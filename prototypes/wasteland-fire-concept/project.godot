@@ -1,0 +1,25 @@
+; PROTOTYPE - NOT FOR PRODUCTION
+; Question: Is the two-Player split-screen Water Canister run fun on one keyboard?
+; Date: 2026-09-30
+config_version=5
+
+[application]
+
+config/name="wasteland-fire-concept"
+run/main_scene="res://main.tscn"
+config/features=PackedStringArray("4.7", "Forward Plus")
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[physics]
+
+3d/physics_engine="Jolt Physics"
+
+[rendering]
+
+renderer/rendering_method="forward_plus"
