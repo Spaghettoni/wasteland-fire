@@ -1,0 +1,104 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/split_screen/split_screen.gd" id="1_split"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/greybox_field.tscn" id="2_field"]
+[ext_resource type="PackedScene" path="res://src/gameplay/units/motorbike.tscn" id="3_bike"]
+[ext_resource type="Script" path="res://src/gameplay/units/player_drive_input.gd" id="4_pdi"]
+[ext_resource type="Script" path="res://src/gameplay/camera/chase_camera.gd" id="5_cam"]
+[ext_resource type="Resource" path="res://src/gameplay/camera/data/chase_camera_settings.tres" id="6_set"]
+[ext_resource type="Material" path="res://src/gameplay/split_screen/data/player_1_body_material.tres" id="7_m1"]
+[ext_resource type="Material" path="res://src/gameplay/split_screen/data/player_2_body_material.tres" id="8_m2"]
+
+[node name="SplitScreen" type="Control" unique_id=9000001 node_paths=PackedStringArray("field", "player_1_unit", "player_2_unit", "player_1_camera", "player_2_camera")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_split")
+field = NodePath("%GreyboxField")
+player_1_unit = NodePath("%Player1Unit")
+player_2_unit = NodePath("%Player2Unit")
+player_1_camera = NodePath("%Player1Camera")
+player_2_camera = NodePath("%Player2Camera")
+
+[node name="World" type="Node3D" parent="." unique_id=9000002]
+physics_interpolation_mode = 1
+
+[node name="GreyboxField" parent="World" unique_id=1102110747 instance=ExtResource("2_field")]
+unique_name_in_owner = true
+
+[node name="Player1Unit" parent="World" unique_id=1111111111 instance=ExtResource("3_bike")]
+unique_name_in_owner = true
+
+[node name="Player2Unit" parent="World" unique_id=1222222222 instance=ExtResource("3_bike")]
+unique_name_in_owner = true
+
+[node name="Player1DriveInput" type="Node" parent="World" unique_id=9000011 node_paths=PackedStringArray("unit")]
+script = ExtResource("4_pdi")
+unit = NodePath("%Player1Unit")
+action_prefix = &"p1_"
+
+[node name="Player2DriveInput" type="Node" parent="World" unique_id=9000012 node_paths=PackedStringArray("unit")]
+script = ExtResource("4_pdi")
+unit = NodePath("%Player2Unit")
+action_prefix = &"p2_"
+
+[node name="Body" parent="World/Player1Unit" index="1" unique_id=1812089259]
+material_override = ExtResource("7_m1")
+
+[node name="Body" parent="World/Player2Unit" index="1" unique_id=1812089259]
+material_override = ExtResource("8_m2")
+
+[node name="Views" type="HBoxContainer" parent="." unique_id=9000003]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="Player1View" type="SubViewportContainer" parent="Views" unique_id=9000021]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="Views/Player1View" unique_id=9000031]
+
+[node name="Player1Camera" type="Camera3D" parent="Views/Player1View/SubViewport" unique_id=9000041 node_paths=PackedStringArray("target")]
+unique_name_in_owner = true
+current = true
+script = ExtResource("5_cam")
+target = NodePath("%Player1Unit")
+settings = ExtResource("6_set")
+
+[node name="Player2View" type="SubViewportContainer" parent="Views" unique_id=9000022]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="Views/Player2View" unique_id=9000032]
+
+[node name="Player2Camera" type="Camera3D" parent="Views/Player2View/SubViewport" unique_id=9000042 node_paths=PackedStringArray("target")]
+unique_name_in_owner = true
+current = true
+script = ExtResource("5_cam")
+target = NodePath("%Player2Unit")
+settings = ExtResource("6_set")
+
+[node name="Divider" type="ColorRect" parent="." unique_id=9000004]
+layout_mode = 1
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -2.0
+offset_right = 2.0
+mouse_filter = 2
+color = Color(0.06, 0.06, 0.07, 1)
+
+[editable path="World/Player1Unit"]
+[editable path="World/Player2Unit"]

@@ -1,0 +1,39 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/units/unit.gd" id="1_ljjdm"]
+[ext_resource type="Resource" path="res://src/gameplay/units/data/motorbike_stats.tres" id="2_ykypc"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wonkl"]
+size = Vector3(1.4, 1, 2.6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vjcix"]
+albedo_color = Color(0.74, 0.36, 0.16, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_8ed75"]
+material = SubResource("StandardMaterial3D_vjcix")
+size = Vector3(1.4, 1, 2.1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_m2fqx"]
+albedo_color = Color(0.96, 0.92, 0.72, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3pgy1"]
+material = SubResource("StandardMaterial3D_m2fqx")
+size = Vector3(1.4, 1, 0.5)
+
+[node name="Motorbike" type="CharacterBody3D" unique_id=1015031245]
+collision_layer = 2
+collision_mask = 3
+script = ExtResource("1_ljjdm")
+stats = ExtResource("2_ykypc")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1114249326]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("BoxShape3D_wonkl")
+
+[node name="Body" type="MeshInstance3D" parent="." unique_id=1812089259]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0.25)
+mesh = SubResource("BoxMesh_8ed75")
+
+[node name="Nose" type="MeshInstance3D" parent="." unique_id=1012444919]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -1.05)
+mesh = SubResource("BoxMesh_3pgy1")

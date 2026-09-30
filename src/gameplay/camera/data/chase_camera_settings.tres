@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="ChaseCameraSettings" format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/camera/chase_camera_settings.gd" id="1_ccset"]
+
+[resource]
+script = ExtResource("1_ccset")
+offset = Vector3(0, 7, 13)
+follow_sharpness = 8.0
+look_height = 1.0

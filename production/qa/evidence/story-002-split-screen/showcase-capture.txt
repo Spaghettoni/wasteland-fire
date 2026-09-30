@@ -1,0 +1,23 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+Movie Maker mode enabled, recording movie in 1280×720 @ 60 FPS...
+SPLIT showcase t=0.000 phase=start p1_x=0.00 p1_z=20.00 p1_speed=0.00 p1_yaw=0.0 p2_x=0.00 p2_z=-20.00 p2_speed=0.00 p2_yaw=0.0
+SPLIT showcase t=1.000 phase=throttle p1_x=0.00 p1_z=17.42 p1_speed=10.00 p1_yaw=0.0 p2_x=0.00 p2_z=-17.42 p2_speed=10.00 p2_yaw=0.0
+SPLIT showcase t=2.000 phase=pass_left p1_x=3.55 p1_z=-1.01 p1_speed=24.00 p1_yaw=2.5 p2_x=-3.55 p2_z=1.01 p2_speed=24.00 p2_yaw=2.5
+SPLIT showcase t=3.000 phase=u_turn_left p1_x=-4.62 p1_z=-20.95 p1_speed=24.00 p1_yaw=82.7 p2_x=4.62 p2_z=20.95 p2_speed=24.00 p2_yaw=82.7
+SPLIT showcase t=4.000 phase=second_pass p1_x=-14.27 p1_z=-2.79 p1_speed=24.00 p1_yaw=178.9 p2_x=14.27 p2_z=2.79 p2_speed=24.00 p2_yaw=178.9
+SPLIT showcase t=5.000 phase=weave_left p1_x=-9.67 p1_z=19.30 p1_speed=24.00 p1_yaw=243.1 p2_x=9.67 p2_z=-19.30 p2_speed=24.00 p2_yaw=243.1
+SPLIT showcase t=6.000 phase=brake p1_x=-5.31 p1_z=34.95 p1_speed=2.40 p1_yaw=178.9 p2_x=5.31 p2_z=-34.95 p2_speed=2.40 p2_yaw=178.9
+SPLIT showcase t=7.000 phase=reverse p1_x=-5.19 p1_z=28.56 p1_speed=-9.00 p1_yaw=178.9 p2_x=5.19 p2_z=-28.56 p2_speed=-9.00 p2_yaw=178.9
+SPLIT showcase t=8.000 phase=coast p1_x=-5.04 p1_z=20.56 p1_speed=-4.20 p1_yaw=178.9 p2_x=5.04 p2_z=-20.56 p2_speed=-4.20 p2_yaw=178.9
+SPLIT showcase t=9.000 phase=coast p1_x=-5.03 p1_z=19.86 p1_speed=0.00 p1_yaw=178.9 p2_x=5.03 p2_z=-19.86 p2_speed=0.00 p2_yaw=178.9
+SPLIT showcase t=10.000 phase=coast p1_x=-5.03 p1_z=19.86 p1_speed=0.00 p1_yaw=178.9 p2_x=5.03 p2_z=-19.86 p2_speed=0.00 p2_yaw=178.9
+RESULT showcase ok checks=0 failed=0 t=10.700 separation_min=7.09 wall_clearance_min=4.99
+--------------------------------------------------------------------------------
+Done recording movie at path: /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a0bbb76e-4a11-49a3-9a86-8984abd2268d/scratchpad/dev-story-002/phase6/cap-showcase/show.png
+643 frames at 60 FPS (movie length: 00:00:10:43), recorded in 00:00:13 (76% of real-time speed).
+CPU render time: 0.01 seconds (average: 0.01 ms/frame)
+GPU render time: 0.00 seconds (average: 0.00 ms/frame)
+Encoding time: 8.81 seconds (average: 13.71 ms/frame)
+--------------------------------------------------------------------------------

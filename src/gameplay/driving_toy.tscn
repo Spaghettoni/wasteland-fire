@@ -1,0 +1,29 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/driving_toy.gd" id="1_qu61f"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/greybox_field.tscn" id="2_qaxwn"]
+[ext_resource type="PackedScene" path="res://src/gameplay/units/motorbike.tscn" id="3_3extu"]
+[ext_resource type="Script" path="res://src/gameplay/camera/chase_camera.gd" id="4_06sbd"]
+[ext_resource type="Resource" path="res://src/gameplay/camera/data/chase_camera_settings.tres" id="5_ccset"]
+[ext_resource type="Script" path="res://src/gameplay/units/player_drive_input.gd" id="6_pdinp"]
+
+[node name="DrivingToy" type="Node3D" unique_id=1837873093 node_paths=PackedStringArray("field", "motorbike", "chase_camera")]
+script = ExtResource("1_qu61f")
+field = NodePath("GreyboxField")
+motorbike = NodePath("Motorbike")
+chase_camera = NodePath("ChaseCamera")
+
+[node name="GreyboxField" parent="." unique_id=1102110747 instance=ExtResource("2_qaxwn")]
+
+[node name="Motorbike" parent="." unique_id=1015031245 instance=ExtResource("3_3extu")]
+
+[node name="ChaseCamera" type="Camera3D" parent="." unique_id=1693586531 node_paths=PackedStringArray("target")]
+current = true
+script = ExtResource("4_06sbd")
+target = NodePath("../Motorbike")
+settings = ExtResource("5_ccset")
+
+[node name="Player1DriveInput" type="Node" parent="." node_paths=PackedStringArray("unit")]
+script = ExtResource("6_pdinp")
+unit = NodePath("../Motorbike")
+action_prefix = &"p1_"
