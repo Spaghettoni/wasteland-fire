@@ -1,11 +1,21 @@
 # Godot Audio — Quick Reference
 
-Last verified: 2026-02-12 | Engine: Godot 4.6
+Last verified: 2026-09-30 | Engine: Godot 4.7.2
 
 ## What Changed Since ~4.3 (LLM Cutoff)
 
-No major breaking changes to the audio API in 4.4–4.6. The core audio system
-remains stable. Key updates are workflow improvements:
+No major breaking changes to the audio API in 4.4–4.6. 4.7 removes
+`AudioEffectSpectrumAnalyzer.tap_back_pos` and changes the `AudioStreamPlayer`
+`area_mask` default (see 4.7 Changes). Otherwise the core audio system remains
+stable.
+
+### 4.7 Changes
+<!-- 4.7 items: the migration guide (https://docs.godotengine.org/en/stable/tutorials/migrating/upgrading_to_godot_4.7.html) for breaking/behavior/default changes; the 4.7 release page, curated changelogs and 4.7 class references for the rest. GH-nnnn is pull request nnnn in godotengine/godot -->
+- **PITFALL (3D local multiplayer)**: `AudioStreamPlayer` default `area_mask` changed from `1` to `0` (disabled) (GH-107679). If you use the `audio_bus_override` feature on `Area2D` or `Area3D` **and** the `AudioStreamPlayer` default `area_mask` (just layer `1` ticked): "you will need to reset the mask to layer `1` — otherwise, the bus overrides will stop working." A mask set to anything except layer `1` "will continue to work as expected."
+- **`AudioEffectSpectrumAnalyzer.tap_back_pos`**: removed; replacement: none stated in the guide (GDScript ❌ · C# binary ❌ · C# source ❌ · GH-114355). Per the curated 4.7 changelog the effect no longer returns jittered values (GH-114355) and, per the PR, "magnitudes will update less frequently"; the Hann window is fixed (GH-116830).
+- **`AudioStreamPlayer3D` with several cameras** (GH-114080): cameras/audio listeners in viewports with `Viewport.audio_listener_enable_3d` enabled (default `false` per the 4.7 Viewport class reference) are merged by taking the maximum volume for each output channel (reverb likewise); cameras in other viewports are skipped; fixes "Audio only plays on one viewport (3D)"
+- **`AudioStreamInteractive`**: `TRANSITION_TO_TIME_PREVIOUS_POSITION` is now bound (GH-114129)
+- **No release-page item**: the release page has no audio item; the `area_mask` default change and the `tap_back_pos` removal are in the migration guide
 
 ### 4.6 Changes
 - **No audio-specific breaking changes** in this release
@@ -77,3 +87,5 @@ func play_pooled(stream: AudioStream) -> void:
 - Creating new AudioStreamPlayer nodes at runtime instead of pooling
 - Not using audio buses for volume categories (Music, SFX, UI, Voice)
 - Using `_process()` for audio timing instead of signals (`finished`)
+- Relying on the `AudioStreamPlayer` default `area_mask` for `Area2D`/`Area3D` `audio_bus_override` — the default became `0` (disabled) in 4.7; tick layer `1` explicitly
+- Expecting a second split-screen camera to hear 3D audio: only viewports with `audio_listener_enable_3d` enabled are merged (4.7)

@@ -1,8 +1,16 @@
 # Godot Navigation — Quick Reference
 
-Last verified: 2026-02-12 | Engine: Godot 4.6
+Last verified: 2026-09-30 | Engine: Godot 4.7.2
 
 ## What Changed Since ~4.3 (LLM Cutoff)
+
+### 4.7 Changes
+<!-- 4.7 items: the migration guide (https://docs.godotengine.org/en/stable/tutorials/migrating/upgrading_to_godot_4.7.html) for breaking/behavior/default changes; the 4.7 release page, curated changelogs and 4.7 class references for the rest. GH-nnnn is pull request nnnn in godotengine/godot -->
+- **`NavigationServer3D.map_get_closest_point_normal`**: no longer returns an unnormalized value (GH-119022)
+- **`GridMap` navmesh baking**: collider baking is faster when bake bounds are used (GH-118867)
+- **4.7.1**: navigation agents are no longer unconditionally added to the avoidance simulation after a pause is resumed (GH-120249)
+- **4.7.2**: debug `NavigationRegion3D` colors update without restarting the project (GH-120939)
+- **No release-page item**: the release page has no navigation item
 
 ### 4.5 Changes
 - **Dedicated 2D navigation server**: No longer a proxy to 3D NavigationServer

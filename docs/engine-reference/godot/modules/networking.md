@@ -1,8 +1,18 @@
 # Godot Networking — Quick Reference
 
-Last verified: 2026-02-12 | Engine: Godot 4.6
+Last verified: 2026-09-30 | Engine: Godot 4.7.2
 
 ## What Changed Since ~4.3 (LLM Cutoff)
+
+### 4.7 Changes
+<!-- 4.7 items: the migration guide (https://docs.godotengine.org/en/stable/tutorials/migrating/upgrading_to_godot_4.7.html) for breaking/behavior/default changes; the 4.7 release page, curated changelogs and 4.7 class references for the rest. GH-nnnn is pull request nnnn in godotengine/godot -->
+- **ENet**: the DTLS server no longer leaks peers (GH-114834)
+- **UDP server**: peer connection fix (GH-120369)
+- **`HTTPRequest`**: missing redirect status codes added (GH-91261)
+- **Downloads**: incomplete file downloads are removed automatically (GH-117448); files are no longer deleted after a chunked transfer completes (GH-118240)
+- **TLS**: mbedTLS updated to 3.6.7 in 4.7.1 (GH-121055); 4.7.2 always uses Godot's OS as the entropy source (GH-121759)
+- **Multiplayer (4.7.2)**: peers no longer stop replicating after deleting a node they spawned with `MultiplayerSpawner` (GH-109864)
+- **No release-page item**: the release page has no networking item
 
 ### 4.6 Changes
 - **Networking section in breaking changes**: See the official migration guide for
