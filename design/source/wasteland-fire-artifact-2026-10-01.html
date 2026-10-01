@@ -1,0 +1,473 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Wasteland Fire (Copy)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;800&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single readable column, a design-doc sheet; unit matrix is the one visual moment */
+:root{
+  --bg:#f3f1ee; --surface:#fbfaf8; --fg:#231f1c; --muted:#6b635c; --line:#dcd6cf;
+  --accent:#b8490f; --fuel:#b8860b; --water:#1f6f95; --code-bg:#ece8e3; --teal:#1f8a8f; --orange:#d9701e;
+  --display:"Saira Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#171412; --surface:#201c19; --fg:#ece6df; --muted:#a39a91; --line:#3a332e;
+  --accent:#ee7a3a; --fuel:#e0b04a; --water:#5fb3dc; --code-bg:#2a2521; --teal:#4fc4c8; --orange:#f0913f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#171412; --surface:#201c19; --fg:#ece6df; --muted:#a39a91; --line:#3a332e;
+  --accent:#ee7a3a; --fuel:#e0b04a; --water:#5fb3dc; --code-bg:#2a2521; --teal:#4fc4c8; --orange:#f0913f; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:16px/1.6 var(--body)}
+.wrap{max-width:46rem;margin:0 auto;padding-inline:16px;padding-block:2.5rem 4rem;display:flex;flex-direction:column;gap:2.25rem}
+header{display:flex;flex-direction:column;gap:.5rem;border-bottom:2px solid var(--fg);padding-bottom:1.25rem}
+.eyebrow{font:500 .75rem var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+h1{font:800 clamp(2.4rem,8vw,3.6rem)/1 var(--display);text-transform:uppercase;letter-spacing:.01em;margin:0;text-wrap:balance}
+h2{font:600 1.5rem/1.2 var(--display);text-transform:uppercase;letter-spacing:.04em;margin:0 0 .75rem}
+p{margin:0 0 .75rem;max-width:65ch}
+.lede{color:var(--muted)}
+section{min-width:0}
+ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.35rem}
+code{font:.88em var(--mono);background:var(--code-bg);padding:.1em .35em;border-radius:3px}
+pre{font:.85rem/1.55 var(--mono);background:var(--code-bg);padding:1rem;border-radius:4px;overflow-x:auto;margin:0}
+.note{font-size:.9rem;color:var(--muted);border-left:3px solid var(--accent);padding-left:.75rem;margin-top:.75rem}
+.tag{font:500 .7rem var(--mono);letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--accent);color:var(--accent);padding:.05rem .35rem;border-radius:2px;white-space:nowrap}
+.units{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:.75rem}
+.unit{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:1rem;display:flex;flex-direction:column;gap:.5rem;min-width:0}
+.unit h3{font:800 1.25rem/1 var(--display);text-transform:uppercase;margin:0}
+.unit .role{font-size:.92rem;color:var(--muted);margin:0}
+.unit dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:.25rem .75rem;font-size:.9rem}
+.unit dt{font:500 .72rem var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-top:.2rem}
+.unit dd{margin:0}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:.75rem}
+.res div{border-top:4px solid var(--c);padding-top:.6rem}
+.res strong{font:600 1.1rem var(--display);text-transform:uppercase;letter-spacing:.04em;color:var(--c)}
+.team{display:flex;flex-direction:column;gap:.5rem}
+.team div{display:flex;flex-wrap:wrap;gap:.25rem .75rem;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:.5rem}
+.team b{font-weight:600}
+.team span{color:var(--muted)}
+.dmg{border-collapse:collapse;font-size:.92rem;font-variant-numeric:tabular-nums;min-width:28rem}
+.dmg th,.dmg td{border:1px solid var(--line);padding:.4rem .7rem;text-align:center}
+.dmg thead th{font:500 .72rem var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.dmg tbody th{text-align:left;font-weight:600}
+.dmg td.hi{color:var(--accent);font-weight:600}
+.board{border:1px solid var(--line);border-radius:6px;background:var(--surface);min-width:0}
+.tabs{display:flex;flex-wrap:wrap;gap:0;border-bottom:1px solid var(--line);padding:0 .5rem}
+.tab{appearance:none;background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-1px;padding:.7rem .85rem .55rem;font:600 1.05rem var(--display);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:.45rem}
+.tab:hover{color:var(--fg)}
+.tab[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+.tab .n{font:500 .72rem var(--mono);background:var(--code-bg);color:var(--muted);border-radius:10px;padding:.05rem .45rem;font-variant-numeric:tabular-nums}
+.tab.drop{background:var(--code-bg);color:var(--accent)}
+.tab.addv{font:500 .8rem var(--mono);text-transform:none;letter-spacing:0}
+.tab:focus-visible,.board button:focus-visible,.board input:focus-visible,.board select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.panel{padding:1rem;display:flex;flex-direction:column;gap:.85rem}
+.add{display:flex;flex-wrap:wrap;gap:.5rem}
+.add input{flex:1 1 14rem;min-width:0}
+.board input,.board select{font:inherit;font-size:.95rem;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:.5rem .65rem}
+.board button{font:600 .85rem var(--body);border-radius:4px;cursor:pointer}
+#add-btn{background:var(--accent);color:#fff;border:1px solid var(--accent);padding:.5rem 1rem}
+#add-btn:disabled{opacity:.5;cursor:default}
+.ideas{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0}
+.idea{display:grid;grid-template-columns:1fr auto;gap:.35rem 1rem;align-items:start;padding:.7rem 0;border-top:1px solid var(--line)}
+.idea:first-child{border-top:0}
+.idea[draggable="true"]{cursor:grab}
+.idea.dragging{opacity:.4}
+.idea .txt{min-width:0}
+.idea .t{font-weight:600;overflow-wrap:anywhere}
+.idea .d{font-size:.9rem;color:var(--muted);overflow-wrap:anywhere;margin-top:.15rem}
+.idea .by{font:500 .7rem var(--mono);color:var(--muted);margin-top:.3rem;display:flex;align-items:center;gap:.35rem}
+.idea .by img{width:16px;height:16px;border-radius:50%}
+.acts{display:flex;flex-wrap:wrap;gap:.35rem;justify-content:flex-end;align-items:center}
+.acts select{font-size:.8rem;padding:.3rem .4rem}
+.ghost{background:none;border:1px solid var(--line);color:var(--muted);padding:.3rem .55rem}
+.ghost:hover{color:var(--fg);border-color:var(--muted)}
+.ghost.danger{color:var(--accent);border-color:var(--accent)}
+.edit{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:.5rem}
+.edit input{flex:1 1 14rem;min-width:0}
+.empty{color:var(--muted);margin:0}
+.vbar{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;padding:.6rem 1rem;border-bottom:1px solid var(--line);font-size:.88rem;color:var(--muted)}
+.vbar:empty{display:none}
+.vbar .vname{font:600 .95rem var(--display);text-transform:uppercase;letter-spacing:.05em;color:var(--fg);margin-right:auto}
+.vbar input{flex:1 1 10rem;min-width:0;padding:.35rem .55rem}
+.vbar .warn{flex-basis:100%;color:var(--fg)}
+.idea{grid-template-columns:auto 1fr auto !important}
+.idea .chk{width:1.15rem;height:1.15rem;margin:.2rem 0 0;accent-color:var(--accent);cursor:pointer}
+.idea.done .t{text-decoration:line-through;color:var(--muted);font-weight:400}
+.idea.done .d{opacity:.7}
+.idea .edit{grid-column:1/-1}
+.status{font:500 .78rem var(--mono);color:var(--muted);margin:0;min-height:1em}
+@media (max-width:520px){.idea{grid-template-columns:auto 1fr !important}.acts{grid-column:2;justify-content:flex-start}}
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">RoninYa · pracovný názov</span>
+    <h1>Wasteland Fire</h1>
+    <p class="lede">3D hra v štýle Return Fire zasadená do Mad Max sveta. Toto je spoločný kontext pre Claude Code (<code>CLAUDE.md</code>). Keď sa zmení dizajn alebo pravidlá, uprav ho v tom istom PR.</p>
+  </header>
+
+  <section>
+    <h2>Pitch</h2>
+    <p>Dvaja hráči, každý má svoju základňu. Cieľ: ukradnúť súperovi vlajku a doviezť ju domov. Po mape sa zbiera benzín, bez neho sa nejazdí ani nelieta. Jeden zápas, žiadne kolá.</p>
+  </section>
+
+  <section id="verzie" aria-labelledby="verzie-h">
+    <h2 id="verzie-h">Verzie a nápady</h2>
+    <p class="lede">Čo patrí do ktorej verzie. Pridávajte nápady, presúvajte ich medzi záložkami (aj potiahnutím na záložku) a mažte, čo padlo. Zmeny vidia všetci hneď.</p>
+    <div class="board">
+      <div class="tabs" role="tablist" id="tabs"></div>
+      <div class="vbar" id="vbar"></div>
+      <div class="panel" id="panel" role="tabpanel">
+        <form id="add" class="add" autocomplete="off">
+          <input id="add-text" type="text" placeholder="Nový nápad…" maxlength="200" aria-label="Nový nápad">
+          <input id="add-note" type="text" placeholder="Poznámka (nepovinné)" maxlength="400" aria-label="Poznámka">
+          <button type="submit" id="add-btn">Pridať</button>
+        </form>
+        <ul class="ideas" id="ideas"></ul>
+        <p class="empty" id="empty" hidden></p>
+        <p class="status" id="status" role="status"></p>
+      </div>
+    </div>
+    <p class="note">Do kódu ide len to, čo je vo verzii, na ktorej sa práve robí. Backlog sú nápady na neskôr.</p>
+  </section>
+
+  <section>
+    <h2>Tímy a vizuál</h2>
+    <div class="res">
+      <div style="--c:var(--teal)"><strong>Teal</strong><p>Na Map 01 základňa B.</p></div>
+      <div style="--c:var(--orange)"><strong>Orange</strong><p>Na Map 01 základňa A.</p></div>
+    </div>
+    <ul style="margin-top:.75rem">
+      <li>Modely, základne aj UI sa farbia podľa tímu, farby sa v modeloch nemiešajú.</li>
+      <li>Štýl je <b>low-poly</b>: Claude skladá modely zo vstavaných Godot meshov a textúry generuje kódom. Meshy nepoužívame (sťahovanie je za predplatné).</li>
+      <li>Vychádzame z concept artu v Discord kanáli #wasteland-fire.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Pravidlá zápasu</h2>
+    <ul>
+      <li>Každý hráč má <b>zásobu tokenov na každý typ vozidla</b> (napr. motorka 5, bugina 3, truck 2, gyrokoptéra 2). Počty určuje <b>mapa</b>, každá môže mať iné.</li>
+      <li>Na začiatku a po každom zničení si hráč vyberie ľubovoľné vozidlo zo zvyšnej zásoby a objaví sa v garáži. Hra medzitým beží ďalej.</li>
+      <li>Zničené vozidlo = mínus 1 token daného typu.</li>
+      <li><b>Vlajku môže niesť len motorka.</b> Keď nosiča zničia, vlajka ostane ležať na mieste.</li>
+      <li><b>Koniec hry:</b> doviezeš súperovu vlajku domov (výhra), alebo prídeš o poslednú motorku (prehra).</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Vozidlá</h2>
+    <p>Štyri vozidlá: <b>trojica bojových</b> (gyrokoptéra, truck, bugina), ktoré sa navzájom porážajú ako kameň, papier, nožnice, a <b>motorka</b> zvlášť, čisto na vlajky. Streľba je len v jednej výške a zbraň strieľa pevne dopredu, takže otáčanie = rýchlosť mierenia. Lietanie znamená iba prelet ponad útesy a vodu.</p>
+    <div style="overflow-x:auto">
+      <table class="dmg stats">
+        <thead><tr><th>Vozidlo</th><th>HP</th><th>DMG</th><th>Rýchlosť m/s</th><th>Otáčanie °/s</th><th>Lieta</th></tr></thead>
+        <tbody>
+          <tr><th>Motorka</th><td>40</td><td>5</td><td>22</td><td>220</td><td>–</td></tr>
+          <tr><th>Bugina</th><td>100</td><td>12</td><td>18</td><td>180</td><td>–</td></tr>
+          <tr><th>Truck</th><td>220</td><td>25</td><td>10</td><td>70</td><td>–</td></tr>
+          <tr><th>Gyrokoptéra</th><td>70</td><td>15</td><td>15</td><td>120</td><td class="hi">áno</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Štartovacie hodnoty, ladiť hraním. Každé vozidlo má svoj <code>VehicleStats</code> resource (<code>.tres</code>): <code>max_hp</code>, <code>damage</code>, <code>speed</code>, <code>turn_rate</code>, <code>can_fly</code>, <code>fuel_use</code>.</p>
+    <div class="units" style="margin-top:1.25rem">
+      <article class="unit"><h3>Bugina &gt; Truck</h3><p class="role">Obkrúži ho, truck sa nestihne otočiť a zamieriť.</p></article>
+      <article class="unit"><h3>Truck &gt; Gyro</h3><p class="role">Gyrokoptéra má málo HP, truck ju zloží na pár zásahov.</p></article>
+      <article class="unit"><h3>Gyro &gt; Bugina</h3><p class="role">Uteká ponad útesy a vodu, kam bugina nemôže, a strieľa z bezpečia.</p></article>
+    </div>
+    <p style="margin-top:1rem">Z čistých parametrov sa trojuholník ľahko rozsype na „najlepšie vozidlo“, preto k nim patrí aj matica násobiteľov poškodenia. Motorka dáva aj dostáva 1.0×.</p>
+    <div style="overflow-x:auto">
+      <table class="dmg">
+        <thead><tr><th>Útočník ↓ / cieľ →</th><th>Bugina</th><th>Truck</th><th>Gyro</th></tr></thead>
+        <tbody>
+          <tr><th>Bugina</th><td>1.0</td><td class="hi">1.5</td><td>0.5</td></tr>
+          <tr><th>Truck</th><td>0.5</td><td>1.0</td><td class="hi">1.5</td></tr>
+          <tr><th>Gyro</th><td class="hi">1.5</td><td>0.5</td><td>1.0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Ak sa trojuholník ukáže aj bez matice, nastavíme všetko na 1.0.</p>
+  </section>
+
+  <section>
+    <h2>Zdroje a pickupy</h2>
+    <div class="res">
+      <div style="--c:var(--fuel)"><strong>Benzín</strong><p>Každá jednotka ho míňa pri pohybe (gyrokoptéra najviac). Kanistre sa respawnujú na pevných miestach.</p></div>
+      <div style="--c:var(--accent)"><strong>Vlajka</strong><p>Jedna v každej základni. Nesie ju len motorka; po zničení nosiča ostane ležať.</p></div>
+    </div>
+    <p class="note">Backlog (nie v0.1): <b>voda</b> = dočasný boost, <b>kľúč</b> = oprava.</p>
+  </section>
+
+  <section>
+    <h2>Technika</h2>
+    <ul>
+      <li>Godot 4.x (zapísať presnú verziu: ______), GDScript s typmi (<code>var speed: float = 10.0</code>)</li>
+      <li>Split-screen cez <code>SubViewportContainer</code> + <code>SubViewport</code>, jedna kamera na hráča</li>
+      <li>Vstupy cez Input Map s prefixom hráča: <code>p1_accelerate</code>, <code>p2_fire</code>, …</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Otvorené otázky · rozhodne test</h2>
+    <p><b>Kamera: fixná vs. otáča sa s vozidlom.</b> Return Fire mal fixnú kameru, zvažujeme kameru, ktorá sa otáča spolu s vozidlom. Pripraviť obe možnosti a zahrať si to v split-screene.</p>
+    <ul>
+      <li>Kamera je samostatný uzol (<code>PlayerCamera</code>), ktorý sleduje vozidlo, nie dieťa vozidla.</li>
+      <li><code>@export var follow_rotation: bool</code> – či kamera preberá natočenie vozidla</li>
+      <li><code>@export var rotation_smoothing: float</code> – vyhladenie, aby sa kamera netočila pri každom drobnom pohybe</li>
+      <li><code>@export var look_ahead: float</code> – posun pohľadu dopredu v smere jazdy</li>
+      <li><code>@export var pitch_degrees: float</code> – 90 = čisto zhora, ~60 = šikmo spoza vozidla</li>
+      <li>Nastavenia môžu byť iné pre každú jednotku (gyrokoptéra možno lepšie s fixnou kamerou).</li>
+    </ul>
+    <p style="margin-top:1rem"><b>Ovládanie: voči vozidlu vs. voči obrazovke.</b> Súvisí s kamerou, rovnaký prístup.</p>
+    <ul>
+      <li><code>@export var control_mode</code>: <code>VEHICLE_RELATIVE</code> (plyn + zatáčanie) alebo <code>SCREEN_RELATIVE</code> (páčka ukazuje smer)</li>
+      <li>Pri rotujúcej kamere čakáme lepšie <code>VEHICLE_RELATIVE</code>, pri fixnej <code>SCREEN_RELATIVE</code> – overiť.</li>
+      <li>Ak vyhrá rotujúca kamera, do v0.1 treba aj šípku k vlastnej základni alebo minimapu (sever hore).</li>
+    </ul>
+    <p class="note">Po teste zapísať rozhodnutie a túto sekciu skrátiť.</p>
+  </section>
+
+  <section>
+    <h2>Štruktúra priečinkov</h2>
+<pre>scenes/    # .tscn – jedna scéna = jedna vec (unit_bike.tscn, pickup_fuel.tscn, level_01.tscn)
+scripts/   # .gd – zrkadlí scenes/
+assets/    # modely, textúry, zvuky
+docs/      # backlog.md, rozhodnutia</pre>
+  </section>
+
+  <section>
+    <h2>Konvencie</h2>
+    <ul>
+      <li>Názvy súborov a premenných po anglicky, <code>snake_case</code>; triedy <code>PascalCase</code> s <code>class_name</code></li>
+      <li>Hodnoty na ladenie (rýchlosť, spotreba, HP, dmg) ako <code>@export</code>, nie natvrdo v kóde</li>
+      <li>Komunikácia medzi objektmi cez signály, nie cez hľadanie uzlov po strome</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Pravidlá pre Claude</h2>
+    <ul>
+      <li>Pred väčšou zmenou napíš krátky plán a počkaj na potvrdenie.</li>
+      <li><code>.tscn</code> súbory upravuj len drobne; novú scénu radšej opíš (aké uzly, v akom poradí), človek ju poskladá v editore.</li>
+      <li>Needituj priečinok <code>.godot/</code> ani <code>*.import</code> súbory.</li>
+      <li>Po zmene povedz, ako to otestovať v hre (ktorú scénu spustiť, čo stlačiť).</li>
+      <li>Nerozširuj scope nad verziu 0.1 bez výslovnej požiadavky.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Tím</h2>
+    <div class="team">
+      <div><b>Martin</b><span>Discord: oko · dizajn, balans, testovanie, …</span></div>
+      <div><b>Tomáš</b><span>Discord: tomero · …</span></div>
+    </div>
+    <p class="note">Kto na čom práve robí: GitHub Issues.</p>
+  </section>
+</div>
+
+<script>
+(() => {
+  const DEFAULT_VERSIONS = ["v0.1", "v0.2", "v0.3", "backlog"];
+  let labels = {};
+  const LABEL = v => labels[v] || (v === "backlog" ? "Backlog" : v);
+  const $ = id => document.getElementById(id);
+  const tabsEl = $("tabs"), listEl = $("ideas"), emptyEl = $("empty"), statusEl = $("status");
+  const addForm = $("add"), addText = $("add-text"), addNote = $("add-note"), addBtn = $("add-btn");
+  let versions = DEFAULT_VERSIONS.slice(), ideas = [], db = null, user = null, me = null;
+  let canWrite = true, editing = null, confirmDel = null, loaded = false, vmode = null;
+  const vbarEl = $("vbar");
+  const saveConfig = (list, lbls) => db.doc("board/config").set({ versions: list, labels: lbls });
+  let active = "v0.1";
+  try { const h = location.hash.slice(1); const saved = localStorage.getItem("wf-tab"); active = (h && h.startsWith("v")) ? h : (saved || active); } catch (e) {}
+
+  const say = t => { statusEl.textContent = t || ""; };
+  const setActive = v => { active = v; try { localStorage.setItem("wf-tab", v); } catch (e) {} render(); };
+
+  async function move(id, to) {
+    if (!db || !canWrite) return;
+    try { await db.doc("ideas/" + id).update({ version: to, order: Date.now() }); say("Presunuté do " + LABEL(to) + "."); }
+    catch (e) { fail(e); }
+  }
+  function fail(e) {
+    if (e && e.code === "invalid_argument") { canWrite = false; render(); say("Na úpravy nemáš oprávnenie. Môžeš len čítať."); }
+    else if (e && e.code === "quota_exceeded") say("Databáza je plná, zmaž staré nápady.");
+    else say("Nepodarilo sa uložiť. Skús to znova.");
+  }
+
+  function renderTabs() {
+    tabsEl.textContent = "";
+    for (const v of versions) {
+      const b = document.createElement("button");
+      b.className = "tab"; b.type = "button"; b.setAttribute("role", "tab");
+      b.setAttribute("aria-selected", String(v === active)); b.id = "tab-" + v;
+      const l = document.createElement("span"); l.textContent = LABEL(v);
+      const n = document.createElement("span"); n.className = "n"; const inV = ideas.filter(i => i.version === v); n.textContent = inV.filter(i => i.done).length + "/" + inV.length; n.title = "hotové / spolu";
+      b.append(l, n);
+      b.onclick = () => { vmode = null; setActive(v); };
+      b.ondragover = ev => { if (canWrite) { ev.preventDefault(); b.classList.add("drop"); } };
+      b.ondragleave = () => b.classList.remove("drop");
+      b.ondrop = ev => { ev.preventDefault(); b.classList.remove("drop"); const id = ev.dataTransfer.getData("text/plain"); if (id) move(id, v); };
+      tabsEl.append(b);
+    }
+    if (canWrite && db) {
+      const a = document.createElement("button");
+      a.className = "tab addv"; a.type = "button"; a.textContent = "+ verzia";
+      a.onclick = addVersion;
+      tabsEl.append(a);
+    }
+  }
+
+  async function addVersion() {
+    const nums = versions.filter(v => /^v\d+\.\d+$/.test(v)).map(v => parseFloat(v.slice(1)));
+    const next = "v" + ((nums.length ? Math.max(...nums) : 0) + 0.1).toFixed(1);
+    const list = versions.filter(v => v !== "backlog").concat([next], versions.includes("backlog") ? ["backlog"] : []);
+    try { await saveConfig(list, labels); active = next; vmode = null; say("Pridaná " + next + "."); }
+    catch (e) { fail(e); }
+  }
+
+  function renderVbar() {
+    vbarEl.textContent = "";
+    if (!(canWrite && db)) return;
+    const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt) e.textContent = txt; return e; };
+    if (vmode === "rename") {
+      const f = mk("form"); f.style.cssText = "display:flex;flex-wrap:wrap;gap:.5rem;flex:1";
+      const inp = mk("input"); inp.id = "vrename"; inp.value = LABEL(active); inp.maxLength = 40; inp.setAttribute("aria-label", "Nový názov záložky");
+      const ok = mk("button", "ghost", "Uložiť"); ok.type = "submit";
+      const no = mk("button", "ghost", "Zrušiť"); no.type = "button"; no.onclick = () => { vmode = null; render(); };
+      f.onsubmit = async ev => { ev.preventDefault(); const nv = inp.value.trim(); if (!nv) return;
+        const nl = Object.assign({}, labels, { [active]: nv });
+        try { await saveConfig(versions, nl); vmode = null; say("Premenované na " + nv + "."); } catch (e) { fail(e); } };
+      f.append(inp, ok, no); vbarEl.append(f); setTimeout(() => inp.select(), 0); return;
+    }
+    const nm = mk("span", "vname", LABEL(active)); vbarEl.append(nm);
+    if (vmode === "remove") {
+      const cnt = ideas.filter(i => i.version === active).length;
+      const target = versions.includes("backlog") && active !== "backlog" ? "backlog" : versions.find(v => v !== active);
+      const w = mk("span", "warn", "Odstrániť záložku " + LABEL(active) + "?" + (cnt ? " " + cnt + " nápad(ov) sa presunie do " + LABEL(target) + "." : ""));
+      const yes = mk("button", "ghost danger", "Áno, odstrániť"); yes.type = "button";
+      const no = mk("button", "ghost", "Zrušiť"); no.type = "button"; no.onclick = () => { vmode = null; render(); };
+      yes.onclick = async () => {
+        yes.disabled = true;
+        try {
+          for (const it of ideas.filter(i => i.version === active)) await db.doc("ideas/" + it.id).update({ version: target });
+          const nl = Object.assign({}, labels); delete nl[active];
+          const old = active; await saveConfig(versions.filter(v => v !== old), nl);
+          vmode = null; active = target; say("Záložka odstránená.");
+        } catch (e) { fail(e); yes.disabled = false; }
+      };
+      vbarEl.append(w, yes, no); return;
+    }
+    const rn = mk("button", "ghost", "Premenovať"); rn.type = "button"; rn.onclick = () => { vmode = "rename"; render(); };
+    vbarEl.append(rn);
+    if (versions.length > 1 && active !== "backlog") {
+      const rm = mk("button", "ghost", "Odstrániť záložku"); rm.type = "button"; rm.onclick = () => { vmode = "remove"; render(); };
+      vbarEl.append(rm);
+    }
+  }
+
+  async function renderList() {
+    const items = ideas.filter(i => i.version === active).sort((a, b) => (!!a.done - !!b.done) || ((a.order || 0) - (b.order || 0)));
+    listEl.textContent = "";
+    emptyEl.hidden = items.length > 0 || !loaded;
+    emptyEl.textContent = db ? "V " + LABEL(active) + " zatiaľ nič nie je." : "";
+    const ids = [...new Set(items.map(i => i.by).filter(Boolean))];
+    const ps = (user && ids.length) ? await user.profiles(ids) : {};
+    for (const it of items) {
+      const li = document.createElement("li"); li.className = "idea" + (it.done ? " done" : "");
+      if (canWrite && editing !== it.id) {
+        li.draggable = true;
+        li.ondragstart = ev => { ev.dataTransfer.setData("text/plain", it.id); li.classList.add("dragging"); };
+        li.ondragend = () => li.classList.remove("dragging");
+      }
+      const txt = document.createElement("div"); txt.className = "txt";
+      if (editing === it.id) {
+        const f = document.createElement("form"); f.className = "edit";
+        const t = document.createElement("input"); t.value = it.text || ""; t.maxLength = 200; t.id = "edit-t-" + it.id; t.setAttribute("aria-label", "Text nápadu");
+        const d = document.createElement("input"); d.value = it.note || ""; d.maxLength = 400; d.placeholder = "Poznámka"; d.id = "edit-d-" + it.id; d.setAttribute("aria-label", "Poznámka");
+        const ok = document.createElement("button"); ok.type = "submit"; ok.className = "ghost"; ok.textContent = "Uložiť";
+        const no = document.createElement("button"); no.type = "button"; no.className = "ghost"; no.textContent = "Zrušiť";
+        no.onclick = () => { editing = null; render(); };
+        f.onsubmit = async ev => { ev.preventDefault(); const nt = t.value.trim(); if (!nt) return;
+          try { await db.doc("ideas/" + it.id).update({ text: nt, note: d.value.trim() }); editing = null; say("Uložené."); render(); } catch (e) { fail(e); } };
+        f.append(t, d, ok, no); li.append(f); listEl.append(li); setTimeout(() => t.focus(), 0); continue;
+      }
+      const t = document.createElement("div"); t.className = "t"; t.textContent = it.text || "";
+      txt.append(t);
+      if (it.note) { const d = document.createElement("div"); d.className = "d"; d.textContent = it.note; txt.append(d); }
+      if (it.by && ps[it.by]) {
+        const p = ps[it.by]; const by = document.createElement("div"); by.className = "by";
+        const img = document.createElement("img"); img.src = p.avatarUrl; img.alt = "";
+        const nm = document.createElement("span"); nm.textContent = (p.isMe ? "ty" : (p.name || "niekto"));
+        by.append(img, nm); txt.append(by);
+      }
+      const ck = document.createElement("input"); ck.type = "checkbox"; ck.className = "chk"; ck.id = "done-" + it.id;
+      ck.checked = !!it.done; ck.disabled = !(canWrite && db); ck.setAttribute("aria-label", "Hotové: " + (it.text || ""));
+      ck.onchange = async () => { try { await db.doc("ideas/" + it.id).update({ done: ck.checked }); say(ck.checked ? "Hotové." : "Znovu otvorené."); } catch (e) { ck.checked = !ck.checked; fail(e); } };
+      li.append(ck, txt);
+      if (canWrite && db) {
+        const acts = document.createElement("div"); acts.className = "acts";
+        const sel = document.createElement("select"); sel.id = "mv-" + it.id; sel.setAttribute("aria-label", "Presunúť do verzie");
+        const o0 = document.createElement("option"); o0.textContent = "Presunúť…"; o0.value = ""; sel.append(o0);
+        for (const v of versions) if (v !== it.version) { const o = document.createElement("option"); o.value = v; o.textContent = "→ " + LABEL(v); sel.append(o); }
+        sel.onchange = () => { if (sel.value) move(it.id, sel.value); };
+        const ed = document.createElement("button"); ed.type = "button"; ed.className = "ghost"; ed.textContent = "Upraviť";
+        ed.onclick = () => { editing = it.id; confirmDel = null; render(); };
+        const del = document.createElement("button"); del.type = "button";
+        del.className = "ghost" + (confirmDel === it.id ? " danger" : "");
+        del.textContent = confirmDel === it.id ? "Naozaj zmazať?" : "Zmazať";
+        del.onclick = async () => {
+          if (confirmDel !== it.id) { confirmDel = it.id; render(); return; }
+          confirmDel = null;
+          try { await db.doc("ideas/" + it.id).delete(); say("Zmazané."); } catch (e) { fail(e); }
+        };
+        acts.append(sel, ed, del); li.append(acts);
+      }
+      listEl.append(li);
+    }
+  }
+
+  function render() {
+    if (!versions.includes(active)) active = versions[0];
+    renderTabs();
+    renderVbar();
+    addForm.hidden = !(canWrite && db);
+    renderList();
+  }
+
+  addForm.onsubmit = async ev => {
+    ev.preventDefault();
+    const text = addText.value.trim(); if (!text || !db) return;
+    addBtn.disabled = true;
+    try {
+      await db.collection("ideas").add({ text, note: addNote.value.trim(), version: active, order: Date.now(), created: Date.now(), by: me });
+      addText.value = ""; addNote.value = ""; say("Pridané do " + LABEL(active) + "."); addText.focus();
+    } catch (e) { fail(e); }
+    addBtn.disabled = false;
+  };
+
+  render();
+  emptyEl.hidden = false; emptyEl.textContent = "Načítavam nápady…";
+
+  (async () => {
+    db = await window.claude?.use?.("db") ?? null;
+    user = await window.claude?.use?.("user") ?? null;
+    if (!db) { emptyEl.hidden = false; emptyEl.textContent = "Nápady sú dostupné len po prihlásení do Claude."; addForm.hidden = true; return; }
+    if (user) {
+      me = await user.id();
+      const c = await user.can("data.write");
+      if (c === false) canWrite = false;
+    }
+    db.doc("board/config").onSnapshot(snap => {
+      const d = snap.exists ? snap.data() : {};
+      versions = (Array.isArray(d.versions) && d.versions.length ? d.versions : DEFAULT_VERSIONS).slice();
+      labels = (d.labels && typeof d.labels === "object") ? Object.assign({}, d.labels) : {};
+      render();
+    }, () => {});
+    db.collection("ideas").onSnapshot(snap => {
+      ideas = snap.docs.map(d => Object.assign({ id: d.id }, d.data()));
+      loaded = true; render();
+    }, () => { say("Spojenie s databázou sa prerušilo. Obnov stránku."); });
+  })();
+})();
+</script>
+
+</body></html>

@@ -1,0 +1,156 @@
+Wasteland Fire (Copy)
+
+ RoninYa · pracovný názov
+ Wasteland Fire
+
+ 3D hra v štýle Return Fire zasadená do Mad Max sveta. Toto je spoločný kontext pre Claude Code (CLAUDE.md). Keď sa zmení dizajn alebo pravidlá, uprav ho v tom istom PR.
+
+ Pitch
+
+ Dvaja hráči, každý má svoju základňu. Cieľ: ukradnúť súperovi vlajku a doviezť ju domov. Po mape sa zbiera benzín, bez neho sa nejazdí ani nelieta. Jeden zápas, žiadne kolá.
+
+ Verzie a nápady
+
+ Čo patrí do ktorej verzie. Pridávajte nápady, presúvajte ich medzi záložkami (aj potiahnutím na záložku) a mažte, čo padlo. Zmeny vidia všetci hneď.
+
+ Pridať
+
+ Do kódu ide len to, čo je vo verzii, na ktorej sa práve robí. Backlog sú nápady na neskôr.
+
+ Tímy a vizuál
+
+ TealNa Map 01 základňa B.
+
+ OrangeNa Map 01 základňa A.
+
+ Modely, základne aj UI sa farbia podľa tímu, farby sa v modeloch nemiešajú.
+
+ Štýl je low-poly: Claude skladá modely zo vstavaných Godot meshov a textúry generuje kódom. Meshy nepoužívame (sťahovanie je za predplatné).
+
+ Vychádzame z concept artu v Discord kanáli #wasteland-fire.
+
+ Pravidlá zápasu
+
+ Každý hráč má zásobu tokenov na každý typ vozidla (napr. motorka 5, bugina 3, truck 2, gyrokoptéra 2). Počty určuje mapa, každá môže mať iné.
+
+ Na začiatku a po každom zničení si hráč vyberie ľubovoľné vozidlo zo zvyšnej zásoby a objaví sa v garáži. Hra medzitým beží ďalej.
+
+ Zničené vozidlo = mínus 1 token daného typu.
+
+ Vlajku môže niesť len motorka. Keď nosiča zničia, vlajka ostane ležať na mieste.
+
+ Koniec hry: doviezeš súperovu vlajku domov (výhra), alebo prídeš o poslednú motorku (prehra).
+
+ Vozidlá
+
+ Štyri vozidlá: trojica bojových (gyrokoptéra, truck, bugina), ktoré sa navzájom porážajú ako kameň, papier, nožnice, a motorka zvlášť, čisto na vlajky. Streľba je len v jednej výške a zbraň strieľa pevne dopredu, takže otáčanie = rýchlosť mierenia. Lietanie znamená iba prelet ponad útesy a vodu.
+
+ Vozidlo | HP | DMG | Rýchlosť m/s | Otáčanie °/s | Lieta | 
+
+ Motorka | 40 | 5 | 22 | 220 | – | 
+
+ Bugina | 100 | 12 | 18 | 180 | – | 
+
+ Truck | 220 | 25 | 10 | 70 | – | 
+
+ Gyrokoptéra | 70 | 15 | 15 | 120 | áno | 
+
+ Štartovacie hodnoty, ladiť hraním. Každé vozidlo má svoj VehicleStats resource (.tres): max_hp, damage, speed, turn_rate, can_fly, fuel_use.
+
+ Bugina > Truck
+Obkrúži ho, truck sa nestihne otočiť a zamieriť.
+
+ Truck > Gyro
+Gyrokoptéra má málo HP, truck ju zloží na pár zásahov.
+
+ Gyro > Bugina
+Uteká ponad útesy a vodu, kam bugina nemôže, a strieľa z bezpečia.
+
+ Z čistých parametrov sa trojuholník ľahko rozsype na „najlepšie vozidlo“, preto k nim patrí aj matica násobiteľov poškodenia. Motorka dáva aj dostáva 1.0×.
+
+ Útočník ↓ / cieľ → | Bugina | Truck | Gyro | 
+
+ Bugina | 1.0 | 1.5 | 0.5 | 
+
+ Truck | 0.5 | 1.0 | 1.5 | 
+
+ Gyro | 1.5 | 0.5 | 1.0 | 
+
+ Ak sa trojuholník ukáže aj bez matice, nastavíme všetko na 1.0.
+
+ Zdroje a pickupy
+
+ BenzínKaždá jednotka ho míňa pri pohybe (gyrokoptéra najviac). Kanistre sa respawnujú na pevných miestach.
+
+ VlajkaJedna v každej základni. Nesie ju len motorka; po zničení nosiča ostane ležať.
+
+ Backlog (nie v0.1): voda = dočasný boost, kľúč = oprava.
+
+ Technika
+
+ Godot 4.x (zapísať presnú verziu: ______), GDScript s typmi (var speed: float = 10.0)
+
+ Split-screen cez SubViewportContainer + SubViewport, jedna kamera na hráča
+
+ Vstupy cez Input Map s prefixom hráča: p1_accelerate, p2_fire, …
+
+ Otvorené otázky · rozhodne test
+
+ Kamera: fixná vs. otáča sa s vozidlom. Return Fire mal fixnú kameru, zvažujeme kameru, ktorá sa otáča spolu s vozidlom. Pripraviť obe možnosti a zahrať si to v split-screene.
+
+ Kamera je samostatný uzol (PlayerCamera), ktorý sleduje vozidlo, nie dieťa vozidla.
+
+ @export var follow_rotation: bool – či kamera preberá natočenie vozidla
+
+ @export var rotation_smoothing: float – vyhladenie, aby sa kamera netočila pri každom drobnom pohybe
+
+ @export var look_ahead: float – posun pohľadu dopredu v smere jazdy
+
+ @export var pitch_degrees: float – 90 = čisto zhora, ~60 = šikmo spoza vozidla
+
+ Nastavenia môžu byť iné pre každú jednotku (gyrokoptéra možno lepšie s fixnou kamerou).
+
+ Ovládanie: voči vozidlu vs. voči obrazovke. Súvisí s kamerou, rovnaký prístup.
+
+ @export var control_mode: VEHICLE_RELATIVE (plyn + zatáčanie) alebo SCREEN_RELATIVE (páčka ukazuje smer)
+
+ Pri rotujúcej kamere čakáme lepšie VEHICLE_RELATIVE, pri fixnej SCREEN_RELATIVE – overiť.
+
+ Ak vyhrá rotujúca kamera, do v0.1 treba aj šípku k vlastnej základni alebo minimapu (sever hore).
+
+ Po teste zapísať rozhodnutie a túto sekciu skrátiť.
+
+ Štruktúra priečinkov
+
+scenes/ # .tscn – jedna scéna = jedna vec (unit_bike.tscn, pickup_fuel.tscn, level_01.tscn)
+scripts/ # .gd – zrkadlí scenes/
+assets/ # modely, textúry, zvuky
+docs/ # backlog.md, rozhodnutia
+
+ Konvencie
+
+ Názvy súborov a premenných po anglicky, snake_case; triedy PascalCase s class_name
+
+ Hodnoty na ladenie (rýchlosť, spotreba, HP, dmg) ako @export, nie natvrdo v kóde
+
+ Komunikácia medzi objektmi cez signály, nie cez hľadanie uzlov po strome
+
+ Pravidlá pre Claude
+
+ Pred väčšou zmenou napíš krátky plán a počkaj na potvrdenie.
+
+ .tscn súbory upravuj len drobne; novú scénu radšej opíš (aké uzly, v akom poradí), človek ju poskladá v editore.
+
+ Needituj priečinok .godot/ ani *.import súbory.
+
+ Po zmene povedz, ako to otestovať v hre (ktorú scénu spustiť, čo stlačiť).
+
+ Nerozširuj scope nad verziu 0.1 bez výslovnej požiadavky.
+
+ Tím
+
+ MartinDiscord: oko · dizajn, balans, testovanie, …
+
+ TomášDiscord: tomero · …
+
+ Kto na čom práve robí: GitHub Issues.
