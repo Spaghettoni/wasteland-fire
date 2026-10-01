@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://assets/art/vehicles/wasteland_buggy/wasteland_buggy_armored.gd" id="1_buggy"]
+
+[node name="WastelandBuggyArmored" type="Node3D"]
+script = ExtResource("1_buggy")
