@@ -1,0 +1,14 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+SPLIT fps t=1.000 fps=69.0 draw_calls=64 primitives=638 objects=64
+SPLIT fps t=2.000 fps=120.0 draw_calls=44 primitives=408 objects=44
+SPLIT fps t=3.000 fps=120.0 draw_calls=72 primitives=758 objects=74
+SPLIT fps t=4.000 fps=120.0 draw_calls=48 primitives=480 objects=50
+SPLIT fps t=5.000 fps=120.0 draw_calls=82 primitives=902 objects=86
+SPLIT fps t=6.000 fps=120.0 draw_calls=50 primitives=492 objects=51
+SPLIT fps t=7.000 fps=120.0 draw_calls=56 primitives=542 objects=56
+SPLIT fps t=8.000 fps=120.0 draw_calls=51 primitives=492 objects=51
+SPLIT fps t=9.000 fps=120.0 draw_calls=48 primitives=446 objects=48
+SPLIT fps t=10.000 fps=120.0 draw_calls=64 primitives=638 objects=64
+RESULT fps ok checks=0 failed=0 t=10.000 fps_avg=114.9 fps_avg_steady=120.0 fps_min=69.0 fps_min_steady=120.0 refresh_hz=120.0 draw_calls_max=82 primitives_max=902 samples=10 display=macOS

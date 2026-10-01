@@ -1,22 +1,33 @@
 class_name SplitScreen
 extends Control
-## The Story 002 launch scene: two side-by-side views of one shared 3D world, one Motorbike, one
-## chase camera and one keyboard layout per Player, both Players driving at once.
+## The launch scene: two side-by-side views of one shared 3D world, one Motorbike, one chase camera
+## and one keyboard layout per Player, both Players driving at once, each starting the Round at
+## their own Base and respawning there when destroyed.
 ##
 ## Implements: design/game-brief.md build-order item 2 (Split screen for two: two side-by-side
 ## viewports, one Unit and one fixed keyboard layout per Player, both driving at once) and
-## production/epics/wasteland-fire/story-002-split-screen.md AC-1 to AC-7. Vocabulary: CONTEXT.md
-## (Player, Unit, Motorbike, Map).
+## production/epics/wasteland-fire/story-002-split-screen.md AC-1 to AC-7. Since Story 003
+## (production/epics/wasteland-fire/story-003-bases-destruction-respawn.md AC-1, AC-3, AC-5 and
+## AC-7) it also composes the Round: the MatchController and each Player's PlayerMatchInput.
+## Vocabulary: CONTEXT.md (Player, Unit, Motorbike, Base, Map).
 ##
-## The scene holds the pieces. This script only puts each Player's Unit on its start marker, once,
-## when the scene is ready: the spawn of DrivingToy, done for two Players. Where a Unit starts is
-## data, the marker's position and facing, asked of the field rather than found by node path, so
-## nothing here knows a coordinate. The layout of the scene:
+## The scene holds the pieces. This script only hands them to the MatchController, once, when the
+## scene is ready: begin() gets the two Units, the two Bases from the field and the two cameras,
+## in Player order. Putting a Unit on its Base, at the start of the Round and at every respawn, is
+## the MatchController's job (AC-1, AC-3); until Story 003 it was this script's (Story 002 put
+## each Unit on its start marker: the spawn of DrivingToy, done for two Players). This scene stays
+## the composition root because it is the one place that sees the field, both Units, both cameras
+## and the controller together: it injects them, so the MatchController needs no node path and no
+## singleton and can be built from stand-ins in a test. The world and the views stay here for the
+## same reason: they are how the pieces are laid out and seen on the screen, which is this scene's
+## business, and none of them depends on the Round. The layout of the scene:
 ##   SplitScreen (this Control, filling the window)
-##     World (Node3D): the field, both Units and both PlayerDriveInputs
+##     World (Node3D): the field with its two Bases, both Units, both PlayerDriveInputs and both
+##       PlayerMatchInputs
 ##     Views (HBoxContainer): a SubViewportContainer per Player, each holding a SubViewport that
 ##       holds that Player's ChaseCamera
 ##     Divider (ColorRect): a thin line drawn over the seam between the two views
+##     MatchController (Node): who is alive and who waits to respawn; the last child
 ##
 ## One world, two views (AC-1, AC-2). World sits in the window's own World3D, outside both
 ## SubViewports, and neither SubViewport sets own_world_3d or a world_3d, so both render the
@@ -37,6 +48,8 @@ extends Control
 ## Input (AC-3 to AC-6). The Players are separated by Input Map layouts, not by devices: each
 ## PlayerDriveInput reads the actions under its own prefix (p1_ or p2_, declared in project.godot
 ## and stored in this scene), so each layout moves only its own Unit and holding both moves both.
+## The Round's keys work the same way: each PlayerMatchInput reads the self_destruct and
+## debug_damage actions under its own prefix and calls its own Unit (Story 003 AC-5, AC-8).
 ## Godot 4.7 does not tell two keyboards apart, and it moved the keyboard's device ID from 0 to
 ## InputEvent.DEVICE_ID_KEYBOARD, so nothing in this project compares InputEvent.device with 0,
 ## and this script reads no input.
@@ -53,8 +66,9 @@ extends Control
 ## .claude/docs/technical-preferences.md are for the two together. Nothing here draws or updates
 ## per frame.
 
-## The field both Units drive on. It carries the two start markers: player_start for Player 1 and
-## player_2_start for Player 2. It sits under World, so it is in the shared world.
+## The field both Units drive on. It carries the two Bases (player_1_base and player_2_base) where
+## each Player's Unit starts the Round and respawns. It sits under World, so it is in the shared
+## world.
 @export var field: GreyboxField
 
 ## The Unit Player 1 drives. It sits under World, beside Player 1's PlayerDriveInput.
@@ -69,26 +83,33 @@ extends Control
 ## The camera that chases Player 2's Unit. It sits in the SubViewport of Player 2's view.
 @export var player_2_camera: ChaseCamera
 
+## The node that owns the Round's state: who is alive and the respawn timers. _ready() hands it the
+## Units, the Bases and the cameras. It is the last child of this scene's root, and what the
+## screen shows about the Round (the respawn countdown) listens to it.
+@export var match_controller: MatchController
+
 
 func _ready() -> void:
 	var missing: String = _first_unassigned()
 	if not missing.is_empty():
-		var reason: String = "The field (with both its start markers), both Units and both cameras must all be assigned."
-		push_error("SplitScreen '%s': %s is not assigned, so no Unit is placed. %s" % [name, missing, reason])
+		var reason: String = "The field (with both its Bases), both Units, both cameras and the MatchController must all be assigned."
+		push_error("SplitScreen '%s': %s is not assigned, so the Round does not begin and no Unit is placed. %s" % [name, missing, reason])
 		return
-	_spawn_unit(player_1_unit, field.player_start, player_1_camera)
-	_spawn_unit(player_2_unit, field.player_2_start, player_2_camera)
+	var units: Array[Unit] = [player_1_unit, player_2_unit]
+	var bases: Array[Base] = [field.player_1_base, field.player_2_base]
+	var cameras: Array[ChaseCamera] = [player_1_camera, player_2_camera]
+	match_controller.begin(units, bases, cameras)
 
 
 ## The name of the first required reference that is not assigned, or an empty string when all
-## seven are: the five exports and the field's two start markers.
+## eight are: the six exports and the field's two Bases.
 func _first_unassigned() -> String:
 	if field == null:
 		return "field"
-	if field.player_start == null:
-		return "field.player_start"
-	if field.player_2_start == null:
-		return "field.player_2_start"
+	if field.player_1_base == null:
+		return "field.player_1_base"
+	if field.player_2_base == null:
+		return "field.player_2_base"
 	if player_1_unit == null:
 		return "player_1_unit"
 	if player_2_unit == null:
@@ -97,14 +118,6 @@ func _first_unassigned() -> String:
 		return "player_1_camera"
 	if player_2_camera == null:
 		return "player_2_camera"
+	if match_controller == null:
+		return "match_controller"
 	return ""
-
-
-## Puts a Unit on its start marker and its camera behind it. The order of a teleport, and a spawn
-## is one, matters: set the transform first, then reset the Unit's motion and physics
-## interpolation, then snap the camera. The other order streaks the Unit across the map for a few
-## frames.
-func _spawn_unit(unit: Unit, marker: Marker3D, camera: ChaseCamera) -> void:
-	unit.global_transform = marker.global_transform
-	unit.reset_motion()
-	camera.snap_to_target()

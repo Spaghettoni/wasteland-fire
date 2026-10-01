@@ -2,6 +2,9 @@
 
 [ext_resource type="Shader" path="res://src/gameplay/maps/spatial_env_grid_floor.gdshader" id="1_06017"]
 [ext_resource type="Script" path="res://src/gameplay/maps/greybox_field.gd" id="2_gbfld"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/base.tscn" id="3_base"]
+[ext_resource type="Material" path="res://src/gameplay/split_screen/data/player_1_body_material.tres" id="4_m1"]
+[ext_resource type="Material" path="res://src/gameplay/split_screen/data/player_2_body_material.tres" id="5_m2"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_gusup"]
 size = Vector3(80, 1, 80)
@@ -45,10 +48,10 @@ ambient_light_source = 2
 ambient_light_color = Color(0.78, 0.82, 0.9, 1)
 ambient_light_energy = 0.7
 
-[node name="GreyboxField" type="Node3D" unique_id=1102110747 node_paths=PackedStringArray("player_start", "player_2_start")]
+[node name="GreyboxField" type="Node3D" unique_id=1102110747 node_paths=PackedStringArray("player_1_base", "player_2_base")]
 script = ExtResource("2_gbfld")
-player_start = NodePath("PlayerStart")
-player_2_start = NodePath("Player2Start")
+player_1_base = NodePath("Base1")
+player_2_base = NodePath("Base2")
 
 [node name="Floor" type="StaticBody3D" parent="." unique_id=1217744923]
 
@@ -107,3 +110,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 20)
 
 [node name="Player2Start" type="Marker3D" parent="." unique_id=1926384071]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, -20)
+
+[node name="Base1" parent="." unique_id=2054817301 node_paths=PackedStringArray("spawn_point") instance=ExtResource("3_base")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 20)
+spawn_point = NodePath("../PlayerStart")
+color_material = ExtResource("4_m1")
+
+[node name="Base2" parent="." unique_id=1437291184 node_paths=PackedStringArray("spawn_point") instance=ExtResource("3_base")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, -20)
+spawn_point = NodePath("../Player2Start")
+color_material = ExtResource("5_m2")

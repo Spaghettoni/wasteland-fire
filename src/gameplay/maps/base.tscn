@@ -1,0 +1,44 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/maps/base.gd" id="1_base"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_pad"]
+size = Vector3(12, 0.02, 12)
+
+[sub_resource type="BoxMesh" id="BoxMesh_beacon"]
+size = Vector3(1.5, 8, 1.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_zone"]
+size = Vector3(12, 4, 12)
+
+[node name="Base" type="Node3D" unique_id=1294118325 node_paths=PackedStringArray("spawn_point", "spare_spawn_points", "zone", "pad", "beacon")]
+script = ExtResource("1_base")
+spawn_point = NodePath("SpawnPoint")
+spare_spawn_points = [NodePath("SpareSpawnLeft"), NodePath("SpareSpawnRight")]
+zone = NodePath("Zone")
+pad = NodePath("Pad")
+beacon = NodePath("Beacon")
+
+[node name="Pad" type="MeshInstance3D" parent="." unique_id=1660293041]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.011, 0)
+mesh = SubResource("BoxMesh_pad")
+
+[node name="Beacon" type="MeshInstance3D" parent="." unique_id=820913547]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.25, 4, -5.25)
+mesh = SubResource("BoxMesh_beacon")
+
+[node name="SpawnPoint" type="Marker3D" parent="." unique_id=1978265402]
+
+[node name="SpareSpawnLeft" type="Marker3D" parent="." unique_id=1560231947]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 0)
+
+[node name="SpareSpawnRight" type="Marker3D" parent="." unique_id=880146213]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+
+[node name="Zone" type="Area3D" parent="." unique_id=461830719]
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Zone" unique_id=1121007238]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+shape = SubResource("BoxShape3D_zone")

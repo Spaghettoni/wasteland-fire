@@ -8,10 +8,14 @@ extends CharacterBody3D
 ## PlayerDriveInput.unit is typed Unit, so Story 005 decides between a shared base class and a
 ## subclass. Nothing here pre-builds either.
 ##
-## Implements: design/game-brief.md build-order item 1 (Driving toy) and
-## production/epics/wasteland-fire/story-001-driving-toy.md AC-2 (throttle, steer, coast to a
-## stop), AC-3 (kinematic CharacterBody3D that never tips, bounces or sticks on the flat plane)
-## and AC-4 (every feel value comes from a UnitStats resource). Vocabulary: CONTEXT.md.
+## Implements: design/game-brief.md build-order item 1 (Driving toy) and MVP feature 3 (Bases,
+## destruction and respawn); production/epics/wasteland-fire/story-001-driving-toy.md AC-2
+## (throttle, steer, coast to a stop), AC-3 (kinematic CharacterBody3D that never tips, bounces
+## or sticks on the flat plane) and AC-4 (every feel value comes from a UnitStats resource);
+## production/epics/wasteland-fire/story-003-bases-destruction-respawn.md AC-2 (hit points from
+## the data, destroyed at zero), AC-3 (what a respawn needs from the Unit: spawn()) and AC-5
+## (Self-destruct: destroy()); design/rules.md "Destruction, respawn and unit swap". Vocabulary:
+## CONTEXT.md.
 ##
 ## Driven by command, not by input: the Unit never reads a key or an Input action and keeps no
 ## singleton state. Whoever drives it (PlayerDriveInput for a Player, later a bot or a test)
@@ -60,14 +64,52 @@ extends CharacterBody3D
 ##
 ## Physics interpolation: the Unit moves only inside _physics_process and leaves its own
 ## physics_interpolation_mode at INHERIT, so it is interpolated for rendering.
+##
+## Hit points, destruction and respawn: the Unit spawns with stats.max_hit_points. apply_damage()
+## subtracts from them and destroy() ends the Unit at once (Self-destruct); the hit that takes
+## them to zero takes the same path. A destroyed Unit leaves play: hidden, no collision with
+## anything (layer and mask zeroed, put back from the values saved in _ready()), no physics tick,
+## motion and held drive command zeroed. It stays in the tree, so its camera and its owner keep
+## their references, and spawn() puts the same body back anywhere: hit points refilled, collision
+## restored, motion reset. The Unit decides nothing beyond that: it emits `destroyed` once and
+## calls nobody, so what a destruction means and when the Unit respawns is the Round's business
+## (MatchController). A Unit is alive with full hit points at _ready(), so the Story 001 sandbox
+## needs no spawn(). One that refused to drive in _ready() is never alive: destroy() and
+## apply_damage() ignore it and spawn() leaves it alone.
+##
+## Leaving play. With collision layer and mask both zero the body neither collides nor is collided
+## with, so the other Unit drives through a wreck and a Unit put down on one is not pushed, and
+## nothing logs. PROCESS_MODE_DISABLED does the same but made Jolt log 'Parameter "space" is null'
+## when destroy() ran inside the Unit's own physics tick (a preflight probe, not retained), so it is
+## not used. This state holds on every tick of a wait. Consequences for Stories 004 and 005: an
+## Area3D zone on the zones layer watches the layer that destroy() zeroes and spawn() restores, so
+## it sees a Unit leave after destroy() and enter after spawn(), a physics tick or so later (measure
+## it before relying on the tick); and a Player still holding the throttle when the Unit respawns
+## drives off at once, because PlayerDriveInput keeps writing the command to the hidden Unit and
+## reset_motion() zeroes it only once.
+##
+## Respawning onto another Unit. The collider is 1.0 m tall, so a Unit put down inside another one
+## is pushed out along the shallowest axis, and when the horizontal overlap is deeper than that
+## metre the shallowest axis is the vertical one: in the Story 003 preflight a Unit spawned exactly
+## on a live one ended under the floor, one spawned a metre in front of it was thrown into the air
+## and one beside it perched on its roof (a throwaway probe, no numbers kept). is_spot_taken() is
+## the exact test, so whoever spawns the Unit (MatchController) puts it on a free spot instead: a
+## spare spawn point of the Base on the tick the spawn point is found taken, or, while every spot is
+## taken, no spot at all until one frees. Put down on a free spot, the Unit lands on the floor, on
+## the spot it was given.
+
+## Emitted once, when a live Unit is destroyed: its hit points reached zero, or destroy() was
+## called. The Unit has already left play when it fires (is_alive is false, hit_points is zero),
+## and nothing follows the emit, so a handler may call spawn() on the Unit at once.
+signal destroyed
 
 ## Largest magnitude of a normalised drive axis (throttle or steer): commands are held to -1..1.
 const AXIS_LIMIT: float = 1.0
 
-## Feel values and controller settings for this Unit type (a UnitStats .tres, for example
-## motorbike_stats.tres). Required: the Unit will not drive without it, or with max_speed or
-## ground_snap_length not above zero. Assign it before the Unit enters the tree. The resource is
-## shared, so never write to it at runtime.
+## Feel values, controller settings and hit points for this Unit type (a UnitStats .tres, for
+## example motorbike_stats.tres). Required: the Unit will not drive without it, or with max_speed,
+## ground_snap_length or max_hit_points not above zero. Assign it before the Unit enters the
+## tree. The resource is shared, so never write to it at runtime.
 @export var stats: UnitStats
 
 ## The drive speed along the facing direction in metres per second: positive forward, negative
@@ -82,23 +124,55 @@ var current_speed: float:
 	set(_value):
 		push_error("Unit '%s': current_speed is read-only. Drive the Unit with set_drive_input()." % name)
 
+## Hit points left: stats.max_hit_points when the Unit spawns, down to zero, which destroys it.
+## Read-only: assigning to it pushes an error and changes nothing; it moves only through
+## apply_damage(), destroy() and spawn().
+var hit_points: float:
+	get:
+		return _hit_points
+	set(_value):
+		push_error("Unit '%s': hit_points is read-only. Change it with apply_damage(), destroy() or spawn()." % name)
+
+## True while the Unit is in play: from _ready() on, until it is destroyed, and again after
+## spawn(). False for a destroyed Unit and for one that refused to drive in _ready(). Read-only
+## like hit_points: assigning to it pushes an error and changes nothing.
+var is_alive: bool:
+	get:
+		return _is_alive
+	set(_value):
+		push_error("Unit '%s': is_alive is read-only. Change it with destroy() or spawn()." % name)
+
 var _speed: float = 0.0
 var _throttle: float = 0.0
 var _steer: float = 0.0
 ## True after a physics tick in which the Unit touched a wall and its real speed along its facing
 ## was under stats.blocked_speed; read by the next tick's _next_speed().
 var _blocked: bool = false
+var _hit_points: float = 0.0
+var _is_alive: bool = false
+## True once _ready() accepted the stats. A Unit that refused to drive never becomes alive, and
+## spawn() never wakes it.
+var _can_drive: bool = false
+## The collision layer and mask as authored, saved in _ready() and put back by spawn(): destroy()
+## zeroes both to take the Unit out of the physics world.
+var _play_collision_layer: int = 0
+var _play_collision_mask: int = 0
 
 
 func _ready() -> void:
-	if stats == null or stats.max_speed <= 0.0 or stats.ground_snap_length <= 0.0:
-		push_error("Unit '%s': stats is missing, or its max_speed or ground_snap_length is not above zero, so it will not drive." % name)
+	if stats == null or stats.max_speed <= 0.0 or stats.ground_snap_length <= 0.0 or stats.max_hit_points <= 0.0:
+		push_error("Unit '%s': stats is missing, or its max_speed, ground_snap_length or max_hit_points is not above zero, so it will not drive." % name)
 		set_physics_process(false)
 		return
 	if motion_mode != MOTION_MODE_GROUNDED:
 		push_warning("Unit '%s': motion_mode is not GROUNDED, but the ground handling assumes it." % name)
 	floor_snap_length = stats.ground_snap_length
 	wall_min_slide_angle = deg_to_rad(stats.wall_min_slide_angle_degrees)
+	_play_collision_layer = collision_layer
+	_play_collision_mask = collision_mask
+	_hit_points = stats.max_hit_points
+	_is_alive = true
+	_can_drive = true
 
 
 func _physics_process(delta: float) -> void:
@@ -136,6 +210,78 @@ func reset_motion() -> void:
 		reset_physics_interpolation()
 
 
+## Takes hit points off a live Unit: subtracts amount, never below zero, and destroys the Unit
+## when none are left (Story 003 AC-2). Ignored when amount is zero, negative or NaN and when the
+## Unit is not alive, so a destroyed Unit cannot be destroyed twice. The debug-damage key calls it
+## until weapons (Story 005) do.
+func apply_damage(amount: float) -> void:
+	if not _is_alive or not (amount > 0.0):
+		return
+	_hit_points = maxf(_hit_points - amount, 0.0)
+	if _hit_points <= 0.0:
+		destroy()
+
+
+## Destroys a live Unit at once, whatever its hit points: Self-destruct (Story 003 AC-5) and the
+## last hit of apply_damage() take this same path. The Unit leaves play (see the class doc), then
+## `destroyed` is emitted, once. Does nothing when the Unit is not alive.
+func destroy() -> void:
+	if not _is_alive:
+		return
+	_is_alive = false
+	_hit_points = 0.0
+	visible = false
+	collision_layer = 0
+	collision_mask = 0
+	set_physics_process(false)
+	reset_motion()
+	destroyed.emit()
+
+
+## Puts the Unit in play at the given transform: the first spawn of a Round and every respawn use
+## this one call (Story 003 AC-1, AC-3). The Unit must be in the tree. It sets global_transform
+## first and then calls reset_motion() (the teleport order), refills hit_points to
+## stats.max_hit_points, shows the Unit, puts its collision back and turns its physics tick on. It
+## works on a destroyed Unit and on one still alive (the first spawn), and emits nothing. Call it
+## inside a physics tick, in the same tick as ChaseCamera.snap_to_target(): from _process the
+## frame of the teleport still draws the Unit at the wreck while the camera has already moved. A
+## Unit that refused to drive in _ready() stays out of play: this pushes an error and changes
+## nothing, so it never wakes a Unit whose stats are invalid.
+func spawn(at: Transform3D) -> void:
+	if not _can_drive:
+		push_error("Unit '%s': spawn() ignored: the Unit refused to drive in _ready() (see that error), so it stays where it is and out of play." % name)
+		return
+	global_transform = at
+	reset_motion()
+	_hit_points = stats.max_hit_points
+	_is_alive = true
+	visible = true
+	collision_layer = _play_collision_layer
+	collision_mask = _play_collision_mask
+	set_physics_process(true)
+
+
+## True when another Unit stands where this one would overlap it if spawn(at) were called now: a
+## body on this Unit's own collision layer (the Units layer, saved in _ready()) overlaps this Unit's
+## collision shape placed at `at`. Only bodies count: not zones, not the map, and never this Unit
+## itself. MatchController asks it before every respawn, at the Base's spawn point and, when that is
+## taken, at each spare spawn point in turn, and puts the Unit only where it is false, because a
+## Unit put down inside another one is thrown through the floor or into the air (class doc). Call it
+## inside a physics tick (it queries the physics space). False for a Unit without a collision shape
+## or outside the tree.
+func is_spot_taken(at: Transform3D) -> bool:
+	var shape_node: CollisionShape3D = _find_shape_node()
+	if shape_node == null or shape_node.shape == null or not is_inside_tree():
+		return false
+	var query: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
+	var excluded: Array[RID] = [get_rid()]
+	query.shape = shape_node.shape
+	query.transform = at * (global_transform.affine_inverse() * shape_node.global_transform)
+	query.collision_mask = _play_collision_layer
+	query.exclude = excluded
+	return not get_world_3d().direct_space_state.intersect_shape(query, 1).is_empty()
+
+
 ## Speed after this tick, per the movement model in the class doc: step 4 first (a blocked Unit
 ## throttled the other way starts from zero), then step 1.
 func _next_speed(delta: float) -> float:
@@ -155,3 +301,11 @@ func _next_speed(delta: float) -> float:
 func _yaw_rate() -> float:
 	var speed_fraction: float = minf(absf(_speed) / stats.max_speed, 1.0)
 	return _steer * stats.turn_rate * speed_fraction * signf(_speed)
+
+
+## The first CollisionShape3D child, or null: the shape is_spot_taken() moves to the spawn point.
+func _find_shape_node() -> CollisionShape3D:
+	for child: Node in get_children():
+		if child is CollisionShape3D:
+			return child as CollisionShape3D
+	return null

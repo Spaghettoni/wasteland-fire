@@ -10,6 +10,7 @@ braking = 36.0
 coast_deceleration = 12.0
 reverse_max_speed = 9.0
 turn_rate = 2.8
+max_hit_points = 100.0
 ground_snap_length = 0.1
 wall_min_slide_angle_degrees = 15.0
 blocked_speed = 0.5

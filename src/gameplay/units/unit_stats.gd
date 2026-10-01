@@ -5,7 +5,9 @@ extends Resource
 ##
 ## Implements: design/game-brief.md build-order item 1 (Driving toy) and
 ## production/epics/wasteland-fire/story-001-driving-toy.md AC-4: every feel value is read
-## from a data resource (one .tres per Unit type), never hardcoded in a script.
+## from a data resource (one .tres per Unit type), never hardcoded in a script. Story 003 AC-2
+## (production/epics/wasteland-fire/story-003-bases-destruction-respawn.md) adds the hit points
+## to the same file: max_hit_points is a tuning value here, not a literal in the Unit.
 ##
 ## Data only. A Unit reads these numbers and never writes them. One .tres is shared by every
 ## Unit that references it, so treat it as read-only at runtime (duplicate() it for a private
@@ -14,7 +16,7 @@ extends Resource
 ## Every default below is 0.0 on purpose. The engine leaves a property out of a saved .tres
 ## when it equals the script default, so a tuned number that happened to match a default would
 ## live in this script and vanish from the data file. Write every tuned number into the .tres.
-## A Unit refuses to drive while max_speed or ground_snap_length is zero or less.
+## A Unit refuses to drive while max_speed, ground_snap_length or max_hit_points is zero or less.
 ##
 ## The Controller group is not feel: it holds engine controller settings (how the body handles
 ## the floor and walls). They are data for the same reasons, one set per Unit type, and the
@@ -43,6 +45,13 @@ extends Resource
 ## Yaw rate at max_speed with steering fully held, in radians per second. The Unit turns slower
 ## at lower speed (in proportion to speed / max_speed), so it cannot pivot on the spot.
 @export_range(0.0, 10.0, 0.01, "or_greater", "suffix:rad/s") var turn_rate: float = 0.0
+
+## Hit points a Unit of this type spawns with, and the most it can have (Story 003 AC-2). Damage
+## takes them off (Unit.apply_damage()) and a Unit whose hit points reach zero is destroyed and
+## leaves play. Zero by default, like every value here, so the tuned number lives in the .tres
+## (see the class doc). A Unit refuses to drive while it is zero or less, because it would spawn
+## already destroyed.
+@export_range(0.0, 1000.0, 1.0, "or_greater", "suffix:hp") var max_hit_points: float = 0.0
 
 @export_group("Controller")
 
