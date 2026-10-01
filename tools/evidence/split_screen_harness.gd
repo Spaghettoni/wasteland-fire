@@ -8,7 +8,8 @@ extends Node
 ## split_screen.tscn and reading the exported members of SplitScreen.
 ##
 ## Scenarios, chosen with --scenario=NAME (after the "--"): layout, isolation, simultaneous, showcase, fps,
-## bases, destruction, countdown and respawn_showcase. Each is a script under tools/evidence/split_screen/,
+## bases, destruction, countdown, respawn_showcase, canister_run, hud, round_over and
+## canister_showcase. Each is a script under tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
 ## line there. A scenario reaches this script, DriveStep, UnitTrack and check_kit.gd through preload
@@ -49,6 +50,10 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"destruction": preload("res://tools/evidence/split_screen/destruction.gd"),
 	&"countdown": preload("res://tools/evidence/split_screen/countdown.gd"),
 	&"respawn_showcase": preload("res://tools/evidence/split_screen/respawn_showcase.gd"),
+	&"canister_run": preload("res://tools/evidence/split_screen/canister_run.gd"),
+	&"hud": preload("res://tools/evidence/split_screen/hud.gd"),
+	&"round_over": preload("res://tools/evidence/split_screen/round_over.gd"),
+	&"canister_showcase": preload("res://tools/evidence/split_screen/canister_showcase.gd"),
 }
 
 ## The shared step class (drive_step.gd): keys held for a time.

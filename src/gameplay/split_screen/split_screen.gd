@@ -27,7 +27,8 @@ extends Control
 ##     Views (HBoxContainer): a SubViewportContainer per Player, each holding a SubViewport that
 ##       holds that Player's ChaseCamera
 ##     Divider (ColorRect): a thin line drawn over the seam between the two views
-##     MatchController (Node): who is alive and who waits to respawn; the last child
+##     MatchController (Node): who is alive, who waits to respawn and the Round's canisters
+##     RoundRestartInput (Node): the restart key of a Round that is over; the last child
 ##
 ## One world, two views (AC-1, AC-2). World sits in the window's own World3D, outside both
 ## SubViewports, and neither SubViewport sets own_world_3d or a world_3d, so both render the
@@ -83,9 +84,10 @@ extends Control
 ## The camera that chases Player 2's Unit. It sits in the SubViewport of Player 2's view.
 @export var player_2_camera: ChaseCamera
 
-## The node that owns the Round's state: who is alive and the respawn timers. _ready() hands it the
-## Units, the Bases and the cameras. It is the last child of this scene's root, and what the
-## screen shows about the Round (the respawn countdown) listens to it.
+## The node that owns the Round's state: who is alive, the respawn timers and the canisters.
+## _ready() hands it the Units, the Bases and the cameras. It sits after the views in this scene's
+## root, with RoundRestartInput after it, and what the screen shows about the Round (the respawn
+## countdown, the HUD and the Round-over screen) listens to it.
 @export var match_controller: MatchController
 
 

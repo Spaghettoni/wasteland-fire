@@ -1,0 +1,45 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/canister/water_canister.gd" id="1_wc"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
+albedo_color = Color(0.8, 0.8, 0.8, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_body"]
+material = SubResource("StandardMaterial3D_body")
+top_radius = 0.45
+bottom_radius = 0.45
+height = 1.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lid"]
+albedo_color = Color(0.96, 0.92, 0.72, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_lid"]
+material = SubResource("StandardMaterial3D_lid")
+top_radius = 0.38
+bottom_radius = 0.38
+height = 0.12
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_pickup"]
+radius = 1.0
+
+[node name="WaterCanister" type="Node3D" unique_id=1403221587 node_paths=PackedStringArray("pickup_zone", "body_mesh")]
+script = ExtResource("1_wc")
+pickup_zone = NodePath("PickupZone")
+body_mesh = NodePath("Body")
+
+[node name="Body" type="MeshInstance3D" parent="." unique_id=1790233101]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
+mesh = SubResource("CylinderMesh_body")
+
+[node name="Lid" type="MeshInstance3D" parent="." unique_id=873355201]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.16, 0)
+mesh = SubResource("CylinderMesh_lid")
+
+[node name="PickupZone" type="Area3D" parent="." unique_id=1219775043]
+collision_layer = 8
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PickupZone" unique_id=1530944008]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("SphereShape3D_pickup")

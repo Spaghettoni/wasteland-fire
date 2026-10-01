@@ -7,16 +7,20 @@ extends Resource
 ## production/epics/wasteland-fire/story-001-driving-toy.md AC-4: every feel value is read
 ## from a data resource (one .tres per Unit type), never hardcoded in a script. Story 003 AC-2
 ## (production/epics/wasteland-fire/story-003-bases-destruction-respawn.md) adds the hit points
-## to the same file: max_hit_points is a tuning value here, not a literal in the Unit.
+## to the same file: max_hit_points is a tuning value here, not a literal in the Unit. Story 004
+## AC-2 (production/epics/wasteland-fire/story-004-water-canister-and-win.md) adds the Cargo
+## group: whether a Unit type carries the Water Canister, and where it rides, is data here too,
+## so the Round rules never ask what type a Unit is.
 ##
 ## Data only. A Unit reads these numbers and never writes them. One .tres is shared by every
 ## Unit that references it, so treat it as read-only at runtime (duplicate() it for a private
 ## copy).
 ##
-## Every default below is 0.0 on purpose. The engine leaves a property out of a saved .tres
-## when it equals the script default, so a tuned number that happened to match a default would
-## live in this script and vanish from the data file. Write every tuned number into the .tres.
-## A Unit refuses to drive while max_speed, ground_snap_length or max_hit_points is zero or less.
+## Every default below is zero on purpose (0.0, false, Vector3.ZERO). The engine leaves a property
+## out of a saved .tres when it equals the script default, so a tuned number that happened to match
+## a default would live in this script and vanish from the data file. Write every tuned number into
+## the .tres. A Unit refuses to drive while max_speed, ground_snap_length or max_hit_points is zero
+## or less.
 ##
 ## The Controller group is not feel: it holds engine controller settings (how the body handles
 ## the floor and walls). They are data for the same reasons, one set per Unit type, and the
@@ -52,6 +56,25 @@ extends Resource
 ## (see the class doc). A Unit refuses to drive while it is zero or less, because it would spawn
 ## already destroyed.
 @export_range(0.0, 1000.0, 1.0, "or_greater", "suffix:hp") var max_hit_points: float = 0.0
+
+@export_group("Cargo")
+
+## Whether a Unit of this type may pick up the Water Canister and carry it (Story 004 AC-2,
+## production/epics/wasteland-fire/story-004-water-canister-and-win.md; design/rules.md "Handling
+## the Water Canister"): only the Motorbike carries, and that is decided here, by data, never by a
+## type check in code. The Round rules (MatchController) read Unit.can_carry and nothing else.
+## False by default for the reason the class doc gives: the engine leaves a property that equals
+## its script default out of a saved .tres, so a type that carries must say so in its data file,
+## and a .tres without the line (an older file, or a type that never carries) loads as one that
+## cannot carry.
+@export var can_carry: bool = false
+
+## Where a carried Water Canister rides, in this Unit type's local space, in metres: the
+## canister's origin (the centre of its base) is placed here, upright, and moves with the Unit.
+## Read only while can_carry is true. Zero by default like every value here, so the tuned offset
+## lives in the .tres (class doc). The Motorbike's is a tail mount, chosen so the canister hides
+## none of the cream nose from the chase camera (the Story 004 evidence doc keeps the comparison).
+@export var carry_offset: Vector3 = Vector3.ZERO
 
 @export_group("Controller")
 

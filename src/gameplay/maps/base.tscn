@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://src/gameplay/maps/base.gd" id="1_base"]
+[ext_resource type="PackedScene" path="res://src/gameplay/canister/water_canister.tscn" id="2_canister"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_pad"]
 size = Vector3(12, 0.02, 12)
@@ -11,13 +12,15 @@ size = Vector3(1.5, 8, 1.5)
 [sub_resource type="BoxShape3D" id="BoxShape3D_zone"]
 size = Vector3(12, 4, 12)
 
-[node name="Base" type="Node3D" unique_id=1294118325 node_paths=PackedStringArray("spawn_point", "spare_spawn_points", "zone", "pad", "beacon")]
+[node name="Base" type="Node3D" unique_id=1294118325 node_paths=PackedStringArray("spawn_point", "spare_spawn_points", "zone", "pad", "beacon", "canister", "canister_seat")]
 script = ExtResource("1_base")
 spawn_point = NodePath("SpawnPoint")
 spare_spawn_points = [NodePath("SpareSpawnLeft"), NodePath("SpareSpawnRight")]
 zone = NodePath("Zone")
 pad = NodePath("Pad")
 beacon = NodePath("Beacon")
+canister = NodePath("Canister")
+canister_seat = NodePath("CanisterSeat")
 
 [node name="Pad" type="MeshInstance3D" parent="." unique_id=1660293041]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.011, 0)
@@ -42,3 +45,9 @@ collision_mask = 2
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Zone" unique_id=1121007238]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 shape = SubResource("BoxShape3D_zone")
+
+[node name="CanisterSeat" type="Marker3D" parent="." unique_id=1704512093]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.5)
+
+[node name="Canister" parent="." unique_id=1357789012 instance=ExtResource("2_canister")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.5)

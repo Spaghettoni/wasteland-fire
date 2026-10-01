@@ -1,40 +1,51 @@
 class_name MatchController
 extends Node
-## Owns the state of one Round: whose Unit is alive, who is waiting to respawn and when. It puts
-## each Player's Unit on that Player's Base at the start of the Round and again at every respawn.
+## Owns the state of one Round: whose Unit is alive, who is waiting to respawn and when, who
+## carries which Water Canister, and whether the Round still runs or has been won. It puts each
+## Player's Unit on that Player's Base at the start of the Round and again at every respawn, seats
+## each Base's canister, applies the canister rules once per physics tick, and freezes the game
+## when a delivery wins the Round, until restart().
 ##
-## Implements: production/epics/wasteland-fire/story-003-bases-destruction-respawn.md AC-1 (each
-## Player's Unit starts the Round at its own Base), AC-3 (a destroyed Unit respawns at its
-## Player's Base after a delay that is a data tuning value, 3 seconds in match_rules.tres), AC-4
-## (respawns are unlimited: nothing here counts lives or caps respawns) and AC-7 (the Round's state,
-## who is alive and the respawn timers, lives in this one node, which emits unit_destroyed and
-## unit_spawned; Units never reach into each other or into a singleton); design/game-brief.md MVP
-## feature 3 (Bases, destruction and respawn); design/rules.md "Destruction, respawn and unit
-## swap" (a destroyed Unit respawns at its player's Base, without limit, after a delay of about
-## three seconds, a tuning value). Vocabulary: CONTEXT.md (Player, Unit, Base, Round). The node and
-## its rules resource keep the names the story gave them (MatchController, MatchRules; AC-7); in
-## prose the thing they serve is the Round, as CONTEXT.md has it.
+## Implements: production/epics/wasteland-fire/story-003-bases-destruction-respawn.md AC-1, AC-3,
+## AC-4 and AC-7; production/epics/wasteland-fire/story-004-water-canister-and-win.md AC-2, AC-3,
+## AC-4, AC-5 and AC-6; design/game-brief.md MVP features 3 (Bases, destruction and respawn) and 4
+## (Water Canister and the win); design/rules.md "Destruction, respawn and unit swap", "Resources"
+## and "Handling the Water Canister". Vocabulary: CONTEXT.md (Player, Unit, Base, Round, Water
+## Canister, Carrier). The node and its rules resource keep the names the story gave them
+## (MatchController, MatchRules; Story 003 AC-7); in prose the thing they serve is the Round, as
+## CONTEXT.md has it.
 ##
 ## Signals up, calls down. A Unit emits `destroyed` and nothing else: it never calls this
-## controller, the other Unit or a singleton. The controller listens, then calls down: it asks the
-## Unit to spawn() and the camera to snap_to_target(). Everything it touches is handed to it once,
-## by begin() (dependency injection: no node path, no autoload, no static state), so a test can
-## build one from stand-in Units, Bases and cameras without the split-screen scene. Player index 0
-## is Player 1.
+## controller, the other Unit, a canister or a singleton. The controller listens, then calls down:
+## it asks the Unit to spawn(), the camera to snap_to_target() and a canister to carry_by(),
+## drop_at() or seat_at() (through CanisterRules, which keeps who carries what). Everything it
+## touches is handed to it once, by begin() (dependency injection: no node path, no autoload, no
+## static state), so a test can build one from stand-in Units, Bases and cameras without the
+## split-screen scene. Player index 0 is Player 1. The canister of Player N is canister N: its
+## index is its owner's Player index and the index of its Base in begin()'s arrays, and that index
+## is what the canister signals carry.
 ##
-## It knows nothing about the screen. A HUD node listens to unit_destroyed and unit_spawned and asks
-## seconds_until_respawn(); this script references no UI class, draws nothing and holds no text, so
-## the display can change, or go, without touching the Round. It reads no input either: what a key
-## does to a Unit is PlayerMatchInput's business, and that acts on the Unit, so a Self-destruct
-## reaches its respawn by the same path as a lost fight.
+## It knows nothing about the screen. A HUD node listens to unit_destroyed, unit_spawned and the
+## canister signals and asks seconds_until_respawn() and canister_status(); the Round-over screen
+## listens to round_over and round_started; this script references no UI class, draws nothing and
+## holds no text, so the display can change, or go, without touching the Round. It reads no input
+## either: what a key does to a Unit is PlayerMatchInput's business, and that acts on the Unit, so
+## a Self-destruct reaches its respawn by the same path as a lost fight; the restart key is
+## RoundRestartInput's, which calls restart().
 ##
 ## State per Player. Each Player's state is independent of the other's: both can wait at once,
 ## each with its own due frame. The table is complete; a pair it does not list cannot happen.
-##   OUT_OF_ROUND -> ALIVE         begin() put the Unit in play: emit unit_spawned
-##   OUT_OF_ROUND -> OUT_OF_ROUND  begin() could not (the Unit refused to drive): push_error
-##   ALIVE        -> WAITING       the Unit emitted destroyed: stamp the frame, emit unit_destroyed
+##   OUT_OF_ROUND -> ALIVE         begin() or restart() put the Unit in play: emit unit_spawned
+##   OUT_OF_ROUND -> OUT_OF_ROUND  begin() or restart() could not (the Unit refused to drive):
+##                                 push_error
+##   ALIVE        -> WAITING       the Unit emitted destroyed: stamp the frame, drop the canister
+##                                 it carried (if any) at the wreck, emit unit_destroyed
+##   ALIVE        -> ALIVE         restart(): the Unit is put back on its Base's spawn point at
+##                                 full hit points: emit unit_spawned
 ##   WAITING      -> ALIVE         the physics frame reached the stamp and the spawn point, or a
-##                                 spare spawn point, is free: spawn there, emit unit_spawned
+##                                 spare spawn point, is free: spawn there, emit unit_spawned; or
+##                                 restart(): the wait is cancelled and the Unit put on its spawn
+##                                 point, emit unit_spawned
 ##   WAITING      -> WAITING       the frame reached the stamp but another Unit stands on the spawn
 ##                                 point and on every spare one: look again next tick (the
 ##                                 paragraph on a respawn onto another Unit)
@@ -42,6 +53,26 @@ extends Node
 ##                                 freed: one push_error
 ## A `destroyed` from a Player who is not ALIVE is ignored with a warning: a Unit that is not alive
 ## cannot be destroyed, so only a Unit spawned behind this controller's back could send one.
+##
+## Round state, one for the whole Round (RoundState). The table is complete:
+##   RUNNING -> OVER     a Player's Unit carrying the other Player's canister was reported inside
+##                       its own Base zone: that Player wins; the tree is paused at the end of that
+##                       tick, then emit round_over(winner)
+##   OVER    -> RUNNING  restart(): every canister seated, every Unit spawned on its Base, the
+##                       tree unpaused, emit round_started
+##   RUNNING -> RUNNING  everything else: a destruction, a respawn, a pick-up, a drop, an owner's
+##                       re-seat, a Unit in its own Base empty-handed, both Units waiting at once
+## begin() starts RUNNING and emits round_started after the spawns and the seating; restart() while
+## RUNNING is refused with a warning. The win is decided by delivery and nothing else (AC-5).
+##
+## The spawn settle rule. On the tick after Unit.spawn() the physics server still reports the Unit
+## overlapping whatever stood at its OLD position (measured on Godot 4.7.2 with Jolt: a respawned
+## Carrier was reported touching its own dropped canister 10 m away, for one tick; the Story 004
+## evidence doc keeps the probe), so without a guard a Player would re-pick its dropped canister
+## from its Base, or deliver an enemy canister lying at its wreck. _spawn() therefore stamps the
+## physics frame per Player and the rules skip that Player until SPAWN_SETTLE_TICKS frames have
+## passed: at the start of the Round, at every respawn and at a restart. The count is an engine
+## latency with a margin, not a tuning value, so it is a constant here and not a MatchRules field.
 ##
 ## The respawn wait is an absolute physics-frame stamp, not a Timer and not a countdown. When a
 ## Unit is destroyed the controller stores Engine.get_physics_frames() plus the delay in ticks
@@ -64,7 +95,12 @@ extends Node
 ## two notifications, so the time it did not run does not count either: a pause longer than the
 ## whole delay ends with as many ticks of the wait still to run as were left when it began. A wait
 ## that was already due and blocked when the pause began is not pushed on, because its stamp is
-## reached and stays so: the first tick after the unpause looks for a free spot again.
+## reached and stays so: the first tick after the unpause looks for a free spot again. A settle
+## stamp taken before the pause began is pushed on the same way, so a pause never counts as settled
+## ticks: the physics server does not step while the tree is paused (the Story 004 evidence doc
+## keeps the run), so the ghost overlap the settle rule guards against would survive the pause
+## unstepped. The pause of a won Round ends in restart() after every wait was cancelled by a spawn
+## and every settle stamp was taken again, later than the pause began, so it pushes nothing.
 ##
 ## The respawn runs inside a physics tick, never from _process: inside a tick the drawn Unit and
 ## its camera jump together in one rendered frame, while from _process the frame of the teleport
@@ -82,19 +118,44 @@ extends Node
 ## and spawns on the first tick a spot is free. While blocked, seconds_until_respawn() reads one
 ## tick, so a countdown never shows a waiting Player as done. The policy is decided here and open to
 ## the designer; the alternatives, waiting for ever or a spawn that destroys what stands there,
-## belong to Stories 004 and 005 (raids, weapons). The start of the Round does not wait: nothing
+## belong to a later story (raids, weapons). The start of the Round does not wait: nothing
 ## stands on a Base then, and the Units have not left the places the scene put them.
 
 ## A Player's Unit left play, and that Player now waits out the respawn delay. The wait is
 ## already stamped when this fires, so seconds_until_respawn(player_index) is the full delay in a
-## handler and is_alive(player_index) is false. Player 1 is index 0.
+## handler and is_alive(player_index) is false. Player 1 is index 0. When the Unit carried a
+## canister, canister_dropped went out just before this.
 signal unit_destroyed(player_index: int)
 
 ## A Player's Unit was put on that Player's Base, on its spawn point or, when that was taken, on a
-## spare one: once for each Player when the Round begins, and at every respawn. The Unit is alive
-## at full hit points and its camera has snapped behind it; is_alive(player_index) is already true
-## when this fires.
+## spare one: once for each Player when the Round begins, at every respawn and at every restart.
+## The Unit is alive at full hit points and its camera has snapped behind it; is_alive(player_index)
+## is already true when this fires.
 signal unit_spawned(player_index: int)
+
+## The Round began, or began again: both Units stand on their Bases at full hit points and every
+## canister stands on its Base's seat. Emitted by begin() after its spawns and by restart() after
+## the unpause, so is_round_over() is false in a handler. A HUD refreshes its canister status on
+## it; the Round-over screen hides.
+signal round_started
+
+## A delivery won the Round (AC-5): the Unit of winner_index carried the other Player's canister
+## into its own Base zone. The tree is already paused when this fires and stays so until restart();
+## is_round_over() is true and winner_index() is this value in a handler.
+signal round_over(winner_index: int)
+
+## The Unit of carrier_index picked up the canister of canister_index (its owner's Player index) by
+## touching it (AC-2). The canister already rides on the Unit when this fires.
+signal canister_picked_up(carrier_index: int, canister_index: int)
+
+## The canister of canister_index dropped at its Carrier's wreck: the Carrier was destroyed (AC-3).
+## It lies there until a Unit picks it up or the Round restarts; nothing moves it home on its own.
+signal canister_dropped(canister_index: int)
+
+## The canister of canister_index stands on its Base's seat again: its owner carried it into the
+## own Base (AC-4). Not emitted by begin() or restart(), which announce their seating with
+## round_started.
+signal canister_seated(canister_index: int)
 
 ## Where one Player is in the Round. The transitions are in the class doc.
 enum State {
@@ -107,6 +168,36 @@ enum State {
 	## Base.
 	WAITING,
 }
+
+## Whether the Round is still played or has been won; one for the whole Round. The transitions
+## are in the class doc.
+enum RoundState {
+	## Before begin(), and from begin() or restart() until a delivery wins.
+	RUNNING,
+	## A delivery won: the tree is paused, winner_index() names the winner, and only restart()
+	## leaves this state.
+	OVER,
+}
+
+## What a Player's HUD shows about the canisters (Story 004 AC-7), the answer of canister_status().
+enum CanisterStatus {
+	## The Player's own canister stands on its Base's seat, and the Player carries nothing foreign.
+	OWN_AT_HOME,
+	## The Player's own canister is away: stolen, lying dropped, or on its way home on its owner's
+	## Unit; and the Player carries nothing foreign.
+	OWN_AWAY,
+	## The Player's Unit carries the other Player's canister.
+	CARRYING_ENEMY,
+}
+
+## Physics ticks after a spawn during which the Player's pick-ups and deliveries are skipped: on
+## the tick after Unit.spawn() the engine still reports an overlap at the Unit's old position (one
+## tick; the class doc names the measurement), and two more are margin. An engine latency, not a
+## tuning value, so a constant and not a MatchRules field.
+const SPAWN_SETTLE_TICKS: int = 3
+
+## The answer of winner_index() while nobody has won.
+const NO_WINNER: int = -1
 
 ## The tuning values (a MatchRules .tres, for example match_rules.tres): rules.respawn_delay_seconds
 ## is the wait between a destruction and the respawn (Story 003 AC-3). Required: begin() refuses to
@@ -124,6 +215,12 @@ var _respawn_frame: Array[int] = []
 ## One flag per Player: true while that Player's respawn is due but another Unit stands on the
 ## spawn point and on every spare one. Cleared at every spawn and every destruction.
 var _is_blocked: Array[bool] = []
+## One physics frame per Player: the frame of that Player's last spawn (the settle rule).
+var _settle_frame: Array[int] = []
+## Who carries which canister, and the calls down to the canisters. Built by begin().
+var _canisters: CanisterRules = null
+var _round_state: RoundState = RoundState.RUNNING
+var _winner: int = NO_WINNER
 var _has_begun: bool = false
 ## True between NOTIFICATION_PAUSED and NOTIFICATION_UNPAUSED, and the physics frame of the first.
 var _is_paused: bool = false
@@ -145,26 +242,41 @@ func _notification(what: int) -> void:
 
 
 ## Respawns every WAITING Player whose due frame has come and whose Base has a free spot (the spawn
-## point, or else a spare one). The wait is counted in physics ticks, not in delta: see the class
+## point, or else a spare one), then, while the Round runs, applies the canister rules in their
+## order (pick-ups, then deliveries) and, when a delivery won, pauses the tree and announces the
+## winner. The wait and the settle rule are counted in physics ticks, not in delta: see the class
 ## doc.
 func _physics_process(_delta: float) -> void:
 	var frame: int = Engine.get_physics_frames()
 	for player_index: int in _state.size():
 		if _state[player_index] == State.WAITING and frame >= _respawn_frame[player_index]:
 			_try_respawn(player_index)
+	if _round_state != RoundState.RUNNING or _canisters == null:
+		return
+	var may_act: Array[bool] = []
+	for player_index: int in _state.size():
+		may_act.append(_state[player_index] == State.ALIVE
+			and frame - _settle_frame[player_index] >= SPAWN_SETTLE_TICKS)
+	_apply_pick_ups(may_act)
+	_apply_deliveries(may_act)
+	if _round_state == RoundState.OVER:
+		get_tree().paused = true
+		round_over.emit(_winner)
 
 
 ## Starts the Round: puts every Player's Unit on that Player's Base (Story 003 AC-1) by the same
-## path a respawn uses, and from then on listens for the Units' destroyed signals. Call it once,
-## from the composition root (SplitScreen), with the Units, Bases and cameras already in the tree.
-## The three arrays hold one entry per Player, in the same order, Player 1 first: the Unit that
-## Player drives, the Base it starts and respawns at, and the camera that chases that Unit. When
-## anything is wrong (rules missing or a delay not above zero, no Players, arrays of different
-## sizes, an entry that is null or not in the tree, a Base without a spawn point or with a spawn
-## point off its pad) it pushes one error naming the problem and does nothing: no spawn, no
-## connection, no signal. A second call after a successful one is refused the same way. A Unit
-## that cannot be put in play (it refused to drive in _ready()) pushes an error and leaves only its
-## own Player out of the Round.
+## path a respawn uses, seats every canister on its Base's seat (Story 004 AC-1), emits
+## round_started, and from then on listens for the Units' destroyed signals. Call it once, from
+## the composition root (SplitScreen), with the Units, Bases and cameras already in the tree. The
+## three arrays hold one entry per Player, in the same order, Player 1 first: the Unit that Player
+## drives, the Base it starts and respawns at, which also holds that Player's canister and its
+## seat, and the camera that chases that Unit. When anything is wrong (rules missing or a delay
+## not above zero, no Players, arrays of different sizes, an entry that is null or not in the
+## tree, a Base without a spawn point, a canister or a canister seat, or with a spawn point off
+## its pad) it pushes one error naming the problem and does nothing: no spawn, no connection, no
+## signal. A second call after a successful one is refused the same way. A Unit that cannot be put
+## in play (it refused to drive in _ready()) pushes an error and leaves only its own Player out of
+## the Round.
 func begin(units: Array[Unit], bases: Array[Base], cameras: Array[ChaseCamera]) -> void:
 	if _has_begun:
 		push_error("MatchController '%s': begin() was called twice. A Round begins once." % name)
@@ -183,16 +295,68 @@ func begin(units: Array[Unit], bases: Array[Base], cameras: Array[ChaseCamera]) 
 	_respawn_frame.fill(0)
 	_is_blocked.resize(_units.size())
 	_is_blocked.fill(false)
+	_settle_frame.resize(_units.size())
+	_settle_frame.fill(0)
+	_canisters = CanisterRules.new(_units, _bases)
+	_round_state = RoundState.RUNNING
+	_winner = NO_WINNER
 	for player_index: int in _units.size():
 		_units[player_index].destroyed.connect(_on_unit_destroyed.bind(player_index))
 	for player_index: int in _units.size():
 		_spawn(player_index, _bases[player_index].spawn_point.global_transform)
+	_canisters.seat_all()
+	round_started.emit()
+
+
+## Starts the Round again after a win (Story 004 AC-6): every canister is seated on its Base's
+## seat (a carried one goes home), every Player's Unit is put on its Base's spawn point by the one
+## spawn path (a pending respawn wait is cancelled, hit points are refilled, unit_spawned goes
+## out), the Round is RUNNING, the tree is unpaused and round_started goes out, in that order.
+## Only while the Round is over: a call while it runs pushes a warning and does nothing.
+func restart() -> void:
+	if _round_state != RoundState.OVER:
+		push_warning("MatchController '%s': restart() was called while the Round is running, so nothing happens. It restarts a Round that is over." % name)
+		return
+	_canisters.seat_all()
+	for player_index: int in _units.size():
+		_spawn(player_index, _bases[player_index].spawn_point.global_transform)
+	_round_state = RoundState.RUNNING
+	_winner = NO_WINNER
+	get_tree().paused = false
+	round_started.emit()
 
 
 ## True while the Player's Unit is in play. False while it waits to respawn, before begin(), and
 ## for a player_index that is not in the Round.
 func is_alive(player_index: int) -> bool:
 	return _is_player(player_index) and _state[player_index] == State.ALIVE
+
+
+## True from the tick a delivery won the Round until restart(). False before begin().
+func is_round_over() -> bool:
+	return _round_state == RoundState.OVER
+
+
+## The Player index that won the Round (0 is Player 1), or NO_WINNER (-1) while the Round runs
+## and before begin().
+func winner_index() -> int:
+	return _winner
+
+
+## What the Player's HUD shows about the canisters, a CanisterStatus value: CARRYING_ENEMY while
+## that Player's Unit carries a canister that is not its own; else OWN_AT_HOME while the Player's
+## own canister stands on its seat; else OWN_AWAY (stolen, lying dropped, or on its way home on its
+## owner's Unit). OWN_AT_HOME before begin() and for a player_index not in the Round: what a Round
+## shows at its start. Ask it when canister_picked_up, canister_dropped, canister_seated or
+## round_started arrives: every change of the answer is announced by one of them.
+func canister_status(player_index: int) -> int:
+	if not _is_player(player_index) or _canisters == null:
+		return CanisterStatus.OWN_AT_HOME
+	if _canisters.is_carrying_enemy(player_index):
+		return CanisterStatus.CARRYING_ENEMY
+	if _canisters.is_own_at_home(player_index):
+		return CanisterStatus.OWN_AT_HOME
+	return CanisterStatus.OWN_AWAY
 
 
 ## Seconds until the Player's Unit respawns: the full delay on the tick of the destruction, then
@@ -212,15 +376,17 @@ func seconds_until_respawn(player_index: int) -> float:
 	return float(ticks_left) / float(Engine.physics_ticks_per_second)
 
 
-## The one spawn path: the start of the Round and every respawn (Story 003 AC-1, AC-3). The Unit
-## goes to the given pose first (a Base's spawn point or spare spawn point) and the camera snaps
-## after it (the order of a teleport; see Unit.spawn() and ChaseCamera.snap_to_target()). The
-## Player is ALIVE before the signal goes out, so a listener sees it alive. Called from a physics
-## tick, or from begin() before the first.
+## The one spawn path: the start of the Round, every respawn and a restart (Story 003 AC-1, AC-3;
+## Story 004 AC-6). The Unit goes to the given pose first (a Base's spawn point or spare spawn
+## point) and the camera snaps after it (the order of a teleport; see Unit.spawn() and
+## ChaseCamera.snap_to_target()); the settle frame is stamped (class doc). The Player is ALIVE
+## before the signal goes out, so a listener sees it alive. Called from a physics tick, or from
+## begin() before the first.
 func _spawn(player_index: int, at: Transform3D) -> void:
 	var unit: Unit = _units[player_index]
 	unit.spawn(at)
 	_is_blocked[player_index] = false
+	_settle_frame[player_index] = Engine.get_physics_frames()
 	if not unit.is_alive:
 		_state[player_index] = State.OUT_OF_ROUND
 		push_error("MatchController '%s': the Unit of player_index %d is not alive after spawn(), so that Player is out of the Round. The Unit reported why." % [name, player_index])
@@ -253,6 +419,37 @@ func _try_respawn(player_index: int) -> void:
 	_is_blocked[player_index] = true
 
 
+## Rule (1) of the tick: each canister that is not carried goes to the first Player who qualifies
+## (CanisterRules.taker_of(); class doc), and the pick-up is announced.
+func _apply_pick_ups(may_act: Array[bool]) -> void:
+	for canister_index: int in _bases.size():
+		var taker: int = _canisters.taker_of(canister_index, may_act)
+		if taker != CanisterRules.NONE:
+			_canisters.pick_up(taker, canister_index)
+			canister_picked_up.emit(taker, canister_index)
+
+
+## Rule (2) of the tick: a Player who may act, carries a canister and is reported inside its own
+## Base zone either wins (the other Player's canister: the Round is OVER, announced by
+## _physics_process after the pause) or brings its own canister home (re-seated, announced here).
+## Two deliveries on one tick: the lower Player index wins, as for pick-ups; the loop stops at the
+## first win, so the other Player's delivery is not applied.
+func _apply_deliveries(may_act: Array[bool]) -> void:
+	for player_index: int in _units.size():
+		var canister_index: int = _canisters.carried_canister(player_index)
+		if canister_index == CanisterRules.NONE or not may_act[player_index]:
+			continue
+		if not _canisters.is_in_own_zone(player_index):
+			continue
+		if canister_index == player_index:
+			_canisters.reseat(player_index)
+			canister_seated.emit(canister_index)
+		else:
+			_round_state = RoundState.OVER
+			_winner = player_index
+			return
+
+
 ## True when the Unit, the Base, its spawn point or the camera of the Player was freed.
 func _has_freed_node(player_index: int) -> bool:
 	var base: Base = _bases[player_index]
@@ -261,13 +458,17 @@ func _has_freed_node(player_index: int) -> bool:
 	return not is_instance_valid(base) or not is_instance_valid(base.spawn_point)
 
 
-## Pushes the due frame of every WAITING Player on by this many ticks: the time the node did not
-## run. A blocked wait is left alone: its due frame is already reached, and must stay so for the
-## first tick after the unpause to look for a free spot.
+## Pushes the due frame of every WAITING Player, and the settle stamp of every Player stamped
+## before the pause began, on by this many ticks: the time the node did not run (class doc, the
+## paragraph on pause). A blocked wait is left alone: its due frame is already reached, and must
+## stay so for the first tick after the unpause to look for a free spot. A settle stamp taken
+## during the pause (restart()'s) is later than the pause's frame and stays.
 func _push_waits_on(ticks: int) -> void:
 	for player_index: int in _state.size():
 		if _state[player_index] == State.WAITING and not _is_blocked[player_index]:
 			_respawn_frame[player_index] += ticks
+		if _settle_frame[player_index] <= _pause_frame:
+			_settle_frame[player_index] += ticks
 
 
 ## The physics frame the waits are measured against: the frame the pause began while paused.
@@ -320,14 +521,32 @@ func _first_player_problem(units: Array[Unit], bases: Array[Base], cameras: Arra
 	var spawn_problem: String = bases[player_index].first_spawn_problem()
 	if not spawn_problem.is_empty():
 		return "bases[%d]: %s" % [player_index, spawn_problem]
+	var canister_problem: String = _first_canister_problem(bases[player_index], player_index)
+	if not canister_problem.is_empty():
+		return canister_problem
 	if not is_instance_valid(cameras[player_index]):
 		return "cameras[%d] is null" % player_index
 	return ""
 
 
-## A Unit left play: stamp the frame at which its Player respawns, then tell the listeners. The
-## state and the stamp are set before the signal goes out, so a handler already sees the Player
-## waiting with the full delay.
+## What is wrong with a Base's canister and canister seat (Story 004: begin() reads both), or an
+## empty string.
+func _first_canister_problem(base: Base, player_index: int) -> String:
+	if not is_instance_valid(base.canister):
+		return "bases[%d].canister is not assigned" % player_index
+	if not base.canister.is_inside_tree():
+		return "bases[%d].canister is not in the tree" % player_index
+	if not is_instance_valid(base.canister_seat):
+		return "bases[%d].canister_seat is not assigned" % player_index
+	if not base.canister_seat.is_inside_tree():
+		return "bases[%d].canister_seat is not in the tree" % player_index
+	return ""
+
+
+## A Unit left play: stamp the frame at which its Player respawns, drop the canister it carried at
+## the wreck (rule (3); AC-3), then tell the listeners. The state and the stamp are set before the
+## signals go out, so a handler already sees the Player waiting with the full delay, and
+## canister_dropped goes out before unit_destroyed.
 func _on_unit_destroyed(player_index: int) -> void:
 	if _state[player_index] != State.ALIVE:
 		push_warning("MatchController '%s': the Unit of player_index %d was destroyed while that Player was not ALIVE (State %d), so the destruction is ignored." % [name, player_index, _state[player_index]])
@@ -335,4 +554,7 @@ func _on_unit_destroyed(player_index: int) -> void:
 	_respawn_frame[player_index] = _now() + _delay_ticks()
 	_is_blocked[player_index] = false
 	_state[player_index] = State.WAITING
+	var dropped: int = _canisters.drop(player_index)
+	if dropped != CanisterRules.NONE:
+		canister_dropped.emit(dropped)
 	unit_destroyed.emit(player_index)

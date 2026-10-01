@@ -5,13 +5,15 @@ extends Label
 ##
 ## Implements: production/epics/wasteland-fire/story-003-bases-destruction-respawn.md AC-6 (while a
 ## Player is waiting to respawn, their viewport shows the seconds remaining); design/game-brief.md
-## MVP feature 3 (Bases, destruction and respawn). Vocabulary: CONTEXT.md (Player, Unit, Base,
-## Round).
+## MVP feature 3 (Bases, destruction and respawn); story-004-water-canister-and-win.md AC-6 (the
+## Round-over screen takes the view: the countdown hides when the Round is over). Vocabulary:
+## CONTEXT.md (Player, Unit, Base, Round).
 ##
 ## Display only (.claude/rules/ui-code.md). The Round belongs to the MatchController. This label
-## connects to its unit_destroyed and unit_spawned signals and reads seconds_until_respawn(), and
-## that is all it asks of it: it owns no state another node reads, calls nothing that changes the
-## Round and reads no input. Take it out of the scene and the Round plays on unchanged.
+## connects to its unit_destroyed, unit_spawned and round_over signals and reads
+## seconds_until_respawn() and is_round_over(), and that is all it asks of it: it owns no state
+## another node reads, calls nothing that changes the Round and reads no input. Take it out of the
+## scene and the Round plays on unchanged.
 ##
 ## One instance per Player, directly under that Player's SubViewport beside that Player's camera
 ## (split_screen.tscn). A Control in a SubViewport is laid out against the viewport, so the
@@ -20,18 +22,27 @@ extends Label
 ## Player's view and in no other. player_index says whose countdown it is (0 is Player 1, the
 ## MatchController's numbering); the scene stores it on each instance.
 ##
-## States, two: hidden (the Player's Unit is in play, or no Round has begun) and counting (the
-## Player's Unit waits to respawn). Each label follows its own Player alone: a signal for another
-## player_index is ignored. The table is complete; a pair it does not list cannot happen.
-##   hidden   -> counting  the controller emitted unit_destroyed for this player_index
+## States, two: hidden (the Player's Unit is in play, no Round has begun, or the Round is over) and
+## counting (the Player's Unit waits to respawn while the Round runs). Each label follows its own
+## Player alone: a signal for another player_index is ignored. The table is complete; a pair it
+## does not list cannot happen.
+##   hidden   -> counting  the controller emitted unit_destroyed for this player_index while the
+##                         Round runs
 ##   counting -> hidden    the controller emitted unit_spawned for this player_index (respawn)
 ##   counting -> hidden    the controller reports no wait for this player_index:
 ##                         seconds_until_respawn() is zero, so no respawn is coming (the Player was
 ##                         dropped out of the Round)
+##   counting -> hidden    the controller emitted round_over: a delivery won (Story 004 AC-6), the
+##                         Round-over screen takes the view, and no respawn comes until the
+##                         restart, which emits unit_spawned for every Player
 ##   hidden   -> hidden    the controller emitted unit_spawned for this player_index (the start
-##                         of the Round: the Player was never waiting)
-## _ready() starts in counting when the controller already reports a wait for this Player (a label
-## added after the Round began) and in hidden otherwise.
+##                         of the Round, or the restart: the Player was never waiting)
+##   hidden   -> hidden    the controller emitted round_over while this Player's Unit was in play;
+##                         or unit_destroyed arrives while the Round is over (it cannot: the tree
+##                         is paused then; refused all the same, so the label never shows during a
+##                         Round that is over)
+## _ready() starts in counting when the Round runs and the controller already reports a wait for
+## this Player (a label added after the Round began) and in hidden otherwise.
 ##
 ## The digit. While counting, every rendered frame the text is rebuilt as
 ## tr(format) % ceili(seconds_until_respawn(player_index)); _process runs only then. The controller
@@ -83,7 +94,9 @@ func _ready() -> void:
 		return
 	match_controller.unit_destroyed.connect(_on_unit_destroyed)
 	match_controller.unit_spawned.connect(_on_unit_spawned)
-	_set_counting(match_controller.seconds_until_respawn(player_index) > 0.0)
+	match_controller.round_over.connect(_on_round_over)
+	_set_counting(not match_controller.is_round_over()
+		and match_controller.seconds_until_respawn(player_index) > 0.0)
 
 
 ## Keeps the text current while counting. Processing is switched off the rest of the time.
@@ -125,14 +138,21 @@ func _first_problem() -> String:
 	return ""
 
 
-## This Player's Unit was destroyed: start counting. Another Player's destruction is not ours.
+## This Player's Unit was destroyed: start counting, unless the Round is over (no respawn comes
+## before the restart). Another Player's destruction is not ours.
 func _on_unit_destroyed(destroyed_player_index: int) -> void:
-	if destroyed_player_index == player_index:
+	if destroyed_player_index == player_index and not match_controller.is_round_over():
 		_set_counting(true)
 
 
-## This Player's Unit was put on its Base, at the start of the Round or at the respawn: hide.
-## Another Player's spawn is not ours.
+## This Player's Unit was put on its Base, at the start of the Round, at the respawn or at the
+## restart: hide. Another Player's spawn is not ours.
 func _on_unit_spawned(spawned_player_index: int) -> void:
 	if spawned_player_index == player_index:
 		_set_counting(false)
+
+
+## A delivery won the Round, whoever won: hide. The Round-over screen takes the view, and the
+## restart announces itself with unit_spawned.
+func _on_round_over(_winner_index: int) -> void:
+	_set_counting(false)

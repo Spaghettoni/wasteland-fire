@@ -14,8 +14,11 @@ extends CharacterBody3D
 ## or sticks on the flat plane) and AC-4 (every feel value comes from a UnitStats resource);
 ## production/epics/wasteland-fire/story-003-bases-destruction-respawn.md AC-2 (hit points from
 ## the data, destroyed at zero), AC-3 (what a respawn needs from the Unit: spawn()) and AC-5
-## (Self-destruct: destroy()); design/rules.md "Destruction, respawn and unit swap". Vocabulary:
-## CONTEXT.md.
+## (Self-destruct: destroy()); production/epics/wasteland-fire/story-004-water-canister-and-win.md
+## AC-2 (whether this Unit may carry the Water Canister is data, can_carry and carry_offset from
+## UnitStats, never a type check) and AC-7 (hit_points_changed, the hit points the HUD shows);
+## design/rules.md "Destruction, respawn and unit swap" and "Handling the Water Canister".
+## Vocabulary: CONTEXT.md.
 ##
 ## Driven by command, not by input: the Unit never reads a key or an Input action and keeps no
 ## singleton state. Whoever drives it (PlayerDriveInput for a Player, later a bot or a test)
@@ -77,6 +80,16 @@ extends CharacterBody3D
 ## needs no spawn(). One that refused to drive in _ready() is never alive: destroy() and
 ## apply_damage() ignore it and spawn() leaves it alone.
 ##
+## Carrying (Story 004): whether this Unit may pick up the Water Canister, and where it rides, is
+## the Unit type's data (UnitStats.can_carry and carry_offset: true and a tail mount for the
+## Motorbike, false and zero for a type that never carries), exposed read-only as can_carry and
+## carry_offset and never a type check in code (AC-2). The Unit does none of the carrying: the
+## Round rules (MatchController) read the two values, reparent the canister under the Unit at
+## carry_offset and drop it where the Unit is destroyed. The Unit never calls the canister, the
+## MatchController or another Unit, and does not know it is a Carrier. Hit points are shown, not
+## polled: hit_points_changed fires once per change (apply_damage(), destroy(), spawn()) with the
+## value and the maximum, so a HUD can listen without reading the Unit every frame (AC-7).
+##
 ## Leaving play. With collision layer and mask both zero the body neither collides nor is collided
 ## with, so the other Unit drives through a wreck and a Unit put down on one is not pushed, and
 ## nothing logs. PROCESS_MODE_DISABLED does the same but made Jolt log 'Parameter "space" is null'
@@ -100,8 +113,17 @@ extends CharacterBody3D
 
 ## Emitted once, when a live Unit is destroyed: its hit points reached zero, or destroy() was
 ## called. The Unit has already left play when it fires (is_alive is false, hit_points is zero),
-## and nothing follows the emit, so a handler may call spawn() on the Unit at once.
+## and nothing follows the emit, so a handler may call spawn() on the Unit at once. It is emitted
+## in the context of whoever called destroy() or apply_damage(): a tick, never a physics signal
+## handler (see apply_damage()).
 signal destroyed
+
+## Emitted once per change of hit_points, with the new value and stats.max_hit_points: after a hit
+## the Unit survives (apply_damage()), with zero when it is destroyed (the lethal hit and
+## destroy() share one path and emit once, after the Unit left play and right before
+## `destroyed`), and with the refill when it spawns (spawn()). Never for an ignored call. It is
+## for display (Story 004 AC-7, the HUD): a handler shows the numbers and does not act on the Unit.
+signal hit_points_changed(hit_points: float, max_hit_points: float)
 
 ## Largest magnitude of a normalised drive axis (throttle or steer): commands are held to -1..1.
 const AXIS_LIMIT: float = 1.0
@@ -141,6 +163,26 @@ var is_alive: bool:
 		return _is_alive
 	set(_value):
 		push_error("Unit '%s': is_alive is read-only. Change it with destroy() or spawn()." % name)
+
+## Whether this Unit may pick up and carry a Water Canister: stats.can_carry, the Unit type's data
+## (Story 004 AC-2; true for the Motorbike, never a type check). False while the Unit refused to
+## drive in _ready() (invalid stats). Read-only: assigning to it pushes an error and changes
+## nothing; change it in the UnitStats .tres.
+var can_carry: bool:
+	get:
+		return stats.can_carry if _can_drive else false
+	set(_value):
+		push_error("Unit '%s': can_carry is read-only. It is the Unit type's data: UnitStats.can_carry." % name)
+
+## Where a carried Water Canister rides, in this Unit's local space: stats.carry_offset, the Unit
+## type's data (a tail mount for the Motorbike). Whoever carries (MatchController) places the
+## canister's origin here. Vector3.ZERO while the Unit refused to drive in _ready(). Read-only:
+## assigning to it pushes an error and changes nothing; change it in the UnitStats .tres.
+var carry_offset: Vector3:
+	get:
+		return stats.carry_offset if _can_drive else Vector3.ZERO
+	set(_value):
+		push_error("Unit '%s': carry_offset is read-only. It is the Unit type's data: UnitStats.carry_offset." % name)
 
 var _speed: float = 0.0
 var _throttle: float = 0.0
@@ -211,20 +253,29 @@ func reset_motion() -> void:
 
 
 ## Takes hit points off a live Unit: subtracts amount, never below zero, and destroys the Unit
-## when none are left (Story 003 AC-2). Ignored when amount is zero, negative or NaN and when the
-## Unit is not alive, so a destroyed Unit cannot be destroyed twice. The debug-damage key calls it
-## until weapons (Story 005) do.
+## when none are left (Story 003 AC-2). A hit the Unit survives emits hit_points_changed once; the
+## lethal hit emits it once from destroy(), with zero. Ignored when amount is zero, negative or NaN
+## and when the Unit is not alive (nothing is emitted), so a destroyed Unit cannot be destroyed
+## twice. The debug-damage key calls it until weapons (Story 005) do. Call it from a physics tick
+## or from _process, never from an Area3D or body signal handler: the Round's handler of
+## `destroyed` reparents the canister a Carrier held (WaterCanister.drop_at()), and the physics
+## server refuses a reparent of a node holding an Area3D while it flushes those signals, so the
+## canister would stay a hidden child of the wreck. A projectile records its hit in body_entered
+## and applies it on its own tick.
 func apply_damage(amount: float) -> void:
 	if not _is_alive or not (amount > 0.0):
 		return
 	_hit_points = maxf(_hit_points - amount, 0.0)
 	if _hit_points <= 0.0:
 		destroy()
+		return
+	hit_points_changed.emit(_hit_points, stats.max_hit_points)
 
 
 ## Destroys a live Unit at once, whatever its hit points: Self-destruct (Story 003 AC-5) and the
 ## last hit of apply_damage() take this same path. The Unit leaves play (see the class doc), then
-## `destroyed` is emitted, once. Does nothing when the Unit is not alive.
+## hit_points_changed is emitted once, with zero, then `destroyed`, once. Does nothing when the
+## Unit is not alive. Call it from a tick, never from a physics signal handler (apply_damage()).
 func destroy() -> void:
 	if not _is_alive:
 		return
@@ -235,6 +286,7 @@ func destroy() -> void:
 	collision_mask = 0
 	set_physics_process(false)
 	reset_motion()
+	hit_points_changed.emit(_hit_points, stats.max_hit_points)
 	destroyed.emit()
 
 
@@ -242,11 +294,12 @@ func destroy() -> void:
 ## this one call (Story 003 AC-1, AC-3). The Unit must be in the tree. It sets global_transform
 ## first and then calls reset_motion() (the teleport order), refills hit_points to
 ## stats.max_hit_points, shows the Unit, puts its collision back and turns its physics tick on. It
-## works on a destroyed Unit and on one still alive (the first spawn), and emits nothing. Call it
-## inside a physics tick, in the same tick as ChaseCamera.snap_to_target(): from _process the
-## frame of the teleport still draws the Unit at the wreck while the camera has already moved. A
-## Unit that refused to drive in _ready() stays out of play: this pushes an error and changes
-## nothing, so it never wakes a Unit whose stats are invalid.
+## works on a destroyed Unit and on one still alive (the first spawn), and emits hit_points_changed
+## once, with the refill, and nothing else. Call it inside a physics tick, in the same tick as
+## ChaseCamera.snap_to_target(): from _process the frame of the teleport still draws the Unit at
+## the wreck while the camera has already moved. A Unit that refused to drive in _ready() stays out
+## of play: this pushes an error and changes nothing, so it never wakes a Unit whose stats are
+## invalid.
 func spawn(at: Transform3D) -> void:
 	if not _can_drive:
 		push_error("Unit '%s': spawn() ignored: the Unit refused to drive in _ready() (see that error), so it stays where it is and out of play." % name)
@@ -259,6 +312,7 @@ func spawn(at: Transform3D) -> void:
 	collision_layer = _play_collision_layer
 	collision_mask = _play_collision_mask
 	set_physics_process(true)
+	hit_points_changed.emit(_hit_points, stats.max_hit_points)
 
 
 ## True when another Unit stands where this one would overlap it if spawn(at) were called now: a

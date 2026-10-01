@@ -12,6 +12,9 @@
 [ext_resource type="Resource" path="res://src/gameplay/match/data/match_rules.tres" id="10_rules"]
 [ext_resource type="Script" path="res://src/gameplay/match/player_match_input.gd" id="11_pmi"]
 [ext_resource type="PackedScene" path="res://src/ui/hud/respawn_countdown.tscn" id="12_cd"]
+[ext_resource type="PackedScene" path="res://src/ui/hud/player_hud.tscn" id="13_hud"]
+[ext_resource type="PackedScene" path="res://src/ui/hud/round_over_screen.tscn" id="14_ros"]
+[ext_resource type="Script" path="res://src/gameplay/match/round_restart_input.gd" id="15_rri"]
 
 [node name="SplitScreen" type="Control" unique_id=9000001 node_paths=PackedStringArray("field", "player_1_unit", "player_2_unit", "player_1_camera", "player_2_camera", "match_controller")]
 layout_mode = 3
@@ -96,6 +99,14 @@ settings = ExtResource("6_set")
 match_controller = NodePath("%MatchController")
 player_index = 0
 
+[node name="Player1Hud" parent="Views/Player1View/SubViewport" unique_id=9000051 node_paths=PackedStringArray("match_controller", "unit") instance=ExtResource("13_hud")]
+match_controller = NodePath("%MatchController")
+unit = NodePath("%Player1Unit")
+player_index = 0
+
+[node name="Player1RoundOver" parent="Views/Player1View/SubViewport" unique_id=9000061 node_paths=PackedStringArray("match_controller") instance=ExtResource("14_ros")]
+match_controller = NodePath("%MatchController")
+
 [node name="Player2View" type="SubViewportContainer" parent="Views" unique_id=9000022]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -115,6 +126,14 @@ settings = ExtResource("6_set")
 match_controller = NodePath("%MatchController")
 player_index = 1
 
+[node name="Player2Hud" parent="Views/Player2View/SubViewport" unique_id=9000052 node_paths=PackedStringArray("match_controller", "unit") instance=ExtResource("13_hud")]
+match_controller = NodePath("%MatchController")
+unit = NodePath("%Player2Unit")
+player_index = 1
+
+[node name="Player2RoundOver" parent="Views/Player2View/SubViewport" unique_id=9000062 node_paths=PackedStringArray("match_controller") instance=ExtResource("14_ros")]
+match_controller = NodePath("%MatchController")
+
 [node name="Divider" type="ColorRect" parent="." unique_id=9000004]
 layout_mode = 1
 anchor_left = 0.5
@@ -129,6 +148,11 @@ color = Color(0.06, 0.06, 0.07, 1)
 unique_name_in_owner = true
 script = ExtResource("9_mc")
 rules = ExtResource("10_rules")
+
+[node name="RoundRestartInput" type="Node" parent="." unique_id=9000006 node_paths=PackedStringArray("match_controller")]
+process_mode = 3
+script = ExtResource("15_rri")
+match_controller = NodePath("%MatchController")
 
 [editable path="World/Player1Unit"]
 [editable path="World/Player2Unit"]
