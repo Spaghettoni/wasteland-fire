@@ -1,427 +1,122 @@
-<p align="center">
-  <h1 align="center">Claude Code Game Studios</h1>
-  <p align="center">
-    Turn a single Claude Code session into a full game development studio.
-    <br />
-    49 agents. 74 skills. One coordinated AI team.
-  </p>
-</p>
+# Wasteland Fire
 
-<p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
-  <a href=".claude/agents"><img src="https://img.shields.io/badge/agents-49-blueviolet" alt="49 Agents"></a>
-  <a href=".claude/skills"><img src="https://img.shields.io/badge/skills-74-green" alt="74 Skills"></a>
-  <a href=".claude/hooks"><img src="https://img.shields.io/badge/hooks-12-orange" alt="12 Hooks"></a>
-  <a href=".claude/rules"><img src="https://img.shields.io/badge/rules-13-red" alt="13 Rules"></a>
-  <a href="https://code.claude.com/docs"><img src="https://img.shields.io/badge/built%20for-Claude%20Code-f5f5f5?logo=anthropic" alt="Built for Claude Code"></a>
-  <a href="https://www.buymeacoffee.com/donchitos3"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Support%20this%20project-FFDD00?logo=buymeacoffee&logoColor=black" alt="Buy Me a Coffee"></a>
-  <a href="https://github.com/sponsors/Donchitos"><img src="https://img.shields.io/badge/GitHub%20Sponsors-Support%20this%20project-ea4aaa?logo=githubsponsors&logoColor=white" alt="GitHub Sponsors"></a>
-</p>
+A two-player split-screen 3D vehicle game for one keyboard and one couch, in
+the spirit of Return Fire (1995). Drive wasteland Motorbikes, Buggies, Trucks
+and Gyrocopters, steal the other Player's Flag and haul it home on a Motorbike
+before your Fuel runs dry and your Tokens run out.
 
----
+Built in Godot 4.7.2 with GDScript. A hobby project, made for playing with
+friends at home.
 
-## Why This Exists
+![Concept sheet: Motorbike, Buggy, Gyrocopter and Truck](assets/art/vehicles/vehicle-design.png)
 
-Building a game solo with AI is powerful — but a single chat session has no structure. No one stops you from hardcoding magic numbers, skipping design docs, or writing spaghetti code. There's no QA pass, no design review, no one asking "does this actually fit the game's vision?"
+## How it plays
 
-**Claude Code Game Studios** solves this by giving your AI session the structure of a real studio. Instead of one general-purpose assistant, you get 49 specialized agents organized into a studio hierarchy — directors who guard the vision, department leads who own their domains, and specialists who do the hands-on work. Each agent has defined responsibilities, escalation paths, and quality gates.
+- Two Players share one keyboard and one screen, split side by side.
+- Each Player spawns Units from the Garage at their Base, paying one Token of
+  that type per spawn. The Map sets the Token stock.
+- Four Units. The Motorbike is fast, weak and the only one that can carry a
+  Flag. The Buggy beats the Truck, the Truck beats the Gyrocopter and the
+  Gyrocopter beats the Buggy. Only the Gyrocopter crosses cliffs and water.
+- Every Unit burns Fuel while moving. Fuel Cans on the Map refill it.
+- Win by delivering the opponent's Flag to your own Base. Lose by losing your
+  last Motorbike, because without one you can never carry a Flag.
 
-The result: you still make every decision, but now you have a team that asks the right questions, catches mistakes early, and keeps your project organized from first brainstorm to launch.
+The rules of record are in `design/rules.md`, the one-page brief in
+`design/game-brief.md` and the vocabulary in `CONTEXT.md`.
 
----
+## Status
 
-## Table of Contents
+| Story | What | State |
+|---|---|---|
+| 001 | Driving toy: one Motorbike, chase camera, arcade kinematic driving | Done |
+| 002 | Split screen for two, one fixed keyboard layout per Player | Done |
+| 003 | Bases, destruction and respawn, self-destruct | Done |
+| 004 | The Flag and the win, per-Player HUD, round-over screen | Done, code still calls it the Water Canister |
+| 005 | Four Units and the counter triangle | In progress |
+| 006 | Fuel and Fuel Cans | Planned |
+| 007 | Map 01 with the Team colours | Planned |
+| 008 | Tokens, the Garage and the loss | Planned |
 
-- [What's Included](#whats-included)
-- [Studio Hierarchy](#studio-hierarchy)
-- [Slash Commands](#slash-commands)
-- [Does it produce games, or documents?](#does-it-produce-games-or-documents)
-- [Getting Started](#getting-started)
-- [Configuration](#configuration)
-- [Upgrading](#upgrading)
-- [Project Structure](#project-structure)
-- [How It Works](#how-it-works)
-- [Design Philosophy](#design-philosophy)
-- [Customization](#customization)
-- [Platform Support](#platform-support)
-- [Community](#community)
-- [Supporting This Project](#supporting-this-project)
-- [License](#license)
+Everything is greybox until the loop is proven. The vehicle concept models
+under `assets/art/` are built from Godot primitives and are not in the game
+yet.
 
----
+## Controls
 
-## What's Included
+| | Player 1 | Player 2 |
+|---|---|---|
+| Throttle / reverse | W / S | Up / Down |
+| Steer | A / D | Left / Right |
+| Self-destruct | Tab | Enter |
 
-| Category | Count | Description |
-|----------|-------|-------------|
-| **Agents** | 49 | Specialized subagents across design, programming, art, audio, narrative, QA, and production |
-| **Skills** | 74 | Slash commands for every workflow phase (`/start`, `/design-system`, `/create-epics`, `/create-stories`, `/dev-story`, `/story-done`, etc.) |
-| **Hooks** | 12 | Automated validation on commits, pushes, asset changes, session lifecycle, agent audit trail, and gap detection |
-| **Rules** | 13 | Path-scoped coding standards enforced when editing gameplay, engine, AI, UI, network code, and more |
-| **Templates** | 39 | Document templates for GDDs, UX specs, ADRs, sprint plans, HUD design, accessibility, and more |
+R restarts from the round-over screen. Keys 1 and 2 damage each Player's Unit
+and exist for testing only.
 
-## Studio Hierarchy
+## Running it
 
-Agents are organized into three tiers, matching how real studios operate:
+1. Install Godot 4.7.2. The project is pinned to that version; see
+   `docs/engine-reference/godot/VERSION.md`.
+2. Open the project folder in the editor and press Play, or from the repo
+   root:
 
 ```
-Tier 1 — Directors
-  creative-director    technical-director    producer
-
-Tier 2 — Department Leads
-  game-designer        lead-programmer       art-director
-  audio-director       narrative-director    qa-lead
-  release-manager      localization-lead
-
-Tier 3 — Specialists
-  gameplay-programmer  engine-programmer     ai-programmer
-  network-programmer   tools-programmer      ui-programmer
-  systems-designer     level-designer        economy-designer
-  technical-artist     sound-designer        writer
-  world-builder        ux-designer           prototyper
-  performance-analyst  devops-engineer       analytics-engineer
-  security-engineer    qa-tester             accessibility-specialist
-  live-ops-designer    community-manager
+godot --path .
 ```
 
-Each agent declares a model in its frontmatter: the three directors ask for
-Opus, `lead-programmer` and fifteen specialists name Sonnet, and the remaining thirty
-**inherit your session's model**. Treat the tiers as seniority of role, not as
-a billing plan — most of the studio runs on whatever model you are already using.
+The game launches straight into the split screen. There is no menu yet.
 
-### Engine Specialists
-
-The template includes agent sets for all three major engines. Use the set that matches your project:
-
-| Engine | Lead Agent | Sub-Specialists |
-|--------|-----------|-----------------|
-| **Godot 4** | `godot-specialist` | GDScript, Shaders, GDExtension |
-| **Unity** | `unity-specialist` | DOTS/ECS, Shaders/VFX, Addressables, UI Toolkit |
-| **Unreal Engine 5** | `unreal-specialist` | GAS, Blueprints, Replication, UMG/CommonUI |
-
-## Slash Commands
-
-Type `/` in Claude Code to access all 74 skills:
-
-**Onboarding & Navigation**
-`/start` `/help` `/project-stage-detect` `/setup-engine` `/adopt` `/settings`
-
-**Game Design**
-`/brainstorm` `/map-systems` `/design-system` `/quick-design` `/review-all-gdds` `/propagate-design-change`
-
-**Art & Assets**
-`/art-bible` `/asset-spec` `/asset-audit`
-
-**UX & Interface Design**
-`/ux-design` `/ux-review`
-
-**Architecture**
-`/create-architecture` `/architecture-decision` `/architecture-review` `/create-control-manifest`
-
-**Stories & Sprints**
-`/create-epics` `/create-stories` `/dev-story` `/sprint-plan` `/sprint-status` `/story-readiness` `/story-done` `/estimate`
-
-**Reviews & Analysis**
-`/design-review` `/code-review` `/balance-check` `/content-audit` `/scope-check` `/perf-profile` `/tech-debt` `/gate-check` `/consistency-check` `/security-audit`
-
-**QA & Testing**
-`/qa-plan` `/smoke-check` `/soak-test` `/regression-suite` `/test-setup` `/test-helpers` `/test-evidence-review` `/test-flakiness` `/skill-test` `/skill-improve`
-
-**Production**
-`/milestone-review` `/retrospective` `/bug-report` `/bug-triage` `/reverse-document` `/playtest-report`
-
-**Release**
-`/release-checklist` `/launch-checklist` `/changelog` `/patch-notes` `/hotfix` `/day-one-patch`
-
-**Creative & Content**
-`/prototype` `/vertical-slice` `/onboard` `/localize`
-
-**Team Orchestration** (coordinate multiple agents on a single feature)
-`/team-combat` `/team-narrative` `/team-ui` `/team-release` `/team-polish` `/team-audio` `/team-level` `/team-live-ops` `/team-qa`
-
-## Does it produce games, or documents?
-
-A fair question, and the answer is a measurement rather than a sample project.
-Four games were built from one brief at different `modes.rigor` levels and the
-documents each wrote **before its first line of game code** were counted:
-
-| `modes.rigor` | Docs before first line of game code | Time |
-|---|---:|---:|
-| `minimal` | **1** (the one-page brief) | 0 min |
-| `standard` | 30 | 58 min |
-
-All of them produced a running, tested game. Two blind reviewers and a human
-playtest then ranked the `standard` build **last** — the extra 29 documents
-bought traceability, not a better game.
-
-### It runs the game and looks at it
-
-The measurement above is about cost. The other half is whether the thing works,
-and for a game that means someone has to *look* at it — a passing test says
-nothing about a menu drawn off-screen. So a story that changes anything the
-player sees is not closed until the game has been launched, observed, and a
-screenshot retained in `production/qa/evidence/`. A parse check is not a run.
-This holds at every rigor level, including `minimal`, where automated tests are
-waived but the look is not.
-
-The games themselves are deliberately **not** shipped here: this is a template
-you clone to start your own project, and somebody else's game in your repo is
-clutter, not evidence.
-
-## Getting Started
-
-### Prerequisites
-
-- [Git](https://git-scm.com/)
-- [Claude Code](https://code.claude.com/docs/en/setup) — the native installer is recommended (`npm install -g @anthropic-ai/claude-code` also works, on Node.js 22+)
-- [Python 3](https://www.python.org/) — reads `project.yaml` for every skill and hook; without it every setting silently falls back to its default
-- Bash — runs every hook; built into macOS and Linux, and on Windows it comes with [Git for Windows](https://git-scm.com/downloads/win)
-- **Recommended**: [jq](https://jqlang.github.io/jq/) (for hook validation)
-
-Hooks fail gracefully if optional tools are missing — you just lose validation — with one deliberate exception: a commit that stages data JSON is blocked when there is no Python to validate it.
-
-### Setup
-
-1. **Clone or use as template**:
-   ```bash
-   git clone https://github.com/Donchitos/Claude-Code-Game-Studios.git my-game
-   cd my-game
-   ```
-
-2. **Open Claude Code** and start a session:
-   ```bash
-   claude
-   ```
-
-3. **Run `/start`** — the system asks where you are (no idea, vague concept,
-   clear design, existing work) and guides you to the right workflow. No assumptions.
-
-   Or jump directly to a specific skill if you already know what you need:
-   - `/brainstorm` — explore game ideas from scratch
-   - `/setup-engine godot 4.6` — configure your engine if you already know
-   - `/project-stage-detect` — analyze an existing project
-
-## Configuration
-
-`project.yaml` at the repo root is the single source of truth for how the
-studio behaves on your project — engine, naming conventions, and a `modes`
-block that controls how much process every skill enforces. `/start` writes it
-for you; you rarely need to hand-edit it.
-
-The one question that matters most is **`modes.rigor`** — `minimal`, `standard`,
-or `full`. It's a single front door over six separate knobs (`workflow` —
-which GDD sections are required, `docs.density`, `qa.level`,
-`story_granularity`, `review_mode` — how many director agents review your work,
-and `team.size`), so `/start` asks it once instead of six times:
-
-- **`minimal`** (default) — jam-game speed. No GDDs required, terse docs, minimal QA evidence, solo review. `/start` → `/setup-engine` → `/brainstorm` (a one-page brief) → `/create-stories` → `/dev-story` ↔ `/story-done`.
-- **`standard`** — 5 required GDD sections, balanced doc depth, standard QA evidence, lean review.
-- **`full`** — all 8 GDD sections, thorough docs, full QA evidence on every story type, full director review.
-
-`minimal` is the default because it was measured against the alternatives: the
-heavier tier cost several times more to reach working code, was ranked last on
-play quality, and returned nothing measurable when a fresh developer inherited
-the project. Raise it in one `/settings` call when your project grows — `/help`
-and `/gate-check` will suggest it when they see the signs.
-
-Two escape hatches keep one setting from being a blunt instrument.
-**`system_overrides`** holds a single system to a higher standard than the rest
-of the project — your combat system gets the full treatment while everything
-else stays light. **`testing.strict`** sets, per test type (logic, integration,
-visual, UI, config), whether missing evidence blocks a story or merely warns.
-
-Any of the six underlying knobs can still be set individually if you want a mix
-(e.g. `workflow: full` with `docs.density: terse` — comprehensive but compact).
-Two of them — `review_mode` (`full` / `lean` / `solo`) and `team.size` — are
-also **personal**: rigor sets the team-wide default, but you can override them
-per-developer in a gitignored `project.local.yaml` without touching the shared
-config. `modes.automation` (how often the AI pauses to ask before it acts) sits
-outside rigor and is likewise personally overridable.
-
-View or change any setting with the `/settings` skill:
+Tests use gdUnit4 and run headless. The same suite runs in GitHub Actions on
+every push:
 
 ```
-/settings                              # view effective config
-/settings modes.review_mode            # view one setting
-/settings modes.rigor=full             # write to project.yaml (team-wide)
-/settings --local modes.review_mode=solo   # write to project.local.yaml (just you)
+godot --headless -s -d --remote-debug tcp://127.0.0.1:0 res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a res://tests --ignoreHeadlessMode
 ```
 
-Full schema and per-setting behavior: `.claude/docs/effects-map.md`.
+## Repository layout
 
-## Upgrading
+- `src/gameplay/` is the game: units, match rules, split screen, maps, chase
+  camera and the Flag (still named `canister`). `src/ui/hud/` is the HUD.
+- `tests/` holds the gdUnit4 tests.
+- `design/` holds the brief, the rules of record and the author's Slovak
+  source with its English translation.
+- `production/` holds the epic, the stories and the retained QA evidence, one
+  folder of screenshots per story.
+- `assets/art/` holds the vehicle concept models, a shared palette and a
+  showcase scene that renders them.
+- `docs/` holds engine reference notes pinned to Godot 4.7.2 and the
+  framework's workflow guide.
+- `.claude/` holds the agents, skills and hooks of the development framework
+  described below.
 
-Already using an older version of this template? See [UPGRADING.md](UPGRADING.md)
-for step-by-step migration instructions, a breakdown of what changed between
-versions, and which files are safe to overwrite vs. which need a manual merge.
+## Concept art
 
-## Project Structure
+Four vehicles in one kit, kitbashed from Godot's built-in meshes with
+procedural rust and paint-chip textures, rendered by the engine itself.
 
-```
-CLAUDE.md                           # Master configuration
-.claude/
-  settings.json                     # Hooks, permissions, safety rules
-  agents/                           # 49 agent definitions (markdown + YAML frontmatter)
-  skills/                           # 74 slash commands (subdirectory per skill)
-  hooks/                            # 14 scripts (bash) — 12 event hooks, yaml-helper.sh,
-                                    #   and one opt-in diagnostic you wire yourself
-  rules/                            # 13 path-scoped coding standards
-  statusline.sh                     # Status line script (context%, model, stage, epic breadcrumb)
-  docs/
-    workflow-catalog.yaml           # 7-phase pipeline definition (read by /help)
-    templates/                      # 39 document templates (+ per-section guidance)
-src/                                # Game source code (Godot). The code root is
-                                    #   ENGINE-SPECIFIC: Unity compiles only
-                                    #   Assets/, Unreal builds from Source/<Module>/
-assets/                             # Art, audio, VFX, shaders, data files
-design/                             # GDDs, narrative docs, level designs
-docs/                               # Technical documentation and ADRs
-tests/                              # Test suites (unit, integration, performance, playtest)
-tools/                              # Build and pipeline tools
-prototypes/                         # Throwaway prototypes (isolated from src/)
-production/                         # Sprint plans, milestones, release tracking
-CCGS Skill Testing Framework/       # QA for the skills and agents themselves — see below
-```
+| Motorbike | Buggy |
+|---|---|
+| ![Motorbike](assets/art/vehicles/wasteland_motorbike/renders/wasteland_motorbike_front.png) | ![Buggy](assets/art/vehicles/wasteland_buggy/renders/wasteland_buggy_front.png) |
 
-### Testing your customizations
+| Gyrocopter | Truck |
+|---|---|
+| ![Gyrocopter](assets/art/vehicles/wasteland_gyrocopter/renders/wasteland_gyrocopter_front.png) | ![Truck](assets/art/vehicles/wasteland_truck/renders/wasteland_truck_front.png) |
 
-CCGS is a template you are meant to edit. `CCGS Skill Testing Framework/` is how
-you check that an edited or newly written skill still holds up — a catalog of all
-74 skills and 49 agents, per-category quality rubrics, behavioral specs, and
-templates for writing specs of your own.
+## How it is made
 
-```
-/skill-test static [name]     # structural linter — 7 compliance checks
-/skill-test category [name]   # category-specific quality rubric
-/skill-test spec [name]       # behavioral spec assertions
-/skill-test audit             # coverage report across skills and agents
-/skill-improve [name]         # test-fix-retest loop; keeps or reverts on score change
-```
+The project is developed with [Claude Code](https://claude.com/claude-code)
+inside [Claude Code Game Studios](https://github.com/Donchitos/Claude-Code-Game-Studios)
+by Donchitos, a studio-shaped set of agents, skills and quality gates for
+Claude Code. The framework turns the work into stories with acceptance
+criteria, reviews and retained evidence. The design, the decisions and the
+playtesting are the author's.
 
-It tests the *framework*, never your game — game tests live in `tests/`.
+## Credits and licence
 
-## How It Works
-
-### Agent Coordination
-
-Agents follow a structured delegation model:
-
-1. **Vertical delegation** — directors delegate to leads, leads delegate to specialists
-2. **Horizontal consultation** — same-tier agents can consult each other but can't make binding cross-domain decisions
-3. **Conflict resolution** — disagreements escalate up to the shared parent (`creative-director` for design, `technical-director` for technical)
-4. **Change propagation** — cross-department changes are coordinated by `producer`
-5. **Domain boundaries** — agents don't modify files outside their domain without explicit delegation
-
-### Collaborative, Not Autonomous
-
-This is **not** an auto-pilot system. Every agent follows a strict collaboration protocol:
-
-1. **Ask** — agents ask questions before proposing solutions
-2. **Present options** — agents show 2-4 options with pros/cons
-3. **You decide** — the user always makes the call
-4. **Draft** — agents show work before finalizing
-5. **Approve** — nothing gets written without your sign-off
-
-You stay in control. The agents provide structure and expertise, not autonomy.
-
-### Automated Safety
-
-**Hooks** run automatically on every session:
-
-| Hook | Trigger | What It Does |
-|------|---------|--------------|
-| `validate-commit.sh` | PreToolUse (Bash, PowerShell) | Checks for hardcoded values, TODO format, JSON validity, design doc sections — exits early if the command is not `git commit` |
-| `validate-push.sh` | PreToolUse (Bash, PowerShell) | Warns on pushes to protected branches — exits early if the command is not `git push` |
-| `validate-assets.sh` | PostToolUse (Write/Edit) | Checks data-file JSON under `assets/`, `Assets/` or `Content/`, and asset naming in Godot's `assets/` only — exits early if the file is under none of them |
-| `session-start.sh` | Session open | Shows current branch and recent commits for orientation |
-| `detect-gaps.sh` | Session open | Detects fresh projects (suggests `/start`) and missing design docs when code or prototypes exist |
-| `pre-compact.sh` | Before compaction | Logs the compaction (its output does not reach Claude — `session-start.sh` restores context afterwards) |
-| `post-compact.sh` | After compaction | Debug-log reminder only (its output does not reach Claude) |
-| `notify.sh` | Notification event | Shows Windows toast notification via PowerShell |
-| `session-stop.sh` | Every response end | Archives `active.md` to session log and records git activity |
-| `log-agent.sh` | Agent spawned | Audit trail start — logs subagent invocation |
-| `log-agent-stop.sh` | Agent stops | Audit trail stop — completes subagent record |
-| `validate-skill-change.sh` | PostToolUse (Write/Edit) | Advises running `/skill-test` after any `.claude/skills/` change |
-
-> **Note**: `validate-commit.sh`, `validate-assets.sh`, and `validate-skill-change.sh` fire on every Bash, PowerShell or Write tool call and exit immediately (exit 0) when the command or file path is not relevant. This is normal hook behavior — not a performance concern.
-
-**Permission rules** in `settings.json` auto-allow safe operations (git status, test runs) and block dangerous ones (force push, `rm -rf`, reading `.env` files) in both the Bash and PowerShell tools. The `git` rules match anywhere after `git`, so a git command whose text only mentions `push` followed later by ` +` or ` -f`, `clean` followed by ` -f`, or `reset` followed by `--hard` — a commit message such as `git commit -m "push + pull"` included — is denied too: reword the message.
-
-### Path-Scoped Rules
-
-Coding standards are automatically enforced based on file location. The paths
-below are Godot's. Each rule also matches the Unity and Unreal layouts: the code
-rules match C# under `Assets/**/Gameplay/` and C++ under `Source/**/Gameplay/` (and `Core`,
-`AI`, `Networking`, `UI`), data matches JSON under `Assets/**/Data/` and
-`Content/**/Data/`, shaders match by file type, and tests match
-C# under `Assets/Tests/` and C++ under `Source/**/Tests/`.
-
-| Path | Enforces |
-|------|----------|
-| `src/gameplay/**` | Data-driven values, delta time usage, no UI references |
-| `src/core/**` | Zero allocations in hot paths, thread safety, API stability |
-| `src/ai/**` | Performance budgets, debuggability, data-driven parameters |
-| `src/networking/**` | Server-authoritative, versioned messages, security |
-| `src/ui/**` | No game state ownership, localization-ready, accessibility |
-| `design/gdd/**` | Required sections per `modes.workflow`, formula format, edge cases |
-| `design/narrative/**` | Lore consistency, character voice, canon levels |
-| `assets/data/**/*.json` | JSON validity, naming conventions, schema rules |
-| `assets/shaders/**` | Naming conventions, performance targets, cross-platform rules |
-| `tests/**` | Test naming, coverage requirements, fixture patterns |
-| `prototypes/**` | Relaxed standards, README required, hypothesis documented |
-
-## Design Philosophy
-
-This template is grounded in professional game development practices:
-
-- **MDA Framework** — Mechanics, Dynamics, Aesthetics analysis for game design
-- **Self-Determination Theory** — Autonomy, Competence, Relatedness for player motivation
-- **Flow State Design** — Challenge-skill balance for player engagement
-- **Bartle Player Types** — Audience targeting and validation
-- **Verification-Driven Development** — Tests first, then implementation
-
-## Customization
-
-This is a **template**, not a locked framework. Everything is meant to be customized:
-
-- **Add/remove agents** — delete agent files you don't need, add new ones for your domains
-- **Edit agent prompts** — tune agent behavior, add project-specific knowledge
-- **Modify skills** — adjust workflows to match your team's process
-- **Add rules** — create new path-scoped rules for your project's directory structure
-- **Tune hooks** — adjust validation strictness, add new checks
-- **Pick your engine** — use the Godot, Unity, or Unreal agent set (or none)
-- **Tune process weight** — `modes.rigor` and its underlying knobs in `project.yaml` (see [Configuration](#configuration)). Override per-run with `--review solo` on any skill.
-
-## Platform Support
-
-Primary development on **Windows 10** with Git Bash. The hooks and scripts are also tested on **macOS** — its stock bash 3.2 and BSD tools, with and without `jq` — and on **Linux**. All hooks use POSIX-compatible patterns (`grep -E`, not `grep -P`) and include fallbacks for missing tools. The `notify.sh` hook uses PowerShell for Windows toast notifications and is a no-op elsewhere — desktop notifications on macOS/Linux are not yet wired. Please file issues for any platform-specific breakage.
-
-## Community
-
-- **Discussions** — [GitHub Discussions](https://github.com/Donchitos/Claude-Code-Game-Studios/discussions) for questions, ideas, and showcasing what you've built
-- **Issues** — [Bug reports and feature requests](https://github.com/Donchitos/Claude-Code-Game-Studios/issues)
-
----
-
-## Supporting This Project
-
-Claude Code Game Studios is free and open source. If it saves you time or helps you ship your game, consider supporting continued development:
-
-<p>
-  <a href="https://www.buymeacoffee.com/donchitos3"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee"></a>
-  &nbsp;
-  <a href="https://github.com/sponsors/Donchitos"><img src="https://img.shields.io/badge/GitHub%20Sponsors-ea4aaa?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="GitHub Sponsors"></a>
-</p>
-
-- **[Buy Me a Coffee](https://www.buymeacoffee.com/donchitos3)** — one-time support
-- **[GitHub Sponsors](https://github.com/sponsors/Donchitos)** — recurring support through GitHub
-
-Sponsorships help fund time spent maintaining skills, adding new agents, keeping up with Claude Code and engine API changes, and responding to community issues.
-
----
-
-*Built for Claude Code. Maintained and extended — contributions welcome via [GitHub Discussions](https://github.com/Donchitos/Claude-Code-Game-Studios/discussions).*
-
-## License
-
-MIT License. See [LICENSE](LICENSE) for details.
+- Game design, code and art: copyright 2026 Tomas Kunzo. A licence for the
+  game's own content has not been chosen yet.
+- Development framework: Claude Code Game Studios by Donchitos, MIT licence,
+  see `LICENSE`.
+- Test framework: gdUnit4 by Mike Schulze, MIT licence, see
+  `addons/gdUnit4/LICENSE`.
+- Inspiration: Return Fire (1995). No code or assets from it are used.
