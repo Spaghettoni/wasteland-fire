@@ -109,7 +109,7 @@ The source's rules for Claude, adopted as project process (decided 2026-10-01):
 The source's v0.1 board is not in the export; this list is the prose plus our decisions.
 
 - Local split screen for two Players; keyboard only (decided 2026-09-29); no online play.
-- Map 01 with Base A (Orange, Player 1) and Base B (Teal, Player 2), cliffs and water that only the Gyrocopter crosses, fixed Fuel Can places, and its Token stock. The author offered a drawing of Map 01 in conversation on 2026-10-01; it goes under `design/source/` when it arrives and is then the layout's input for story 007. The source itself gives no drawing of Map 01 and no Map size.
+- Map 01 with Base A (Orange, Player 1) and Base B (Teal, Player 2), cliffs and water that only the Gyrocopter crosses, fixed Fuel Can places, and its Token stock. The author offered a drawing of Map 01 in conversation on 2026-10-01 and supplied two on 2026-10-02, under `design/source/`: `map01_blueprint.png` ("BLOCKOUT v0.1", 300 × 100 m, mirror symmetry at x = 150: the layout of record) and `map01_colored.png` (the illustrated version: the look). They are the layout's input for story 007, whose open questions list what they leave open; the rules they imply (fords that slow ground Units, the sea as the Map's edge, Base walls and cover) are recorded here once settled. The rules source itself gives no drawing of Map 01 and no Map size.
 - Four Units with the triangle and the multiplier matrix; the Unit chosen at every spawn from the Token stock; the Garage.
 - Fuel and Fuel Cans; the Flag.
 - The win by delivery; the loss by losing the last Motorbike; the Round-over screen with restart (built in story 004).
@@ -122,5 +122,5 @@ The source's v0.1 board is not in the export; this list is the prose plus our de
 - Token counts per Map (the source's example in Tokens and the Garage).
 - Fuel: capacity per Unit, burn rate per Unit (the Gyrocopter highest), the starting tank at spawn; Fuel Can amount, places and respawn time.
 - The respawn delay (in Destruction and respawn).
-- Map size.
+- Map size (Map 01 is drawn at 300 × 100 m).
 - After v0.1: the camera exports and the control mode of the test.
