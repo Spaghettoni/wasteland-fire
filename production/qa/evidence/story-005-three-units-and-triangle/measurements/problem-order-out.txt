@@ -1,0 +1,6 @@
+ORDER 1 no exports      -> match_controller is not assigned
+ORDER 2 controller only -> choice_input is not assigned
+ORDER 3 + input         -> player_index is not set (store 0 for Player 1 or 1 for Player 2 in the scene)
+ORDER 4 + index         -> action_prefix is empty (store the Player's prefix, p1_ or p2_, in the scene)
+ORDER 5 + prefix, title cleared -> title_text is not set (store the title in the scene)
+ORDER 6 texts ok, no nodes (not in the tree) -> the scene lacks the title, the slot row, the slot template or the hint label

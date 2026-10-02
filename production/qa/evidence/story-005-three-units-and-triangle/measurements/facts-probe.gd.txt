@@ -1,0 +1,205 @@
+extends SceneTree
+## Story 005 engine-facts probe (scratch only; reads the project it is run against, writes nothing in it).
+## Re-measures on the final code the engine facts that code comments cite as "the Story 005 evidence doc keeps
+## the run": (1) a collider-changing spawn on the first tick after a teleport is thrown, (2) the physics space lags one
+## tick behind a spawn, (3) a mask change while overlapping a cliff pushes a body under the floor, (4) a shot
+## tested by one ray per tick does not tunnel at 60 m/s and 60 Hz.
+
+const SPLIT_PATH: String = "res://src/gameplay/split_screen/split_screen.tscn"
+const SHOT_PATH: String = "res://src/gameplay/combat/shot.tscn"
+const SOUTH: Basis = Basis(Vector3.UP, PI)
+
+var _failed: int = 0
+
+
+func _initialize() -> void:
+	Input.use_accumulated_input = false
+	_start()
+
+
+func _start() -> void:
+	await process_frame
+	await _main()
+
+
+func _p(text: String) -> void:
+	print("FACT " + text)
+
+
+func _check(check_name: String, ok: bool, detail: String) -> void:
+	if not ok:
+		_failed += 1
+	print("FACT CHECK %s %s %s" % [check_name, "PASS" if ok else "FAIL", detail])
+
+
+func _v(v: Vector3) -> String:
+	return "(%.3f, %.3f, %.3f)" % [v.x, v.y, v.z]
+
+
+func _ticks(count: int) -> void:
+	for _i: int in count:
+		await physics_frame
+
+
+func _make_split() -> SplitScreen:
+	var split: SplitScreen = (load(SPLIT_PATH) as PackedScene).instantiate() as SplitScreen
+	root.add_child(split)
+	return split
+
+
+func _drop(split: SplitScreen) -> void:
+	split.queue_free()
+	await _ticks(3)
+
+
+func _main() -> void:
+	await _throw(1)
+	await _throw(2)
+	await _throw(3)
+	await _lag()
+	await _mask_swap()
+	await _tunnel()
+	print("FACT DONE failed=%d" % _failed)
+	quit(1 if _failed > 0 else 0)
+
+
+## (1) Truck asked for (0, 0, -2) facing south and Buggy asked for (0, 0, 10) in the same tick, `wait` physics
+## ticks after the scene was added (the bench teleport of begin() happened inside add_child).
+func _throw(wait: int) -> void:
+	var split: SplitScreen = _make_split()
+	var u1: Unit = split.player_1_unit
+	var u2: Unit = split.player_2_unit
+	var rules: MatchRules = split.match_controller.rules
+	await _ticks(wait)
+	u1.spawn(Transform3D(Basis.IDENTITY, Vector3(0, 0, 10)), rules.unit_types[1])
+	u2.spawn(Transform3D(SOUTH, Vector3(0, 0, -2)), rules.unit_types[2])
+	var want: Vector3 = Vector3(0, 0, -2)
+	var worst: float = 0.0
+	var track: PackedStringArray = []
+	for i: int in 5:
+		await physics_frame
+		worst = maxf(worst, u2.global_position.distance_to(want))
+		track.append("t%d %s v=%s" % [i + 1, _v(u2.global_position), _v(u2.get_real_velocity())])
+	_p("throw: spawn(Truck) %d tick(s) after the scene was added: asked %s, farthest it was from that pose %.3f m | %s" % [
+			wait, _v(want), worst, " | ".join(track)])
+	_check("throw_wait_%d" % wait, (worst > 5.0) == (wait == 1),
+			"%s: %.3f m from the asked pose (thrown when waiting 1 tick, lands when waiting 2 or 3)" % ["thrown" if worst > 5.0 else "lands", worst])
+	await _drop(split)
+
+
+func _found(unit: Unit, at: Vector3) -> bool:
+	var params: PhysicsPointQueryParameters3D = PhysicsPointQueryParameters3D.new()
+	params.position = at + Vector3.UP * 0.5
+	params.collision_mask = 0xFFFFF
+	params.collide_with_bodies = true
+	for hit: Dictionary in root.get_world_3d().direct_space_state.intersect_point(params, 8):
+		if hit["rid"] == unit.get_rid():
+			return true
+	return false
+
+
+## (2) A settled Buggy at A is spawned at B: which pose does a point query find it at, on the spawn tick and the next two?
+func _lag() -> void:
+	var split: SplitScreen = _make_split()
+	var u1: Unit = split.player_1_unit
+	var rules: MatchRules = split.match_controller.rules
+	await _ticks(5)
+	var a: Vector3 = Vector3(0, 0, 10)
+	var b: Vector3 = Vector3(14, 0, 10)
+	u1.spawn(Transform3D(Basis.IDENTITY, a), rules.unit_types[1])
+	await _ticks(8)
+	var before: String = "settled at A: found at A=%s, at B=%s" % [_found(u1, a), _found(u1, b)]
+	u1.spawn(Transform3D(Basis.IDENTITY, b), rules.unit_types[1])
+	var rows: PackedStringArray = ["same tick: A=%s B=%s" % [_found(u1, a), _found(u1, b)]]
+	var seen: Array[bool] = []
+	for i: int in 3:
+		await physics_frame
+		rows.append("+%d: A=%s B=%s" % [i + 1, _found(u1, a), _found(u1, b)])
+		seen.append(_found(u1, b))
+	_p("lag: " + before + " | spawn at B (same type, same collider) -> " + " | ".join(rows))
+	_check("lag_unit_reaches_B", seen[2], "found at B by the second tick after the spawn: %s" % seen[2])
+	await _drop(split)
+
+
+## (3) A Gyrocopter standing in the cliff block is given the ground layer and mask where it stands, against the order
+## Unit.spawn() uses (layers off, teleport, layers back).
+func _mask_swap() -> void:
+	var split: SplitScreen = _make_split()
+	var u1: Unit = split.player_1_unit
+	var rules: MatchRules = split.match_controller.rules
+	await _ticks(5)
+	var in_cliff: Vector3 = Vector3(-30, 0, 0)
+	u1.spawn(Transform3D(Basis.IDENTITY, in_cliff), rules.unit_types[3])
+	await _ticks(10)
+	var y_before: float = u1.global_position.y
+	u1.collision_layer = rules.unit_types[2].collision_layer
+	u1.collision_mask = rules.unit_types[2].collision_mask
+	var ys: PackedStringArray = []
+	var y_min: float = 0.0
+	for i: int in 60:
+		await physics_frame
+		y_min = minf(y_min, u1.global_position.y)
+		if i == 0 or i == 9 or i == 29 or i == 59:
+			ys.append("t%d y=%.3f" % [i + 1, u1.global_position.y])
+	_p("mask swap in the cliff: Gyrocopter y=%.3f in the block (x=-30), then the ground layer and mask written where it stands -> %s (lowest y %.3f)" % [
+			y_before, " | ".join(ys), y_min])
+	_check("mask_swap_pushes_under_floor", y_min < -0.3, "lowest y %.3f (the floor is y=0)" % y_min)
+	# The order Unit.spawn() uses: layers off, teleport clear of the block, layers back.
+	u1.spawn(Transform3D(Basis.IDENTITY, in_cliff), rules.unit_types[3])
+	await _ticks(10)
+	u1.leave_play()
+	await _ticks(2)
+	u1.spawn(Transform3D(Basis.IDENTITY, Vector3(-20, 0, 0)), rules.unit_types[2])
+	var y_ok: float = 0.0
+	for i: int in 60:
+		await physics_frame
+		y_ok = minf(y_ok, u1.global_position.y)
+	_p("mask swap in the spawn order: Gyrocopter in the block, leave_play(), spawn(Truck) at x=-20 -> lowest y %.3f, now %s" % [y_ok, _v(u1.global_position)])
+	_check("spawn_order_is_clean", y_ok > -0.05, "lowest y %.3f" % y_ok)
+	await _drop(split)
+
+
+## (4) 100 real Shots at the west wall and 100 at a parked Truck, each launched in its own tick with its own
+## fractional start so the 1 m per tick samples fall on different phases of the face.
+func _tunnel() -> void:
+	var split: SplitScreen = _make_split()
+	var mc: MatchController = split.match_controller
+	var rules: MatchRules = mc.rules
+	var u1: Unit = split.player_1_unit
+	var u2: Unit = split.player_2_unit
+	await _ticks(6)
+	mc.choose(0, 0)
+	mc.choose(1, 2)
+	await _ticks(10)
+	var truck_hp_events: Array[int] = [0]
+	u2.hit_points_changed.connect(func(_hp: float, _max: float) -> void: truck_hp_events[0] += 1)
+	var face_z: float = u2.global_position.z + 2.2
+	var wall_errors: Array[float] = []
+	var truck_errors: Array[float] = []
+	var scene: PackedScene = load(SHOT_PATH) as PackedScene
+	for i: int in 200:
+		var frac: float = float(i % 100) / 100.0
+		var shot: Shot = scene.instantiate() as Shot
+		u1.get_parent().add_child(shot)
+		if i < 100:
+			var origin: Vector3 = Vector3(-20.0 - frac, 0.5, 3.0 + 0.2 * float(i % 7))
+			shot.launch(u1, origin, Vector3.LEFT, 0.0, 60.0, 60.0, rules.damage_matrix, rules.shot_collision_mask)
+			shot.tree_exiting.connect(func() -> void: wall_errors.append(shot.global_position.x + 40.0))
+		else:
+			var origin2: Vector3 = Vector3(-1.0 + 0.02 * float(i % 100), 0.5, face_z + 16.0 + frac)
+			shot.launch(u1, origin2, Vector3.FORWARD, 0.001, 60.0, 60.0, rules.damage_matrix, rules.shot_collision_mask)
+			shot.tree_exiting.connect(func() -> void: truck_errors.append(shot.global_position.z - face_z))
+		await physics_frame
+	await _ticks(70)
+	var wall_worst: float = 0.0
+	for e: float in wall_errors:
+		wall_worst = maxf(wall_worst, absf(e))
+	var truck_worst: float = 0.0
+	for e2: float in truck_errors:
+		truck_worst = maxf(truck_worst, absf(e2))
+	_p("tunnel: 200 shots at 60 m/s (1 m per tick): %d ended at the west wall (worst distance from its inner face x=-40: %.4f m), %d ended at the Truck's front face z=%.2f (worst %.4f m), %d hit_points_changed events on the Truck" % [
+			wall_errors.size(), wall_worst, truck_errors.size(), face_z, truck_worst, truck_hp_events[0]])
+	_check("tunnel_wall", wall_errors.size() == 100 and wall_worst < 0.002, "100 expected, %d ended, worst %.4f m" % [wall_errors.size(), wall_worst])
+	_check("tunnel_unit", truck_errors.size() == 100 and truck_worst < 0.002 and truck_hp_events[0] == 100,
+			"100 expected, %d ended, worst %.4f m, %d hits registered" % [truck_errors.size(), truck_worst, truck_hp_events[0]])
+	await _drop(split)

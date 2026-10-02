@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="UnitStats" format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/units/unit_stats.gd" id="1_us"]
+[ext_resource type="PackedScene" path="res://src/gameplay/units/models/truck_model.tscn" id="2_model"]
+
+[resource]
+script = ExtResource("1_us")
+max_speed = 10.9
+acceleration = 9.0
+braking = 22.0
+coast_deceleration = 6.0
+reverse_max_speed = 5.0
+turn_rate = 0.89
+max_hit_points = 220.0
+ground_snap_length = 0.1
+wall_min_slide_angle_degrees = 15.0
+blocked_speed = 0.5
+type_id = &"truck"
+display_name = "Truck"
+damage = 25.0
+fire_interval_seconds = 0.8
+weapon_range = 40.0
+shot_speed = 60.0
+muzzle_forward = 2.8
+model = ExtResource("2_model")
+collision_size = Vector3(2.4, 1.6, 4.4)
+collision_center = Vector3(0, 0.8, 0)
+collision_layer = 2
+collision_mask = 35
+spot_mask = 18

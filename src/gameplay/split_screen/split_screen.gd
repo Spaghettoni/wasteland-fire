@@ -1,8 +1,8 @@
 class_name SplitScreen
 extends Control
-## The launch scene: two side-by-side views of one shared 3D world, one Motorbike, one chase camera
-## and one keyboard layout per Player, both Players driving at once, each starting the Round at
-## their own Base and respawning there when destroyed.
+## The launch scene: two side-by-side views of one shared 3D world, one Unit (the type its Player
+## chooses), one chase camera and one keyboard layout per Player, both Players driving at once, each
+## starting the Round at their own Base and respawning there when destroyed.
 ##
 ## Implements: design/game-brief.md build-order item 2 (Split screen for two: two side-by-side
 ## viewports, one Unit and one fixed keyboard layout per Player, both driving at once) and
@@ -22,12 +22,15 @@ extends Control
 ## same reason: they are how the pieces are laid out and seen on the screen, which is this scene's
 ## business, and none of them depends on the Round. The layout of the scene:
 ##   SplitScreen (this Control, filling the window)
-##     World (Node3D): the field with its two Bases, both Units, both PlayerDriveInputs and both
-##       PlayerMatchInputs
+##     World (Node3D): the field with its two Bases and the terrain stand-ins, both Units, both
+##       PlayerDriveInputs, both PlayerMatchInputs, both Weapons with their PlayerFireInputs and
+##       both PlayerChoiceInputs
 ##     Views (HBoxContainer): a SubViewportContainer per Player, each holding a SubViewport that
-##       holds that Player's ChaseCamera
+##       holds that Player's ChaseCamera, respawn countdown, HUD, Unit choice panel and Round-over
+##       screen
 ##     Divider (ColorRect): a thin line drawn over the seam between the two views
-##     MatchController (Node): who is alive, who waits to respawn and the Round's canisters
+##     MatchController (Node): who is alive, who is choosing or waiting to respawn and the Round's
+##       canisters
 ##     RoundRestartInput (Node): the restart key of a Round that is over; the last child
 ##
 ## One world, two views (AC-1, AC-2). World sits in the window's own World3D, outside both
@@ -66,6 +69,15 @@ extends Control
 ## Performance (AC-7): both views render the shared world, so the frame and draw-call budgets in
 ## .claude/docs/technical-preferences.md are for the two together. Nothing here draws or updates
 ## per frame.
+##
+## Shots (Story 005). A Weapon adds its Shots under World and they belong to the node group
+## SHOT_GROUP (shot.tscn stores it). A Round that ends pauses the tree with every shot in flight
+## frozen, and restart() unpauses it, so this scene frees the whole group when the MatchController
+## emits round_started: no shot of the Round before flies on into the next one and hits a Unit
+## just chosen on its Base.
+
+## The node group every Shot in flight belongs to; _free_shots() frees it at every Round start.
+const SHOT_GROUP: StringName = &"shots"
 
 ## The field both Units drive on. It carries the two Bases (player_1_base and player_2_base) where
 ## each Player's Unit starts the Round and respawns. It sits under World, so it is in the shared
@@ -101,6 +113,7 @@ func _ready() -> void:
 	var bases: Array[Base] = [field.player_1_base, field.player_2_base]
 	var cameras: Array[ChaseCamera] = [player_1_camera, player_2_camera]
 	match_controller.begin(units, bases, cameras)
+	match_controller.round_started.connect(_free_shots)
 
 
 ## The name of the first required reference that is not assigned, or an empty string when all
@@ -123,3 +136,12 @@ func _first_unassigned() -> String:
 	if match_controller == null:
 		return "match_controller"
 	return ""
+
+
+## Frees every Shot still in flight (the SHOT_GROUP nodes) when a Round starts or restarts, so the
+## Round-over pause cannot carry a shot into the next Round. Each shot stops its tick first, so a
+## shot queued to be freed cannot still hit something on the tick of the restart.
+func _free_shots() -> void:
+	for shot: Node in get_tree().get_nodes_in_group(SHOT_GROUP):
+		shot.set_physics_process(false)
+		shot.queue_free()

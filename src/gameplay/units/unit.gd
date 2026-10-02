@@ -1,24 +1,34 @@
 class_name Unit
 extends CharacterBody3D
-## An arcade, kinematic body: what a Player drives (the Motorbike now, the Buggy later).
+## An arcade, kinematic body: what a Player drives. One body per Player, which takes the type the
+## Player chose (the Motorbike, the Buggy, the Truck or the Gyrocopter) from a UnitStats at each
+## spawn: feel values, controller settings, hit points, collider, collision layers and the greybox
+## model (Story 005).
 ##
-## Unit is the ground-vehicle model (Motorbike, Buggy): _ready() refuses to drive without
-## ground_snap_length, and gravity applies off the floor. The Gyrocopter (Story 005) needs its own
-## movement model behind the same set_drive_input() / reset_motion() / current_speed surface;
-## PlayerDriveInput.unit is typed Unit, so Story 005 decides between a shared base class and a
-## subclass. Nothing here pre-builds either.
+## Unit is the one body for every type, the Gyrocopter included (decided 2026-10-01): it drives on
+## the floor in GROUNDED mode like the ground types, with the movement model below, and its model
+## draws it hovering. What sets it apart is data alone, the collision layer and mask in its
+## UnitStats: it crosses the cliffs_water layer that stops the ground types and passes through them
+## (and they through it), so nothing here names a type or branches on can_fly. The separate movement
+## model and the subclass this doc once left open to Story 005 were not needed.
 ##
-## Implements: design/game-brief.md build-order item 1 (Driving toy) and MVP feature 3 (Bases,
-## destruction and respawn); production/epics/wasteland-fire/story-001-driving-toy.md AC-2
-## (throttle, steer, coast to a stop), AC-3 (kinematic CharacterBody3D that never tips, bounces
-## or sticks on the flat plane) and AC-4 (every feel value comes from a UnitStats resource);
+## Implements: design/game-brief.md build-order item 1 (Driving toy), MVP feature 3 (Bases,
+## destruction and respawn) and MVP item 5 (the four Units);
+## production/epics/wasteland-fire/story-001-driving-toy.md AC-2 (throttle, steer, coast to a
+## stop), AC-3 (kinematic CharacterBody3D that never tips, bounces or sticks on the flat plane) and
+## AC-4 (every feel value comes from a UnitStats resource);
 ## production/epics/wasteland-fire/story-003-bases-destruction-respawn.md AC-2 (hit points from
 ## the data, destroyed at zero), AC-3 (what a respawn needs from the Unit: spawn()) and AC-5
 ## (Self-destruct: destroy()); production/epics/wasteland-fire/story-004-water-canister-and-win.md
 ## AC-2 (whether this Unit may carry the Water Canister is data, can_carry and carry_offset from
 ## UnitStats, never a type check) and AC-7 (hit_points_changed, the hit points the HUD shows);
-## design/rules.md "Destruction, respawn and unit swap" and "Handling the Water Canister".
-## Vocabulary: CONTEXT.md.
+## production/epics/wasteland-fire/story-005-three-units-and-triangle.md AC-1 (the four types are
+## four UnitStats that spawn() applies to the same body: stats, collider, layers and silhouette
+## from the data), AC-5 (the Gyrocopter crosses cliffs and water and passes through ground Units
+## through the layer and mask in its data, and spawn spots are checked per type) and AC-8 (the
+## silhouette is the type's model, painted with team_material, in both views; the hit points and
+## their maximum come from the chosen type's data); design/rules.md "Units", "Destruction and
+## respawn" and "Resources". Vocabulary: CONTEXT.md.
 ##
 ## Driven by command, not by input: the Unit never reads a key or an Input action and keeps no
 ## singleton state. Whoever drives it (PlayerDriveInput for a Player, later a bot or a test)
@@ -48,13 +58,13 @@ extends CharacterBody3D
 ##
 ## Ground handling: the body stays in the default GROUNDED motion mode with every other
 ## CharacterBody3D setting at its default except floor_snap_length and wall_min_slide_angle,
-## both copied from the stats' Controller group in _ready(). Nothing here writes the height or
-## the pitch and roll by hand, and there is no unstick code: velocity along the facing direction
-## slides along walls and recovers from corners. A hit within wall_min_slide_angle of head-on
-## stops the Unit dead (the stats' wall_min_slide_angle_degrees; on Godot 4.7.2 with Jolt this
-## applies in GROUNDED mode, contrary to the class reference, which says it only affects
-## FLOATING: measured 2026-09-30, see UnitStats.wall_min_slide_angle_degrees). Walls must be at
-## least 1 m thick.
+## both copied from the stats' Controller group in _ready() and again by spawn() for a new type.
+## Nothing here writes the height or the pitch and roll by hand, and there is no unstick code:
+## velocity along the facing direction slides along walls and recovers from corners. A hit within
+## wall_min_slide_angle of head-on stops the Unit dead (the stats' wall_min_slide_angle_degrees;
+## on Godot 4.7.2 with Jolt this applies in GROUNDED mode, contrary to the class reference, which
+## says it only affects FLOATING: measured 2026-09-30, see
+## UnitStats.wall_min_slide_angle_degrees). Walls must be at least 1 m thick.
 ##
 ## What the Story 001 evidence harness verified under Jolt: walls and corners on the flat greybox
 ## field only. Slopes were NOT covered (the field is flat; slopes arrive with the Map in Story
@@ -71,14 +81,15 @@ extends CharacterBody3D
 ## Hit points, destruction and respawn: the Unit spawns with stats.max_hit_points. apply_damage()
 ## subtracts from them and destroy() ends the Unit at once (Self-destruct); the hit that takes
 ## them to zero takes the same path. A destroyed Unit leaves play: hidden, no collision with
-## anything (layer and mask zeroed, put back from the values saved in _ready()), no physics tick,
-## motion and held drive command zeroed. It stays in the tree, so its camera and its owner keep
-## their references, and spawn() puts the same body back anywhere: hit points refilled, collision
-## restored, motion reset. The Unit decides nothing beyond that: it emits `destroyed` once and
-## calls nobody, so what a destruction means and when the Unit respawns is the Round's business
-## (MatchController). A Unit is alive with full hit points at _ready(), so the Story 001 sandbox
-## needs no spawn(). One that refused to drive in _ready() is never alive: destroy() and
-## apply_damage() ignore it and spawn() leaves it alone.
+## anything (layer and mask zeroed, put back from the play values: the scene's own, saved in
+## _ready(), or the type's, see Unit types below), no physics tick, motion and held drive command
+## zeroed. It stays in the tree, so its camera and its owner keep their references, and spawn()
+## puts the same body back anywhere: hit points refilled, collision restored, motion reset. The
+## Unit decides nothing beyond that: it emits `destroyed` once and calls nobody, so what a
+## destruction means and when the Unit respawns is the Round's business (MatchController). A Unit
+## is alive with full hit points at _ready(), so the Story 001 sandbox needs no spawn(). One that
+## refused to drive in _ready() is never alive: destroy() and apply_damage() ignore it and spawn()
+## leaves it alone.
 ##
 ## Carrying (Story 004): whether this Unit may pick up the Water Canister, and where it rides, is
 ## the Unit type's data (UnitStats.can_carry and carry_offset: true and a tail mount for the
@@ -87,8 +98,9 @@ extends CharacterBody3D
 ## Round rules (MatchController) read the two values, reparent the canister under the Unit at
 ## carry_offset and drop it where the Unit is destroyed. The Unit never calls the canister, the
 ## MatchController or another Unit, and does not know it is a Carrier. Hit points are shown, not
-## polled: hit_points_changed fires once per change (apply_damage(), destroy(), spawn()) with the
-## value and the maximum, so a HUD can listen without reading the Unit every frame (AC-7).
+## polled: hit_points_changed fires once per change (apply_damage(), destroy(), leave_play(),
+## spawn()) with the value and the maximum, so a HUD can listen without reading the Unit every
+## frame (AC-7).
 ##
 ## Leaving play. With collision layer and mask both zero the body neither collides nor is collided
 ## with, so the other Unit drives through a wreck and a Unit put down on one is not pushed, and
@@ -110,29 +122,74 @@ extends CharacterBody3D
 ## spare spawn point of the Base on the tick the spawn point is found taken, or, while every spot is
 ## taken, no spot at all until one frees. Put down on a free spot, the Unit lands on the floor, on
 ## the spot it was given.
+##
+## Unit types (Story 005 AC-1, AC-8). The scene (motorbike.tscn) authors one type: its stats, its
+## box collider, its collision layer and mask and its Body and Nose meshes, and _ready() applies
+## nothing beyond that, so the driving toy and every Unit nobody spawns keep the scene as it is.
+## spawn(at, new_stats) with a UnitStats turns the same node into that type before it puts it in
+## play: stats, floor_snap_length and wall_min_slide_angle, the play collision layer and mask (the
+## type's where they are not zero, else the scene's own, saved in _ready()), a new BoxShape3D of
+## collision_size on the first CollisionShape3D child moved to collision_center (a new shape, never
+## a write to the scene's, which is one sub-resource shared by every instance), and the model: the
+## scene's own MeshInstance3D children are hidden and left in the tree, the previous Model child is
+## removed and freed, the type's model scene is instanced as the last child named Model, and every
+## MeshInstance3D under it in the "team_colour" group gets team_material as material_override (the
+## Body, and the Truck's Cab). One node per Player, retyped in place, is the Story 004 hand-off:
+## the HUD, the chase camera, both input nodes, the Round and a carried canister all hold the node.
+## The physics space lags one tick behind a spawn: the swapped shape answers queries at once, the
+## teleport and the restored layer and mask on the next tick (measured on 4.7.2; the Story 005
+## evidence doc keeps the run), which is why the Round stamps a settle tick and never tests a spot
+## on the tick another Unit spawns.
+##
+## Benching: leave_play() takes a live Unit out of play without a destruction (the Round uses it at
+## the start of a Round and at a restart, while the Player chooses the next type): collision layer
+## and mask zeroed first, then hidden, physics tick off, motion zeroed, hit points zero,
+## hit_points_changed once with zero and never `destroyed`. The order matters: a body whose mask
+## changes while it overlaps a cliff is pushed under the floor, one benched or teleported first is
+## not (measured; the Story 005 evidence doc keeps the run).
+##
+## Spot checks across types (Story 005 AC-5): is_spot_taken(at, for_stats) tests the given type's
+## box and spot_mask (the units and gyrocopters layers in the data), so a Truck is checked as a
+## Truck before it is spawned on a Motorbike's body, and a Gyrocopter parked on the spawn point is
+## found although Units never collide with it.
 
 ## Emitted once, when a live Unit is destroyed: its hit points reached zero, or destroy() was
 ## called. The Unit has already left play when it fires (is_alive is false, hit_points is zero),
 ## and nothing follows the emit, so a handler may call spawn() on the Unit at once. It is emitted
 ## in the context of whoever called destroy() or apply_damage(): a tick, never a physics signal
-## handler (see apply_damage()).
+## handler (see apply_damage()). Never emitted by leave_play().
 signal destroyed
 
 ## Emitted once per change of hit_points, with the new value and stats.max_hit_points: after a hit
 ## the Unit survives (apply_damage()), with zero when it is destroyed (the lethal hit and
 ## destroy() share one path and emit once, after the Unit left play and right before
-## `destroyed`), and with the refill when it spawns (spawn()). Never for an ignored call. It is
-## for display (Story 004 AC-7, the HUD): a handler shows the numbers and does not act on the Unit.
+## `destroyed`), with zero when it is benched (leave_play()), and with the refill when it spawns
+## (spawn(), with the maximum of the type it spawned as). Never for an ignored call. It is for
+## display (Story 004 AC-7, the HUD): a handler shows the numbers and does not act on the Unit.
 signal hit_points_changed(hit_points: float, max_hit_points: float)
 
 ## Largest magnitude of a normalised drive axis (throttle or steer): commands are held to -1..1.
 const AXIS_LIMIT: float = 1.0
 
+## The node group a model scene puts its team-coloured meshes in (the Body; the Truck's Cab too):
+## spawn() paints them with team_material. A scene convention, not a gameplay value.
+const TEAM_COLOUR_GROUP: StringName = &"team_colour"
+
+## Name of the child spawn() instances from UnitStats.model.
+const MODEL_NODE_NAME: StringName = &"Model"
+
 ## Feel values, controller settings and hit points for this Unit type (a UnitStats .tres, for
 ## example motorbike_stats.tres). Required: the Unit will not drive without it, or with max_speed,
 ## ground_snap_length or max_hit_points not above zero. Assign it before the Unit enters the
-## tree. The resource is shared, so never write to it at runtime.
+## tree; spawn() replaces it with the chosen type's (Story 005). The resource is shared, so never
+## write to it at runtime.
 @export var stats: UnitStats
+
+## The Player's body colour (Story 005 AC-8): split_screen.tscn stores the Player's body material
+## here, the same one the scene's own Body shows through its material_override. spawn() paints
+## every mesh of the type's model that is in the "team_colour" group with it as material_override;
+## null leaves the model its own neutral colour.
+@export var team_material: Material
 
 ## The drive speed along the facing direction in metres per second: positive forward, negative
 ## in reverse. Read-only: assigning to it pushes an error and changes nothing; it moves only
@@ -148,16 +205,16 @@ var current_speed: float:
 
 ## Hit points left: stats.max_hit_points when the Unit spawns, down to zero, which destroys it.
 ## Read-only: assigning to it pushes an error and changes nothing; it moves only through
-## apply_damage(), destroy() and spawn().
+## apply_damage(), destroy(), leave_play() and spawn().
 var hit_points: float:
 	get:
 		return _hit_points
 	set(_value):
 		push_error("Unit '%s': hit_points is read-only. Change it with apply_damage(), destroy() or spawn()." % name)
 
-## True while the Unit is in play: from _ready() on, until it is destroyed, and again after
-## spawn(). False for a destroyed Unit and for one that refused to drive in _ready(). Read-only
-## like hit_points: assigning to it pushes an error and changes nothing.
+## True while the Unit is in play: from _ready() on, until it is destroyed or benched, and again
+## after spawn(). False for a destroyed or benched Unit and for one that refused to drive in
+## _ready(). Read-only like hit_points: assigning to it pushes an error and changes nothing.
 var is_alive: bool:
 	get:
 		return _is_alive
@@ -184,6 +241,16 @@ var carry_offset: Vector3:
 	set(_value):
 		push_error("Unit '%s': carry_offset is read-only. It is the Unit type's data: UnitStats.carry_offset." % name)
 
+## Which type this Unit is: stats.type_id, the Unit type's data (Story 005; &"motorbike", &"buggy",
+## &"truck" or &"gyrocopter" in the shipped data), for the damage matrix and for display. Empty
+## while the Unit refused to drive in _ready(). Read-only: assigning to it pushes an error and
+## changes nothing; the type changes through spawn() with a UnitStats.
+var type_id: StringName:
+	get:
+		return stats.type_id if _can_drive else &""
+	set(_value):
+		push_error("Unit '%s': type_id is read-only. It is the Unit type's data: UnitStats.type_id." % name)
+
 var _speed: float = 0.0
 var _throttle: float = 0.0
 var _steer: float = 0.0
@@ -195,10 +262,18 @@ var _is_alive: bool = false
 ## True once _ready() accepted the stats. A Unit that refused to drive never becomes alive, and
 ## spawn() never wakes it.
 var _can_drive: bool = false
-## The collision layer and mask as authored, saved in _ready() and put back by spawn(): destroy()
-## zeroes both to take the Unit out of the physics world.
+## The collision layer and mask the Unit plays with, put back by spawn(): the scene's own, saved
+## in _ready(), until spawn() applies a type whose collision_layer or collision_mask is not zero.
+## destroy() and leave_play() zero the body's to take it out of the physics world.
 var _play_collision_layer: int = 0
 var _play_collision_mask: int = 0
+## The collision layer and mask the scene authored, saved in _ready(): the play values fall back
+## to them for a type whose collision_layer or collision_mask is zero.
+var _scene_collision_layer: int = 0
+var _scene_collision_mask: int = 0
+## The type's model instanced by spawn() (the child named Model), or null while the scene's own
+## meshes show.
+var _model: Node3D
 
 
 func _ready() -> void:
@@ -212,6 +287,8 @@ func _ready() -> void:
 	wall_min_slide_angle = deg_to_rad(stats.wall_min_slide_angle_degrees)
 	_play_collision_layer = collision_layer
 	_play_collision_mask = collision_mask
+	_scene_collision_layer = collision_layer
+	_scene_collision_mask = collision_mask
 	_hit_points = stats.max_hit_points
 	_is_alive = true
 	_can_drive = true
@@ -256,12 +333,12 @@ func reset_motion() -> void:
 ## when none are left (Story 003 AC-2). A hit the Unit survives emits hit_points_changed once; the
 ## lethal hit emits it once from destroy(), with zero. Ignored when amount is zero, negative or NaN
 ## and when the Unit is not alive (nothing is emitted), so a destroyed Unit cannot be destroyed
-## twice. The debug-damage key calls it until weapons (Story 005) do. Call it from a physics tick
-## or from _process, never from an Area3D or body signal handler: the Round's handler of
-## `destroyed` reparents the canister a Carrier held (WaterCanister.drop_at()), and the physics
-## server refuses a reparent of a node holding an Area3D while it flushes those signals, so the
-## canister would stay a hidden child of the wreck. A projectile records its hit in body_entered
-## and applies it on its own tick.
+## twice. A Shot calls it from its own physics tick (see Shot), and the debug-damage key still does
+## while match_rules.debug_damage is above zero. Call it from a physics tick or from _process,
+## never from an Area3D or body signal handler: the Round's handler of `destroyed` reparents the
+## canister a Carrier held (WaterCanister.drop_at()), and the physics server refuses a reparent of
+## a node holding an Area3D while it flushes those signals, so the canister would stay a hidden
+## child of the wreck.
 func apply_damage(amount: float) -> void:
 	if not _is_alive or not (amount > 0.0):
 		return
@@ -290,20 +367,58 @@ func destroy() -> void:
 	destroyed.emit()
 
 
+## Takes a live Unit out of play without destroying it (Story 005: the Round benches both Units at
+## the start of a Round and at a restart, while each Player chooses the next type). Collision
+## layer and mask are zeroed first, then the Unit is hidden, its physics tick turned off, its
+## motion and held drive command zeroed and its hit points set to zero; hit_points_changed is
+## emitted once, with zero and the maximum, and `destroyed` never, so the Round sees no
+## destruction and no respawn wait starts. Does nothing when the Unit is not alive (benched,
+## destroyed or refused to drive). spawn() puts the Unit back. Call it from a tick or from a
+## _ready(), never from a physics signal handler (apply_damage()).
+func leave_play() -> void:
+	if not _is_alive:
+		return
+	_is_alive = false
+	_hit_points = 0.0
+	collision_layer = 0
+	collision_mask = 0
+	visible = false
+	set_physics_process(false)
+	reset_motion()
+	hit_points_changed.emit(_hit_points, stats.max_hit_points)
+
+
 ## Puts the Unit in play at the given transform: the first spawn of a Round and every respawn use
-## this one call (Story 003 AC-1, AC-3). The Unit must be in the tree. It sets global_transform
-## first and then calls reset_motion() (the teleport order), refills hit_points to
-## stats.max_hit_points, shows the Unit, puts its collision back and turns its physics tick on. It
-## works on a destroyed Unit and on one still alive (the first spawn), and emits hit_points_changed
-## once, with the refill, and nothing else. Call it inside a physics tick, in the same tick as
-## ChaseCamera.snap_to_target(): from _process the frame of the teleport still draws the Unit at
-## the wreck while the camera has already moved. A Unit that refused to drive in _ready() stays out
-## of play: this pushes an error and changes nothing, so it never wakes a Unit whose stats are
-## invalid.
-func spawn(at: Transform3D) -> void:
+## this one call (Story 003 AC-1, AC-3). The Unit must be in the tree. With new_stats it first
+## becomes that type (Story 005 AC-1, AC-8): a UnitStats whose first_problem() is not empty pushes
+## an error and changes nothing, else stats, floor_snap_length and wall_min_slide_angle, the play
+## collision layer and mask (the type's where not zero, else the scene's own), the collider (a new
+## BoxShape3D of collision_size at collision_center on the first CollisionShape3D child, unless
+## collision_size is zero) and the model (when model is not null: the scene's own meshes hidden,
+## the previous Model freed, the type's scene instanced as the last child named Model, its
+## "team_colour" meshes painted with team_material) are applied before the spawn proper. With
+## new_stats null (the default) the Unit keeps its type and this behaves exactly as before Story
+## 005. The spawn proper sets global_transform first and then calls reset_motion() (the teleport
+## order), refills hit_points to stats.max_hit_points, shows the Unit, puts the play collision
+## layer and mask back after the teleport (a mask that changes while the body overlaps a cliff
+## pushes it under the floor; the Story 005 evidence doc keeps the run) and turns its physics tick
+## on. It works on a destroyed Unit, on a benched one (leave_play()) and on one still alive, and
+## emits hit_points_changed once, with the refill and the new maximum, and nothing else. Call it
+## inside a physics tick, in the same tick as ChaseCamera.snap_to_target(): from _process the
+## frame of the teleport still draws the Unit at the wreck while the camera has already moved. A
+## Unit that refused to drive in _ready() stays out of play: this pushes an error and changes
+## nothing, so it never wakes a Unit whose stats are invalid.
+func spawn(at: Transform3D, new_stats: UnitStats = null) -> void:
 	if not _can_drive:
 		push_error("Unit '%s': spawn() ignored: the Unit refused to drive in _ready() (see that error), so it stays where it is and out of play." % name)
 		return
+	if new_stats != null:
+		var problem: String = new_stats.first_problem()
+		if not problem.is_empty():
+			push_error(("Unit '%s': spawn() ignored: the UnitStats given is unusable (%s), so the "
+					+ "Unit keeps its type, its place and its state.") % [name, problem])
+			return
+		_apply_type(new_stats)
 	global_transform = at
 	reset_motion()
 	_hit_points = stats.max_hit_points
@@ -315,23 +430,41 @@ func spawn(at: Transform3D) -> void:
 	hit_points_changed.emit(_hit_points, stats.max_hit_points)
 
 
-## True when another Unit stands where this one would overlap it if spawn(at) were called now: a
-## body on this Unit's own collision layer (the Units layer, saved in _ready()) overlaps this Unit's
-## collision shape placed at `at`. Only bodies count: not zones, not the map, and never this Unit
-## itself. MatchController asks it before every respawn, at the Base's spawn point and, when that is
-## taken, at each spare spawn point in turn, and puts the Unit only where it is false, because a
-## Unit put down inside another one is thrown through the floor or into the air (class doc). Call it
-## inside a physics tick (it queries the physics space). False for a Unit without a collision shape
-## or outside the tree.
-func is_spot_taken(at: Transform3D) -> bool:
+## True when another Unit stands where this one would overlap it if spawn(at, for_stats) were
+## called now: a body on the layers of the spot mask overlaps the collision box placed at `at`.
+## With for_stats null the box is this Unit's own collision shape and the mask its own play
+## collision layer, as before Story 005. With for_stats given (the type about to be spawned, Story
+## 005 AC-5) the box is that type's collision_size at collision_center and the mask its spot_mask
+## (the units and gyrocopters layers in the data: a Gyrocopter parked on the spawn point is found
+## although Units never collide with it); a zero collision_size falls back to this Unit's shape
+## and a zero spot_mask to its play layer, so a Truck is checked as a Truck before it is put down
+## on a Motorbike's body. Only bodies count: not zones, not the map, and never this Unit itself.
+## MatchController asks it before every spawn, at the Base's spawn point and, when that is taken,
+## at each spare spawn point in turn, and puts the Unit only where it is false, because a Unit put
+## down inside another one is thrown through the floor or into the air (class doc). Call it inside
+## a physics tick (it queries the physics space), and never on the tick another Unit spawned: the
+## space shows its teleport and its restored layer one tick later. False for a Unit without a
+## collision shape or outside the tree.
+func is_spot_taken(at: Transform3D, for_stats: UnitStats = null) -> bool:
 	var shape_node: CollisionShape3D = _find_shape_node()
 	if shape_node == null or shape_node.shape == null or not is_inside_tree():
 		return false
 	var query: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
 	var excluded: Array[RID] = [get_rid()]
-	query.shape = shape_node.shape
-	query.transform = at * (global_transform.affine_inverse() * shape_node.global_transform)
-	query.collision_mask = _play_collision_layer
+	var shape: Shape3D = shape_node.shape
+	var shape_offset: Transform3D = global_transform.affine_inverse() * shape_node.global_transform
+	var mask: int = _play_collision_layer
+	if for_stats != null:
+		if for_stats.collision_size != Vector3.ZERO:
+			var box: BoxShape3D = BoxShape3D.new()
+			box.size = for_stats.collision_size
+			shape = box
+			shape_offset = Transform3D(Basis.IDENTITY, for_stats.collision_center)
+		if for_stats.spot_mask != 0:
+			mask = for_stats.spot_mask
+	query.shape = shape
+	query.transform = at * shape_offset
+	query.collision_mask = mask
 	query.exclude = excluded
 	return not get_world_3d().direct_space_state.intersect_shape(query, 1).is_empty()
 
@@ -357,7 +490,74 @@ func _yaw_rate() -> float:
 	return _steer * stats.turn_rate * speed_fraction * signf(_speed)
 
 
-## The first CollisionShape3D child, or null: the shape is_spot_taken() moves to the spawn point.
+## Turns this body into the given type (Story 005 AC-1): the stats and the controller settings
+## _ready() copies for the scene's type, the play collision layer and mask (the type's where not
+## zero, else the scene's own), the collider (unless collision_size is zero) and the model (unless
+## model is null). It writes neither collision_layer nor collision_mask of the body itself (spawn()
+## applies the play values after the teleport) and emits nothing. The caller has checked
+## first_problem().
+func _apply_type(new_stats: UnitStats) -> void:
+	stats = new_stats
+	floor_snap_length = stats.ground_snap_length
+	wall_min_slide_angle = deg_to_rad(stats.wall_min_slide_angle_degrees)
+	_play_collision_layer = _scene_collision_layer
+	_play_collision_mask = _scene_collision_mask
+	if stats.collision_layer != 0:
+		_play_collision_layer = stats.collision_layer
+	if stats.collision_mask != 0:
+		_play_collision_mask = stats.collision_mask
+	if stats.collision_size != Vector3.ZERO:
+		var shape_node: CollisionShape3D = _find_shape_node()
+		if shape_node == null:
+			push_error("Unit '%s': no CollisionShape3D child to take the type's collider." % name)
+		else:
+			var box: BoxShape3D = BoxShape3D.new()
+			box.size = stats.collision_size
+			shape_node.shape = box
+			shape_node.position = stats.collision_center
+	if stats.model != null:
+		_swap_model(stats.model)
+
+
+## Replaces the visual with the type's model scene (Story 005 AC-1, AC-8): the scene's own
+## MeshInstance3D children are hidden and left in the tree, the previous Model child is removed
+## from the tree before it is freed (so its name is free at once), and the new one is instanced as
+## the LAST child, named Model, so the CollisionShape3D stays the first child (_find_shape_node()),
+## then painted with team_material. A scene whose root is not a Node3D is refused with an error.
+func _swap_model(model_scene: PackedScene) -> void:
+	var instance: Node = model_scene.instantiate()
+	if not (instance is Node3D):
+		push_error("Unit '%s': UnitStats.model '%s' is not a Node3D scene, so the visual stays." % [
+				name, model_scene.resource_path])
+		instance.free()
+		return
+	for child: Node in get_children():
+		if child is MeshInstance3D:
+			(child as MeshInstance3D).visible = false
+	if _model != null:
+		remove_child(_model)
+		_model.queue_free()
+		_model = null
+	_model = instance as Node3D
+	_model.name = MODEL_NODE_NAME
+	add_child(_model)
+	_paint_team_colour(_model)
+
+
+## Paints every MeshInstance3D under `node` that is in TEAM_COLOUR_GROUP with team_material as
+## material_override (the Body; the Truck's Cab), depth first. With team_material null the meshes
+## keep the model's own neutral colour.
+func _paint_team_colour(node: Node) -> void:
+	if team_material == null:
+		return
+	for child: Node in node.get_children():
+		if child is MeshInstance3D and child.is_in_group(TEAM_COLOUR_GROUP):
+			(child as MeshInstance3D).material_override = team_material
+		_paint_team_colour(child)
+
+
+## The first CollisionShape3D child, or null: the shape is_spot_taken() moves to the spawn point
+## and spawn() gives the type's collider.
 func _find_shape_node() -> CollisionShape3D:
 	for child: Node in get_children():
 		if child is CollisionShape3D:

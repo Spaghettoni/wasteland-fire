@@ -1,0 +1,48 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
+albedo_color = Color(0.74, 0.36, 0.16, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_body"]
+material = SubResource("StandardMaterial3D_body")
+size = Vector3(1.8, 0.6, 2.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nose"]
+albedo_color = Color(0.96, 0.92, 0.72, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_nose"]
+material = SubResource("StandardMaterial3D_nose")
+size = Vector3(1.8, 0.6, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_frame"]
+albedo_color = Color(0.25, 0.25, 0.27, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_upright"]
+material = SubResource("StandardMaterial3D_frame")
+size = Vector3(0.12, 0.45, 0.12)
+
+[sub_resource type="BoxMesh" id="BoxMesh_crossbar"]
+material = SubResource("StandardMaterial3D_frame")
+size = Vector3(1.62, 0.1, 0.12)
+
+[node name="Model" type="Node3D"]
+
+[node name="Body" type="MeshInstance3D" parent="." groups=["team_colour"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0.25)
+mesh = SubResource("BoxMesh_body")
+
+[node name="Nose" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, -1.25)
+mesh = SubResource("BoxMesh_nose")
+
+[node name="RollBarLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.75, 0.825, 0.3)
+mesh = SubResource("BoxMesh_upright")
+
+[node name="RollBarRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.75, 0.825, 0.3)
+mesh = SubResource("BoxMesh_upright")
+
+[node name="RollBarTop" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0.3)
+mesh = SubResource("BoxMesh_crossbar")

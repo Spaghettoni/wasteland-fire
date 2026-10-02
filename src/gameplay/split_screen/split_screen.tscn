@@ -15,6 +15,12 @@
 [ext_resource type="PackedScene" path="res://src/ui/hud/player_hud.tscn" id="13_hud"]
 [ext_resource type="PackedScene" path="res://src/ui/hud/round_over_screen.tscn" id="14_ros"]
 [ext_resource type="Script" path="res://src/gameplay/match/round_restart_input.gd" id="15_rri"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/terrain_stand_ins.tscn" id="16_terrain"]
+[ext_resource type="Script" path="res://src/gameplay/combat/weapon.gd" id="17_weapon"]
+[ext_resource type="PackedScene" path="res://src/gameplay/combat/shot.tscn" id="18_shot"]
+[ext_resource type="Script" path="res://src/gameplay/combat/player_fire_input.gd" id="19_pfi"]
+[ext_resource type="Script" path="res://src/gameplay/match/player_choice_input.gd" id="20_pci"]
+[ext_resource type="PackedScene" path="res://src/ui/hud/unit_choice.tscn" id="21_choice"]
 
 [node name="SplitScreen" type="Control" unique_id=9000001 node_paths=PackedStringArray("field", "player_1_unit", "player_2_unit", "player_1_camera", "player_2_camera", "match_controller")]
 layout_mode = 3
@@ -37,11 +43,15 @@ physics_interpolation_mode = 1
 [node name="GreyboxField" parent="World" unique_id=1102110747 instance=ExtResource("2_field")]
 unique_name_in_owner = true
 
+[node name="TerrainStandIns" parent="World" instance=ExtResource("16_terrain")]
+
 [node name="Player1Unit" parent="World" unique_id=1111111111 instance=ExtResource("3_bike")]
 unique_name_in_owner = true
+team_material = ExtResource("7_m1")
 
 [node name="Player2Unit" parent="World" unique_id=1222222222 instance=ExtResource("3_bike")]
 unique_name_in_owner = true
+team_material = ExtResource("8_m2")
 
 [node name="Player1DriveInput" type="Node" parent="World" unique_id=9000011 node_paths=PackedStringArray("unit")]
 script = ExtResource("4_pdi")
@@ -63,6 +73,44 @@ action_prefix = &"p1_"
 script = ExtResource("11_pmi")
 unit = NodePath("%Player2Unit")
 rules = ExtResource("10_rules")
+action_prefix = &"p2_"
+
+[node name="Player1Weapon" type="Node" parent="World" node_paths=PackedStringArray("unit")]
+unique_name_in_owner = true
+script = ExtResource("17_weapon")
+unit = NodePath("%Player1Unit")
+rules = ExtResource("10_rules")
+shot_scene = ExtResource("18_shot")
+
+[node name="Player2Weapon" type="Node" parent="World" node_paths=PackedStringArray("unit")]
+unique_name_in_owner = true
+script = ExtResource("17_weapon")
+unit = NodePath("%Player2Unit")
+rules = ExtResource("10_rules")
+shot_scene = ExtResource("18_shot")
+
+[node name="Player1FireInput" type="Node" parent="World" node_paths=PackedStringArray("weapon")]
+script = ExtResource("19_pfi")
+weapon = NodePath("%Player1Weapon")
+action_prefix = &"p1_"
+
+[node name="Player2FireInput" type="Node" parent="World" node_paths=PackedStringArray("weapon")]
+script = ExtResource("19_pfi")
+weapon = NodePath("%Player2Weapon")
+action_prefix = &"p2_"
+
+[node name="Player1ChoiceInput" type="Node" parent="World" node_paths=PackedStringArray("match_controller")]
+unique_name_in_owner = true
+script = ExtResource("20_pci")
+match_controller = NodePath("%MatchController")
+player_index = 0
+action_prefix = &"p1_"
+
+[node name="Player2ChoiceInput" type="Node" parent="World" node_paths=PackedStringArray("match_controller")]
+unique_name_in_owner = true
+script = ExtResource("20_pci")
+match_controller = NodePath("%MatchController")
+player_index = 1
 action_prefix = &"p2_"
 
 [node name="Body" parent="World/Player1Unit" index="1" unique_id=1812089259]
@@ -104,6 +152,12 @@ match_controller = NodePath("%MatchController")
 unit = NodePath("%Player1Unit")
 player_index = 0
 
+[node name="Player1UnitChoice" parent="Views/Player1View/SubViewport" node_paths=PackedStringArray("match_controller", "choice_input") instance=ExtResource("21_choice")]
+match_controller = NodePath("%MatchController")
+choice_input = NodePath("%Player1ChoiceInput")
+player_index = 0
+action_prefix = &"p1_"
+
 [node name="Player1RoundOver" parent="Views/Player1View/SubViewport" unique_id=9000061 node_paths=PackedStringArray("match_controller") instance=ExtResource("14_ros")]
 match_controller = NodePath("%MatchController")
 
@@ -130,6 +184,12 @@ player_index = 1
 match_controller = NodePath("%MatchController")
 unit = NodePath("%Player2Unit")
 player_index = 1
+
+[node name="Player2UnitChoice" parent="Views/Player2View/SubViewport" node_paths=PackedStringArray("match_controller", "choice_input") instance=ExtResource("21_choice")]
+match_controller = NodePath("%MatchController")
+choice_input = NodePath("%Player2ChoiceInput")
+player_index = 1
+action_prefix = &"p2_"
 
 [node name="Player2RoundOver" parent="Views/Player2View/SubViewport" unique_id=9000062 node_paths=PackedStringArray("match_controller") instance=ExtResource("14_ros")]
 match_controller = NodePath("%MatchController")

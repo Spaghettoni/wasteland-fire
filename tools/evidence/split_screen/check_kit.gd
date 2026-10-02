@@ -24,6 +24,19 @@ const KEYS_DESTRUCT_1: Array[Key] = [KEY_TAB]
 const KEYS_DESTRUCT_2: Array[Key] = [KEY_ENTER]
 ## Both Self-destruct keys, pressed in the same tick.
 const KEYS_DESTRUCT_BOTH: Array[Key] = [KEY_TAB, KEY_ENTER]
+## Player 1's fire key (p1_fire, Story 005): the choice confirm and the weapon's trigger, the key
+## the runner presses for Player 1 (its PLAYER_1_FIRE_KEY).
+const KEYS_FIRE_1: Array[Key] = [KEY_SPACE]
+## Player 2's fire key (p2_fire, Story 005): the Period key, the runner's PLAYER_2_FIRE_KEY. A key
+## pressed through these constants carries no location, so a right-located Shift could not be bound
+## here (the Story 005 evidence doc).
+const KEYS_FIRE_2: Array[Key] = [KEY_PERIOD]
+## Player 1's steer-left key (p1_steer_left): the previous type while choosing.
+const KEYS_PREVIOUS_1: Array[Key] = [KEY_A]
+## Player 1's steer-right key (p1_steer_right): the next type while choosing.
+const KEYS_NEXT_1: Array[Key] = [KEY_D]
+## Player 2's steer-right key (p2_steer_right): the next type while choosing.
+const KEYS_NEXT_2: Array[Key] = [KEY_RIGHT]
 ## Both Players, in the order of the controller's indices (0 is Player 1).
 const PLAYERS: Array[int] = [0, 1]
 

@@ -4,10 +4,10 @@ extends Node
 ## debug-damage key while MatchRules.debug_damage is above zero.
 ##
 ## Implements: production/epics/wasteland-fire/story-003-bases-destruction-respawn.md AC-5
-## (Self-destruct: one key per Player destroys that Player's own Unit immediately, and the Unit
-## then goes through the normal respawn path) and AC-8 (until weapons arrive in Story 005, a debug
-## key applies damage to the local Unit, gated so it can be switched off); design/game-brief.md
-## MVP feature 3 (a Self-destruct action so a stranded Unit can respawn). Vocabulary: CONTEXT.md
+## (Self-destruct: one key per Player destroys that Player's own Unit immediately, and the Unit then
+## goes through the normal respawn path) and AC-8 (until weapons arrived in Story 005, a debug key
+## applied damage to the local Unit, gated so it can be switched off); design/game-brief.md MVP
+## feature 3 (a Self-destruct action so a stranded Unit can respawn). Vocabulary: CONTEXT.md
 ## (Player, Unit).
 ##
 ## The two Input Map actions are the prefix plus self_destruct and debug_damage, declared in

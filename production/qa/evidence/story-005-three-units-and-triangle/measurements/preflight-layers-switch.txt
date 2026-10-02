@@ -1,0 +1,6 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PROBE engine=4.7.2-stable (official) physics=Jolt Physics ticks/s=60 which=switch
+PROBE 2d before switch: ground-type z=-2.699 (blocked at the cliff face, expect ~-2.7)
+PROBE 2d ground->gyro switch (layer/mask written in tick k), z in the next 8 ticks: -3.10, -3.50, -3.90, -4.30, -4.70, -5.10, -5.50, -5.90
+PROBE 2d gyro->ground switch while overlapping the cliff (was z=-13.90, throttle 0): t0 z=-13.91 y=-0.61 | t1 z=-13.91 y=-0.62 | t2 z=-13.92 y=-0.62 | t5 z=-13.94 y=-0.62 | t10 z=-13.98 y=-0.62 | t30 z=-14.12 y=-0.62 | t59 z=-14.33 y=-0.61

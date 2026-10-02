@@ -1,0 +1,6 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+GHOST combos_seen=0/8 missing=[P1 throttle+left / P2 throttle+left, P1 throttle+right / P2 throttle+right, P1 throttle+left / P2 throttle+right, P1 throttle+right / P2 throttle+left, P1 reverse+left / P2 reverse+right, P1 reverse+right / P2 reverse+left, P1 throttle+left+right+fire, P2 throttle+left+right+fire] max_actions_at_once=0 max_raw_keys_at_once=0
+
+rc 0 stderr-noisy []

@@ -33,7 +33,7 @@ The rules of record are in `design/rules.md`, the one-page brief in
 | 002 | Split screen for two, one fixed keyboard layout per Player | Done |
 | 003 | Bases, destruction and respawn, self-destruct | Done |
 | 004 | The Flag and the win, per-Player HUD, round-over screen | Done, code still calls it the Water Canister |
-| 005 | Four Units and the counter triangle | In progress |
+| 005 | Four Units and the counter triangle | Done |
 | 006 | Fuel and Fuel Cans | Planned |
 | 007 | Map 01 with the Team colours | Planned |
 | 008 | Tokens, the Garage and the loss | Planned |
@@ -48,10 +48,16 @@ yet.
 |---|---|---|
 | Throttle / reverse | W / S | Up / Down |
 | Steer | A / D | Left / Right |
+| Fire | Space | Period |
+| Choose a Unit (previous / next) | A / D | Left / Right |
+| Confirm the Unit | Space | Period |
 | Self-destruct | Tab | Enter |
 
-R restarts from the round-over screen. Keys 1 and 2 damage each Player's Unit
-and exist for testing only.
+Each Player chooses a Unit type at the start of a Round and after every
+destruction, with the choice panel at the bottom of their own view. R restarts
+from the round-over screen. Keys 1 and 2 used to damage each Player's own Unit
+for testing; they are off now that weapons exist, and `debug_damage` in
+`src/gameplay/match/data/match_rules.tres` brings them back.
 
 ## Running it
 

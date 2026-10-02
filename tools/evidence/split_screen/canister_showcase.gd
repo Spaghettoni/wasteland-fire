@@ -104,6 +104,7 @@ func run(harness: Node) -> void:
 	await _hold(&"round_over")
 	_harness.phase = &"restart"
 	await _kit.press_settled(KEYS_RESTART)
+	await _harness.confirm_choices()
 	await _hold(&"restarted")
 	_harness.phase = &"end"
 	_line("")

@@ -1,0 +1,45 @@
+[gd_scene format=3]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_cliff"]
+size = Vector3(6, 4, 12)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cliff"]
+albedo_color = Color(0.42, 0.36, 0.3, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_cliff"]
+material = SubResource("StandardMaterial3D_cliff")
+size = Vector3(6, 4, 12)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_water"]
+size = Vector3(8, 0.4, 14)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_water"]
+albedo_color = Color(0.36, 0.48, 0.6, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_water"]
+material = SubResource("StandardMaterial3D_water")
+size = Vector3(8, 0.4, 14)
+
+[node name="TerrainStandIns" type="Node3D"]
+
+[node name="Cliff" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 2, 0)
+collision_layer = 32
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cliff"]
+shape = SubResource("BoxShape3D_cliff")
+
+[node name="Mesh" type="MeshInstance3D" parent="Cliff"]
+mesh = SubResource("BoxMesh_cliff")
+
+[node name="Water" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0.2, 0)
+collision_layer = 32
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Water"]
+shape = SubResource("BoxShape3D_water")
+
+[node name="Mesh" type="MeshInstance3D" parent="Water"]
+mesh = SubResource("BoxMesh_water")

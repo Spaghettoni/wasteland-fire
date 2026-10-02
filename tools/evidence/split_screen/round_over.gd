@@ -124,6 +124,7 @@ func _check_restart_resets() -> void:
 	var started: int = _cans.round_started
 	var spawned: int = _cans.spawns.size()
 	await _kit.press_settled(KEYS_RESTART)
+	await _harness.confirm_choices()
 	await _kit.advance(Kit.TICK_SLACK)
 	var running: bool = (not controller.is_round_over() and controller.winner_index() == MatchController.NO_WINNER
 		and not _harness.get_tree().paused and _cans.round_started == started + 1 and _cans.spawns.size() == spawned + Kit.PLAYERS.size())

@@ -1,0 +1,143 @@
+extends SceneTree
+## Fix-pass-1 probe (scratch only; reads the project it is run against and writes nothing in it).
+## Proves: (A) a confirm held through the spawn is not a shot, (B) a key held through a respawn fires
+## nothing until it was released, (C) a normal press still fires on the very tick (no added lag),
+## (D) a shot frozen by the Round-over pause is freed by restart(), (E) a Weapon whose scene is not a
+## Shot leaks no node.
+
+const SPLIT_PATH: String = "res://src/gameplay/split_screen/split_screen.tscn"
+
+var _failed: int = 0
+var _shots_seen: int = 0
+
+
+func _initialize() -> void:
+	Input.use_accumulated_input = false
+	node_added.connect(func(node: Node) -> void:
+		if node is Shot:
+			_shots_seen += 1)
+	_start()
+
+
+func _start() -> void:
+	await process_frame
+	await _main()
+
+
+func _check(check_name: String, ok: bool, detail: String) -> void:
+	if not ok:
+		_failed += 1
+	print("PROBE CHECK %s %s %s" % [check_name, "PASS" if ok else "FAIL", detail])
+
+
+func _ticks(count: int) -> void:
+	for _i: int in count:
+		await physics_frame
+
+
+func _key(key: Key, pressed: bool) -> void:
+	var event: InputEventKey = InputEventKey.new()
+	event.physical_keycode = key
+	event.pressed = pressed
+	event.device = InputEvent.DEVICE_ID_KEYBOARD
+	Input.parse_input_event(event)
+
+
+func _make_split() -> SplitScreen:
+	var split: SplitScreen = (load(SPLIT_PATH) as PackedScene).instantiate() as SplitScreen
+	root.add_child(split)
+	return split
+
+
+func _main() -> void:
+	var split: SplitScreen = _make_split()
+	var mc: MatchController = split.match_controller
+	var unit: Unit = split.player_1_unit
+	var weapon: Weapon = split.find_child("Player1Weapon", true, false) as Weapon
+	await _ticks(8)
+	_check("start_benched", not unit.is_alive and mc.is_choosing(0), "alive=%s choosing=%s" % [unit.is_alive, mc.is_choosing(0)])
+
+	# A. The confirm key (Space) is held through the spawn and for 40 ticks after it.
+	var before: int = _shots_seen
+	_key(KEY_SPACE, true)
+	var alive_after: int = -1
+	for tick: int in 40:
+		await physics_frame
+		if alive_after < 0 and unit.is_alive:
+			alive_after = tick
+	_check("A_confirm_held_through_spawn_fires_nothing", alive_after >= 0 and _shots_seen == before,
+			"Unit alive %d ticks after the press, key held 40 ticks, shots fired %d (expected 0)" % [alive_after, _shots_seen - before])
+
+	# C. Released, then a normal press: the first shot leaves on the tick of the press (+1 for the edge).
+	_key(KEY_SPACE, false)
+	await _ticks(3)
+	before = _shots_seen
+	_key(KEY_SPACE, true)
+	var first_shot_tick: int = -1
+	for tick: int in 30:
+		await physics_frame
+		if first_shot_tick < 0 and _shots_seen > before:
+			first_shot_tick = tick
+	_check("C_normal_press_fires_without_lag", first_shot_tick >= 0 and first_shot_tick <= 1,
+			"first shot %d ticks after the key event; %d shots in 30 ticks (interval %.2f s)" % [first_shot_tick, _shots_seen - before, unit.stats.fire_interval_seconds])
+
+	# B. Destroyed while the key is held; the Player chooses again by a direct call, and the Unit comes back
+	# (delay + settle) with the key still down: it must fire nothing until the key was released.
+	unit.destroy()
+	await _ticks(2)
+	_check("B_destroyed", not unit.is_alive and mc.is_choosing(0), "alive=%s choosing=%s" % [unit.is_alive, mc.is_choosing(0)])
+	mc.choose(0, 0)
+	before = _shots_seen
+	var back_after: int = -1
+	for tick: int in 260:
+		await physics_frame
+		if back_after < 0 and unit.is_alive:
+			back_after = tick
+	_check("B_key_held_through_respawn_fires_nothing", back_after >= 0 and _shots_seen == before,
+			"Unit back %d ticks after the choice, key held the whole time (about %d ticks alive), shots fired %d (expected 0)" % [back_after, 260 - back_after, _shots_seen - before])
+	_key(KEY_SPACE, false)
+	await _ticks(2)
+	before = _shots_seen
+	_key(KEY_SPACE, true)
+	await _ticks(14)
+	_check("B_release_and_press_fires_again", _shots_seen > before, "shots after release and press: %d" % (_shots_seen - before))
+
+	# D. A shot in flight when the Round ends is frozen by the pause and freed by restart().
+	var shot: Shot = null
+	for node: Node in get_nodes_in_group(&"shots"):
+		shot = node as Shot
+	_check("D_shot_in_flight", shot != null and is_instance_valid(shot), "shots in the group: %d" % get_nodes_in_group(&"shots").size())
+	_key(KEY_SPACE, false)
+	mc._round_state = MatchController.RoundState.OVER
+	paused = true
+	var frozen_at: Vector3 = shot.global_position if shot != null else Vector3.ZERO
+	await _ticks(3)
+	var still: bool = shot != null and is_instance_valid(shot) and shot.global_position == frozen_at
+	_check("D_pause_freezes_the_shot", still, "shot at %s, 3 ticks later at %s" % [frozen_at, shot.global_position if still else Vector3.ZERO])
+	mc.restart()
+	await _ticks(2)
+	_check("D_restart_frees_the_shots", get_nodes_in_group(&"shots").is_empty() and not paused,
+			"shots left in the group: %d, tree paused: %s" % [get_nodes_in_group(&"shots").size(), paused])
+
+	# E. A Weapon whose scene is not a Shot fires nothing and leaks no node.
+	var plain: PackedScene = PackedScene.new()
+	var plain_root: Node3D = Node3D.new()
+	plain.pack(plain_root)
+	plain_root.free()
+	mc.choose(0, 0)
+	await _ticks(10)
+	weapon.shot_scene = plain
+	var orphans_before: int = int(Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT))
+	var nodes_before: int = int(Performance.get_monitor(Performance.OBJECT_NODE_COUNT))
+	_key(KEY_SPACE, false)
+	await _ticks(2)
+	_key(KEY_SPACE, true)
+	await _ticks(60)
+	_key(KEY_SPACE, false)
+	var orphans_after: int = int(Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT))
+	var nodes_after: int = int(Performance.get_monitor(Performance.OBJECT_NODE_COUNT))
+	_check("E_non_shot_scene_leaks_nothing", orphans_after == orphans_before and nodes_after == nodes_before,
+			"alive Unit=%s, trigger held 60 ticks, orphan nodes %d -> %d, nodes %d -> %d" % [unit.is_alive, orphans_before, orphans_after, nodes_before, nodes_after])
+
+	print("PROBE DONE failed=%d" % _failed)
+	quit(1 if _failed > 0 else 0)

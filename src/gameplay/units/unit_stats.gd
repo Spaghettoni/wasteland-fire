@@ -12,6 +12,22 @@ extends Resource
 ## group: whether a Unit type carries the Water Canister, and where it rides, is data here too,
 ## so the Round rules never ask what type a Unit is.
 ##
+## Story 005 AC-1, AC-2 and AC-9
+## (production/epics/wasteland-fire/story-005-three-units-and-triangle.md; design/rules.md
+## "Units") add the other three types and three groups: Identity (which type this is, for the
+## damage matrix and the choice panel), Weapon (the one straight-ahead weapon every type has: its
+## damage, cadence, range, shot speed and muzzle) and Body (whether it flies, its greybox model,
+## its box collider and its physics layers). One .tres per type (data/motorbike_stats.tres,
+## buggy_stats.tres, truck_stats.tres, gyrocopter_stats.tres) holds the source's starting values
+## for the Round to hand a Unit at every spawn; the Motorbike keeps the movement Story 001 tuned
+## by playing (decided 2026-10-01) and the other three are scaled by its tuned-to-source ratio,
+## so it stays the fastest and most agile (the values the source does not give, acceleration,
+## braking, coasting and reverse, are starting values chosen there, to tune by playing). A Unit
+## applies a type's Body group when it spawns as that type (Unit.spawn()), never in _ready(), so
+## a Unit nobody spawns (the driving toy's) keeps its scene's own look, collider and layers.
+## first_problem() is the one rule of what is usable: MatchController and Unit.spawn() apply it, and
+## Unit._ready() keeps its own inline copy of the same three tests.
+##
 ## Data only. A Unit reads these numbers and never writes them. One .tres is shared by every
 ## Unit that references it, so treat it as read-only at runtime (duplicate() it for a private
 ## copy).
@@ -60,9 +76,9 @@ extends Resource
 @export_group("Cargo")
 
 ## Whether a Unit of this type may pick up the Water Canister and carry it (Story 004 AC-2,
-## production/epics/wasteland-fire/story-004-water-canister-and-win.md; design/rules.md "Handling
-## the Water Canister"): only the Motorbike carries, and that is decided here, by data, never by a
-## type check in code. The Round rules (MatchController) read Unit.can_carry and nothing else.
+## production/epics/wasteland-fire/story-004-water-canister-and-win.md; design/rules.md
+## "Resources"): only the Motorbike carries, and that is decided here, by data, never by a type
+## check in code. The Round rules (MatchController) read Unit.can_carry and nothing else.
 ## False by default for the reason the class doc gives: the engine leaves a property that equals
 ## its script default out of a saved .tres, so a type that carries must say so in its data file,
 ## and a .tres without the line (an older file, or a type that never carries) loads as one that
@@ -97,3 +113,112 @@ extends Resource
 ## its held drive speed at once instead of braking it off first (Unit, movement model step 4).
 ## Zero disables that, and leaving a wall then takes as long as braking from the drive speed.
 @export_range(0.0, 5.0, 0.05, "suffix:m/s") var blocked_speed: float = 0.0
+
+@export_group("Identity")
+
+## Which Unit type this is, as a short lower-case id (&"motorbike", &"buggy", &"truck",
+## &"gyrocopter"): the key of the damage matrix (DamageMatrix.multiplier() takes the attacker's
+## and the target's type_id) and what Unit.type_id reports (Story 005 AC-4,
+## production/epics/wasteland-fire/story-005-three-units-and-triangle.md). Only data ever
+## compares it: no branch in a script names a type. Empty by default (class doc); a .tres
+## without the line reads as no type, and a matrix pair with an empty id reads the matrix's
+## default_multiplier.
+@export var type_id: StringName = &""
+
+## The name the choice panel shows for this type ("Motorbike", "Buggy", "Truck", "Gyrocopter",
+## the CONTEXT.md vocabulary), through tr(), so a translation replaces it without touching code
+## (Story 005 AC-6: the Player chooses the type in their own viewport). Display only: nothing in
+## gameplay compares it. Empty by default (class doc).
+@export var display_name: String = ""
+
+@export_group("Weapon")
+
+## Hit points one hit of this type's weapon takes off the Unit hit, before the damage matrix
+## scales it (the source's DMG; Story 005 AC-3 and AC-4; design/rules.md "Units"): damage taken =
+## damage * DamageMatrix.multiplier(this type, the target's type). Zero by default (class doc);
+## the tuned number lives in the .tres, and a type whose .tres has no line shoots for nothing.
+@export_range(0.0, 1000.0, 0.5, "or_greater", "suffix:hp") var damage: float = 0.0
+
+## Seconds between two shots while the fire key is held (Story 005 AC-3: the fire rate is data).
+## The Weapon counts it in physics ticks (rounded, never under one tick), so it does not depend
+## on the frame rate, and a press cannot beat it. Zero by default (class doc): a type whose .tres
+## has no line fires every tick.
+@export_range(0.0, 10.0, 0.01, "or_greater", "suffix:s") var fire_interval_seconds: float = 0.0
+
+## Metres a shot of this type flies from the muzzle before it ends without a hit (Story 005
+## AC-3: the range is data). Zero by default (class doc): a type whose .tres has no line hits
+## nothing.
+@export_range(0.0, 500.0, 0.5, "or_greater", "suffix:m") var weapon_range: float = 0.0
+
+## Speed of this type's shot along the Unit's heading, in metres per second: a shot is a short
+## projectile, not a hitscan, so a target can still drive out of its path (Story 005 AC-3). Zero
+## by default (class doc): a type whose .tres has no line fires a shot that never leaves the
+## muzzle.
+@export_range(0.0, 500.0, 0.5, "or_greater", "suffix:m/s") var shot_speed: float = 0.0
+
+## Metres ahead of the Unit's origin, along its heading, where its shot starts: just past the
+## type's own collider, so a Unit never meets its own shot (Story 005 AC-3: a hit is never applied
+## to the shooter). The shot's height is not here: every type fires at MatchRules.shooting_height,
+## the one height all Units share. Zero by default (class doc).
+@export_range(0.0, 10.0, 0.05, "or_greater", "suffix:m") var muzzle_forward: float = 0.0
+
+@export_group("Body")
+
+## Whether this type flies (Story 005 AC-1 and AC-5; design/rules.md "Units": "Flying means only
+## crossing cliffs and water"): true for the Gyrocopter only. What flying does is in its layers
+## below (its collision_mask leaves the cliffs_water layer out); this flag is for Story 006's
+## crash rule (a Gyrocopter with no Fuel falls), and in Story 005 nothing but the evidence reads
+## it. False by default (class doc), so a type that flies must say so in its .tres.
+@export var can_fly: bool = false
+
+## The greybox visual of this type (models/<type>_model.tscn): a Model root with MeshInstance3D
+## children, those in the node group "team_colour" painted with the Player's team material when
+## the Unit spawns as this type (Story 005 AC-1 and AC-8: each type has a distinct silhouette, in
+## both views). Null by default (class doc): with no model the Unit keeps the look its scene
+## gives it (the Motorbike's own Body and Nose).
+@export var model: PackedScene
+
+## Size of this type's box collider, in metres, given to the Unit's CollisionShape3D when it
+## spawns as this type (as a new BoxShape3D, never the scene's shared one; Story 005 AC-1). Zero
+## by default (class doc), and Vector3.ZERO means keep the collider the Unit's scene has.
+@export var collision_size: Vector3 = Vector3.ZERO
+
+## Where the collider of collision_size sits, in the Unit's local space, in metres (its centre:
+## a ground type's box stands on the floor when y is half its height). Read only while
+## collision_size is not zero. The Gyrocopter's stays at ground level like everyone's, because it
+## is hit at the one shooting height, whatever height its model is drawn at (Story 005 AC-5).
+@export var collision_center: Vector3 = Vector3.ZERO
+
+## The physics layer the Unit is on while it drives as this type (project.godot [layer_names]:
+## 2 "units" for a ground type, 16 "gyrocopters" for the Gyrocopter; Story 005 AC-5), a bit mask
+## written as a plain int in the .tres. Zero by default (class doc), and zero means keep the
+## layer the Unit's scene has.
+@export_flags_3d_physics var collision_layer: int = 0
+
+## The physics layers the Unit collides with while it drives as this type (Story 005 AC-5): a
+## ground type takes the map, the units and the cliffs_water layers (1 + 2 + 32 = 35), so cliffs
+## and water stop it; the Gyrocopter takes the map alone (1), so it crosses cliffs and water,
+## passes through ground Units and they through it (decided 2026-10-01), and still stops at the
+## field's walls. Zero by default (class doc), and zero means keep the mask the Unit's scene has.
+@export_flags_3d_physics var collision_mask: int = 0
+
+## The physics layers a spawn spot must be free of before the Unit is put down there as this type
+## (the units and the gyrocopters layers, 2 + 16 = 18, for every type: a Truck is never put down
+## inside a Gyrocopter parked in its Garage although the two never collide; Story 005 AC-5 and
+## AC-6). Zero by default (class doc), and zero means test the Unit's own layer, as Story 003 did.
+@export_flags_3d_physics var spot_mask: int = 0
+
+
+## The reason these stats cannot drive a Unit, or an empty String when they can: max_speed,
+## ground_snap_length and max_hit_points must each be above zero (the rule Unit._ready() applies;
+## the class doc says why). MatchController asks it of every entry of MatchRules.unit_types before
+## a Round begins, and Unit.spawn() of the type it is handed, so a bad .tres is one named error
+## and never a Unit that spawns already destroyed.
+func first_problem() -> String:
+	if max_speed <= 0.0:
+		return "max_speed is not above zero"
+	if ground_snap_length <= 0.0:
+		return "ground_snap_length is not above zero"
+	if max_hit_points <= 0.0:
+		return "max_hit_points is not above zero"
+	return ""

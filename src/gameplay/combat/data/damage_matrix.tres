@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="DamageMatrix" format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/combat/damage_matrix.gd" id="1_dm"]
+
+[resource]
+script = ExtResource("1_dm")
+default_multiplier = 1.0
+multipliers = Dictionary[StringName, float]({
+&"buggy>gyrocopter": 0.5,
+&"buggy>truck": 1.5,
+&"gyrocopter>buggy": 1.5,
+&"gyrocopter>truck": 0.5,
+&"truck>buggy": 0.5,
+&"truck>gyrocopter": 1.5
+})

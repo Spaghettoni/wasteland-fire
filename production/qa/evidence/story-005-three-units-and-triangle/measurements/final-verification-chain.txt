@@ -1,0 +1,79 @@
+IMPORT (scratch copy) rc=0 noisy=[]
+class cache: 227 classes; new since the repo's cache: []; gone: []
+uid sidecars copied into the repo: []
+PARSE rc=0 files=23
+ok: res://src/gameplay/combat/damage_matrix.gd
+ok: res://src/gameplay/combat/player_fire_input.gd
+ok: res://src/gameplay/combat/shot.gd
+ok: res://src/gameplay/combat/weapon.gd
+ok: res://src/gameplay/match/garage_queue.gd
+ok: res://src/gameplay/match/match_controller.gd
+ok: res://src/gameplay/match/match_rules.gd
+ok: res://src/gameplay/match/player_choice_input.gd
+ok: res://src/gameplay/split_screen/split_screen.gd
+ok: res://src/gameplay/units/unit.gd
+ok: res://src/gameplay/units/unit_stats.gd
+ok: res://src/ui/hud/unit_choice.gd
+ok: res://tools/evidence/input_ghosting_check.gd
+ok: res://tools/evidence/split_screen/canister_showcase.gd
+ok: res://tools/evidence/split_screen/check_kit.gd
+ok: res://tools/evidence/split_screen/choice.gd
+ok: res://tools/evidence/split_screen/gyro.gd
+ok: res://tools/evidence/split_screen/round_over.gd
+ok: res://tools/evidence/split_screen/unit_kit.gd
+ok: res://tools/evidence/split_screen/units.gd
+ok: res://tools/evidence/split_screen/units_showcase.gd
+ok: res://tools/evidence/split_screen/weapons.gd
+ok: res://tools/evidence/split_screen_harness.gd
+
+STRICT drive  coast             rc=0 identical=True
+STRICT drive  walls             rc=0 identical=True
+STRICT drive  showcase          rc=0 identical=True
+STRICT drive  soak              rc=0 identical=True
+STRICT split  layout            rc=0 identical=True
+STRICT split  isolation         rc=0 identical=True
+STRICT split  simultaneous      rc=0 identical=True
+STRICT split  showcase          rc=0 identical=True
+STRICT split  bases             rc=0 identical=True
+STRICT split  destruction       rc=0 identical=True
+STRICT split  countdown         rc=0 identical=True
+STRICT split  respawn_showcase  rc=0 identical=True
+SOFT   split  canister_run      rc=0 result_ok=True identical=True
+SOFT   split  hud               rc=0 result_ok=True identical=True
+SOFT   split  round_over        rc=0 result_ok=True identical=True
+SOFT   split  canister_showcase rc=0 result_ok=True identical=False
+    --- baseline
+    +++ now
+    @@ -3,103 +3,103 @@
+    -SPLIT canister_showcase t=0.000 frame=0 phase=start p1_x=0.00 p1_z=20.00 p1_hp=100 p1_alive=true p1_status=OWN_AT_HOME p2_x=0.00 p2_z=-20.00 p2_hp=100 p2_alive=true p2_status=OWN_AT_HOME canister_1=AT_HOME canister_2=AT
+    -SPLIT canister_showcase t=0.500 frame=30 phase=idle p1_x=0.00 p1_z=20.00 p1_hp=100 p1_alive=true p1_status=OWN_AT_HOME p2_x=0.00 p2_z=-20.00 p2_hp=100 p2_alive=true p2_status=OWN_AT_HOME canister_1=AT_HOME canister_2=AT
+    -SPLIT canister_showcase t=1.000 frame=60 phase=idle p1_x=0.00 p1_z=20.00 p1_hp=100 p1_alive=true p1_status=OWN_AT_HOME p2_x=0.00 p2_z=-20.00 p2_hp=100 p2_alive=true p2_status=OWN_AT_HOME canister_1=AT_HOME canister_2=AT
+    -SPLIT canister_showcase t=1.500 frame=90 phase=idle p1_x=0.00 p1_z=20.00 p1_hp=100 p1_alive=true p1_status=OWN_AT_HOME p2_x=0.00 p2_z=-20.00 p2_hp=100 p2_alive=true p2_status=OWN_AT_HOME canister_1=AT_HOME canister_2=AT
+    -SPLIT canister_showcase t=2.000 frame=120 phase=p2_clears_lane p1_x=0.00 p1_z=20.00 p1_hp=100 p1_alive=true p1_status=OWN_AT_HOME p2_x=-0.40 p2_z=-17.46 p2_hp=100 p2_alive=true p2_status=OWN_AT_HOME canister_1=AT_HOME c
+    -SPLIT canister_showcase t=2.500 frame=150 phase=p2_clears_lane p1_x=0.00 p1_z=20.00 p1_hp=100 p1_alive=true p1_status=OWN_AT_HOME p2_x=-2.82 p2_z=-13.08 p2_hp=100 p2_alive=true p2_status=OWN_AT_HOME canister_1=AT_HOME c
+    -SPLIT canister_showcase t=3.000 frame=180 phase=p2_clears_lane p1_x=0.00 p1_z=20.00 p1_hp=100 p1_alive=true p1_status=OWN_AT_HOME p2_x=-5.46 p2_z=-8.82 p2_hp=100 p2_alive=true p2_status=OWN_AT_HOME canister_1=AT_HOME ca
+    -SPLIT canister_showcase t=3.500 frame=210 phase=p2_clears_lane p1_x=0.00 p1_z=20.00 p1_hp=100 p1_alive=true p1_status=OWN_AT_HOME p2_x=-8.11 p2_z=-4.55 p2_hp=100 p2_alive=true p2_status=OWN_AT_HOME canister_1=AT_HOME ca
+    -SPLIT canister_showcase t=4.000 frame=240 phase=p2_clears_lane p1_x=0.00 p1_z=20.00 p1_hp=100 p1_alive=true p1_status=OWN_AT_HOME p2_x=-10.56 p2_z=-0.60 p2_hp=100 p2_alive=true p2_status=OWN_AT_HOME canister_1=AT_HOME c
+ALL_OK=True (strict twelve identical and exit 0, soft four RESULT ok)
+--- units rc=0 lines=6
+    CHECK units unit_data PASS 4 types in rules.unit_types, 18 numbers and the collider of the table checked per type | Motorbike (motorbike_stats.tres): hp=40 dmg=5 speed=24.0 turn=2.80 fire=0.2s range=25 shot=60 muzzle=1.6 box=(1.4, 1.0, 2.6) fly=false carry=true | Buggy (buggy_stats.tres): hp=100 dmg=12 speed=19.6 turn=2.29 fire=0.4s range=35 shot=60 muzzle=2.0 box=(1.8, 1.1, 3.0) fly=false carry=false | Truck (truck_
+    CHECK units silhouettes PASS motorbike (the runner's first choice): alive as Motorbike=true, Model=true, own meshes hidden 2/2, team_colour meshes painted 1 (unpainted 0), collider box (1.4, 1.0, 2.6) at (0.0, 0.5, 0.0)=true, bounds=(-0.70,0.00,-1.30 1.40x1.00x2.60), HUD bar 40/40 line="HP 40 / 40" | buggy (Tab, D, Space, respawned 176 ticks after the choice): alive as Buggy=true, Model=true, own meshes hidden 2/2, t
+    RESULT units ok checks=2 failed=0 t=9.317 types=4 spawned=3 destroyed=3
+--- weapons rc=0 lines=7
+    CHECK weapons weapon_fire PASS buggy 12 m from a truck, trigger held 3.0 s (180 ticks): 8 shots (expected ceil(180 / 24) = 8) at ticks [13, 37, 61, 85, 109, 133, 157, 181], spacing 24 ticks = round(0.40 s x 60); the first shot seen 0.000 m off the muzzle's line and 0.00 m along it (muzzle_forward 2.0, shooting_height 0.50, at most two steps of 1.0 m); hits [18.0, 18.0, 18.0, 18.0, 18.0, 18.0, 18.0, 18.0] (each expect
+    CHECK weapons matrix PASS 16 ordered pairs at 10 m, one real shot each after the longest cadence of the data (51 ticks), damage taken = attacker damage x multiplier (the table { &"buggy>truck": 1.5, &"buggy>gyrocopter": 0.5, &"truck>buggy": 0.5, &"truck>gyrocopter": 1.5, &"gyrocopter>buggy": 1.5, &"gyrocopter>truck": 0.5 }, else 1.0), each cell with the x where the shot ended: motorbike>motorbike=5.0@x3.7 motorbike>b
+    CHECK weapons carrier_fires PASS motorbike can_carry=true drove 62 ticks into canister 2 and picked it up (CARRIED); put 10 m from a truck with it on its tail: one shot took 5.0 (expected 5.0 = damage 5.0 x 1.0), canister_2 still CARRIED by it=true | standing on canister 1 (AT_HOME on Base 1's seat) for 30 ticks each: buggy: can_carry=false touching 29/30 ticks pick_ups=1 (before 1) canister_1=AT_HOME | truck: can_ca
+    RESULT weapons ok checks=3 failed=0 t=43.350 shots=43 hits=115 destroyed=0
+--- gyro rc=0 lines=5
+    CHECK gyro gyro_terrain PASS motorbike at the cliff (can_fly=false): drove 3.0 s from x=-18, farthest x=-25.70 (near face x=-27, far face x=-33, wall x=-40): crossed=false stopped_at_face=true stopped_at_wall=false on_wall=true | motorbike at the water (can_fly=false): drove 3.0 s from x=18, farthest x=24.70 (near face x=26, far face x=34, wall x=40): crossed=false stopped_at_face=true stopped_at_wall=false on_wall=t
+    RESULT gyro ok checks=1 failed=0 t=26.333 shots=1 destroyed=0
+--- choice rc=0 lines=6
+    CHECK choice choice_flow PASS start: choosing=true/true alive=false/false visible=false/false seconds_until_respawn=0.00/0.00 spawns=0 | p2 Period on tick 0 of the run: unit_spawned(1) at tick 2 (2 after the key; bench settle 3), type=motorbike, 0.0000 m from its spawn point (max 0.05), facing dot 1.0000, p1 still choosing=true | p1 cursor after D D A A A D D: [1, 2, 1, 0, 3, 0, 1] (expected [1, 2, 1, 0, 3, 0, 1], tw
+    CHECK choice choice_panel PASS p1 start choosing: visible=true title="Choose your Unit" (expected "Choose your Unit") slots=["Motorbike", "Buggy", "Truck", "Gyrocopter"] marked=0 (expected 0) hint="A / D to choose, Space to confirm" panel=(40,1122 560x142) inside_margin_16=true width_max=560 | p2 start choosing: visible=true title="Choose your Unit" (expected "Choose your Unit") slots=["Motorbike", "Buggy", "Truck", 
+    RESULT choice ok checks=2 failed=0 t=11.983 chosen=6 spawned=6 destroyed=3 round_started=1 round_over=1 cursor_moves=10
+--- units_showcase rc=0 lines=101
+    RESULT units_showcase ok checks=0 failed=0 t=41.883 steps=both_choose:2,p2_fires:61,p1_buggy:110,p1_truck:110,p1_gyrocopter:110 p1_types=[&"motorbike", &"buggy", &"truck", &"gyrocopter"] p2_truck=true truck_hp=195/220 shots=7 destroyed=3 crossed_x=38.80 separation_min=6.66 wall_clearance_min=1.20
+RUN --quit-after 120 rc=0 noisy=[]
+RUN --quit-after 60 res://src/gameplay/driving_toy.tscn rc=0 noisy=[]
+src/gameplay/camera/chase_camera.gd: OK | src/gameplay/camera/chase_camera_settings.gd: OK | src/gameplay/camera/data/chase_camera_settings.tres: OK | src/gameplay/units/player_drive_input.gd: OK | src/gameplay/units/motorbike.tscn: OK | src/gameplay/driving_toy.gd: OK | src/gameplay/driving_toy.tscn: OK | tools/evidence/drive_harness.gd: OK | tools/evidence/drive_harness.tscn: OK 
+ASSETS UNCHANGED

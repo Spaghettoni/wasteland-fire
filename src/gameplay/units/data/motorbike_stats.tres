@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="UnitStats" format=3]
 
 [ext_resource type="Script" path="res://src/gameplay/units/unit_stats.gd" id="1_g7j1u"]
+[ext_resource type="PackedScene" path="res://src/gameplay/units/models/motorbike_model.tscn" id="2_model"]
 
 [resource]
 script = ExtResource("1_g7j1u")
@@ -10,9 +11,22 @@ braking = 36.0
 coast_deceleration = 12.0
 reverse_max_speed = 9.0
 turn_rate = 2.8
-max_hit_points = 100.0
+max_hit_points = 40.0
 can_carry = true
 carry_offset = Vector3(0, 0.5, 1.7)
 ground_snap_length = 0.1
 wall_min_slide_angle_degrees = 15.0
 blocked_speed = 0.5
+type_id = &"motorbike"
+display_name = "Motorbike"
+damage = 5.0
+fire_interval_seconds = 0.2
+weapon_range = 25.0
+shot_speed = 60.0
+muzzle_forward = 1.6
+model = ExtResource("2_model")
+collision_size = Vector3(1.4, 1, 2.6)
+collision_center = Vector3(0, 0.5, 0)
+collision_layer = 2
+collision_mask = 35
+spot_mask = 18

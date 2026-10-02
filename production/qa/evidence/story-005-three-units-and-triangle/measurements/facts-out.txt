@@ -1,0 +1,16 @@
+FACT throw: spawn(Truck) 1 tick(s) after the scene was added: asked (0.000, 0.000, -2.000), farthest it was from that pose 10.060 m | t1 (-0.000, 0.958, -2.000) v=(-0.000, 57.502, 0.000) | t2 (0.000, 1.083, 8.000) v=(0.000, 7.449, 600.000) | t3 (0.000, 1.099, 8.000) v=(0.000, 0.965, 0.000) | t4 (0.000, 1.090, 8.000) v=(0.000, -0.534, 0.000) | t5 (0.000, 1.099, 8.000) v=(0.000, 0.582, 0.000)
+FACT CHECK throw_wait_1 PASS thrown: 10.060 m from the asked pose (thrown when waiting 1 tick, lands when waiting 2 or 3)
+FACT throw: spawn(Truck) 2 tick(s) after the scene was added: asked (0.000, 0.000, -2.000), farthest it was from that pose 0.000 m | t1 (0.000, 0.000, -2.000) v=(0.000, 0.000, 0.000) | t2 (0.000, 0.000, -2.000) v=(0.000, 0.000, 0.000) | t3 (0.000, 0.000, -2.000) v=(0.000, 0.000, 0.000) | t4 (0.000, 0.000, -2.000) v=(0.000, 0.000, 0.000) | t5 (0.000, 0.000, -2.000) v=(0.000, 0.000, 0.000)
+FACT CHECK throw_wait_2 PASS lands: 0.000 m from the asked pose (thrown when waiting 1 tick, lands when waiting 2 or 3)
+FACT throw: spawn(Truck) 3 tick(s) after the scene was added: asked (0.000, 0.000, -2.000), farthest it was from that pose 0.000 m | t1 (0.000, 0.000, -2.000) v=(0.000, 0.000, 0.000) | t2 (0.000, 0.000, -2.000) v=(0.000, 0.000, 0.000) | t3 (0.000, 0.000, -2.000) v=(0.000, 0.000, 0.000) | t4 (0.000, 0.000, -2.000) v=(0.000, 0.000, 0.000) | t5 (0.000, 0.000, -2.000) v=(0.000, 0.000, 0.000)
+FACT CHECK throw_wait_3 PASS lands: 0.000 m from the asked pose (thrown when waiting 1 tick, lands when waiting 2 or 3)
+FACT lag: settled at A: found at A=true, at B=false | spawn at B (same type, same collider) -> same tick: A=true B=false | +1: A=false B=true | +2: A=false B=true | +3: A=false B=true
+FACT CHECK lag_unit_reaches_B PASS found at B by the second tick after the spawn: true
+FACT mask swap in the cliff: Gyrocopter y=0.000 in the block (x=-30), then the ground layer and mask written where it stands -> t1 y=-0.615 | t10 y=-0.625 | t30 y=-0.625 | t60 y=-0.625 (lowest y -0.625)
+FACT CHECK mask_swap_pushes_under_floor PASS lowest y -0.625 (the floor is y=0)
+FACT mask swap in the spawn order: Gyrocopter in the block, leave_play(), spawn(Truck) at x=-20 -> lowest y 0.000, now (-20.000, 0.000, 0.000)
+FACT CHECK spawn_order_is_clean PASS lowest y 0.000
+FACT tunnel: 200 shots at 60 m/s (1 m per tick): 100 ended at the west wall (worst distance from its inner face x=-40: 0.0000 m), 100 ended at the Truck's front face z=-17.80 (worst 0.0000 m), 100 hit_points_changed events on the Truck
+FACT CHECK tunnel_wall PASS 100 expected, 100 ended, worst 0.0000 m
+FACT CHECK tunnel_unit PASS 100 expected, 100 ended, worst 0.0000 m, 100 hits registered
+FACT DONE failed=0

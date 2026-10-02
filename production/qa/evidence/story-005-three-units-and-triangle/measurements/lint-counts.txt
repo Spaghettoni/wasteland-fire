@@ -1,0 +1,37 @@
+src/gameplay/combat/damage_matrix.gd                     total= 43 doc= 31 blank=  4 code=  8
+src/gameplay/combat/player_fire_input.gd                 total= 74 doc= 33 blank=  9 code= 32
+src/gameplay/combat/shot.gd                              total=108 doc= 52 blank=  5 code= 51
+src/gameplay/combat/weapon.gd                            total=115 doc= 48 blank= 13 code= 54
+src/gameplay/match/garage_queue.gd                       total=435 doc=244 blank= 41 code=150
+src/gameplay/match/match_controller.gd                   total=480 doc=214 blank= 58 code=208
+src/gameplay/match/match_rules.gd                        total= 64 doc= 50 blank=  6 code=  8
+src/gameplay/match/player_choice_input.gd                total=122 doc= 50 blank= 16 code= 56
+src/gameplay/split_screen/split_screen.gd                total=144 doc= 89 blank= 13 code= 42
+src/gameplay/units/unit.gd                               total=565 doc=296 blank= 44 code=225
+src/gameplay/units/unit_stats.gd                         total=224 doc=150 blank= 33 code= 41
+src/ui/hud/unit_choice.gd                                total=341 doc=143 blank= 46 code=152
+tools/evidence/input_ghosting_check.gd                   total=789 doc=196 blank= 97 code=493
+tools/evidence/split_screen/canister_showcase.gd         total=255 doc= 67 blank= 31 code=157
+tools/evidence/split_screen/check_kit.gd                 total=107 doc= 41 blank= 19 code= 47
+tools/evidence/split_screen/choice.gd                    total=367 doc= 63 blank= 23 code=281
+tools/evidence/split_screen/gyro.gd                      total=171 doc= 47 blank= 13 code=111
+tools/evidence/split_screen/round_over.gd                total=261 doc= 49 blank= 27 code=185
+tools/evidence/split_screen/unit_kit.gd                  total=164 doc= 52 blank= 20 code= 92
+tools/evidence/split_screen/units.gd                     total=229 doc= 46 blank= 15 code=168
+tools/evidence/split_screen/units_showcase.gd            total=215 doc= 57 blank= 25 code=133
+tools/evidence/split_screen/weapons.gd                   total=334 doc= 78 blank= 33 code=223
+tools/evidence/split_screen_harness.gd                   total=507 doc=184 blank= 66 code=256
+src/gameplay/match/match_controller.gd                   _first_problem                     lines= 17 cc~12
+tools/evidence/split_screen/choice.gd                    _check_start                       lines= 28 cc~18
+tools/evidence/split_screen/choice.gd                    _check_cursor_and_confirm          lines= 40 cc~18
+tools/evidence/split_screen/choice.gd                    _check_countdown_choice            lines= 33 cc~19
+tools/evidence/split_screen/choice.gd                    _check_late_choice                 lines= 21 cc~13
+tools/evidence/split_screen/choice.gd                    _check_restart                     lines= 28 cc~15
+tools/evidence/split_screen/choice.gd                    _read_panel                        lines= 36 cc~20
+tools/evidence/split_screen/unit_kit.gd                  _init                              lines= 28 cc~12
+tools/evidence/split_screen/units.gd                     _check_unit_data                   lines= 35 cc~27
+tools/evidence/split_screen/units.gd                     _read_silhouette                   lines= 38 cc~25
+tools/evidence/split_screen/units_showcase.gd            _finish                            lines= 21 cc~14
+functions over 40 lines or cc~10: 11
+declarations without a ## directly above: 0
+## lines over 100 columns added by the story: 0

@@ -1,0 +1,4 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PROBE engine=4.7.2-stable (official) physics=Jolt Physics ticks/s=60 which=shape
+PROBE 2d collider swap to Truck box 2.4x1.6x4.4 (half-length 2.2) then drive into the north wall (face z=-40): swapped while alive final z=-37.800, swapped while benched(layer 0/mask 0) final z=-37.800 (both expect -37.8), unswapped bike box final z=-38.698 (expect -38.7)

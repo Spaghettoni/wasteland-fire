@@ -1,0 +1,12 @@
+PROBE CHECK start_benched PASS alive=false choosing=true
+PROBE CHECK A_confirm_held_through_spawn_fires_nothing FAIL Unit alive 1 ticks after the press, key held 40 ticks, shots fired 4 (expected 0)
+PROBE CHECK C_normal_press_fires_without_lag FAIL first shot 6 ticks after the key event; 2 shots in 30 ticks (interval 0.20 s)
+PROBE CHECK B_destroyed PASS alive=false choosing=true
+PROBE CHECK B_key_held_through_respawn_fires_nothing FAIL Unit back 178 ticks after the choice, key held the whole time (about 82 ticks alive), shots fired 7 (expected 0)
+PROBE CHECK B_release_and_press_fires_again PASS shots after release and press: 2
+PROBE CHECK D_shot_in_flight PASS shots in the group: 2
+PROBE CHECK D_pause_freezes_the_shot PASS shot at (0.0, 0.5, 17.4), 3 ticks later at (0.0, 0.5, 17.4)
+PROBE CHECK D_restart_frees_the_shots FAIL shots left in the group: 2, tree paused: false
+ERROR: Weapon 'Player1Weapon': shot_scene '' is not a Shot scene, so it fires nothing.
+PROBE CHECK E_non_shot_scene_leaks_nothing FAIL alive Unit=true, trigger held 60 ticks, orphan nodes 0 -> 5, nodes 143 -> 141
+PROBE DONE failed=5

@@ -8,8 +8,9 @@ extends Node
 ## split_screen.tscn and reading the exported members of SplitScreen.
 ##
 ## Scenarios, chosen with --scenario=NAME (after the "--"): layout, isolation, simultaneous, showcase, fps,
-## bases, destruction, countdown, respawn_showcase, canister_run, hud, round_over and
-## canister_showcase. Each is a script under tools/evidence/split_screen/,
+## bases, destruction, countdown, respawn_showcase, canister_run, hud, round_over, canister_showcase
+## and, since Story 005, units, weapons, gyro, choice and units_showcase. Each is a script under
+## tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
 ## line there. A scenario reaches this script, DriveStep, UnitTrack and check_kit.gd through preload
@@ -26,6 +27,28 @@ extends Node
 ## at any frame rate and a headless --fixed-fps 60 run is faster than real time. The continuation after
 ## physics_frame runs before the nodes' _physics_process of that tick (measured on 4.7.2), so a key pressed
 ## there reaches PlayerDriveInput in the same tick and what is read there is the previous tick.
+##
+## The Unit choice (Story 005): a Round now starts with both Units benched and both Players choosing
+## a type, and a destroyed Unit comes back only once its Player has chosen again. The runner is the
+## one place that makes the choice for a scenario, with real presses of the fire keys: before run()
+## it confirms the type at the cursor's start, the Motorbike, for both Players and waits until both
+## Units are in play (confirm_choices(); raw physics_frame awaits that do not count in ticks, so a
+## scenario still starts at t=0 with both Units on their spawn points), unless the scenario script
+## declares const OWN_CHOICE: bool = true; and for the scenarios written before the choice existed
+## (LEGACY_SCENARIOS) it makes the choice again after every destruction, the first type of the data,
+## by the controller's own choose() and with no key (an injected key acts one tick later, measured
+## on 4.7.2 (the Story 005 evidence doc keeps the run), and a fire key still down on the tick the
+## Unit appears fires its weapon; the direct call is in before any due frame), so their respawns
+## come after the delay exactly as before the choice existed. Each fire key the runner holds for
+## confirm_choices() is released on the tick the controller accepts the choice, so it is up again
+## before the Unit appears a tick or more later (the bench settle), and no stray shot is fired at a
+## spawn. A scenario of Story 005 or later chooses with its own keys after a destruction; round_over
+## and canister_showcase, which restart the Round, call confirm_choices() after the restart key. The
+## legacy scenarios also run on the data they were measured with (_apply_legacy_data(), on the
+## shared resources before the scene is instanced): the Motorbike's placeholder 100 hit points, the
+## debug damage of 25 and the Motorbike's old collision mask, which the shipped data changed in
+## Story 005 (40 hit points, the debug keys off, the cliffs_water layer in the mask); a scenario of
+## Story 005 or later runs on the shipped data.
 ##
 ## Output: SPLIT <scenario> t=<seconds> key=value ... (progress), CHECK <scenario> <check name> PASS|FAIL
 ## <detail> and exactly one last RESULT <scenario> ok|fail checks=<n> failed=<n> key=value ...; then quit with
@@ -54,6 +77,11 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"hud": preload("res://tools/evidence/split_screen/hud.gd"),
 	&"round_over": preload("res://tools/evidence/split_screen/round_over.gd"),
 	&"canister_showcase": preload("res://tools/evidence/split_screen/canister_showcase.gd"),
+	&"units": preload("res://tools/evidence/split_screen/units.gd"),
+	&"weapons": preload("res://tools/evidence/split_screen/weapons.gd"),
+	&"gyro": preload("res://tools/evidence/split_screen/gyro.gd"),
+	&"choice": preload("res://tools/evidence/split_screen/choice.gd"),
+	&"units_showcase": preload("res://tools/evidence/split_screen/units_showcase.gd"),
 }
 
 ## The shared step class (drive_step.gd): keys held for a time.
@@ -80,6 +108,47 @@ const BOTH: int = -1
 const PLAYER_1_KEYS: Array[Key] = [KEY_W, KEY_S, KEY_A, KEY_D]
 ## Physical keys of Player 2's layout, in the order of SLOT_*: the p2_ Input Map actions are bound to these.
 const PLAYER_2_KEYS: Array[Key] = [KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT]
+## Physical key of Player 1's fire action (p1_fire): the choice confirm, and the weapon's trigger.
+const PLAYER_1_FIRE_KEY: Key = KEY_SPACE
+## Physical key of Player 2's fire action (p2_fire).
+const PLAYER_2_FIRE_KEY: Key = KEY_PERIOD
+## The scenarios written before Story 005's Unit choice, which expect both Units in play when they
+## start and a destroyed Unit back after the delay with no key of theirs: for them the runner makes
+## a destroyed Player's choice again at once (_on_legacy_destroyed()). A scenario of Story 005 or
+## later is not listed and chooses with its own keys after a destruction.
+const LEGACY_SCENARIOS: Array[StringName] = [&"layout", &"isolation", &"simultaneous", &"showcase",
+	&"fps", &"bases", &"destruction", &"countdown", &"respawn_showcase", &"canister_run", &"hud",
+	&"round_over", &"canister_showcase"]
+## The type the runner chooses for a legacy scenario's destroyed Player: the first of the data, the
+## Motorbike, what every Unit was before Story 005.
+const LEGACY_TYPE_INDEX: int = 0
+## The shared Motorbike stats: the one resource motorbike.tscn and match_rules.tres both use (one
+## cached object), so a value written here before the launch scene is instanced reaches the Units
+## and the rules.
+const MOTORBIKE_STATS_PATH: String = "res://src/gameplay/units/data/motorbike_stats.tres"
+## The Motorbike's collision mask the legacy scenarios were measured with: the map and units layers,
+## the scene's own, before the data added the cliffs_water layer that the typed spawn now applies
+## (the destruction scenario prints the mask; the legacy lanes never reach that layer's bodies).
+const LEGACY_MOTORBIKE_COLLISION_MASK: int = 3
+## The Motorbike's hit points the legacy scenarios were measured with: Story 003's placeholder 100,
+## before the shipped data took the design's 40 (Story 005 AC-2); their debug-key presses, respawns
+## and HUD readings count on it, and two of them print it in a CHECK line.
+const LEGACY_MOTORBIKE_HIT_POINTS: float = 100.0
+## The shared match rules: the one resource split_screen.tscn hands the MatchController and both
+## PlayerMatchInputs (one cached object), so a value written here before the launch scene is
+## instanced reaches them all.
+const MATCH_RULES_PATH: String = "res://src/gameplay/match/data/match_rules.tres"
+## The debug damage the legacy scenarios were measured with: a quarter of the placeholder hit
+## points, before the shipped data set it to zero, the gate of Story 003 AC-8 that switches the
+## debug keys off now that Story 005 brings weapons. PlayerMatchInput reads the gate once, in its
+## _ready(), so the value must be in before the scene is instanced.
+const LEGACY_DEBUG_DAMAGE: float = 25.0
+## The constant a scenario script declares (const OWN_CHOICE: bool = true) to make the first choice
+## of the Round itself: the runner then presses no fire key before run().
+const OWN_CHOICE_CONSTANT: StringName = &"OWN_CHOICE"
+## Raw physics ticks confirm_choices() waits for the chosen Units to appear before it gives up: the
+## bench settle, the key's tick and margin.
+const CHOICE_LIMIT_TICKS: int = 120
 
 ## Position of the throttle key in a layout (PLAYER_1_KEYS, PLAYER_2_KEYS).
 const SLOT_THROTTLE: int = 0
@@ -114,9 +183,11 @@ var phase: StringName = &"start"
 var report_ticks: int = 0
 ## Physics ticks simulated so far. Simulated time is this over the tick rate; read it, do not set it.
 var ticks: int = 0
-## The Players whose unit_spawned signal arrived while the launch scene was added to the tree, in the
-## order it came: the start of the Round. MatchController.begin() runs inside add_child(split), before
-## any scenario exists to connect to it, so the runner listens from before that and keeps the log here.
+## The Players whose unit_spawned signal arrived before the scenario started, in the order it came:
+## the start of the Round. MatchController.begin() runs inside add_child(split), before any scenario
+## exists to connect to it, and the spawns follow the runner's confirm_choices() a few ticks later,
+## so the runner listens from before begin() until both spawns have arrived and keeps the log here.
+## Empty for a scenario that declares OWN_CHOICE.
 var round_start_spawns: Array[int] = []
 ## Closest the two Units' origins came since the run began, metres.
 var separation_min: float = INF
@@ -124,6 +195,10 @@ var separation_min: float = INF
 var wall_clearance_min: float = INF
 ## Which physical keys the harness holds down now, so an event is sent only on a change.
 var _held: Dictionary[int, bool] = {}
+## One flag per Player: true while the runner itself holds that Player's fire key for a choice
+## (confirm_choices()). That key is released on the tick the controller accepts the choice; a fire
+## key a scenario holds is never touched.
+var _choice_key_held: Array[bool] = [false, false]
 var _ticks_per_second: int = 60
 var _checks: int = 0
 var _failed: int = 0
@@ -142,31 +217,128 @@ func _ready() -> void:
 		return
 	Input.use_accumulated_input = false
 	get_tree().create_timer(WATCHDOG_SECONDS).timeout.connect(_on_watchdog)
+	if LEGACY_SCENARIOS.has(scenario):
+		_apply_legacy_data()
 	split = SPLIT_SCENE.instantiate() as SplitScreen
 	if split.match_controller != null:
 		split.match_controller.unit_spawned.connect(_on_round_start_spawn)
+		split.match_controller.unit_chosen.connect(_on_choice_confirmed)
 	add_child(split)
 	_run()
 
 
 ## Runs the chosen scenario as a coroutine: after the first frame, so the window and the layout
-## exist, then the scenario script's run(), which awaits physics ticks. The log of the Round's start
-## (round_start_spawns) is closed first, so a respawn is never taken for it.
+## exist, then the Players' first choice (confirm_choices(), unless the script declares OWN_CHOICE),
+## then the scenario script's run(), which awaits physics ticks. The log of the Round's start
+## (round_start_spawns) is closed before run(), so a respawn is never taken for it, and a legacy
+## scenario gets its re-choice after every destruction from here on.
 func _run() -> void:
 	await get_tree().process_frame
-	if split.match_controller != null and split.match_controller.unit_spawned.is_connected(_on_round_start_spawn):
-		split.match_controller.unit_spawned.disconnect(_on_round_start_spawn)
 	if DisplayServer.get_name() == "headless":
 		get_window().size = WINDOW_SIZE
+	var script: GDScript = SCENARIOS[scenario]
+	if not bool(script.get_script_constant_map().get(OWN_CHOICE_CONSTANT, false)):
+		await confirm_choices()
+	if split.match_controller != null:
+		if split.match_controller.unit_spawned.is_connected(_on_round_start_spawn):
+			split.match_controller.unit_spawned.disconnect(_on_round_start_spawn)
+		if LEGACY_SCENARIOS.has(scenario):
+			split.match_controller.unit_destroyed.connect(_on_legacy_destroyed)
 	tracks.append(UnitTrack.new(split.player_1_unit))
 	tracks.append(UnitTrack.new(split.player_2_unit))
-	var entry: RefCounted = SCENARIOS[scenario].new()
+	var entry: RefCounted = script.new()
 	await entry.run(self)
 
 
-## Logs a unit_spawned that arrives before the first frame: the start of the Round (round_start_spawns).
+## Gives the scenarios written before Story 005 (LEGACY_SCENARIOS) the data they were measured with,
+## on the shared resources and before the launch scene is instanced, so that their outputs stay what
+## they were while the shipped data changes: on motorbike_stats.tres the Motorbike's collision mask
+## (LEGACY_MOTORBIKE_COLLISION_MASK) and hit points (LEGACY_MOTORBIKE_HIT_POINTS), on
+## match_rules.tres the debug damage (LEGACY_DEBUG_DAMAGE), which the shipped data sets to zero so
+## the debug keys are off in the game (the code stays, gated by the data). Each resource that fails
+## to load is an error and is skipped. A scenario of Story 005 or later runs on the shipped data.
+func _apply_legacy_data() -> void:
+	var motorbike: UnitStats = load(MOTORBIKE_STATS_PATH) as UnitStats
+	if motorbike == null:
+		push_error("split_screen_harness: %s did not load as UnitStats, so the legacy Motorbike data is not applied." % MOTORBIKE_STATS_PATH)
+	else:
+		motorbike.collision_mask = LEGACY_MOTORBIKE_COLLISION_MASK
+		motorbike.max_hit_points = LEGACY_MOTORBIKE_HIT_POINTS
+	var rules: MatchRules = load(MATCH_RULES_PATH) as MatchRules
+	if rules == null:
+		push_error("split_screen_harness: %s did not load as MatchRules, so the legacy debug damage is not applied." % MATCH_RULES_PATH)
+		return
+	rules.debug_damage = LEGACY_DEBUG_DAMAGE
+
+
+## Logs a unit_spawned that arrives before the scenario starts: the start of the Round
+## (round_start_spawns).
 func _on_round_start_spawn(player_index: int) -> void:
 	round_start_spawns.append(player_index)
+
+
+## The physical key of a Player's fire action: Space for Player 1, Period for Player 2.
+func fire_key(player: int) -> Key:
+	return PLAYER_1_FIRE_KEY if player == PLAYER_1 else PLAYER_2_FIRE_KEY
+
+
+## Makes every Player who is choosing confirm the type at its cursor (the Motorbike, where nothing
+## has moved the cursor) with a real press of that Player's fire key, and waits, in raw physics
+## ticks that do not count in ticks, until those Players' Units are in play, at most
+## CHOICE_LIMIT_TICKS; each key is released on the tick the controller accepts the choice
+## (_on_choice_confirmed()), a tick or more before the Unit appears (the bench settle), and any
+## still held at the end is released then. A Player who is not choosing (in play, or with a standing
+## choice) gets no key, so a weapon is never fired by this. The runner's one place for the first
+## choice: before run(), unless the scenario declares OWN_CHOICE, and after a restart, where
+## round_over and canister_showcase call it. A CHECK fails when the Units did not appear. A
+## coroutine: await it.
+func confirm_choices() -> void:
+	var controller: MatchController = split.match_controller
+	if controller == null:
+		return
+	var pending: Array[int] = []
+	for player: int in [PLAYER_1, PLAYER_2]:
+		if controller.is_choosing(player):
+			pending.append(player)
+			_choice_key_held[player] = true
+			set_key(fire_key(player), true)
+	var left: int = CHOICE_LIMIT_TICKS
+	while left > 0 and not _all_alive(controller, pending):
+		await get_tree().physics_frame
+		left -= 1
+	for player: int in pending:
+		_choice_key_held[player] = false
+		set_key(fire_key(player), false)
+	if not _all_alive(controller, pending):
+		check("choice", false, "the chosen Units did not appear within %d physics ticks: alive p1=%s p2=%s" % [
+			CHOICE_LIMIT_TICKS, controller.is_alive(PLAYER_1), controller.is_alive(PLAYER_2)])
+
+
+## True when every listed Player's Unit is in play.
+func _all_alive(controller: MatchController, players: Array[int]) -> bool:
+	for player: int in players:
+		if not controller.is_alive(player):
+			return false
+	return true
+
+
+## The controller accepted a choice: the fire key the runner held for it goes up on this very tick,
+## before the fire input reads it. A key the runner does not hold for a choice is left alone.
+func _on_choice_confirmed(player_index: int, _type_index: int) -> void:
+	if player_index >= 0 and player_index < _choice_key_held.size() and _choice_key_held[player_index]:
+		_choice_key_held[player_index] = false
+		set_key(fire_key(player_index), false)
+
+
+## A legacy scenario's Unit was destroyed: the runner makes that Player's choice at once,
+## LEGACY_TYPE_INDEX (the Motorbike), by the controller's own choose() and with no key, inside the
+## destruction's own tick. The choice is in before the due frame however short the delay, so the
+## respawn comes exactly when it did before the choice existed, and no fire key is down when the
+## Unit appears (a held one stays unarmed until released: PlayerFireInput). Connected to
+## unit_destroyed for LEGACY_SCENARIOS only.
+func _on_legacy_destroyed(player_index: int) -> void:
+	if is_instance_valid(split) and split.match_controller != null:
+		split.match_controller.choose(player_index, LEGACY_TYPE_INDEX)
 
 
 ## The scenario named by --scenario=NAME among the user arguments, or an empty name.

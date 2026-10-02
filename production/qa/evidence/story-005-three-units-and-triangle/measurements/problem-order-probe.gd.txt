@@ -1,0 +1,19 @@
+extends SceneTree
+## Scratch: the order of UnitChoice._first_problem() after its split in three.
+func _initialize() -> void:
+	var scene: PackedScene = load("res://src/ui/hud/unit_choice.tscn") as PackedScene
+	var panel: UnitChoice = scene.instantiate() as UnitChoice
+	print("ORDER 1 no exports      -> ", panel._first_problem())
+	panel.match_controller = MatchController.new()
+	print("ORDER 2 controller only -> ", panel._first_problem())
+	panel.choice_input = PlayerChoiceInput.new()
+	print("ORDER 3 + input         -> ", panel._first_problem())
+	panel.player_index = 0
+	print("ORDER 4 + index         -> ", panel._first_problem())
+	panel.action_prefix = &"p1_"
+	var saved: String = panel.title_text
+	panel.title_text = ""
+	print("ORDER 5 + prefix, title cleared -> ", panel._first_problem())
+	panel.title_text = saved
+	print("ORDER 6 texts ok, no nodes (not in the tree) -> ", panel._first_problem())
+	quit(0)

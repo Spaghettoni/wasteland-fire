@@ -1,0 +1,77 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PROBE godot=4.7.2-stable (official) physics_engine=Jolt Physics layer_5=gyrocopters layer_6=cliffs_water
+PROBE actions present: p1_fire=true p2_fire=true
+ERROR: Not supported by this display server.
+   at: keyboard_get_label_from_physical (servers/display/display_server.cpp:1228)
+   GDScript backtrace (most recent call first):
+       [0] _text_probe (res://probe/probe_input.gd:84)
+       [1] _main (res://probe/probe_input.gd:175)
+ERROR: Not supported by this display server.
+   at: keyboard_get_keycode_from_physical (servers/display/display_server.cpp:1224)
+   GDScript backtrace (most recent call first):
+       [0] _text_probe (res://probe/probe_input.gd:85)
+       [1] _main (res://probe/probe_input.gd:175)
+PROBE text p1_fire: physical=32 keycode=0 key_label=0 location=0 device=-1 shift=false OS.get_keycode_string(physical)=[Space] as_text_physical_keycode=[Space] as_text_key_label=[(unset)] as_text_keycode=[(unset)] as_text_location=[] as_text=[Space - Physical] kb_label_from_physical=[Space] kb_keycode_from_physical=[Space]
+ERROR: Not supported by this display server.
+   at: keyboard_get_label_from_physical (servers/display/display_server.cpp:1228)
+   GDScript backtrace (most recent call first):
+       [0] _text_probe (res://probe/probe_input.gd:84)
+       [1] _main (res://probe/probe_input.gd:176)
+ERROR: Not supported by this display server.
+   at: keyboard_get_keycode_from_physical (servers/display/display_server.cpp:1224)
+   GDScript backtrace (most recent call first):
+       [0] _text_probe (res://probe/probe_input.gd:85)
+       [1] _main (res://probe/probe_input.gd:176)
+PROBE text p2_fire: physical=4194325 keycode=0 key_label=0 location=2 device=-1 shift=false OS.get_keycode_string(physical)=[Shift] as_text_physical_keycode=[Shift] as_text_key_label=[(unset)] as_text_keycode=[(unset)] as_text_location=[right] as_text=[Shift] kb_label_from_physical=[Shift] kb_keycode_from_physical=[Shift]
+ERROR: Not supported by this display server.
+   at: keyboard_get_label_from_physical (servers/display/display_server.cpp:1228)
+   GDScript backtrace (most recent call first):
+       [0] _text_probe (res://probe/probe_input.gd:84)
+       [1] _main (res://probe/probe_input.gd:177)
+ERROR: Not supported by this display server.
+   at: keyboard_get_keycode_from_physical (servers/display/display_server.cpp:1224)
+   GDScript backtrace (most recent call first):
+       [0] _text_probe (res://probe/probe_input.gd:85)
+       [1] _main (res://probe/probe_input.gd:177)
+PROBE text p2_steer_left: physical=4194319 keycode=0 key_label=0 location=0 device=-1 shift=false OS.get_keycode_string(physical)=[Left] as_text_physical_keycode=[Left] as_text_key_label=[(unset)] as_text_keycode=[(unset)] as_text_location=[] as_text=[Left] kb_label_from_physical=[Left] kb_keycode_from_physical=[Left]
+ERROR: Not supported by this display server.
+   at: keyboard_get_label_from_physical (servers/display/display_server.cpp:1228)
+   GDScript backtrace (most recent call first):
+       [0] _text_probe (res://probe/probe_input.gd:84)
+       [1] _main (res://probe/probe_input.gd:178)
+ERROR: Not supported by this display server.
+   at: keyboard_get_keycode_from_physical (servers/display/display_server.cpp:1224)
+   GDScript backtrace (most recent call first):
+       [0] _text_probe (res://probe/probe_input.gd:85)
+       [1] _main (res://probe/probe_input.gd:178)
+PROBE text p1_steer_left: physical=65 keycode=0 key_label=0 location=0 device=-1 shift=false OS.get_keycode_string(physical)=[A] as_text_physical_keycode=[A] as_text_key_label=[(unset)] as_text_keycode=[(unset)] as_text_location=[] as_text=[A - Physical] kb_label_from_physical=[A] kb_keycode_from_physical=[A]
+PROBE A1 LEFT shift (keycode+physical, shift_pressed, loc LEFT) | after press: p1_fire=false p2_fire=false p2_throttle=false p2_steer_left=false | after release: p1_fire=false p2_fire=false p2_throttle=false p2_steer_left=false
+PROBE A2 RIGHT shift (keycode+physical, shift_pressed, loc RIGHT) | after press: p1_fire=false p2_fire=true p2_throttle=false p2_steer_left=false | after release: p1_fire=false p2_fire=false p2_throttle=false p2_steer_left=false
+PROBE A3 shift, location UNSPECIFIED (keycode+physical, shift_pressed) | after press: p1_fire=false p2_fire=false p2_throttle=false p2_steer_left=false | after release: p1_fire=false p2_fire=false p2_throttle=false p2_steer_left=false
+PROBE A4 physical-only RIGHT (harness set_key style + location) | after press: p1_fire=false p2_fire=true p2_throttle=false p2_steer_left=false | after release: p1_fire=false p2_fire=false p2_throttle=false p2_steer_left=false
+PROBE A5 physical-only LEFT | after press: p1_fire=false p2_fire=false p2_throttle=false p2_steer_left=false | after release: p1_fire=false p2_fire=false p2_throttle=false p2_steer_left=false
+PROBE A6 physical-only UNSPECIFIED (harness that omits location) | after press: p1_fire=false p2_fire=false p2_throttle=false p2_steer_left=false | after release: p1_fire=false p2_fire=false p2_throttle=false p2_steer_left=false
+PROBE A7 press RIGHT, release UNSPECIFIED | after press: p1_fire=false p2_fire=true p2_throttle=false p2_steer_left=false | after release: p1_fire=false p2_fire=true p2_throttle=false p2_steer_left=false
+PROBE A8 press RIGHT, release LEFT | after press: p1_fire=false p2_fire=true p2_throttle=false p2_steer_left=false | after release: p1_fire=false p2_fire=true p2_throttle=false p2_steer_left=false
+PROBE A9 press UNSPECIFIED, release RIGHT | after press: p1_fire=false p2_fire=false p2_throttle=false p2_steer_left=false | after release: p1_fire=false p2_fire=false p2_throttle=false p2_steer_left=false
+PROBE B1 Space physical-only | after press: p1_fire=true p2_fire=false p2_throttle=false p2_steer_left=false | after release: p1_fire=false p2_fire=false p2_throttle=false p2_steer_left=false
+PROBE B2 Space keycode+physical, shift_pressed=true | after press: p1_fire=true p2_fire=false p2_throttle=false p2_steer_left=false | after release: p1_fire=false p2_fire=false p2_throttle=false p2_steer_left=false
+PROBE mod: hold Right Shift -> p1_fire=false p2_fire=true p2_throttle=false p2_steer_left=false
+PROBE mod: + UP(shift_pressed=true) -> p1_fire=false p2_fire=true p2_throttle=true p2_steer_left=false | exact_match p2_throttle=false axis(p2_reverse,p2_throttle)=1.0
+PROBE mod: + LEFT(shift_pressed=true) -> p1_fire=false p2_fire=true p2_throttle=true p2_steer_left=true
+PROBE mod: all released -> p1_fire=false p2_fire=false p2_throttle=false p2_steer_left=false
+PROBE mod: UP alone with shift_pressed=true -> p1_fire=false p2_fire=false p2_throttle=true p2_steer_left=false
+PROBE timing case1: injected in a physics_frame continuation at frames=5 (4 ticks of rows per watcher):
+PROBE     prio-100: frames=4 just_pressed=false pressed=false ;; prio-100: frames=5 just_pressed=false pressed=true ;; prio-100: frames=6 just_pressed=true pressed=true ;; prio-100: frames=7 just_pressed=false pressed=true
+PROBE     prio0: frames=4 just_pressed=false pressed=false ;; prio0: frames=5 just_pressed=false pressed=true ;; prio0: frames=6 just_pressed=true pressed=true ;; prio0: frames=7 just_pressed=false pressed=true
+PROBE     prio+100: frames=4 just_pressed=false pressed=false ;; prio+100: frames=5 just_pressed=false pressed=true ;; prio+100: frames=6 just_pressed=true pressed=true ;; prio+100: frames=7 just_pressed=false pressed=true
+PROBE timing case2: injected from a node _physics_process (prio 0) at frames=13:
+PROBE     prio-100: frames=11 just_pressed=false pressed=false ;; prio-100: frames=12 just_pressed=false pressed=false ;; prio-100: frames=13 just_pressed=false pressed=false ;; prio-100: frames=14 just_pressed=true pressed=true
+PROBE     prio0: frames=11 just_pressed=false pressed=false ;; prio0: frames=12 just_pressed=false pressed=false ;; prio0: frames=13 just_pressed=false pressed=false ;; prio0: frames=14 just_pressed=true pressed=true
+PROBE     prio+100: frames=11 just_pressed=false pressed=false ;; prio+100: frames=12 just_pressed=false pressed=false ;; prio+100: frames=13 just_pressed=false pressed=true ;; prio+100: frames=14 just_pressed=true pressed=true
+PROBE timing case3: injected in a process_frame (idle) continuation, frames=19:
+PROBE     prio-100: frames=19 just_pressed=false pressed=false ;; prio-100: frames=20 just_pressed=true pressed=true ;; prio-100: frames=21 just_pressed=false pressed=true ;; prio-100: frames=22 just_pressed=false pressed=true
+PROBE     prio0: frames=19 just_pressed=false pressed=false ;; prio0: frames=20 just_pressed=true pressed=true ;; prio0: frames=21 just_pressed=false pressed=true ;; prio0: frames=22 just_pressed=false pressed=true
+PROBE     prio+100: frames=19 just_pressed=false pressed=false ;; prio+100: frames=20 just_pressed=true pressed=true ;; prio+100: frames=21 just_pressed=false pressed=true ;; prio+100: frames=22 just_pressed=false pressed=true
+PROBE round-trip save_custom err=0

@@ -137,6 +137,14 @@ const COMBINATIONS: Array[Dictionary] = [
 		"name": "P1 reverse+right / P2 reverse+left",
 		"actions": [&"p1_reverse", &"p1_steer_right", &"p2_reverse", &"p2_steer_left"],
 	},
+	{
+		"name": "P1 throttle+left+right+fire",
+		"actions": [&"p1_throttle", &"p1_steer_left", &"p1_steer_right", &"p1_fire"],
+	},
+	{
+		"name": "P2 throttle+left+right+fire",
+		"actions": [&"p2_throttle", &"p2_steer_left", &"p2_steer_right", &"p2_fire"],
+	},
 ]
 
 ## The window title.
