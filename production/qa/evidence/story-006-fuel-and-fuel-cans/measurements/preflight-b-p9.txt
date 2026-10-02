@@ -1,0 +1,7 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PROBE P9 sandbox_motorbike(never spawned) type=motorbike layer=2 ticks=140 A_vs_C_no_can_control_max_diff_m=0.000000000000 A_vs_B_with_can_max_diff_m=0.000000000000 final_z=-16.4000 | geometric_inside: first_idx=91 last_idx=105 count=15 | in_overlap_list: first_idx=92 last_idx=106 count=15 | entry_latency_ticks=1 exit_latency_ticks=1
+PROBE P9 truck(spawned) type=truck layer=2 ticks=260 A_vs_C_no_can_control_max_diff_m=0.000000000000 A_vs_B_with_can_max_diff_m=0.000000000000 final_z=-15.5417 | geometric_inside: first_idx=153 last_idx=194 count=42 | in_overlap_list: first_idx=154 last_idx=195 count=42 | entry_latency_ticks=1 exit_latency_ticks=1
+PROBE P9 gyrocopter(spawned) type=gyrocopter layer=16 ticks=160 A_vs_C_no_can_control_max_diff_m=0.000000000000 A_vs_B_with_can_max_diff_m=0.000000000000 final_z=-9.6308 | geometric_inside: first_idx=114 last_idx=134 count=21 | in_overlap_list: first_idx=115 last_idx=135 count=21 | entry_latency_ticks=1 exit_latency_ticks=1
+
+--STDERR--

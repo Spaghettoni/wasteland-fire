@@ -1,0 +1,4 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PROBE p2.env godot=4.7.2-stable (official) physics_ticks_per_second=60 max_fps=0 time_scale=1.00 args=-s /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a0bbb76e-4a11-49a3-9a86-8984abd2268d/scratchpad/dev-story-006/preflight/a/probe_frames.gd root_process_mode=1
+PROBE p2.steady ticks=240 wall_ms=3950 physics_frame_delta_histogram={ 1: 239 } process_frame_delta_histogram={ 0: 2, 4: 1, 2: 138, 3: 98 } continuation_frame_seen_by_node_physics_process=239/240 node_calls=239 first_frame=1 last_frame=240 node_to_node_process_frames_per_tick min=0 max=4

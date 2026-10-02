@@ -1,0 +1,346 @@
+extends SceneTree
+## Story 006 slice A2 probe (throwaway, never in the repo): measures the Unit's tank on the real
+## unit.gd with the shipped data, headless at --fixed-fps 60, on a floor and a wall built here.
+
+const MOTO_SCENE: String = "res://src/gameplay/units/motorbike.tscn"
+const TYPES: Array[String] = ["motorbike", "buggy", "truck", "gyrocopter"]
+const STATS_PATH: String = "res://src/gameplay/units/data/%s_stats.tres"
+const DRIVE_TICKS: int = 1760
+
+var _world: Node3D
+var _fails: int = 0
+var _events: Dictionary = {}
+var _samples: Dictionary = {}
+var _tracked: Array[Unit] = []
+var _four: Array[Unit] = []
+
+
+func _initialize() -> void:
+	_run()
+
+
+func _stats(type_name: String) -> UnitStats:
+	return load(STATS_PATH % type_name) as UnitStats
+
+
+func _check(label: String, ok: bool, detail: String) -> void:
+	print("PROBE %s %s | %s" % ["PASS" if ok else "FAIL", label, detail])
+	if not ok:
+		_fails += 1
+
+
+func _box(size: Vector3, at: Vector3) -> void:
+	var body: StaticBody3D = StaticBody3D.new()
+	body.collision_layer = 1
+	body.collision_mask = 0
+	var shape_node: CollisionShape3D = CollisionShape3D.new()
+	var box: BoxShape3D = BoxShape3D.new()
+	box.size = size
+	shape_node.shape = box
+	body.add_child(shape_node)
+	body.position = at
+	_world.add_child(body)
+
+
+func _new_unit(label: String, at: Vector3) -> Unit:
+	var unit: Unit = (load(MOTO_SCENE) as PackedScene).instantiate() as Unit
+	unit.name = label
+	unit.position = at
+	_world.add_child(unit)
+	var events: Array = []
+	_events[unit] = events
+	unit.hit_points_changed.connect(func(v: float, m: float) -> void: events.append(["hp", v, m, Engine.get_physics_frames(), Engine.is_in_physics_frame()]))
+	unit.fuel_changed.connect(func(v: float, c: float) -> void: events.append(["fuel", v, c, Engine.get_physics_frames(), Engine.is_in_physics_frame()]))
+	unit.destroyed.connect(func() -> void: events.append(["destroyed", 0.0, 0.0, Engine.get_physics_frames(), Engine.is_in_physics_frame()]))
+	return unit
+
+
+func _mark(unit: Unit) -> int:
+	return (_events[unit] as Array).size()
+
+
+func _ev(unit: Unit, from_index: int) -> Array:
+	return (_events[unit] as Array).slice(from_index)
+
+
+func _names(events: Array) -> String:
+	var parts: PackedStringArray = []
+	for e: Array in events:
+		parts.append(str(e[0]))
+	return " ".join(parts)
+
+
+func _show(events: Array) -> String:
+	var parts: PackedStringArray = []
+	for e: Array in events:
+		parts.append("%s(%s,%s)" % [e[0], e[1], e[2]])
+	return " ".join(parts)
+
+
+func _track(unit: Unit) -> void:
+	_tracked.append(unit)
+	_samples[unit] = {}
+
+
+func _frames(count: int) -> void:
+	for _i: int in count:
+		await physics_frame
+		var frame: int = Engine.get_physics_frames()
+		for unit: Unit in _tracked:
+			var table: Dictionary = _samples[unit]
+			table[frame] = [unit.current_speed, unit.global_position, unit.global_rotation.y, unit.fuel]
+
+
+func _yaw_sum(table: Dictionary, from_frame: int, to_frame: int) -> float:
+	var total: float = 0.0
+	for frame: int in range(from_frame, to_frame):
+		total += wrapf(float(table[frame + 1][2]) - float(table[frame][2]), -PI, PI)
+	return total
+
+
+func _run() -> void:
+	_world = Node3D.new()
+	root.add_child(_world)
+	_box(Vector3(600.0, 1.0, 600.0), Vector3(0.0, -0.5, 0.0))
+	_box(Vector3(12.0, 3.0, 1.0), Vector3(0.0, 1.5, -112.5))
+	await _frames(2)
+	await _t_spawn_and_idle()
+	await _t_drive_until_empty()
+	await _t_empty_controls()
+	await _t_coast()
+	await _t_wall()
+	await _t_respawn_and_guards()
+	await _t_never_spawned()
+	print("PROBE DONE fails=%d" % _fails)
+	_tracked.clear()
+	_events.clear()
+	_samples.clear()
+	_four.clear()
+	_world.queue_free()
+	await physics_frame
+	await physics_frame
+	quit(1 if _fails > 0 else 0)
+
+
+func _t_spawn_and_idle() -> void:
+	for i: int in TYPES.size():
+		_four.append(_new_unit("U_" + TYPES[i], Vector3(-90.0 + 60.0 * i, 0.0, 0.0)))
+	await _frames(3)
+	for i: int in TYPES.size():
+		var unit: Unit = _four[i]
+		var ready_fuel: float = unit.fuel
+		var ready_events: int = _mark(unit)
+		unit.spawn(Transform3D(Basis.IDENTITY, Vector3(-90.0 + 60.0 * i, 0.0, 0.0)), _stats(TYPES[i]))
+		var events: Array = _ev(unit, ready_events)
+		var ok: bool = ready_fuel == 100.0 and ready_events == 0 and _names(events) == "hp fuel"
+		ok = ok and float(events[1][1]) == 50.0 and float(events[1][2]) == 100.0 and unit.fuel == 50.0
+		ok = ok and unit.fuel_capacity == 100.0 and not unit.is_fuel_empty
+		_check("spawn_partial_tank_" + TYPES[i], ok, "fuel_before_spawn(_ready)=%s events_before_spawn=%d spawn_events=[%s] fuel=%s capacity=%s empty=%s" % [ready_fuel, ready_events, _show(events), unit.fuel, unit.fuel_capacity, unit.is_fuel_empty])
+		_track(unit)
+	var marks: Array[int] = []
+	for unit: Unit in _four:
+		marks.append(_mark(unit))
+	await _frames(600)
+	for i: int in TYPES.size():
+		var unit: Unit = _four[i]
+		var after: Array = _ev(unit, marks[i])
+		var ok: bool = after.is_empty() and unit.fuel == 50.0 and unit.is_alive and unit.current_speed == 0.0
+		_check("standing_600_ticks_burns_nothing_" + TYPES[i], ok, "events=%d fuel=%s alive=%s drive_speed=%s" % [after.size(), unit.fuel, unit.is_alive, unit.current_speed])
+
+
+func _t_drive_until_empty() -> void:
+	var marks: Array[int] = []
+	for unit: Unit in _four:
+		marks.append(_mark(unit))
+		unit.set_drive_input(1.0, 1.0)
+	var start: int = Engine.get_physics_frames()
+	await _frames(DRIVE_TICKS)
+	for i: int in TYPES.size():
+		_report_drive(_four[i], TYPES[i], _ev(_four[i], marks[i]), start)
+
+
+func _report_drive(unit: Unit, type_name: String, events: Array, start: int) -> void:
+	var use: float = unit.stats.fuel_use
+	var table: Dictionary = _samples[unit]
+	var burns: Dictionary = {}
+	var empty_frame: int = -1
+	for e: Array in events:
+		if str(e[0]) == "fuel" and empty_frame < 0:
+			burns[int(e[3])] = true
+			if float(e[1]) == 0.0:
+				empty_frame = int(e[3])
+	var mismatches: int = 0
+	for frame: int in range(start, empty_frame + 1):
+		if (not is_zero_approx(float(table[frame][0]))) != burns.has(frame):
+			mismatches += 1
+	var expected: int = roundi(50.0 / use * 60.0)
+	_check("burn_to_empty_" + type_name, burns.size() == expected and mismatches == 0, "burning_ticks_until_exactly_0.0=%d expected=50/fuel_use*60=%d empty_on_frame=start+%d burn_ticks_vs_(start_speed_not_zero_approx)_mismatches=%d" % [burns.size(), expected, empty_frame - start, mismatches])
+	var drop: float = 50.0 - float(table[start + 120][3])
+	_check("full_throttle_2s_" + type_name, absf(drop - use * 2.0) <= use / 60.0 + 1e-9, "burned_in_120_ticks=%.9f fuel_use*2s=%.9f diff=%.9f one_tick=%.9f" % [drop, use * 2.0, drop - use * 2.0, use / 60.0])
+	if unit.stats.can_fly:
+		_report_crash(unit, events, empty_frame, table)
+	else:
+		_report_stranded(unit, type_name, empty_frame, table)
+
+
+func _report_crash(unit: Unit, events: Array, empty_frame: int, table: Dictionary) -> void:
+	var destroyed_count: int = 0
+	var on_tick: Array = []
+	var all_physics: bool = true
+	for e: Array in events:
+		if str(e[0]) == "destroyed":
+			destroyed_count += 1
+		if int(e[3]) == empty_frame:
+			on_tick.append(e)
+			all_physics = all_physics and bool(e[4])
+	var moved: float = (table[empty_frame + 1][1] as Vector3).distance_to(table[empty_frame][1] as Vector3)
+	var later: float = (table[empty_frame + 100][1] as Vector3).distance_to(table[empty_frame][1] as Vector3)
+	var ok: bool = destroyed_count == 1 and _names(on_tick) == "fuel hp fuel destroyed" and all_physics and moved == 0.0
+	ok = ok and not unit.is_alive and not unit.is_physics_processing() and unit.hit_points == 0.0 and unit.fuel == 0.0
+	_check("gyro_fuel_crash", ok, "destroyed_count=%d events_on_crash_tick=[%s] all_inside_physics_frame=%s moved_on_crash_tick=%s moved_100_ticks_later=%s alive=%s physics_processing=%s hp=%s fuel=%s" % [destroyed_count, _show(on_tick), all_physics, moved, later, unit.is_alive, unit.is_physics_processing(), unit.hit_points, unit.fuel])
+
+
+func _report_stranded(unit: Unit, type_name: String, empty_frame: int, table: Dictionary) -> void:
+	var last: int = Engine.get_physics_frames()
+	var zero_frame: int = -1
+	var residue: int = 0
+	for frame: int in range(empty_frame + 1, last + 1):
+		var speed: float = table[frame][0]
+		if speed != 0.0 and is_zero_approx(speed):
+			residue += 1
+		if zero_frame < 0 and speed == 0.0:
+			zero_frame = frame
+	var stays: bool = zero_frame > 0
+	var drift: float = 0.0
+	var p0: Vector3 = table[maxi(zero_frame, 0)][1]
+	for frame: int in range(maxi(zero_frame, 0), last + 1):
+		var p: Vector3 = table[frame][1]
+		stays = stays and float(table[frame][0]) == 0.0
+		drift = maxf(drift, Vector2(p.x - p0.x, p.z - p0.z).length())
+	var rolling: float = _yaw_sum(table, empty_frame, empty_frame + 30) / 0.5
+	var standing: float = _yaw_sum(table, zero_frame, zero_frame + 60) / 1.0
+	var rate: float = unit.stats.empty_turn_rate
+	var ok: bool = stays and drift < 1e-6 and absf(rolling - rate) < 1e-6 and absf(standing - rate) < 1e-6 and unit.is_fuel_empty
+	_check("empty_held_throttle_" + type_name, ok, "coast_ticks_to_exactly_0.0=%d residue_ticks=%d speed_stays_0.0_with_throttle_held_%d_ticks=%s horizontal_drift_after_stop=%.12f yaw_rate_rolling=%.9f yaw_rate_standing_60_ticks=%.9f empty_turn_rate=%s is_fuel_empty=%s" % [zero_frame - empty_frame, residue, last - zero_frame, stays, drift, rolling, standing, rate, unit.is_fuel_empty])
+
+
+func _t_empty_controls() -> void:
+	var truck: Unit = _four[2]
+	truck.set_drive_input(-1.0, 0.0)
+	var p0: Vector3 = truck.global_position
+	var y0: float = truck.global_rotation.y
+	await _frames(60)
+	var rev_ok: bool = truck.current_speed == 0.0 and truck.global_position.distance_to(p0) == 0.0
+	_check("empty_reverse_ignored_truck", rev_ok, "drive_speed=%s moved_60_ticks=%s yaw_change=%s" % [truck.current_speed, truck.global_position.distance_to(p0), wrapf(truck.global_rotation.y - y0, -PI, PI)])
+	var mark: int = _mark(truck)
+	var added: float = truck.refuel(10.0)
+	var empty_after: bool = truck.is_fuel_empty
+	var events: Array = _ev(truck, mark)
+	truck.set_drive_input(0.0, 1.0)
+	y0 = truck.global_rotation.y
+	await _frames(10)
+	var yaw_still: float = wrapf(truck.global_rotation.y - y0, -PI, PI)
+	p0 = truck.global_position
+	truck.set_drive_input(1.0, 0.0)
+	await _frames(1)
+	var speed_1: float = truck.current_speed
+	await _frames(29)
+	var ok: bool = added == 10.0 and not empty_after and _show(events) == "fuel(10.0,100.0)" and yaw_still == 0.0
+	ok = ok and speed_1 > 0.0 and truck.global_position.distance_to(p0) > 0.1
+	_check("refuel_ends_empty_truck", ok, "refuel(10)=%s is_fuel_empty_right_after=%s events=[%s] yaw_10_ticks_steer_at_standstill_after_refuel=%s drive_speed_after_1_tick=%s moved_30_ticks=%.4f fuel_after_30_ticks=%.9f" % [added, empty_after, _show(events), yaw_still, speed_1, truck.global_position.distance_to(p0), truck.fuel])
+	var buggy: Unit = _four[1]
+	mark = _mark(buggy)
+	var was_empty: bool = buggy.is_fuel_empty
+	buggy.destroy()
+	events = _ev(buggy, mark)
+	_check("destroy_at_zero_fuel_buggy", was_empty and _show(events) == "hp(0.0,100.0) fuel(0.0,100.0) destroyed(0.0,0.0)" and not buggy.is_alive, "was_empty=%s events=[%s] alive=%s" % [was_empty, _show(events), buggy.is_alive])
+	var moto: Unit = _four[0]
+	mark = _mark(moto)
+	moto.leave_play()
+	events = _ev(moto, mark)
+	_check("leave_play_at_zero_fuel_motorbike", _show(events) == "hp(0.0,40.0) fuel(0.0,100.0)" and not moto.is_alive, "events=[%s] alive=%s" % [_show(events), moto.is_alive])
+
+
+func _t_coast() -> void:
+	var truck: Unit = _new_unit("U_coast", Vector3(60.0, 0.0, 150.0))
+	await _frames(3)
+	truck.spawn(Transform3D(Basis.IDENTITY, Vector3(60.0, 0.0, 150.0)), _stats("truck"))
+	await _frames(3)
+	var mark: int = _mark(truck)
+	truck.set_drive_input(1.0, 0.0)
+	await _frames(73)
+	truck.set_drive_input(0.0, 0.0)
+	await _frames(130)
+	var events: Array = _ev(truck, mark)
+	var expected_fuel: float = 50.0 - 181.0 * 3.0 / 60.0
+	_check("coast_burn_ticks_truck", events.size() == 181 and absf(truck.fuel - expected_fuel) < 1e-9 and truck.current_speed == 0.0, "burning_ticks(73_accelerating+130_coasting)=%d (C1: 181) fuel=%.12f expected=%.12f drive_speed=%s" % [events.size(), truck.fuel, expected_fuel, truck.current_speed])
+
+
+func _t_wall() -> void:
+	var bike: Unit = _new_unit("U_wall", Vector3(0.0, 0.0, -100.0))
+	await _frames(3)
+	bike.spawn(Transform3D(Basis.IDENTITY, Vector3(0.0, 0.0, -100.0)), _stats("motorbike"))
+	await _frames(3)
+	bike.set_drive_input(1.0, 0.0)
+	await _frames(120)
+	var p0: Vector3 = bike.global_position
+	var f0: float = bike.fuel
+	var mark: int = _mark(bike)
+	await _frames(60)
+	var events: Array = _ev(bike, mark)
+	var moved: float = bike.global_position.distance_to(p0)
+	var ok: bool = bike.current_speed == 24.0 and moved < 0.01 and events.size() == 60 and absf((f0 - bike.fuel) - 2.0) < 1e-9
+	_check("pinned_on_wall_keeps_burning_motorbike", ok, "drive_speed=%s real_velocity=%.6f moved_60_ticks=%.6f z=%.4f burn_events_60_ticks=%d burned=%.12f" % [bike.current_speed, bike.get_real_velocity().length(), moved, bike.global_position.z, events.size(), f0 - bike.fuel])
+
+
+func _t_respawn_and_guards() -> void:
+	var buggy: Unit = _four[1]
+	await _frames(3)
+	var at: Transform3D = Transform3D(Basis.IDENTITY, Vector3(-30.0, 0.0, 40.0))
+	var mark: int = _mark(buggy)
+	buggy.spawn(at)
+	var respawn_fuel: float = buggy.fuel
+	var events: Array = _ev(buggy, mark)
+	var added_full: float = buggy.refuel(100.0)
+	var full_fuel: float = buggy.fuel
+	mark = _mark(buggy)
+	var r_full: float = buggy.refuel(5.0)
+	var full_events: int = _ev(buggy, mark).size()
+	_check("respawn_partial_then_refuel_to_full", respawn_fuel == 50.0 and _names(events) == "hp fuel" and added_full == 50.0 and full_fuel == 100.0 and r_full == 0.0 and full_events == 0, "respawn_fuel=%s events=[%s] refuel(100)=%s fuel=%s refuel(5)_on_full=%s events=%d" % [respawn_fuel, _show(events), added_full, full_fuel, r_full, full_events])
+	buggy.destroy()
+	mark = _mark(buggy)
+	var r_dead: float = buggy.refuel(5.0)
+	var dead_events: int = _ev(buggy, mark).size()
+	await _frames(3)
+	mark = _mark(buggy)
+	buggy.spawn(at, _stats("truck"))
+	events = _ev(buggy, mark)
+	_check("full_tank_destroyed_respawns_partial", r_dead == 0.0 and dead_events == 0 and buggy.fuel == 50.0 and buggy.type_id == &"truck" and _names(events) == "hp fuel", "refuel(5)_on_destroyed=%s events=%d respawn_as=%s fuel=%s events=[%s]" % [r_dead, dead_events, buggy.type_id, buggy.fuel, _show(events)])
+	mark = _mark(buggy)
+	var r_neg: float = buggy.refuel(-5.0)
+	var r_nan: float = buggy.refuel(NAN)
+	var r_zero: float = buggy.refuel(0.0)
+	var bad_events: int = _ev(buggy, mark).size()
+	_check("refuel_ignored_amounts", r_neg == 0.0 and r_nan == 0.0 and r_zero == 0.0 and bad_events == 0 and buggy.fuel == 50.0, "refuel(-5)=%s refuel(NAN)=%s refuel(0)=%s events=%d fuel=%s" % [r_neg, r_nan, r_zero, bad_events, buggy.fuel])
+	print("PROBE MARK readonly-begin")
+	buggy.fuel = 1.0
+	buggy.fuel_capacity = 1.0
+	buggy.is_fuel_empty = true
+	print("PROBE MARK readonly-end")
+	_check("readonly_properties", buggy.fuel == 50.0 and buggy.fuel_capacity == 100.0 and not buggy.is_fuel_empty, "fuel=%s fuel_capacity=%s is_fuel_empty=%s" % [buggy.fuel, buggy.fuel_capacity, buggy.is_fuel_empty])
+
+
+func _t_never_spawned() -> void:
+	var toy: Unit = _new_unit("U_toy", Vector3(0.0, 0.0, 150.0))
+	await _frames(3)
+	var mark: int = _mark(toy)
+	toy.set_drive_input(1.0, 1.0)
+	var top: float = 0.0
+	var ever_empty: bool = false
+	for _i: int in 900:
+		await physics_frame
+		top = maxf(top, toy.current_speed)
+		ever_empty = ever_empty or toy.is_fuel_empty
+	var r: float = toy.refuel(5.0)
+	var events: Array = _ev(toy, mark)
+	_check("never_spawned_burns_nothing", toy.fuel == 100.0 and events.is_empty() and not ever_empty and top == 24.0 and r == 0.0, "fuel_after_900_ticks=%s events=%d ever_empty=%s top_drive_speed=%s refuel(5)=%s" % [toy.fuel, events.size(), ever_empty, top, r])

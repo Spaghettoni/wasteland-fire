@@ -16,6 +16,13 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fuel_fill"]
+bg_color = Color(0.96, 0.7, 0.18, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
 [node name="PlayerHud" type="Control" unique_id=1930421077]
 layout_mode = 3
 anchors_preset = 15
@@ -26,6 +33,7 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_hud")
 hit_points_format = "HP %d / %d"
+fuel_format = "Fuel %d / %d"
 carrying_text = "You carry the enemy Water Canister"
 home_text = "Your Water Canister is at home"
 away_text = "Your Water Canister is away"
@@ -48,6 +56,33 @@ layout_mode = 1
 offset_left = 16.0
 offset_top = 16.0
 offset_right = 316.0
+offset_bottom = 40.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="FuelBar" type="ProgressBar" parent="." unique_id=2006001001]
+unique_name_in_owner = true
+layout_mode = 1
+offset_left = 332.0
+offset_top = 16.0
+offset_right = 624.0
+offset_bottom = 40.0
+mouse_filter = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_fuel_fill")
+show_percentage = false
+
+[node name="FuelLabel" type="Label" parent="." unique_id=2006001002]
+unique_name_in_owner = true
+layout_mode = 1
+offset_left = 332.0
+offset_top = 16.0
+offset_right = 624.0
 offset_bottom = 40.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.06, 1)

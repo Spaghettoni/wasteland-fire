@@ -1,0 +1,25 @@
+extends SceneTree
+
+class Counter extends Logger:
+	var errors: int = 0
+	var warnings: int = 0
+
+	func _log_error(_function: String, _file: String, _line: int, _code: String, _rationale: String,
+			_editor_notify: bool, error_type: int, _script_backtraces: Array[ScriptBacktrace]) -> void:
+		if error_type == ERROR_TYPE_WARNING:
+			warnings += 1
+		else:
+			errors += 1
+
+
+func _init() -> void:
+	var counter: Counter = Counter.new()
+	OS.add_logger(counter)
+	push_error("logger probe: push_error")
+	push_warning("logger probe: push_warning")
+	var orphan: Node = Node.new()
+	orphan.get_node("missing")
+	orphan.free()
+	OS.remove_logger(counter)
+	print("LOGGER_PROBE errors=%d warnings=%d (expected 2 and 1)" % [counter.errors, counter.warnings])
+	quit()

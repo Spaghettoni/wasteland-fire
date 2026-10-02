@@ -1,0 +1,105 @@
+== 2026-10-02 14:09:55 final verification chain, story 006 (orchestrator)
+## dev06.py import
+IMPORT (scratch copy) rc=0 noisy=[]
+class cache: 229 classes; new since the repo's cache: []; gone: []
+uid sidecars copied into the repo: []
+## dev06.py parse
+PARSE rc=0 files=11
+ok: res://src/gameplay/fuel/fuel_can.gd
+ok: res://src/gameplay/fuel/fuel_can_settings.gd
+ok: res://src/gameplay/split_screen/split_screen.gd
+ok: res://src/gameplay/units/unit.gd
+ok: res://src/gameplay/units/unit_stats.gd
+ok: res://src/ui/hud/player_hud.gd
+ok: res://tools/evidence/split_screen/fuel.gd
+ok: res://tools/evidence/split_screen/fuel_cans.gd
+ok: res://tools/evidence/split_screen/fuel_kit.gd
+ok: res://tools/evidence/split_screen/fuel_showcase.gd
+ok: res://tools/evidence/split_screen_harness.gd
+
+## dev06.py regress
+STRICT drive  coast             rc=0 identical=True
+STRICT drive  walls             rc=0 identical=True
+STRICT drive  showcase          rc=0 identical=True
+STRICT drive  soak              rc=0 identical=True
+STRICT split  layout            rc=0 identical=True
+STRICT split  isolation         rc=0 identical=True
+STRICT split  simultaneous      rc=0 identical=True
+STRICT split  showcase          rc=0 identical=True
+STRICT split  bases             rc=0 identical=True
+STRICT split  destruction       rc=0 identical=True
+STRICT split  countdown         rc=0 identical=True
+STRICT split  respawn_showcase  rc=0 identical=True
+STRICT split  units             rc=0 identical=True
+STRICT split  weapons           rc=0 identical=True
+STRICT split  gyro              rc=0 identical=True
+STRICT split  choice            rc=0 identical=True
+STRICT split  units_showcase    rc=0 identical=True
+SOFT   split  canister_run      rc=0 result_ok=True identical=True
+SOFT   split  hud               rc=0 result_ok=True identical=False
+    --- baseline
+    +++ now
+    @@ -7 +7 @@
+    -CHECK hud fits_view PASS window=1280x720 margin_min=8 px | player_1: view=(0,0 640x720) root=(0,0 640x720) root_is_view=true HitPointsBar=(16,16 300x24) inside_margin=true HitPointsLabel=(16,16 300x26) inside_margin=tru
+    +CHECK hud fits_view PASS window=1280x720 margin_min=8 px | player_1: view=(0,0 640x720) root=(0,0 640x720) root_is_view=true HitPointsBar=(16,16 300x24) inside_margin=true HitPointsLabel=(16,16 300x26) inside_margin=tru
+SOFT   split  round_over        rc=0 result_ok=True identical=True
+SOFT   split  canister_showcase rc=0 result_ok=True identical=True
+ALL_OK=True (strict seventeen identical and exit 0, soft four RESULT ok)
+## dev06.py new fuel fuel_cans fuel_showcase (run 1)
+--- fuel rc=0 lines=48
+    CHECK fuel fuel_burn PASS data(capacity/use/share) motorbike=100.0/2.0/0.50 buggy=100.0/2.5/0.50 truck=100.0/3.0/0.50 gyrocopter=100.0/5.0/0.50 spawns(said x Fuel/capacity) round p1=1x50.0 p2=1x50.0 motorbike=1x50.00/100.0 buggy=1x50.00/100.0 gyrocopter=1x50.00/100.0 truck=1x50.00/100.0 | standing 180 ticks: truck 50.0000->50.0000, gyrocopter 50.0000->50.0000, said=0 | throttle 90 ticks: burned=4.4500 expected=4.5000
+    CHECK fuel fuel_empty PASS truck dry after 1001 ticks; gyrocopter Fuel 0 at tick 1630, destroyed at tick 1630 (hp 70), destroyed=1 unit_destroyed=1, back 180 ticks later (delay 180+-1) as motorbike; flags AT_HOME/AT_HOME/0 -> AT_HOME/AT_HOME/0 | empty, throttle held: drive speed 10.80 -> ~0 after 108 ticks (10.8 / 6.0 m/s2 = 108), rises=0 end=0.000000 burns=0 | open ground: throttle, reverse 30 ticks each: peak speed
+    RESULT fuel ok checks=2 failed=0 t=43.833 p1=motorbike p1_fuel=50.00 p2=motorbike p2_fuel=50.00 errors=0 warnings=0
+--- fuel_cans rc=0 lines=32
+    CHECK fuel_cans can_cycle PASS start: FuelCan1=(0,0) AVAILABLE FuelCan2=(-16,-8) AVAILABLE FuelCan3=(16,8) AVAILABLE FuelCan4=(-16,8) AVAILABLE FuelCan5=(16,-8) AVAILABLE | take: FuelCan4 by p1 motorbike after 116 ticks: +40.0000 (room 52.7333, refill 40.0), hidden=true; stood 60 ticks, listed 60, takes=1 | full pass: p2 motorbike kept full onto FuelCan5: listed 188 ticks, in the zone=true 0.16 m from its centre at 0
+    CHECK fuel_cans fuel_hud PASS spawn: p1 motorbike alive=true bar=50.00/100 line="Fuel 50 / 100" p2 motorbike alive=true bar=50.00/100 line="Fuel 50 / 100" | layout: p1 view=0,0-640,720 gauge=332,16-624,42 hit_points=16,16-316,42 status=16,46-624,76 p2 view=0,0-640,720 gauge=332,16-624,42 hit_points=16,16-316,42 status=16,46-624,76 | p1 driving, 295 ticks traced: falls=232 rises=1, the rise +39.96 (gain 40.0000, bar s
+    RESULT fuel_cans ok checks=2 failed=0 t=27.550 takes=2 restocks=2 round_started=1 p1=motorbike p1_fuel=50.00 p2=motorbike p2_fuel=50.00
+--- fuel_showcase rc=0 lines=107
+    RESULT fuel_showcase ok checks=0 failed=0 t=45.750 steps=both_choose:2,p1_through_can:219,p2_runs_dry:1001,p2_turns:211,p1_self_destructs:0,p1_gyrocopter:104,p1_crash:601 spawns=p1_motorbike,p2_truck,p1_gyrocopter take_gain=40.00 truck_turn=90.7deg truck_moved=0.0000 damage=25.0 destroyed=2/0 gyro_hp=70 crash_zero_calls=2 countdown_and_panel=true p1_fuel=0.00 p2_fuel=0.00 separation_min=7.17 wall_clearance_min=3.68
+## dev06.py new fuel fuel_cans fuel_showcase (run 2)
+--- fuel rc=0 lines=48
+    CHECK fuel fuel_burn PASS data(capacity/use/share) motorbike=100.0/2.0/0.50 buggy=100.0/2.5/0.50 truck=100.0/3.0/0.50 gyrocopter=100.0/5.0/0.50 spawns(said x Fuel/capacity) round p1=1x50.0 p2=1x50.0 motorbike=1x50.00/100.0 buggy=1x50.00/100.0 gyrocopter=1x50.00/100.0 truck=1x50.00/100.0 | standing 180 ticks: truck 50.0000->50.0000, gyrocopter 50.0000->50.0000, said=0 | throttle 90 ticks: burned=4.4500 expected=4.5000
+    CHECK fuel fuel_empty PASS truck dry after 1001 ticks; gyrocopter Fuel 0 at tick 1630, destroyed at tick 1630 (hp 70), destroyed=1 unit_destroyed=1, back 180 ticks later (delay 180+-1) as motorbike; flags AT_HOME/AT_HOME/0 -> AT_HOME/AT_HOME/0 | empty, throttle held: drive speed 10.80 -> ~0 after 108 ticks (10.8 / 6.0 m/s2 = 108), rises=0 end=0.000000 burns=0 | open ground: throttle, reverse 30 ticks each: peak speed
+    RESULT fuel ok checks=2 failed=0 t=43.833 p1=motorbike p1_fuel=50.00 p2=motorbike p2_fuel=50.00 errors=0 warnings=0
+--- fuel_cans rc=0 lines=32
+    CHECK fuel_cans can_cycle PASS start: FuelCan1=(0,0) AVAILABLE FuelCan2=(-16,-8) AVAILABLE FuelCan3=(16,8) AVAILABLE FuelCan4=(-16,8) AVAILABLE FuelCan5=(16,-8) AVAILABLE | take: FuelCan4 by p1 motorbike after 116 ticks: +40.0000 (room 52.7333, refill 40.0), hidden=true; stood 60 ticks, listed 60, takes=1 | full pass: p2 motorbike kept full onto FuelCan5: listed 188 ticks, in the zone=true 0.16 m from its centre at 0
+    CHECK fuel_cans fuel_hud PASS spawn: p1 motorbike alive=true bar=50.00/100 line="Fuel 50 / 100" p2 motorbike alive=true bar=50.00/100 line="Fuel 50 / 100" | layout: p1 view=0,0-640,720 gauge=332,16-624,42 hit_points=16,16-316,42 status=16,46-624,76 p2 view=0,0-640,720 gauge=332,16-624,42 hit_points=16,16-316,42 status=16,46-624,76 | p1 driving, 295 ticks traced: falls=232 rises=1, the rise +39.96 (gain 40.0000, bar s
+    RESULT fuel_cans ok checks=2 failed=0 t=27.550 takes=2 restocks=2 round_started=1 p1=motorbike p1_fuel=50.00 p2=motorbike p2_fuel=50.00
+--- fuel_showcase rc=0 lines=107
+    RESULT fuel_showcase ok checks=0 failed=0 t=45.750 steps=both_choose:2,p1_through_can:219,p2_runs_dry:1001,p2_turns:211,p1_self_destructs:0,p1_gyrocopter:104,p1_crash:601 spawns=p1_motorbike,p2_truck,p1_gyrocopter take_gain=40.00 truck_turn=90.7deg truck_moved=0.0000 damage=25.0 destroyed=2/0 gyro_hp=70 crash_zero_calls=2 countdown_and_panel=true p1_fuel=0.00 p2_fuel=0.00 separation_min=7.17 wall_clearance_min=3.68
+DETERMINISM fuel identical
+DETERMINISM fuel_cans identical
+DETERMINISM fuel_showcase identical
+## dev06.py launch
+RUN --quit-after 120 rc=0 noisy=[]
+RUN --quit-after 60 res://src/gameplay/driving_toy.tscn rc=0 noisy=[]
+## dev06.py frozen
+src/gameplay/camera/chase_camera.gd: OK | src/gameplay/camera/chase_camera_settings.gd: OK | src/gameplay/camera/data/chase_camera_settings.tres: OK | src/gameplay/units/player_drive_input.gd: OK | src/gameplay/units/motorbike.tscn: OK | src/gameplay/driving_toy.gd: OK | src/gameplay/driving_toy.tscn: OK | tools/evidence/drive_harness.gd: OK | tools/evidence/drive_harness.tscn: OK 
+## dev06.py assets
+ASSETS UNCHANGED
+## lint006.py all
+src/gameplay/fuel/fuel_can.gd                            total=235 doc=113 blank= 28 code= 94
+src/gameplay/fuel/fuel_can_settings.gd                   total= 30 doc= 24 blank=  2 code=  4
+src/gameplay/split_screen/split_screen.gd                total=172 doc=107 blank= 16 code= 49
+src/gameplay/units/unit.gd                               total=687 doc=350 blank= 56 code=281
+src/gameplay/units/unit_stats.gd                         total=270 doc=186 blank= 38 code= 46
+src/ui/hud/player_hud.gd                                 total=253 doc=128 blank= 33 code= 92
+tools/evidence/split_screen/fuel.gd                      total=340 doc= 63 blank= 30 code=247
+tools/evidence/split_screen/fuel_cans.gd                 total=450 doc= 91 blank= 51 code=308
+tools/evidence/split_screen/fuel_kit.gd                  total=146 doc= 38 blank= 26 code= 82
+tools/evidence/split_screen/fuel_showcase.gd             total=305 doc= 80 blank= 25 code=200
+tools/evidence/split_screen_harness.gd                   total=542 doc=201 blank= 68 code=272
+functions over 40 lines or cc~10: 0
+declarations without a ## directly above: 0
+## lines over 100 columns added by the story: 0
+src/gameplay/fuel/fuel_can.gd                            total=235 doc=113 blank= 28 code= 94
+src/gameplay/fuel/fuel_can_settings.gd                   total= 30 doc= 24 blank=  2 code=  4
+src/gameplay/split_screen/split_screen.gd                total=172 doc=107 blank= 16 code= 49
+src/gameplay/units/unit.gd                               total=687 doc=350 blank= 56 code=281
+src/gameplay/units/unit_stats.gd                         total=270 doc=186 blank= 38 code= 46
+src/ui/hud/player_hud.gd                                 total=253 doc=128 blank= 33 code= 92
+tools/evidence/split_screen/fuel.gd                      total=340 doc= 63 blank= 30 code=247
+tools/evidence/split_screen/fuel_cans.gd                 total=450 doc= 91 blank= 51 code=308
+tools/evidence/split_screen/fuel_kit.gd                  total=146 doc= 38 blank= 26 code= 82
+tools/evidence/split_screen/fuel_showcase.gd             total=305 doc= 80 blank= 25 code=200
+tools/evidence/split_screen_harness.gd                   total=542 doc=201 blank= 68 code=272

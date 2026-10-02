@@ -1,0 +1,168 @@
+extends SceneTree
+## Engine lens probe B (scratch): a moving full-tank Unit through a Can, a Unit destroyed or benched
+## inside a Can's zone and respawned far away, standstill drift of an empty Truck.
+
+const UNIT_SCENE: String = "res://src/gameplay/units/motorbike.tscn"
+const CAN_SCENE: String = "res://src/gameplay/fuel/fuel_can.tscn"
+const TRUCK_PATH: String = "res://src/gameplay/units/data/truck_stats.tres"
+
+var _frames: int = 0
+
+func _physics_process(_delta: float) -> bool:
+	_frames += 1
+	return _frames > 40000
+
+func _initialize() -> void:
+	_run()
+
+func _p(text: String) -> void:
+	print("PROBE ", text)
+
+func _ticks(n: int) -> void:
+	for i: int in n:
+		await physics_frame
+
+func _make_floor() -> void:
+	var body: StaticBody3D = StaticBody3D.new()
+	body.collision_layer = 1
+	body.collision_mask = 0
+	var shape: CollisionShape3D = CollisionShape3D.new()
+	var box: BoxShape3D = BoxShape3D.new()
+	box.size = Vector3(8000.0, 1.0, 8000.0)
+	shape.shape = box
+	shape.position = Vector3(0.0, -0.5, 0.0)
+	body.add_child(shape)
+	root.add_child(body)
+
+func _make_unit(unit_name: String, pos: Vector3) -> Unit:
+	var unit: Unit = (load(UNIT_SCENE) as PackedScene).instantiate() as Unit
+	unit.name = unit_name
+	root.add_child(unit)
+	unit.global_position = pos
+	return unit
+
+func _make_can(can_name: String, pos: Vector3) -> FuelCan:
+	var can: FuelCan = (load(CAN_SCENE) as PackedScene).instantiate() as FuelCan
+	can.name = can_name
+	root.add_child(can)
+	can.global_position = pos
+	return can
+
+func _run() -> void:
+	_make_floor()
+	await _ticks(2)
+	await _probe_full_pass()
+	await _probe_death_in_zone()
+	await _probe_drift()
+	_p("DONE")
+	quit(0)
+
+func _probe_full_pass() -> void:
+	var can: FuelCan = _make_can("PassCan", Vector3(0.0, 0.0, 0.0))
+	var unit: Unit = _make_unit("PassUnit", Vector3(0.0, 0.0, 60.0))
+	var log: Array[String] = []
+	var taken: Array[int] = [0]
+	can.taken.connect(func(u: Unit) -> void: taken[0] += 1; log.append("taken by %s at z=%.2f fuel=%.4f frame=%d" % [u.name, u.global_position.z, u.fuel, Engine.get_physics_frames()]))
+	await _ticks(3)
+	unit.spawn(Transform3D(Basis.IDENTITY, Vector3(0.0, 0.05, 60.0)))
+	unit.refuel(100.0)
+	await _ticks(6)
+	var fuel_before: float = unit.fuel
+	var listed_ticks: int = 0
+	var min_fuel: float = 100.0
+	for i: int in 260:
+		unit.set_drive_input(1.0, 0.0)
+		await physics_frame
+		if can.pickup_zone.overlaps_body(unit):
+			listed_ticks += 1
+		min_fuel = minf(min_fuel, unit.fuel)
+	_p("full pass (driving, started full=%.2f): taken=%d, listed ticks=%d, can available=%s, restock_frame=%d; %s" % [fuel_before, taken[0], listed_ticks, str(can.is_available), can.restock_frame, str(log)])
+	# a full Unit that STANDS in the zone of an available Can
+	unit.leave_play()
+	can.restock()
+	await _ticks(8)
+	taken[0] = 0
+	log.clear()
+	unit.spawn(Transform3D(Basis.IDENTITY, Vector3(0.0, 0.05, 0.0)))
+	unit.refuel(100.0)
+	await _ticks(120)
+	_p("full Unit standing 120 ticks in the zone: taken=%d available=%s fuel=%.2f" % [taken[0], str(can.is_available), unit.fuel])
+	unit.leave_play()
+	can.restock()
+	await _ticks(8)
+
+func _probe_death_in_zone() -> void:
+	var centre: Vector3 = Vector3(800.0, 0.0, 800.0)
+	var can: FuelCan = _make_can("DeathCan", centre)
+	var unit: Unit = _make_unit("DeathUnit", centre + Vector3(0.0, 0.0, 200.0))
+	var taken: Array[int] = [0]
+	can.taken.connect(func(_u: Unit) -> void: taken[0] += 1)
+	await _ticks(3)
+	var truck: UnitStats = load(TRUCK_PATH) as UnitStats
+	for variant: String in ["destroy+spawn", "bench+spawn", "destroy+retype-spawn", "destroy+spawn-near (4 m)"]:
+		taken[0] = 0
+		can.restock()
+		unit.leave_play()
+		await _ticks(8)
+		unit.spawn(Transform3D(Basis.IDENTITY, centre + Vector3(0.0, 0.05, 0.0)))
+		unit.refuel(100.0)
+		await _ticks(20)
+		var pre_available: bool = can.is_available
+		if variant.begins_with("bench"):
+			unit.leave_play()
+		else:
+			unit.destroy()
+		await _ticks(30)
+		var far: Vector3 = centre + Vector3(0.0, 0.05, 11.3)
+		if variant.ends_with("(4 m)"):
+			far = centre + Vector3(0.0, 0.05, 4.0)
+		var fuel_at_spawn: float = 0.0
+		if variant.contains("retype"):
+			unit.spawn(Transform3D(Basis.IDENTITY, far), truck)
+		else:
+			unit.spawn(Transform3D(Basis.IDENTITY, far))
+		fuel_at_spawn = unit.fuel
+		await _ticks(14)
+		_p("death in zone [%s]: available before=%s, after respawn 11.3 m away: taken=%d available=%s fuel %.2f -> %.2f" % [variant, str(pre_available), taken[0], str(can.is_available), fuel_at_spawn, unit.fuel])
+	unit.leave_play()
+	await _ticks(4)
+
+func _yaw_of(unit: Unit) -> float:
+	var facing: Vector3 = -unit.global_transform.basis.z
+	return atan2(-facing.x, -facing.z)
+
+func _probe_drift() -> void:
+	var unit: Unit = _make_unit("DriftTruck", Vector3(-3000.0, 0.0, -3000.0))
+	await _ticks(3)
+	var small: UnitStats = (load(TRUCK_PATH) as UnitStats).duplicate() as UnitStats
+	small.spawn_fuel_fraction = 0.05
+	unit.spawn(Transform3D(Basis.IDENTITY, Vector3(-3000.0, 0.05, -3000.0)), small)
+	await _ticks(5)
+	for i: int in 400:
+		unit.set_drive_input(1.0, 0.0)
+		await physics_frame
+		if unit.is_fuel_empty and unit.current_speed == 0.0:
+			break
+	await _ticks(10)
+	var p0: Vector3 = unit.global_position
+	var dxz: float = 0.0
+	var dy: float = 0.0
+	var yaw0: float = _yaw_of(unit)
+	var deltas: Array[float] = []
+	var prev: float = yaw0
+	var prev_pos: Vector3 = p0
+	var max_step: float = 0.0
+	for i: int in 300:
+		unit.set_drive_input(0.0, 1.0)
+		await physics_frame
+		dxz = maxf(dxz, Vector2(unit.global_position.x - p0.x, unit.global_position.z - p0.z).length())
+		dy = maxf(dy, absf(unit.global_position.y - p0.y))
+		max_step = maxf(max_step, unit.global_position.distance_to(prev_pos))
+		prev_pos = unit.global_position
+		var yaw_now: float = _yaw_of(unit)
+		deltas.append(angle_difference(prev, yaw_now))
+		prev = yaw_now
+	var total: float = 0.0
+	for d: float in deltas:
+		total += d
+	_p("standstill turn 300 ticks: ground-plane drift max=%.12f m, vertical range=%.12f m, max step=%.12f m, mean yaw/tick=%.9f (expected %.9f), total=%.6f rad" % [dxz, dy, max_step, total / 300.0, small.empty_turn_rate / 60.0, total])

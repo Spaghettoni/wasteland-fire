@@ -1,0 +1,54 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PROBE PASS spawn_partial_tank_motorbike | fuel_before_spawn(_ready)=100.0 events_before_spawn=0 spawn_events=[hp(40.0,40.0) fuel(50.0,100.0)] fuel=50.0 capacity=100.0 empty=false
+PROBE PASS spawn_partial_tank_buggy | fuel_before_spawn(_ready)=100.0 events_before_spawn=0 spawn_events=[hp(100.0,100.0) fuel(50.0,100.0)] fuel=50.0 capacity=100.0 empty=false
+PROBE PASS spawn_partial_tank_truck | fuel_before_spawn(_ready)=100.0 events_before_spawn=0 spawn_events=[hp(220.0,220.0) fuel(50.0,100.0)] fuel=50.0 capacity=100.0 empty=false
+PROBE PASS spawn_partial_tank_gyrocopter | fuel_before_spawn(_ready)=100.0 events_before_spawn=0 spawn_events=[hp(70.0,70.0) fuel(50.0,100.0)] fuel=50.0 capacity=100.0 empty=false
+PROBE PASS standing_600_ticks_burns_nothing_motorbike | events=0 fuel=50.0 alive=true drive_speed=0.0
+PROBE PASS standing_600_ticks_burns_nothing_buggy | events=0 fuel=50.0 alive=true drive_speed=0.0
+PROBE PASS standing_600_ticks_burns_nothing_truck | events=0 fuel=50.0 alive=true drive_speed=0.0
+PROBE PASS standing_600_ticks_burns_nothing_gyrocopter | events=0 fuel=50.0 alive=true drive_speed=0.0
+PROBE PASS burn_to_empty_motorbike | burning_ticks_until_exactly_0.0=1500 expected=50/fuel_use*60=1500 empty_on_frame=start+1500 burn_ticks_vs_(start_speed_not_zero_approx)_mismatches=0
+PROBE PASS full_throttle_2s_motorbike | burned_in_120_ticks=3.966666667 fuel_use*2s=4.000000000 diff=-0.033333333 one_tick=0.033333333
+PROBE PASS empty_held_throttle_motorbike | coast_ticks_to_exactly_0.0=121 residue_ticks=1 speed_stays_0.0_with_throttle_held_139_ticks=true horizontal_drift_after_stop=0.000000000000 yaw_rate_rolling=1.399999857 yaw_rate_standing_60_ticks=1.400000159 empty_turn_rate=1.4 is_fuel_empty=true
+PROBE PASS burn_to_empty_buggy | burning_ticks_until_exactly_0.0=1200 expected=50/fuel_use*60=1200 empty_on_frame=start+1200 burn_ticks_vs_(start_speed_not_zero_approx)_mismatches=0
+PROBE PASS full_throttle_2s_buggy | burned_in_120_ticks=4.958333333 fuel_use*2s=5.000000000 diff=-0.041666667 one_tick=0.041666667
+PROBE PASS empty_held_throttle_buggy | coast_ticks_to_exactly_0.0=118 residue_ticks=0 speed_stays_0.0_with_throttle_held_442_ticks=true horizontal_drift_after_stop=0.000000000000 yaw_rate_rolling=1.150000215 yaw_rate_standing_60_ticks=1.150000159 empty_turn_rate=1.15 is_fuel_empty=true
+PROBE PASS burn_to_empty_truck | burning_ticks_until_exactly_0.0=1000 expected=50/fuel_use*60=1000 empty_on_frame=start+1000 burn_ticks_vs_(start_speed_not_zero_approx)_mismatches=0
+PROBE PASS full_throttle_2s_truck | burned_in_120_ticks=5.950000000 fuel_use*2s=6.000000000 diff=-0.050000000 one_tick=0.050000000
+PROBE PASS empty_held_throttle_truck | coast_ticks_to_exactly_0.0=110 residue_ticks=1 speed_stays_0.0_with_throttle_held_650_ticks=true horizontal_drift_after_stop=0.000000000000 yaw_rate_rolling=0.450000048 yaw_rate_standing_60_ticks=0.450000048 empty_turn_rate=0.45 is_fuel_empty=true
+PROBE PASS burn_to_empty_gyrocopter | burning_ticks_until_exactly_0.0=600 expected=50/fuel_use*60=600 empty_on_frame=start+600 burn_ticks_vs_(start_speed_not_zero_approx)_mismatches=0
+PROBE PASS full_throttle_2s_gyrocopter | burned_in_120_ticks=9.916666667 fuel_use*2s=10.000000000 diff=-0.083333333 one_tick=0.083333333
+PROBE PASS gyro_fuel_crash | destroyed_count=1 events_on_crash_tick=[fuel(0.0,100.0) hp(0.0,70.0) fuel(0.0,100.0) destroyed(0.0,0.0)] all_inside_physics_frame=true moved_on_crash_tick=0.0 moved_100_ticks_later=0.0 alive=false physics_processing=false hp=0.0 fuel=0.0
+PROBE PASS empty_reverse_ignored_truck | drive_speed=0.0 moved_60_ticks=0.0 yaw_change=0.0
+PROBE PASS refuel_ends_empty_truck | refuel(10)=10.0 is_fuel_empty_right_after=false events=[fuel(10.0,100.0)] yaw_10_ticks_steer_at_standstill_after_refuel=0.0 drive_speed_after_1_tick=0.15 moved_30_ticks=1.1625 fuel_after_30_ticks=8.550000000
+PROBE PASS destroy_at_zero_fuel_buggy | was_empty=true events=[hp(0.0,100.0) fuel(0.0,100.0) destroyed(0.0,0.0)] alive=false
+PROBE PASS leave_play_at_zero_fuel_motorbike | events=[hp(0.0,40.0) fuel(0.0,100.0)] alive=false
+PROBE PASS coast_burn_ticks_truck | burning_ticks(73_accelerating+130_coasting)=181 (C1: 181) fuel=40.950000000001 expected=40.950000000000 drive_speed=0.0
+PROBE PASS pinned_on_wall_keeps_burning_motorbike | drive_speed=24.0 real_velocity=0.000000 moved_60_ticks=0.000000 z=-110.6993 burn_events_60_ticks=60 burned=2.000000000000
+PROBE PASS respawn_partial_then_refuel_to_full | respawn_fuel=50.0 events=[hp(100.0,100.0) fuel(50.0,100.0)] refuel(100)=50.0 fuel=100.0 refuel(5)_on_full=0.0 events=0
+PROBE PASS full_tank_destroyed_respawns_partial | refuel(5)_on_destroyed=0.0 events=0 respawn_as=truck fuel=50.0 events=[hp(220.0,220.0) fuel(50.0,100.0)]
+PROBE PASS refuel_ignored_amounts | refuel(-5)=0.0 refuel(NAN)=0.0 refuel(0)=0.0 events=0 fuel=50.0
+PROBE MARK readonly-begin
+ERROR: Unit 'U_buggy': fuel is read-only. Add Fuel with refuel(); it burns while the Unit moves.
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] @fuel_setter (res://src/gameplay/units/unit.gd:285)
+       [1] _t_respawn_and_guards (/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a0bbb76e-4a11-49a3-9a86-8984abd2268d/scratchpad/dev-story-006/impl/A2/probe_a2.gd:326)
+       [2] _frames (/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a0bbb76e-4a11-49a3-9a86-8984abd2268d/scratchpad/dev-story-006/impl/A2/probe_a2.gd:91)
+ERROR: Unit 'U_buggy': fuel_capacity is read-only. It is the Unit type's data: UnitStats.fuel_capacity.
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] @fuel_capacity_setter (res://src/gameplay/units/unit.gd:294)
+       [1] _t_respawn_and_guards (/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a0bbb76e-4a11-49a3-9a86-8984abd2268d/scratchpad/dev-story-006/impl/A2/probe_a2.gd:327)
+       [2] _frames (/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a0bbb76e-4a11-49a3-9a86-8984abd2268d/scratchpad/dev-story-006/impl/A2/probe_a2.gd:91)
+ERROR: Unit 'U_buggy': is_fuel_empty is read-only. Add Fuel with refuel().
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] @is_fuel_empty_setter (res://src/gameplay/units/unit.gd:303)
+       [1] _t_respawn_and_guards (/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a0bbb76e-4a11-49a3-9a86-8984abd2268d/scratchpad/dev-story-006/impl/A2/probe_a2.gd:328)
+       [2] _frames (/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a0bbb76e-4a11-49a3-9a86-8984abd2268d/scratchpad/dev-story-006/impl/A2/probe_a2.gd:91)
+PROBE MARK readonly-end
+PROBE PASS readonly_properties | fuel=50.0 fuel_capacity=100.0 is_fuel_empty=false
+PROBE PASS never_spawned_burns_nothing | fuel_after_900_ticks=100.0 events=0 ever_empty=false top_drive_speed=24.0 refuel(5)=0.0
+PROBE DONE fails=0

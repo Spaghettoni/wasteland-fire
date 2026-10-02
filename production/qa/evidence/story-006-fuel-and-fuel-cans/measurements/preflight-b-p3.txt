@@ -1,0 +1,17 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PROBE P3 setup probe_loaded=true unit_script_is_probe=true ctl_ok=true
+PROBE P3 spawned alive_after_ticks=1 type=gyrocopter can_fly=true hp=70.0 layer=16 mask=1 proc=true
+PROBE P3 own_tick_crash crash_frame=22 seen_not_alive_at=23 destroy_calls=1 last_unit_tick_frame=22 moved_on_crash_tick=0.000000 speed_after=0.0
+PROBE P3 own_tick_crash events=[22:u.hit_points_changed(0.0/70.0) | 22:u.destroyed | 22:c.unit_destroyed(0) secs=3.0 choosing=true alive=false]
+PROBE P3 unit_state alive=false hp=0.0 visible=false layer=0 mask=0 proc=false
+PROBE P3 countdown visible=true text='Respawn in 3' ctl_secs=2.96666666666667 choosing=true
+PROBE P3 after_10_ticks last_unit_tick_frame=22 (crash_frame=22) status_before=[0, 0] status_after=[0, 0] dropped_events=0
+PROBE P3 respawn ticks_from_crash_tick_to_unit_spawned=180 expected=180 (3.0 s x 60) wait_loop=169 unit_ticking_again=false alive=true hp=70.0
+PROBE P3 after_controller_respawn unit_last_tick_frame=205 spawned_frame=202 ticking_again=true pos=(0.0, 0.0, 20.0)
+PROBE P3 key_destroy_frame=214 last_unit_tick_frame=213 (equal means the Unit still ticked in the frame an earlier-priority key node destroyed it; smaller means its tick was skipped) match_input_priority_offset=-1
+PROBE P3 key_path events=[214:u.hit_points_changed(0.0/70.0) | 214:u.destroyed | 214:c.unit_destroyed(0) secs=3.0 choosing=true alive=false]
+PROBE P3 compare own_tick_sequence_equals_key_sequence=true own=["u.hit_points_changed(0.0/70.0)", "u.destroyed", "c.unit_destroyed(0) secs=3.0 choosing=true alive=false"] key=["u.hit_points_changed(0.0/70.0)", "u.destroyed", "c.unit_destroyed(0) secs=3.0 choosing=true alive=false"]
+PROBE P3 totals u.destroyed=2 c.unit_destroyed(0)=2 (2 destructions: one own-tick, one key)
+
+--STDERR--

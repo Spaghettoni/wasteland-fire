@@ -22,9 +22,9 @@ extends Control
 ## same reason: they are how the pieces are laid out and seen on the screen, which is this scene's
 ## business, and none of them depends on the Round. The layout of the scene:
 ##   SplitScreen (this Control, filling the window)
-##     World (Node3D): the field with its two Bases and the terrain stand-ins, both Units, both
-##       PlayerDriveInputs, both PlayerMatchInputs, both Weapons with their PlayerFireInputs and
-##       both PlayerChoiceInputs
+##     World (Node3D): the field with its two Bases, the terrain stand-ins, the greybox Fuel Cans,
+##       both Units, both PlayerDriveInputs, both PlayerMatchInputs, both Weapons with their
+##       PlayerFireInputs and both PlayerChoiceInputs
 ##     Views (HBoxContainer): a SubViewportContainer per Player, each holding a SubViewport that
 ##       holds that Player's ChaseCamera, respawn countdown, HUD, Unit choice panel and Round-over
 ##       screen
@@ -75,9 +75,22 @@ extends Control
 ## frozen, and restart() unpauses it, so this scene frees the whole group when the MatchController
 ## emits round_started: no shot of the Round before flies on into the next one and hits a Unit
 ## just chosen on its Base.
+##
+## Fuel Cans (Story 006). World holds FuelCans (greybox_fuel_cans.tscn), five Fuel Cans at fixed
+## spots clear of the Bases, their Garages and the terrain stand-ins: the greybox stand-in for the
+## Map's Fuel Can markers until the real Map replaces it (Story 007). Each Can polls its own zone,
+## refills the Unit that touches it and comes back on its own after its delay (FuelCan), and its
+## root belongs to the node group FUEL_CAN_GROUP (fuel_can.tscn stores it). The Round-over pause
+## stops the Cans with the tree, so when the MatchController emits round_started again this scene
+## calls restock() on the whole group: a Round that starts again has every Can back at its spot
+## (production/epics/wasteland-fire/story-006-fuel-and-fuel-cans.md AC-6).
 
 ## The node group every Shot in flight belongs to; _free_shots() frees it at every Round start.
 const SHOT_GROUP: StringName = &"shots"
+
+## The node group every Fuel Can belongs to; _restock_fuel_cans() brings the whole group back
+## whenever a Round starts again.
+const FUEL_CAN_GROUP: StringName = &"fuel_cans"
 
 ## The field both Units drive on. It carries the two Bases (player_1_base and player_2_base) where
 ## each Player's Unit starts the Round and respawns. It sits under World, so it is in the shared
@@ -114,6 +127,7 @@ func _ready() -> void:
 	var cameras: Array[ChaseCamera] = [player_1_camera, player_2_camera]
 	match_controller.begin(units, bases, cameras)
 	match_controller.round_started.connect(_free_shots)
+	match_controller.round_started.connect(_restock_fuel_cans)
 
 
 ## The name of the first required reference that is not assigned, or an empty string when all
@@ -145,3 +159,14 @@ func _free_shots() -> void:
 	for shot: Node in get_tree().get_nodes_in_group(SHOT_GROUP):
 		shot.set_physics_process(false)
 		shot.queue_free()
+
+
+## Brings every Fuel Can (the FUEL_CAN_GROUP nodes) back at its spot when a Round starts again
+## (Story 006 AC-6): FuelCan.restock() shows a taken Can and makes it available, and leaves an
+## available one alone. A Can taken late in a Round would otherwise still be away when the next
+## Round starts, until its own delay ran out.
+func _restock_fuel_cans() -> void:
+	for node: Node in get_tree().get_nodes_in_group(FUEL_CAN_GROUP):
+		var fuel_can: FuelCan = node as FuelCan
+		if fuel_can != null:
+			fuel_can.restock()

@@ -1,0 +1,107 @@
+extends SceneTree
+
+const RADIUS: float = 1.6
+const CENTER: Vector3 = Vector3(0.0, 0.6, 0.0)
+
+var _world: Node3D
+var _can: Area3D = null
+
+
+func _initialize() -> void:
+	_run()
+
+
+func _wait(count: int) -> void:
+	for _i: int in count:
+		await physics_frame
+
+
+func _dist(p: Vector3, a: AABB) -> float:
+	var lo: Vector3 = a.position
+	var hi: Vector3 = a.end
+	return p.distance_to(Vector3(clampf(p.x, lo.x, hi.x), clampf(p.y, lo.y, hi.y), clampf(p.z, lo.z, hi.z)))
+
+
+func _add_can() -> void:
+	_can = Area3D.new()
+	_can.collision_layer = 0
+	_can.collision_mask = 18
+	var cs: CollisionShape3D = CollisionShape3D.new()
+	var sphere: SphereShape3D = SphereShape3D.new()
+	sphere.radius = RADIUS
+	cs.shape = sphere
+	cs.position = CENTER
+	_can.add_child(cs)
+	_world.add_child(_can)
+
+
+func _drive_once(type_path: String, with_can: bool, ticks: int) -> Dictionary:
+	if with_can:
+		_add_can()
+	var unit: Unit = load("res://src/gameplay/units/motorbike.tscn").instantiate()
+	unit.position = Vector3(0, 0, 25)
+	_world.add_child(unit)
+	await _wait(2)
+	if type_path != "":
+		unit.spawn(Transform3D(Basis(Vector3.UP, 0.0), Vector3(0, 0, 25)), load(type_path))
+	await _wait(6)
+	var size: Vector3 = unit.stats.collision_size
+	var cy: float = unit.stats.collision_center.y
+	var layer: int = unit.collision_layer
+	var positions: Array[Vector3] = []
+	var inside: Array[bool] = []
+	var listed: Array[bool] = []
+	for _i: int in ticks:
+		await physics_frame
+		unit.set_drive_input(1.0, 0.0)
+		var p: Vector3 = unit.global_position
+		positions.append(p)
+		var box: AABB = AABB(Vector3(p.x - size.x * 0.5, p.y + cy - size.y * 0.5, p.z - size.z * 0.5), size)
+		inside.append(_dist(CENTER, box) <= RADIUS)
+		listed.append(with_can and _can.get_overlapping_bodies().has(unit))
+	var type_id: StringName = unit.type_id
+	unit.queue_free()
+	if _can != null:
+		_can.queue_free()
+		_can = null
+	await _wait(4)
+	return {"pos": positions, "inside": inside, "listed": listed, "type": type_id, "layer": layer}
+
+
+func _first(flags: Array[bool]) -> int:
+	return flags.find(true)
+
+
+func _last(flags: Array[bool]) -> int:
+	return flags.rfind(true)
+
+
+func _count(flags: Array[bool]) -> int:
+	var n: int = 0
+	for f: bool in flags:
+		if f:
+			n += 1
+	return n
+
+
+func _maxdiff(a: Array[Vector3], b: Array[Vector3]) -> float:
+	var m: float = 0.0
+	for i: int in mini(a.size(), b.size()):
+		m = maxf(m, (a[i] - b[i]).length())
+	return m
+
+
+func _run() -> void:
+	_world = Node3D.new()
+	root.add_child(_world)
+	_world.add_child(load("res://src/gameplay/maps/greybox_field.tscn").instantiate())
+	await _wait(2)
+	for entry: Array in [["sandbox_motorbike(never spawned)", "", 140], ["truck(spawned)", "res://src/gameplay/units/data/truck_stats.tres", 260], ["gyrocopter(spawned)", "res://src/gameplay/units/data/gyrocopter_stats.tres", 160]]:
+		var a: Dictionary = await _drive_once(entry[1], false, entry[2])
+		var b: Dictionary = await _drive_once(entry[1], true, entry[2])
+		var c: Dictionary = await _drive_once(entry[1], false, entry[2])
+		var ins: Array[bool] = b["inside"]
+		var lst: Array[bool] = b["listed"]
+		var pos_b: Array[Vector3] = b["pos"]
+		print("PROBE P9 %s type=%s layer=%d ticks=%d A_vs_C_no_can_control_max_diff_m=%.12f A_vs_B_with_can_max_diff_m=%.12f final_z=%.4f | geometric_inside: first_idx=%d last_idx=%d count=%d | in_overlap_list: first_idx=%d last_idx=%d count=%d | entry_latency_ticks=%d exit_latency_ticks=%d" % [entry[0], b["type"], b["layer"], entry[2], _maxdiff(a["pos"], c["pos"]), _maxdiff(a["pos"], b["pos"]), pos_b[pos_b.size() - 1].z, _first(ins), _last(ins), _count(ins), _first(lst), _last(lst), _count(lst), _first(lst) - _first(ins), _last(lst) - _last(ins)])
+	quit(0)

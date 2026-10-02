@@ -1,0 +1,10 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PROBE full pass (driving, started full=100.00): taken=1, listed ticks=14, can available=false, restock_frame=1392; ["taken by PassUnit at z=1.80 fuel=100.0000 frame=192"]
+PROBE full Unit standing 120 ticks in the zone: taken=0 available=true fuel=100.00
+PROBE death in zone [destroy+spawn]: available before=true, after respawn 11.3 m away: taken=0 available=true fuel 50.00 -> 50.00
+PROBE death in zone [bench+spawn]: available before=true, after respawn 11.3 m away: taken=0 available=true fuel 50.00 -> 50.00
+PROBE death in zone [destroy+retype-spawn]: available before=true, after respawn 11.3 m away: taken=0 available=true fuel 50.00 -> 50.00
+PROBE death in zone [destroy+spawn-near (4 m)]: available before=true, after respawn 11.3 m away: taken=0 available=true fuel 50.00 -> 50.00
+PROBE standstill turn 300 ticks: ground-plane drift max=0.000000000000 m, vertical range=0.000000000000 m, max step=0.000000000000 m, mean yaw/tick=0.007499999 (expected 0.007500000), total=2.250000 rad
+PROBE DONE

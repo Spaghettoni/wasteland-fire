@@ -1,0 +1,53 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/fuel/fuel_can.gd" id="1_fc"]
+[ext_resource type="Resource" path="res://src/gameplay/fuel/data/fuel_can_settings.tres" id="2_fcset"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tank"]
+albedo_color = Color(0.95, 0.62, 0.12, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_tank"]
+material = SubResource("StandardMaterial3D_tank")
+size = Vector3(0.8, 1, 0.4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dark"]
+albedo_color = Color(0.16, 0.15, 0.14, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_cap"]
+material = SubResource("StandardMaterial3D_dark")
+size = Vector3(0.14, 0.14, 0.14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_handle"]
+material = SubResource("StandardMaterial3D_dark")
+size = Vector3(0.4, 0.08, 0.12)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_pickup"]
+radius = 1.6
+
+[node name="FuelCan" type="Node3D" node_paths=PackedStringArray("pickup_zone", "can_body") groups=["fuel_cans"]]
+script = ExtResource("1_fc")
+settings = ExtResource("2_fcset")
+pickup_zone = NodePath("PickupZone")
+can_body = NodePath("Body")
+
+[node name="Body" type="Node3D" parent="."]
+
+[node name="Tank" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("BoxMesh_tank")
+
+[node name="Cap" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.26, 1.07, 0)
+mesh = SubResource("BoxMesh_cap")
+
+[node name="Handle" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.12, 1.04, 0)
+mesh = SubResource("BoxMesh_handle")
+
+[node name="PickupZone" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 18
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PickupZone"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("SphereShape3D_pickup")

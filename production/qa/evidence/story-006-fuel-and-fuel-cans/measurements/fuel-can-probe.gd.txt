@@ -1,0 +1,341 @@
+extends SceneTree
+## Story 006 slice A3 probe (throwaway, never in the repo): the Fuel Can on the real split screen,
+## headless at --fixed-fps 60 with the shipped data. Exit code = number of failed checks.
+
+const SPLIT_SCENE: String = "res://src/gameplay/split_screen/split_screen.tscn"
+const SPOTS: Array[Vector3] = [Vector3(0, 0, 0), Vector3(-16, 0, -8), Vector3(16, 0, 8), Vector3(-16, 0, 8), Vector3(16, 0, -8)]
+const NORTH: Vector3 = Vector3(0, 0, -1)
+const PARK_1: Vector3 = Vector3(-8, 0, 0)
+const PARK_2: Vector3 = Vector3(8, 0, 0)
+
+var _split: SplitScreen
+var _mc: MatchController
+var _units: Array[Unit] = []
+var _cans: Array[FuelCan] = []
+var _fails: int = 0
+var _taken: Dictionary = {}
+var _restocked: Dictionary = {}
+var _fuel_log: Dictionary = {}
+var _monitor_ok: bool = true
+var _monitor_samples: int = 0
+var _can2_take: int = -1
+var _can2_stamp: int = -1
+var _alive_frames: Array[int] = []
+
+
+func _initialize() -> void:
+	_run()
+
+
+func _check(label: String, ok: bool, detail: String) -> void:
+	print("PROBE %s %s | %s" % ["PASS" if ok else "FAIL", label, detail])
+	if not ok:
+		_fails += 1
+
+
+func _tick(n: int) -> void:
+	for k: int in n:
+		await physics_frame
+		for c: FuelCan in _cans:
+			_monitor_samples += 1
+			if not c.pickup_zone.monitoring:
+				_monitor_ok = false
+
+
+func _frame() -> int:
+	return Engine.get_physics_frames()
+
+
+func _pose(at: Vector3, facing: Vector3) -> Transform3D:
+	return Transform3D(Basis(Vector3.UP, atan2(-facing.x, -facing.z)), Vector3(at.x, 0.0, at.z))
+
+
+func _type_index(type_id: StringName) -> int:
+	var types: Array[UnitStats] = _mc.unit_types()
+	for i: int in types.size():
+		if types[i].type_id == type_id:
+			return i
+	return -1
+
+
+func _delay_ticks(can: FuelCan) -> int:
+	return roundi(can.settings.respawn_delay_seconds * Engine.physics_ticks_per_second)
+
+
+func _spawn_fuel(unit: Unit) -> float:
+	return unit.stats.fuel_capacity * clampf(unit.stats.spawn_fuel_fraction, 0.0, 1.0)
+
+
+func _on_taken(unit: Unit, can: FuelCan) -> void:
+	var listed: PackedStringArray = []
+	for b: Node3D in can.pickup_zone.get_overlapping_bodies():
+		var d: float = Vector2(b.global_position.x - can.global_position.x, b.global_position.z - can.global_position.z).length()
+		listed.append("%s@%.4f" % [b.name, d])
+	(_taken[can] as Array).append({"frame": _frame(), "unit": String(unit.name), "fuel": unit.fuel, "phys": Engine.is_in_physics_frame(), "listed": listed, "stamp": can.restock_frame, "hidden": not can.can_body.visible, "state": can.state})
+
+
+func _on_restocked(can: FuelCan) -> void:
+	(_restocked[can] as Array).append({"frame": _frame(), "phys": Engine.is_in_physics_frame()})
+
+
+func _on_fuel(fuel: float, capacity: float, unit: Unit) -> void:
+	(_fuel_log[unit] as Array).append([_frame(), fuel, capacity])
+
+
+func _fuel_before_refuel(unit: Unit, t: Dictionary) -> float:
+	var entries: Array = _fuel_log[unit]
+	for i: int in entries.size():
+		var e: Array = entries[i]
+		if int(e[0]) == int(t["frame"]) and float(e[1]) == float(t["fuel"]):
+			return float((entries[i - 1] as Array)[1]) if i > 0 else NAN
+	return NAN
+
+
+func _drive_until_taken(unit: Unit, can: FuelCan, limit: int) -> int:
+	unit.set_drive_input(1.0, 0.0)
+	var n: int = 0
+	while n < limit and can.is_available:
+		await _tick(1)
+		n += 1
+	await _brake(unit)
+	return n
+
+
+func _brake(unit: Unit) -> void:
+	for i: int in 300:
+		if i > 0 and unit.current_speed == 0.0:
+			break
+		unit.set_drive_input(-1.0 if unit.current_speed > 0.05 else 0.0, 0.0)
+		await _tick(1)
+	unit.set_drive_input(0.0, 0.0)
+
+
+func _run() -> void:
+	_split = (load(SPLIT_SCENE) as PackedScene).instantiate() as SplitScreen
+	root.add_child(_split)
+	await process_frame
+	_mc = _split.match_controller
+	_units = [_split.player_1_unit, _split.player_2_unit]
+	for path: String in ["World/Player1DriveInput", "World/Player2DriveInput"]:
+		_split.get_node(path).process_mode = Node.PROCESS_MODE_DISABLED
+	for node: Node in get_nodes_in_group(&"fuel_cans"):
+		_cans.append(node as FuelCan)
+	_cans.sort_custom(func(a: FuelCan, b: FuelCan) -> bool: return String(a.name) < String(b.name))
+	for c: FuelCan in _cans:
+		_taken[c] = []
+		_restocked[c] = []
+		c.taken.connect(_on_taken.bind(c))
+		c.restocked.connect(_on_restocked.bind(c))
+	for u: Unit in _units:
+		_fuel_log[u] = []
+		u.fuel_changed.connect(_on_fuel.bind(u))
+	_units[0].hit_points_changed.connect(func(hp: float, _m: float) -> void: if hp > 0.0: _alive_frames.append(_frame()))
+	await _tick(3)
+	_phase_spots()
+	var chosen: bool = await _phase_choose()
+	if chosen and _cans.size() == SPOTS.size():
+		await _phase_truck_take()
+		await _phase_full_tank()
+		await _phase_gyro_take()
+		await _phase_destroyed()
+		await _phase_two_units()
+		await _phase_can2_restock()
+		await _phase_round_started()
+	_check("monitoring_always_on", _monitor_ok and _monitor_samples > 0, "samples=%d (cans x ticks) frames=%d" % [_monitor_samples, _frame()])
+	for c: FuelCan in _cans:
+		print("PROBE TAKES %s %s" % [c.name, _taken[c]])
+	print("PROBE P1 alive frames %s" % [_alive_frames])
+	print("PROBE DONE fails=%d frame=%d" % [_fails, _frame()])
+	quit(_fails)
+
+
+func _phase_spots() -> void:
+	var parts: PackedStringArray = []
+	var ok: bool = _cans.size() == SPOTS.size()
+	for i: int in mini(_cans.size(), SPOTS.size()):
+		var c: FuelCan = _cans[i]
+		ok = ok and c.global_position.is_equal_approx(SPOTS[i]) and c.is_available and c.can_body.is_visible_in_tree() and c.restock_frame == 0
+		parts.append("%s@%s avail=%s shown=%s" % [c.name, c.global_position, c.is_available, c.can_body.is_visible_in_tree()])
+	_check("five_cans_at_spots", ok, "count=%d; %s" % [_cans.size(), "; ".join(parts)])
+	if _cans.is_empty():
+		return
+	var zone: Area3D = _cans[0].pickup_zone
+	var shape: SphereShape3D = (zone.get_child(0) as CollisionShape3D).shape as SphereShape3D
+	var good: bool = zone.collision_layer == 0 and zone.collision_mask == 18 and _cans[0].process_mode == Node.PROCESS_MODE_INHERIT and is_equal_approx(shape.radius, 1.6) and _cans[0].is_in_group(&"fuel_cans")
+	_check("zone_setup", good, "layer=%d mask=%d process_mode=%d radius=%.2f refill=%.1f delay=%.1fs" % [zone.collision_layer, zone.collision_mask, _cans[0].process_mode, shape.radius, _cans[0].settings.refill_amount, _cans[0].settings.respawn_delay_seconds])
+
+
+func _phase_choose() -> bool:
+	var accepted: bool = _mc.choose(0, _type_index(&"truck"))
+	accepted = _mc.choose(1, _type_index(&"motorbike")) and accepted
+	var waited: int = 0
+	while waited < 300 and not (_units[0].is_alive and _units[1].is_alive):
+		await _tick(1)
+		waited += 1
+	var ok: bool = accepted and _units[0].is_alive and _units[1].is_alive
+	_check("both_spawned", ok, "accepted=%s waited=%d types=%s,%s fuel=%.3f,%.3f" % [accepted, waited, _units[0].type_id, _units[1].type_id, _units[0].fuel, _units[1].fuel])
+	return ok
+
+
+func _phase_truck_take() -> void:
+	var truck: Unit = _units[0]
+	var can: FuelCan = _cans[1]
+	truck.spawn(_pose(SPOTS[1] + Vector3(0, 0, 7), NORTH))
+	await _tick(5)
+	var start_fuel: float = truck.fuel
+	var drove: int = await _drive_until_taken(truck, can, 300)
+	var entries: Array = _taken[can]
+	if entries.is_empty():
+		_check("truck_takes_can", false, "not taken after %d ticks, fuel=%.3f pos=%s" % [drove, truck.fuel, truck.global_position])
+		return
+	var t: Dictionary = entries[0]
+	var before: float = _fuel_before_refuel(truck, t)
+	var expected: float = minf(can.settings.refill_amount, truck.fuel_capacity - before)
+	var gain: float = float(t["fuel"]) - before
+	var gap: int = int(t["stamp"]) - int(t["frame"])
+	var ok: bool = String(t["unit"]) == String(truck.name) and is_equal_approx(gain, expected) and bool(t["hidden"]) and int(t["state"]) == FuelCan.State.TAKEN and bool(t["phys"]) and absi(gap - _delay_ticks(can)) <= 1
+	_check("truck_takes_can", ok, "start=%.3f before=%.6f after=%.6f gain=%.9f expected=%.6f take_frame=%d stamp=%d gap=%d delay=%d hidden=%s in_physics=%s drove=%d listed=%s" % [start_fuel, before, float(t["fuel"]), gain, expected, int(t["frame"]), int(t["stamp"]), gap, _delay_ticks(can), t["hidden"], t["phys"], drove, t["listed"]])
+	_can2_take = int(t["frame"])
+	_can2_stamp = int(t["stamp"])
+	await _tick(60)
+	var listed: bool = can.pickup_zone.overlaps_body(truck)
+	var standing: bool = listed and truck.current_speed == 0.0 and entries.size() == 1 and not can.is_available and not can.can_body.visible
+	_check("standing_unit_no_retake", standing, "listed=%s speed=%.4f takes=%d state=%d fuel=%.3f/%.1f pos=%s" % [listed, truck.current_speed, entries.size(), can.state, truck.fuel, truck.fuel_capacity, truck.global_position])
+	truck.spawn(_pose(PARK_1, NORTH))
+	await _tick(5)
+
+
+func _phase_full_tank() -> void:
+	var moto: Unit = _units[1]
+	var can: FuelCan = _cans[4]
+	moto.spawn(_pose(SPOTS[4], NORTH))
+	var topped: float = moto.refuel(1000.0)
+	await _tick(10)
+	var listed: bool = can.pickup_zone.overlaps_body(moto)
+	var takes: int = (_taken[can] as Array).size()
+	_check("full_tank_parked_leaves_can", listed and can.is_available and takes == 0 and moto.fuel == moto.fuel_capacity, "listed=%s available=%s takes=%d fuel=%.3f/%.1f topped=+%.3f" % [listed, can.is_available, takes, moto.fuel, moto.fuel_capacity, topped])
+	moto.spawn(_pose(SPOTS[4] + Vector3(0, 0, 7), NORTH))
+	moto.refuel(1000.0)
+	await _tick(5)
+	moto.set_drive_input(1.0, 0.0)
+	var listed_ticks: int = 0
+	for k: int in 120:
+		await _tick(1)
+		moto.refuel(1000.0)
+		if can.pickup_zone.overlaps_body(moto):
+			listed_ticks += 1
+	await _brake(moto)
+	takes = (_taken[can] as Array).size()
+	_check("full_tank_driving_leaves_can", listed_ticks > 0 and can.is_available and takes == 0, "topped up at every tick start: listed_ticks=%d available=%s takes=%d pos=%s" % [listed_ticks, can.is_available, takes, moto.global_position])
+
+
+func _phase_gyro_take() -> void:
+	var unit: Unit = _units[1]
+	var can: FuelCan = _cans[2]
+	unit.spawn(_pose(SPOTS[2] + Vector3(0, 0, 7), NORTH), _mc.unit_types()[_type_index(&"gyrocopter")])
+	await _tick(5)
+	var pre: float = unit.refuel(30.0)
+	var drove: int = await _drive_until_taken(unit, can, 300)
+	var entries: Array = _taken[can]
+	if entries.is_empty():
+		_check("gyro_takes_can_room_limited", false, "type=%s not taken after %d ticks fuel=%.3f pos=%s" % [unit.type_id, drove, unit.fuel, unit.global_position])
+		return
+	var t: Dictionary = entries[0]
+	var before: float = _fuel_before_refuel(unit, t)
+	var gain: float = float(t["fuel"]) - before
+	var expected: float = minf(can.settings.refill_amount, unit.fuel_capacity - before)
+	var ok: bool = String(t["unit"]) == String(unit.name) and unit.type_id == &"gyrocopter" and is_equal_approx(gain, expected) and expected < can.settings.refill_amount and float(t["fuel"]) == unit.fuel_capacity and entries.size() == 1
+	_check("gyro_takes_can_room_limited", ok, "type=%s pre_refuel=+%.1f before=%.6f after=%.6f gain=%.6f expected=%.6f takes=%d drove=%d listed=%s pos=%s" % [unit.type_id, pre, before, float(t["fuel"]), gain, expected, entries.size(), drove, t["listed"], unit.global_position])
+
+
+func _phase_destroyed() -> void:
+	var truck: Unit = _units[0]
+	var can: FuelCan = _cans[3]
+	truck.spawn(_pose(SPOTS[3], NORTH))
+	truck.refuel(1000.0)
+	await _tick(5)
+	var listed_before: bool = can.pickup_zone.overlaps_body(truck)
+	truck.destroy()
+	var listed_on_tick: bool = can.pickup_zone.get_overlapping_bodies().has(truck)
+	await _tick(1)
+	var listed_next: bool = can.pickup_zone.get_overlapping_bodies().has(truck)
+	await _tick(10)
+	var takes: int = (_taken[can] as Array).size()
+	var ok: bool = listed_before and listed_on_tick and can.is_available and takes == 0 and truck.fuel == 0.0 and not truck.is_alive
+	_check("destroyed_unit_never_takes", ok, "listed before=%s on the destroy tick=%s next tick=%s available=%s takes=%d fuel=%.3f alive=%s" % [listed_before, listed_on_tick, listed_next, can.is_available, takes, truck.fuel, truck.is_alive])
+	var again: bool = _mc.choose(0, _type_index(&"truck"))
+	var waited: int = 0
+	while waited < 600 and not truck.is_alive:
+		await _tick(1)
+		waited += 1
+	_check("truck_back_in_play", again and truck.is_alive, "chosen=%s waited=%d fuel=%.3f pos=%s" % [again, waited, truck.fuel, truck.global_position])
+	await _tick(6)
+	var ghost_ok: bool = can.is_available and (_taken[can] as Array).is_empty() and truck.fuel == _spawn_fuel(truck)
+	_check("respawn_ghost_never_takes", ghost_ok, "the Unit destroyed in %s respawned at %s: available=%s takes=%d fuel=%.3f" % [can.name, truck.global_position, can.is_available, (_taken[can] as Array).size(), truck.fuel])
+	truck.spawn(_pose(PARK_1, NORTH))
+	_units[1].spawn(_pose(PARK_2, NORTH))
+	await _tick(5)
+
+
+func _two_units(label: String, can: FuelCan, offset_1: float, offset_2: float, winner_index: int) -> void:
+	var entries: Array = _taken[can]
+	var before_takes: int = entries.size()
+	_units[0].spawn(_pose(can.global_position + Vector3(offset_1, 0, 0), NORTH))
+	_units[1].spawn(_pose(can.global_position + Vector3(offset_2, 0, 0), NORTH))
+	await _tick(6)
+	var winner: Unit = _units[winner_index]
+	var other: Unit = _units[1 - winner_index]
+	var t: Dictionary = entries[before_takes] if entries.size() > before_takes else {}
+	var listed: PackedStringArray = t.get("listed", PackedStringArray())
+	var ok: bool = entries.size() == before_takes + 1 and String(t.get("unit", "")) == String(winner.name) and listed.size() == 2 and winner.fuel == minf(_spawn_fuel(winner) + can.settings.refill_amount, winner.fuel_capacity) and other.fuel == _spawn_fuel(other)
+	_check(label, ok, "%s p1(%s)=%+.2f p2(%s)=%+.2f takes=%d taker=%s listed(order@dist)=%s fuel p1=%.3f p2=%.3f frame=%d" % [can.name, _units[0].type_id, offset_1, _units[1].type_id, offset_2, entries.size() - before_takes, t.get("unit", "-"), listed, _units[0].fuel, _units[1].fuel, int(t.get("frame", -1))])
+	_units[0].spawn(_pose(PARK_1, NORTH))
+	_units[1].spawn(_pose(PARK_2, NORTH))
+	await _tick(5)
+
+
+func _phase_two_units() -> void:
+	await _two_units("two_units_nearer_p1", _cans[0], 1.0, -1.5, 0)
+	await _two_units("two_units_nearer_p2", _cans[3], -1.6, 1.0, 1)
+	await _two_units("two_units_nearer_p1_again", _cans[4], 0.9, -1.3, 0)
+	_cans[0].restock()
+	await _tick(3)
+	await _two_units("two_units_exact_tie_name_first", _cans[0], -1.25, 1.25, 0)
+
+
+func _phase_can2_restock() -> void:
+	var can: FuelCan = _cans[1]
+	while _frame() < _can2_stamp + 3:
+		await _tick(1)
+	var entries: Array = _restocked[can]
+	var r: Dictionary = entries[0] if not entries.is_empty() else {}
+	var back_after: int = int(r.get("frame", -1)) - _can2_take
+	var ok: bool = entries.size() == 1 and absi(back_after - _delay_ticks(can)) <= 1 and can.is_available and can.can_body.is_visible_in_tree() and can.global_position.is_equal_approx(SPOTS[1]) and can.restock_frame == 0 and (_taken[can] as Array).size() == 1 and bool(r.get("phys", false))
+	_check("can_back_after_delay", ok, "take=%d stamp=%d restocked_at=%d back_after=%d (delay %d = round(%.1f s x %d)) restocked=%d available=%s shown=%s pos=%s restock_frame=%d takes=%d" % [_can2_take, _can2_stamp, int(r.get("frame", -1)), back_after, _delay_ticks(can), can.settings.respawn_delay_seconds, Engine.physics_ticks_per_second, entries.size(), can.is_available, can.can_body.is_visible_in_tree(), can.global_position, can.restock_frame, (_taken[can] as Array).size()])
+
+
+func _phase_round_started() -> void:
+	var restock_call: Callable = Callable()
+	var methods: PackedStringArray = []
+	for conn: Dictionary in _mc.round_started.get_connections():
+		var cb: Callable = conn["callable"]
+		methods.append(String(cb.get_method()))
+		if cb.get_object() == _split and cb.get_method() == &"_restock_fuel_cans":
+			restock_call = cb
+	var away: PackedStringArray = []
+	var counts: Array[int] = []
+	for c: FuelCan in _cans:
+		if not c.is_available:
+			away.append(String(c.name))
+		counts.append((_restocked[c] as Array).size())
+	if restock_call.is_valid():
+		restock_call.call()
+	var ok: bool = restock_call.is_valid() and not away.is_empty()
+	for i: int in _cans.size():
+		var c: FuelCan = _cans[i]
+		var added: int = (_restocked[c] as Array).size() - counts[i]
+		ok = ok and c.is_available and c.can_body.is_visible_in_tree() and c.restock_frame == 0 and added == (1 if away.has(String(c.name)) else 0)
+	await _tick(3)
+	for c: FuelCan in _cans:
+		ok = ok and c.is_available
+	_check("round_started_restocks_every_can", ok, "round_started connections=%s; away before the call=%s" % [methods, away])

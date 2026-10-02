@@ -1,0 +1,19 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://src/gameplay/fuel/fuel_can.tscn" id="1_can"]
+
+[node name="FuelCans" type="Node3D"]
+
+[node name="FuelCan1" parent="." instance=ExtResource("1_can")]
+
+[node name="FuelCan2" parent="." instance=ExtResource("1_can")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, -8)
+
+[node name="FuelCan3" parent="." instance=ExtResource("1_can")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 8)
+
+[node name="FuelCan4" parent="." instance=ExtResource("1_can")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, 8)
+
+[node name="FuelCan5" parent="." instance=ExtResource("1_can")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, -8)

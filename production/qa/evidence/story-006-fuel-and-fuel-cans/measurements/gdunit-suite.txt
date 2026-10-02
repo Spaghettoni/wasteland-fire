@@ -1,0 +1,8 @@
+$ (in the scratch import copy) godot --headless -s -d --remote-debug tcp://127.0.0.1:0 res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a res://tests --ignoreHeadlessMode
+rc=0
+  res://tests/unit/framework/framework_smoke_test.gd > test_framework_runs_returns_true PASSED 1ms
+Statistics: 1 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 8ms
+Overall Summary: 1 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans |
+Executed test suites: (1/1)
+Executed test cases : (1/1)
+Exit code: 0

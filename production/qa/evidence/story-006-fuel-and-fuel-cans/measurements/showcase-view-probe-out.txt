@@ -1,0 +1,34 @@
+STRICT drive  coast             rc=0 identical=True
+STRICT drive  walls             rc=0 identical=True
+STRICT drive  showcase          rc=0 identical=True
+STRICT drive  soak              rc=0 identical=True
+STRICT split  layout            rc=0 identical=True
+STRICT split  isolation         rc=0 identical=True
+STRICT split  simultaneous      rc=0 identical=True
+STRICT split  showcase          rc=0 identical=True
+STRICT split  bases             rc=0 identical=True
+STRICT split  destruction       rc=0 identical=True
+STRICT split  countdown         rc=0 identical=True
+STRICT split  respawn_showcase  rc=0 identical=True
+STRICT split  units             rc=0 identical=True
+STRICT split  weapons           rc=0 identical=True
+STRICT split  gyro              rc=0 identical=True
+STRICT split  choice            rc=0 identical=True
+STRICT split  units_showcase    rc=0 identical=True
+SOFT   split  canister_run      rc=0 result_ok=True identical=True
+SOFT   split  hud               rc=0 result_ok=True identical=False
+    --- baseline
+    +++ now
+    @@ -7 +7 @@
+    -CHECK hud fits_view PASS window=1280x720 margin_min=8 px | player_1: view=(0,0 640x720) root=(0,0 640x720) root_is_view=true HitPointsBar=(16,16 300x24) inside_margin=true HitPointsLabel=(16,16 300x26) inside_margin=tru
+    +CHECK hud fits_view PASS window=1280x720 margin_min=8 px | player_1: view=(0,0 640x720) root=(0,0 640x720) root_is_view=true HitPointsBar=(16,16 300x24) inside_margin=true HitPointsLabel=(16,16 300x26) inside_margin=tru
+SOFT   split  round_over        rc=0 result_ok=True identical=True
+SOFT   split  canister_showcase rc=0 result_ok=True identical=True
+ALL_OK=True (strict seventeen identical and exit 0, soft four RESULT ok)
+--- launch
+RUN --quit-after 120 rc=0 noisy=[]
+RUN --quit-after 60 res://src/gameplay/driving_toy.tscn rc=0 noisy=[]
+--- frozen
+src/gameplay/camera/chase_camera.gd: OK | src/gameplay/camera/chase_camera_settings.gd: OK | src/gameplay/camera/data/chase_camera_settings.tres: OK | src/gameplay/units/player_drive_input.gd: OK | src/gameplay/units/motorbike.tscn: OK | src/gameplay/driving_toy.gd: OK | src/gameplay/driving_toy.tscn: OK | tools/evidence/drive_harness.gd: OK | tools/evidence/drive_harness.tscn: OK 
+--- assets
+ASSETS UNCHANGED

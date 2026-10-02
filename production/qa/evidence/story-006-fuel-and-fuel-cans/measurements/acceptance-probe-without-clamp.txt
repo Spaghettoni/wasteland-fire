@@ -1,0 +1,85 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK lens_probe probe_ac5_first_choice_tank PASS p1 motorbike fuel=50.0 cap=100.0 said=1 last=50.0 p2 motorbike fuel=50.0 cap=100.0 said=1 last=50.0
+CHECK lens_probe probe_ac2_stand_and_hover_10s PASS 600 ticks: p1 motorbike 50.0->50.0, p2 gyrocopter 50.0->50.0, fuel_changed=0
+CHECK lens_probe probe_ac2_throttle_then_coast PASS motorbike 90 ticks throttle + coast: burns=209 (throttle part 89, expected 89-90) ticks starting with speed!=~0: 209, mismatching ticks=0, burned=6.966667 expected=6.966667 (fuel_use 2.00 x 209/60), end speed=0.0
+CHECK lens_probe probe_ac6_refuel_contract PASS nan->0.0 neg->0.0 zero->0.0 (signals 0); 43.0333 +refuel(10)=10.0 -> 53.0333 (1 signal: 1); refuel(1000)=46.9667 (room 46.9667) -> 100.0; full refuel(1)=0.0 signals 0
+CHECK lens_probe probe_ac3_buggy_runs_dry_then_throttle_ignored PASS buggy pinned at z=38.50, throttle held: empty after 1201 ticks, 1200 burning ticks (50/(2.50/60)=1200), fuel=0.0; throttle still held 300 ticks: speed 19.433 -> 0.0 after 117 ticks, rises=0, burns=0
+CHECK lens_probe probe_ac3_buggy_empty_throttle_reverse PASS open ground: throttle 30 ticks peak=0.0 moved=0.00000; reverse 30 ticks peak=0.0 moved=0.00000
+CHECK lens_probe probe_ac3_buggy_empty_fires PASS shots=1 damage=18.0 to p2 truck at 8 m
+CHECK lens_probe probe_ac3_buggy_empty_turns_on_spot PASS steer left 60 ticks: yaw 1.15000 rad (empty_turn_rate 1.15 rad/s x 1 s); right 60 ticks: yaw -1.15000; moved 0.00000 m; speed 0.0
+CHECK lens_probe probe_ac3_refuel_drives_again_and_clamps FAIL refuel(0.51) added=0.51 not_empty=true; throttle 60 ticks: peak 3.683 m/s, drove 1.077 m, burns=13 (expect 13: 12 x 0.04167 + a clamped last), fuel after=-0.03166666666667 empty=false coast=(0, 0, 0)
+CHECK lens_probe probe_ac8_tab_at_zero_fuel FAIL Tab at fuel -0.03166666666667: destroyed=true (unit_destroyed +1, destroyed signal +1); back as motorbike 180 ticks later (180+-1) with fuel 50.0
+CHECK lens_probe probe_ac4_gyro_crash PASS gyrocopter throttle held: gone after 601 ticks, fuel_changed=601 (600 burns + 1 at destroy), zero said at tick 3543, unit_destroyed at tick 3543 (+1), destroyed signal +1, hp before 70.0/70.0, can_carry=false, flags AT_HOME/AT_HOME/0 -> AT_HOME/AT_HOME/0, new errors/warnings=0
+CHECK lens_probe probe_ac7_gauge_zero_while_waiting PASS 30 ticks after the crash: line="Fuel 0 / 100" bar=0.0/100.0; refuel(10) on the wreck=0.0; countdown shown=true panel shown=true
+CHECK lens_probe probe_ac5_respawn_after_crash PASS p2 back as motorbike 180 ticks after the crash (180+-1) with fuel 50.0
+CHECK lens_probe probe_ac6_full_tank_leaves_can_and_no_stale_take PASS full Motorbike drove 116 ticks onto FuelCan4, rested 20, in zone=true, Can available=true; Tab: dead=true; respawned 180 ticks later at 20.00 m from the Can (fuel 50.0); zone listed it on 1 of the 11 samples after the spawn; Can available throughout=true
+CHECK lens_probe probe_ac6_two_takes PASS drives 87/87 ticks (coasts (20, 20, 0) (20, 20, 0)): FuelCan1:Player1Unit@4131 gain=40.0000 room=51.7667 restock_in=1200; FuelCan5:Player2Unit@4243 gain=40.0000 room=51.7667 restock_in=1200; FuelCan1 hidden=true FuelCan5 hidden=true
+CHECK lens_probe probe_ac6_round_started_restocks_every_can PASS after round_started: all five available, shown, restock_frame 0, at their spots=true; restocked +2 (FuelCan1@4306,FuelCan5@4306)
+CHECK lens_probe probe_ac7_gauge_layout_full_line PASS p1 view=[P: (0.0, 0.0), S: (640.0, 720.0)] bar=[P: (332.0, 16.0), S: (292.0, 24.0)] label=[P: (332.0, 16.0), S: (292.0, 26.0)] hp=[P: (16.0, 16.0), S: (300.0, 26.0)] status=[P: (16.0, 46.0), S: (608.0, 30.0)] line="Fuel 100 / 100" text 120 px (+outline 132) in 292 px, lines=1, bar 100.0/100.0 | p2 view=[P: (0.0, 0.0), S: (640.0, 720.0)] bar=[P: (332.0, 16.0), S: (292.0, 24.0)] label=[P: (332.0, 16.0), S: (292.0, 26.0)] hp=[P: (16.0, 16.0), S: (300.0, 26.0)] status=[P: (16.0, 46.0), S: (608.0, 30.0)] line="Fuel 100 / 100" text 120 px (+outline 132) in 292 px, lines=1, bar 100.0/100.0
+CHECK lens_probe probe_ac6_can_facts PASS FuelCan1 at (0.0, 0.0, 0.0) monitoring=true layer=0 mask=18 radius=1.60000002384186 centre=(0.0, 0.6, 0.0) ok=true; FuelCan2 at (-16.0, 0.0, -8.0) monitoring=true layer=0 mask=18 radius=1.60000002384186 centre=(0.0, 0.6, 0.0) ok=true; FuelCan3 at (16.0, 0.0, 8.0) monitoring=true layer=0 mask=18 radius=1.60000002384186 centre=(0.0, 0.6, 0.0) ok=true; FuelCan4 at (-16.0, 0.0, 8.0) monitoring=true layer=0 mask=18 radius=1.60000002384186 centre=(0.0, 0.6, 0.0) ok=true; FuelCan5 at (16.0, 0.0, -8.0) monitoring=true layer=0 mask=18 radius=1.60000002384186 centre=(0.0, 0.6, 0.0) ok=true; restock() on an available Can signals 0
+CHECK lens_probe probe_quiet_and_never_negative FAIL min_fuel_said=-0.03166666666667 errors=0 warnings=0 first= takes=FuelCan1:Player1Unit@4131,FuelCan5:Player2Unit@4243 restocks=FuelCan1@4306,FuelCan5@4306
+CHECK lens_probe probe_readonly_properties PASS fuel 100.0 cap 100.0 empty false state 0 available true restock_frame 0 (expected six ERROR lines above)
+RESULT lens_probe fail checks=20 failed=3 t=71.850 probe=done
+
+----STDERR----
+ERROR: Unit 'Player1Unit': fuel is read-only. Add Fuel with refuel(); it burns while the Unit moves.
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] @fuel_setter (res://src/gameplay/units/unit.gd:285)
+       [1] _readonly (res://tools/evidence/split_screen/lens_probe.gd:455)
+       [2] run (res://tools/evidence/split_screen/lens_probe.gd:69)
+       [3] _restart_restocks (res://tools/evidence/split_screen/lens_probe.gd:388)
+       [4] advance (res://tools/evidence/split_screen/check_kit.gd:87)
+       [5] tick (res://tools/evidence/split_screen/check_kit.gd:81)
+       [6] advance_ticks (res://tools/evidence/split_screen_harness.gd:411)
+ERROR: Unit 'Player1Unit': fuel_capacity is read-only. It is the Unit type's data: UnitStats.fuel_capacity.
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] @fuel_capacity_setter (res://src/gameplay/units/unit.gd:294)
+       [1] _readonly (res://tools/evidence/split_screen/lens_probe.gd:456)
+       [2] run (res://tools/evidence/split_screen/lens_probe.gd:69)
+       [3] _restart_restocks (res://tools/evidence/split_screen/lens_probe.gd:388)
+       [4] advance (res://tools/evidence/split_screen/check_kit.gd:87)
+       [5] tick (res://tools/evidence/split_screen/check_kit.gd:81)
+       [6] advance_ticks (res://tools/evidence/split_screen_harness.gd:411)
+ERROR: Unit 'Player1Unit': is_fuel_empty is read-only. Add Fuel with refuel().
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] @is_fuel_empty_setter (res://src/gameplay/units/unit.gd:303)
+       [1] _readonly (res://tools/evidence/split_screen/lens_probe.gd:457)
+       [2] run (res://tools/evidence/split_screen/lens_probe.gd:69)
+       [3] _restart_restocks (res://tools/evidence/split_screen/lens_probe.gd:388)
+       [4] advance (res://tools/evidence/split_screen/check_kit.gd:87)
+       [5] tick (res://tools/evidence/split_screen/check_kit.gd:81)
+       [6] advance_ticks (res://tools/evidence/split_screen_harness.gd:411)
+ERROR: FuelCan 'FuelCan2': state is read-only. A Unit takes the Can by touching it; restock() brings it back.
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] @state_setter (res://src/gameplay/fuel/fuel_can.gd:111)
+       [1] _readonly (res://tools/evidence/split_screen/lens_probe.gd:459)
+       [2] run (res://tools/evidence/split_screen/lens_probe.gd:69)
+       [3] _restart_restocks (res://tools/evidence/split_screen/lens_probe.gd:388)
+       [4] advance (res://tools/evidence/split_screen/check_kit.gd:87)
+       [5] tick (res://tools/evidence/split_screen/check_kit.gd:81)
+       [6] advance_ticks (res://tools/evidence/split_screen_harness.gd:411)
+ERROR: FuelCan 'FuelCan2': is_available is read-only. A Unit takes the Can by touching it; restock() brings it back.
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] @is_available_setter (res://src/gameplay/fuel/fuel_can.gd:119)
+       [1] _readonly (res://tools/evidence/split_screen/lens_probe.gd:460)
+       [2] run (res://tools/evidence/split_screen/lens_probe.gd:69)
+       [3] _restart_restocks (res://tools/evidence/split_screen/lens_probe.gd:388)
+       [4] advance (res://tools/evidence/split_screen/check_kit.gd:87)
+       [5] tick (res://tools/evidence/split_screen/check_kit.gd:81)
+       [6] advance_ticks (res://tools/evidence/split_screen_harness.gd:411)
+ERROR: FuelCan 'FuelCan2': restock_frame is read-only. A take stamps it from settings.respawn_delay_seconds.
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] @restock_frame_setter (res://src/gameplay/fuel/fuel_can.gd:127)
+       [1] _readonly (res://tools/evidence/split_screen/lens_probe.gd:461)
+       [2] run (res://tools/evidence/split_screen/lens_probe.gd:69)
+       [3] _restart_restocks (res://tools/evidence/split_screen/lens_probe.gd:388)
+       [4] advance (res://tools/evidence/split_screen/check_kit.gd:87)
+       [5] tick (res://tools/evidence/split_screen/check_kit.gd:81)
+       [6] advance_ticks (res://tools/evidence/split_screen_harness.gd:411)

@@ -1,0 +1,56 @@
+extends SceneTree
+## Probe D (scratch): what a Unit that starts FULL 8 m short of a Can gets when it drives through it.
+## fix pass 2 copy: line 28 sets position (the Unit is a direct child of root, so it is the global
+## position) instead of global_position, which pushed a not-inside-tree ERROR during _initialize().
+const UNIT_SCENE: String = "res://src/gameplay/units/motorbike.tscn"
+const CAN_SCENE: String = "res://src/gameplay/fuel/fuel_can.tscn"
+var _frames: int = 0
+func _physics_process(_delta: float) -> bool:
+	_frames += 1
+	return _frames > 5000
+func _initialize() -> void:
+	_run()
+func _ticks(n: int) -> void:
+	for i: int in n:
+		await physics_frame
+func _run() -> void:
+	var body: StaticBody3D = StaticBody3D.new()
+	body.collision_layer = 1
+	var shape: CollisionShape3D = CollisionShape3D.new()
+	var box: BoxShape3D = BoxShape3D.new()
+	box.size = Vector3(4000.0, 1.0, 4000.0)
+	shape.shape = box
+	shape.position = Vector3(0.0, -0.5, 0.0)
+	body.add_child(shape)
+	root.add_child(body)
+	var can: FuelCan = (load(CAN_SCENE) as PackedScene).instantiate() as FuelCan
+	root.add_child(can)
+	var unit: Unit = (load(UNIT_SCENE) as PackedScene).instantiate() as Unit
+	root.add_child(unit)
+	unit.position = Vector3(0.0, 0.0, 300.0)
+	var fuels: Array[float] = []
+	var taken: Array[int] = [0]
+	unit.fuel_changed.connect(func(f: float, _c: float) -> void: fuels.append(f))
+	can.taken.connect(func(_u: Unit) -> void: taken[0] += 1)
+	await _ticks(3)
+	for start_z: float in [8.0, 30.0, 60.0]:
+		can.restock()
+		unit.leave_play()
+		await _ticks(8)
+		fuels.clear()
+		taken[0] = 0
+		unit.spawn(Transform3D(Basis.IDENTITY, Vector3(0.0, 0.05, start_z)))
+		unit.refuel(100.0)
+		for i: int in 300:
+			unit.set_drive_input(1.0, 0.0)
+			await physics_frame
+			if taken[0] > 0:
+				break
+		# the value just before the jump to 100
+		var before: float = 100.0
+		for k: int in range(fuels.size() - 1, 0, -1):
+			if fuels[k] > fuels[k - 1] + 1e-6:
+				before = fuels[k - 1]
+				break
+		print("PROBE start full %.0f m short: taken=%d, tank before the Can's refill=%.4f, gain=%.4f of refill_amount %.1f, can_available=%s" % [start_z, taken[0], before, 100.0 - before, can.settings.refill_amount, str(can.is_available)])
+	quit(0)

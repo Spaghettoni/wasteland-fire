@@ -1,0 +1,35 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PROBE INFO -s root window before: size=(100, 100) visible_rect=[P: (0.0, 0.0), S: (1280.0, 1280.0)]
+PROBE INFO root window set to: size=(1280, 720) visible_rect=[P: (0.0, 0.0), S: (1280.0, 720.0)]
+PROBE INFO after the first frame the window is set again, as the harness does: size=(1280, 720)
+PROBE PASS wiring | each HUD on its own Unit's fuel_changed=true cross-wired=false connections p1=2 p2=2 (HUD + this probe's counter)
+PROBE PASS round_start_choosing_reads_zero | frame=6 p1 unit=0.0000/100.0 bar=0.0000/100.0 label="Fuel 0 / 100" choosing=true hp_label="HP 0 / 40" p2 unit=0.0000/100.0 bar=0.0000/100.0 label="Fuel 0 / 100" choosing=true hp_label="HP 0 / 40"
+PROBE PASS spawn_reads_partial_tank | accepted=true alive_after=1 ticks | p1 unit=50.0000/100.0 bar=50.0000/100.0 label="Fuel 50 / 100" type=motorbike fuel_changed_since_choice=1 p2 unit=50.0000/100.0 bar=50.0000/100.0 label="Fuel 50 / 100" type=truck fuel_changed_since_choice=1
+PROBE PASS p1_drives_alone_60_ticks | p1 bar 50.0000 -> 48.0300 label="Fuel 49 / 100" speed=20.00 | p2 untouched: p2 unit=50.0000/100.0 bar=50.0000/100.0 label="Fuel 50 / 100" | mismatched_ticks=[0, 0] rising_ticks=[0, 0]
+PROBE PASS both_drive_45_ticks | p1 48.0300 -> 46.5300 (fuel_use 2.0) | p2 50.0000 -> 47.8000 (fuel_use 3.0) | p1 unit=46.5333/100.0 bar=46.5300/100.0 label="Fuel 47 / 100" | p2 unit=47.8000/100.0 bar=47.8000/100.0 label="Fuel 48 / 100" | mismatched_ticks=[0, 0] rising_ticks=[0, 0]
+PROBE PASS coast_then_stand_60_ticks | coast_ticks=120 then 60 ticks standing unchanged=true: p1 unit=42.5333/100.0 bar=42.5300/100.0 label="Fuel 43 / 100" | p2 unit=44.4000/100.0 bar=44.4000/100.0 label="Fuel 45 / 100" | cans FuelCan1=true,FuelCan2=true,FuelCan3=true,FuelCan4=true,FuelCan5=true | p1_pos=(-0.08, 0.0, 22.32) p2_pos=(0.0, 0.0, -13.67)
+PROBE PASS refuel_rises_same_call | p1 42.5333 + 40.0000: bar 42.5300 -> 82.5300 label "Fuel 43 / 100" -> "Fuel 83 / 100" | p2 unchanged: p2 unit=44.4000/100.0 bar=44.4000/100.0 label="Fuel 45 / 100"
+PROBE PASS max_value_before_value | (150, 200): max=200.0 value=150.0 label="Fuel 150 / 200" | (0, 0) leaves the maximum: max=200.0 value=0.0 label="Fuel 0 / 0" | restored: p1 unit=82.5333/100.0 bar=82.5300/100.0 label="Fuel 83 / 100" | control: a bare ProgressBar given value 150 before max 200 holds 100.0
+PROBE PASS destroy_reads_zero_then_respawn_partial | held 82.5333; destroyed: p1 unit=0.0000/100.0 bar=0.0000/100.0 label="Fuel 0 / 100" (p2 unchanged "Fuel 45 / 100"); waiting ticks not reading zero=0; chose after 1 ticks, alive 180 ticks later; respawned: p1 unit=50.0000/100.0 bar=50.0000/100.0 label="Fuel 50 / 100"
+PROBE PASS layout_p1 | view=(0,0 640x720) FuelBar=(332,16 292x24) FuelLabel=(332,16 292x26) HitPointsBar=(16,16 300x24) HitPointsLabel=(16,16 300x26) CanisterStatusLabel=(16,46 608x30) overlaps=0 gap_to_hp_bar=16 gap_to_right_edge=16 gap_label_to_status=4
+PROBE PASS layout_p2 | view=(0,0 640x720) FuelBar=(332,16 292x24) FuelLabel=(332,16 292x26) HitPointsBar=(16,16 300x24) HitPointsLabel=(16,16 300x26) CanisterStatusLabel=(16,46 608x30) overlaps=0 gap_to_hp_bar=16 gap_to_right_edge=16 gap_label_to_status=4
+PROBE PASS text_fits_292 | "Fuel 100 / 100" font_size=18 outline=6 string_width=120.0 with_outline=132.0 no-wrap minimum=(120.0, 26.0); in a copy of the real label rect=(332,16 292x26) lines=1
+PROBE PASS style | fill=(0.96, 0.7, 0.18, 1.0) (hit-point fill (0.4, 0.82, 0.38, 1.0)) radii_4=true background_shared_with_hp_bar=true show_percentage=false mouse_filter bar=2 label=2 label_style_equals_hp_label=true bar_step=0.01
+PROBE NOTE the next two ERROR lines are expected (fuel_format left empty, then with one placeholder)
+ERROR: PlayerHud 'ProbeHud': fuel_format is not set (store the Fuel line, with two %d placeholders, in the scene), so it shows nothing.
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://src/ui/hud/player_hud.gd:140)
+       [1] _step_validation (/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a0bbb76e-4a11-49a3-9a86-8984abd2268d/scratchpad/dev-story-006/impl/B/probe_b.gd:348)
+       [2] _run (/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a0bbb76e-4a11-49a3-9a86-8984abd2268d/scratchpad/dev-story-006/impl/B/probe_b.gd:123)
+       [3] _step_text_fit (/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a0bbb76e-4a11-49a3-9a86-8984abd2268d/scratchpad/dev-story-006/impl/B/probe_b.gd:310)
+ERROR: PlayerHud 'ProbeHud': fuel_format 'Fuel %d' lacks the two placeholders for the Fuel and the capacity, so it shows nothing.
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://src/ui/hud/player_hud.gd:140)
+       [1] _step_validation (/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a0bbb76e-4a11-49a3-9a86-8984abd2268d/scratchpad/dev-story-006/impl/B/probe_b.gd:348)
+PROBE PASS fuel_format_validated | fuel_format="" hidden=true connected=false | fuel_format="Fuel %d" hidden=true connected=false
+PROBE INFO handler_cost_us_per_call=0.886 over 20000 calls (format, tr, bar value, label text)
+PROBE PASS restored_after_cost_loop | p1 unit=50.0000/100.0 bar=50.0000/100.0 label="Fuel 50 / 100"
+PROBE DONE fails=0 frame=486

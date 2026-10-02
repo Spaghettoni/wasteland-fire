@@ -30,3 +30,7 @@ collision_center = Vector3(0, 0.5, 0)
 collision_layer = 2
 collision_mask = 35
 spot_mask = 18
+fuel_capacity = 100.0
+fuel_use = 2.0
+spawn_fuel_fraction = 0.5
+empty_turn_rate = 1.4

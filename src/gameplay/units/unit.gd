@@ -9,8 +9,10 @@ extends CharacterBody3D
 ## the floor in GROUNDED mode like the ground types, with the movement model below, and its model
 ## draws it hovering. What sets it apart is data alone, the collision layer and mask in its
 ## UnitStats: it crosses the cliffs_water layer that stops the ground types and passes through them
-## (and they through it), so nothing here names a type or branches on can_fly. The separate movement
-## model and the subclass this doc once left open to Story 005 were not needed.
+## (and they through it), so nothing here names a type. The one branch on can_fly is Fuel (Story
+## 006, movement model step 5): a flying Unit whose tank runs dry crashes, while a ground Unit
+## stops and can still turn on the spot. The separate movement model and the subclass this doc once
+## left open to Story 005 were not needed.
 ##
 ## Implements: design/game-brief.md build-order item 1 (Driving toy), MVP feature 3 (Bases,
 ## destruction and respawn) and MVP item 5 (the four Units);
@@ -27,8 +29,12 @@ extends CharacterBody3D
 ## from the data), AC-5 (the Gyrocopter crosses cliffs and water and passes through ground Units
 ## through the layer and mask in its data, and spawn spots are checked per type) and AC-8 (the
 ## silhouette is the type's model, painted with team_material, in both views; the hit points and
-## their maximum come from the chosen type's data); design/rules.md "Units", "Destruction and
-## respawn" and "Resources". Vocabulary: CONTEXT.md.
+## their maximum come from the chosen type's data);
+## production/epics/wasteland-fire/story-006-fuel-and-fuel-cans.md AC-1 to AC-5 and AC-8 (the
+## tank from the type's data, burned only while moving; an empty ground Unit stops but turns and
+## fires, an empty Gyrocopter crashes through destroy(), a spawn gives a fixed partial tank, and
+## destroy() works at zero Fuel), AC-6 (refuel()) and AC-7 (fuel_changed, what the HUD shows);
+## design/rules.md "Units", "Destruction and respawn" and "Resources". Vocabulary: CONTEXT.md.
 ##
 ## Driven by command, not by input: the Unit never reads a key or an Input action and keeps no
 ## singleton state. Whoever drives it (PlayerDriveInput for a Player, later a bot or a test)
@@ -41,7 +47,8 @@ extends CharacterBody3D
 ##      throttle is held.
 ##   2. Steering turns the Unit about the up axis at steer * turn_rate * speed fraction, where
 ##      the speed fraction is |speed| / max_speed (0 to 1). The turn reverses while rolling
-##      backward and vanishes at a standstill, so the Unit cannot pivot on the spot.
+##      backward and vanishes at a standstill, so the Unit cannot pivot on the spot (a ground
+##      Unit with an empty tank is the exception, step 5).
 ##   3. Horizontal velocity is the facing direction times speed. Gravity is added only while
 ##      airborne, then move_and_slide() moves and slides the body.
 ##   4. The speed is a command, not a measurement: a Unit held against a wall keeps it, which is
@@ -55,6 +62,15 @@ extends CharacterBody3D
 ##      held speed, then the first tick of reverse). Wall slides and the steer-out of a pin never
 ##      take this path: it fires only when the throttle is pushed against the held speed, and both
 ##      keep the throttle forward (the walls scenario of the evidence harness covers them).
+##   5. Fuel (Story 006), first in the tick. A Unit has a tank once spawn() has run, while its
+##      type's fuel_capacity is above zero (the driving toy's Unit never spawns and burns
+##      nothing). The tank burns stats.fuel_use * delta on each tick that starts with a drive
+##      speed that is not approximately zero: a Unit coasting to a stop burns until then, one held
+##      against a wall with the throttle on keeps burning, one standing or hovering still burns
+##      nothing. An empty ground Unit gets zero throttle in step 1 (it coasts to a standstill;
+##      forward and reverse are ignored) and turns at steer * empty_turn_rate in step 2 at any
+##      speed; it still fires and can self-destruct. An empty flying Unit calls destroy() (the
+##      Fuel crash) and the rest of its tick does not run.
 ##
 ## Ground handling: the body stays in the default GROUNDED motion mode with every other
 ## CharacterBody3D setting at its default except floor_snap_length and wall_min_slide_angle,
@@ -89,7 +105,8 @@ extends CharacterBody3D
 ## destruction means and when the Unit respawns is the Round's business (MatchController). A Unit
 ## is alive with full hit points at _ready(), so the Story 001 sandbox needs no spawn(). One that
 ## refused to drive in _ready() is never alive: destroy() and apply_damage() ignore it and spawn()
-## leaves it alone.
+## leaves it alone. destroy() and leave_play() empty the tank and spawn() gives the type's starting
+## share of it (step 5), so dying is never a free refuel (Story 006 AC-5).
 ##
 ## Carrying (Story 004): whether this Unit may pick up the Water Canister, and where it rides, is
 ## the Unit type's data (UnitStats.can_carry and carry_offset: true and a tail mount for the
@@ -100,7 +117,7 @@ extends CharacterBody3D
 ## MatchController or another Unit, and does not know it is a Carrier. Hit points are shown, not
 ## polled: hit_points_changed fires once per change (apply_damage(), destroy(), leave_play(),
 ## spawn()) with the value and the maximum, so a HUD can listen without reading the Unit every
-## frame (AC-7).
+## frame (AC-7). Fuel is shown the same way, through fuel_changed (Story 006 AC-7).
 ##
 ## Leaving play. With collision layer and mask both zero the body neither collides nor is collided
 ## with, so the other Unit drives through a wreck and a Unit put down on one is not pushed, and
@@ -143,10 +160,10 @@ extends CharacterBody3D
 ##
 ## Benching: leave_play() takes a live Unit out of play without a destruction (the Round uses it at
 ## the start of a Round and at a restart, while the Player chooses the next type): collision layer
-## and mask zeroed first, then hidden, physics tick off, motion zeroed, hit points zero,
-## hit_points_changed once with zero and never `destroyed`. The order matters: a body whose mask
-## changes while it overlaps a cliff is pushed under the floor, one benched or teleported first is
-## not (measured; the Story 005 evidence doc keeps the run).
+## and mask zeroed first, then hidden, physics tick off, motion zeroed, hit points and Fuel zero,
+## hit_points_changed then fuel_changed once each, with zero, and never `destroyed`. The order
+## matters: a body whose mask changes while it overlaps a cliff is pushed under the floor, one
+## benched or teleported first is not (measured; the Story 005 evidence doc keeps the run).
 ##
 ## Spot checks across types (Story 005 AC-5): is_spot_taken(at, for_stats) tests the given type's
 ## box and spot_mask (the units and gyrocopters layers in the data), so a Truck is checked as a
@@ -167,6 +184,13 @@ signal destroyed
 ## (spawn(), with the maximum of the type it spawned as). Never for an ignored call. It is for
 ## display (Story 004 AC-7, the HUD): a handler shows the numbers and does not act on the Unit.
 signal hit_points_changed(hit_points: float, max_hit_points: float)
+
+## Emitted when the Fuel in the tank changes, with the new value and stats.fuel_capacity (Story 006
+## AC-7, the HUD's Fuel gauge): once per tick the Unit burns Fuel, once when refuel() adds some,
+## once with the starting tank at a spawn and once with zero when it is destroyed or benched,
+## whatever it held (both right after hit_points_changed, and before `destroyed`). Never for an
+## ignored call. For display: a handler shows the numbers and does not act on the Unit.
+signal fuel_changed(fuel: float, capacity: float)
 
 ## Largest magnitude of a normalised drive axis (throttle or steer): commands are held to -1..1.
 const AXIS_LIMIT: float = 1.0
@@ -251,6 +275,33 @@ var type_id: StringName:
 	set(_value):
 		push_error("Unit '%s': type_id is read-only. It is the Unit type's data: UnitStats.type_id." % name)
 
+## Fuel in the tank, in Fuel units (Story 006): the type's starting share at each spawn, down while
+## the Unit moves, up through refuel(), zero once destroyed or benched (full and never burned on a
+## Unit nobody spawned). Read-only: assigning to it pushes an error and changes nothing.
+var fuel: float:
+	get:
+		return _fuel
+	set(_value):
+		push_error("Unit '%s': fuel is read-only. Add Fuel with refuel(); it burns while the Unit moves." % name)
+
+## The most Fuel the tank holds, the top of the Fuel gauge: stats.fuel_capacity, the Unit type's
+## data (Story 006 AC-1); 0.0 while the Unit refused to drive in _ready(). Read-only: assigning to
+## it pushes an error and changes nothing.
+var fuel_capacity: float:
+	get:
+		return stats.fuel_capacity if _can_drive else 0.0
+	set(_value):
+		push_error("Unit '%s': fuel_capacity is read-only. It is the Unit type's data: UnitStats.fuel_capacity." % name)
+
+## True while the Unit is alive, has a tank (it has spawned and its fuel_capacity is above zero)
+## and no Fuel left (Story 006 AC-3): a ground Unit then cannot drive but still turns and fires.
+## Read-only: assigning to it pushes an error and changes nothing.
+var is_fuel_empty: bool:
+	get:
+		return _is_alive and _has_tank() and _fuel <= 0.0
+	set(_value):
+		push_error("Unit '%s': is_fuel_empty is read-only. Add Fuel with refuel()." % name)
+
 var _speed: float = 0.0
 var _throttle: float = 0.0
 var _steer: float = 0.0
@@ -274,6 +325,12 @@ var _scene_collision_mask: int = 0
 ## The type's model instanced by spawn() (the child named Model), or null while the scene's own
 ## meshes show.
 var _model: Node3D
+## Fuel in the tank, what fuel reads (Story 006): full from _ready(), then set by spawn(), burned
+## by _burn_fuel(), added to by refuel() and zeroed by destroy() and leave_play().
+var _fuel: float = 0.0
+## True once spawn() has put the Unit in play (Story 006): from then on the Unit has a tank while
+## its type's fuel_capacity is above zero. Never set on a Unit nobody spawns (the driving toy's).
+var _has_spawned: bool = false
 
 
 func _ready() -> void:
@@ -290,11 +347,15 @@ func _ready() -> void:
 	_scene_collision_layer = collision_layer
 	_scene_collision_mask = collision_mask
 	_hit_points = stats.max_hit_points
+	_fuel = stats.fuel_capacity
 	_is_alive = true
 	_can_drive = true
 
 
 func _physics_process(delta: float) -> void:
+	_burn_fuel(delta)
+	if not _is_alive:
+		return
 	_speed = _next_speed(delta)
 	rotate_y(_yaw_rate() * delta)
 	var facing: Vector3 = -global_transform.basis.z.normalized()
@@ -349,43 +410,66 @@ func apply_damage(amount: float) -> void:
 	hit_points_changed.emit(_hit_points, stats.max_hit_points)
 
 
-## Destroys a live Unit at once, whatever its hit points: Self-destruct (Story 003 AC-5) and the
-## last hit of apply_damage() take this same path. The Unit leaves play (see the class doc), then
-## hit_points_changed is emitted once, with zero, then `destroyed`, once. Does nothing when the
-## Unit is not alive. Call it from a tick, never from a physics signal handler (apply_damage()).
+## Adds Fuel up to the type's fuel_capacity and returns the amount added, emitting fuel_changed once
+## (Story 006 AC-6: a Fuel Can calls it and is taken only when this is above zero). Returns 0.0 and
+## does nothing for a Unit that is not alive, an amount not above zero (or NaN), a Unit without a
+## tank and a full tank. Fuel above zero lets an empty Unit drive again at once, on this call. Call
+## it from a tick; it changes no physics state.
+func refuel(amount: float) -> float:
+	if not _is_alive or not (amount > 0.0) or not _has_tank():
+		return 0.0
+	var room: float = stats.fuel_capacity - _fuel
+	if not (room > 0.0):
+		return 0.0
+	var added: float = minf(amount, room)
+	_fuel = stats.fuel_capacity if added >= room else _fuel + added
+	fuel_changed.emit(_fuel, stats.fuel_capacity)
+	return added
+
+
+## Destroys a live Unit at once, whatever its hit points: Self-destruct (Story 003 AC-5; it works
+## at zero Fuel, Story 006 AC-8), the last hit of apply_damage() and the Fuel crash of a flying
+## Unit, called from its own tick (Story 006 AC-4), take this same path. The Unit leaves play (see
+## the class doc) with its hit points and Fuel at zero, then hit_points_changed and fuel_changed
+## are emitted once each, with zero, then `destroyed`, once. Does nothing when the Unit is not
+## alive. Call it from a tick, never from a physics signal handler (apply_damage()).
 func destroy() -> void:
 	if not _is_alive:
 		return
 	_is_alive = false
 	_hit_points = 0.0
+	_fuel = 0.0
 	visible = false
 	collision_layer = 0
 	collision_mask = 0
 	set_physics_process(false)
 	reset_motion()
 	hit_points_changed.emit(_hit_points, stats.max_hit_points)
+	fuel_changed.emit(_fuel, stats.fuel_capacity)
 	destroyed.emit()
 
 
 ## Takes a live Unit out of play without destroying it (Story 005: the Round benches both Units at
 ## the start of a Round and at a restart, while each Player chooses the next type). Collision
 ## layer and mask are zeroed first, then the Unit is hidden, its physics tick turned off, its
-## motion and held drive command zeroed and its hit points set to zero; hit_points_changed is
-## emitted once, with zero and the maximum, and `destroyed` never, so the Round sees no
-## destruction and no respawn wait starts. Does nothing when the Unit is not alive (benched,
-## destroyed or refused to drive). spawn() puts the Unit back. Call it from a tick or from a
-## _ready(), never from a physics signal handler (apply_damage()).
+## motion and held drive command zeroed and its hit points and Fuel set to zero;
+## hit_points_changed and then fuel_changed are emitted once each, with zero, and `destroyed`
+## never, so the Round sees no destruction and no respawn wait starts. Does nothing when the Unit
+## is not alive (benched, destroyed or refused to drive). spawn() puts the Unit back. Call it from
+## a tick or from a _ready(), never from a physics signal handler (apply_damage()).
 func leave_play() -> void:
 	if not _is_alive:
 		return
 	_is_alive = false
 	_hit_points = 0.0
+	_fuel = 0.0
 	collision_layer = 0
 	collision_mask = 0
 	visible = false
 	set_physics_process(false)
 	reset_motion()
 	hit_points_changed.emit(_hit_points, stats.max_hit_points)
+	fuel_changed.emit(_fuel, stats.fuel_capacity)
 
 
 ## Puts the Unit in play at the given transform: the first spawn of a Round and every respawn use
@@ -399,11 +483,14 @@ func leave_play() -> void:
 ## "team_colour" meshes painted with team_material) are applied before the spawn proper. With
 ## new_stats null (the default) the Unit keeps its type and this behaves exactly as before Story
 ## 005. The spawn proper sets global_transform first and then calls reset_motion() (the teleport
-## order), refills hit_points to stats.max_hit_points, shows the Unit, puts the play collision
-## layer and mask back after the teleport (a mask that changes while the body overlaps a cliff
-## pushes it under the floor; the Story 005 evidence doc keeps the run) and turns its physics tick
-## on. It works on a destroyed Unit, on a benched one (leave_play()) and on one still alive, and
-## emits hit_points_changed once, with the refill and the new maximum, and nothing else. Call it
+## order), refills hit_points to stats.max_hit_points, gives the Unit its tank (Story 006 AC-5)
+## with stats.fuel_capacity times spawn_fuel_fraction clamped to 0..1, whatever it held before (a
+## fixed partial tank in the shipped data, so dying is never a free refuel), shows the Unit, puts
+## the play collision layer and mask back after the teleport (a mask that changes while the body
+## overlaps a cliff pushes it under the floor; the Story 005 evidence doc keeps the run) and turns
+## its physics tick on. It works on a destroyed Unit, on a benched one (leave_play()) and on one
+## still alive, and emits hit_points_changed once, with the refill and the new maximum, then
+## fuel_changed once, with the starting tank and the capacity, and nothing else. Call it
 ## inside a physics tick, in the same tick as ChaseCamera.snap_to_target(): from _process the
 ## frame of the teleport still draws the Unit at the wreck while the camera has already moved. A
 ## Unit that refused to drive in _ready() stays out of play: this pushes an error and changes
@@ -422,12 +509,15 @@ func spawn(at: Transform3D, new_stats: UnitStats = null) -> void:
 	global_transform = at
 	reset_motion()
 	_hit_points = stats.max_hit_points
+	_fuel = stats.fuel_capacity * clampf(stats.spawn_fuel_fraction, 0.0, 1.0)
+	_has_spawned = true
 	_is_alive = true
 	visible = true
 	collision_layer = _play_collision_layer
 	collision_mask = _play_collision_mask
 	set_physics_process(true)
 	hit_points_changed.emit(_hit_points, stats.max_hit_points)
+	fuel_changed.emit(_fuel, stats.fuel_capacity)
 
 
 ## True when another Unit stands where this one would overlap it if spawn(at, for_stats) were
@@ -470,24 +560,56 @@ func is_spot_taken(at: Transform3D, for_stats: UnitStats = null) -> bool:
 
 
 ## Speed after this tick, per the movement model in the class doc: step 4 first (a blocked Unit
-## throttled the other way starts from zero), then step 1.
+## throttled the other way starts from zero), then step 1. Every rule reads the effective
+## throttle: the held one, or zero while the tank of a ground Unit is empty (step 5).
 func _next_speed(delta: float) -> float:
+	var throttle: float = 0.0 if _is_stranded() else _throttle
 	var speed: float = _speed
-	if _blocked and signf(_throttle) * signf(speed) < 0.0:
+	if _blocked and signf(throttle) * signf(speed) < 0.0:
 		speed = 0.0
-	if is_zero_approx(_throttle):
+	if is_zero_approx(throttle):
 		return move_toward(speed, 0.0, stats.coast_deceleration * delta)
-	var top_speed: float = stats.max_speed if _throttle > 0.0 else stats.reverse_max_speed
-	var opposing: bool = signf(_throttle) * signf(speed) < 0.0
+	var top_speed: float = stats.max_speed if throttle > 0.0 else stats.reverse_max_speed
+	var opposing: bool = signf(throttle) * signf(speed) < 0.0
 	var rate: float = stats.braking if opposing else stats.acceleration
-	return move_toward(speed, top_speed * _throttle, rate * delta)
+	return move_toward(speed, top_speed * throttle, rate * delta)
 
 
 ## Yaw rate in radians per second, positive turning left: steer scaled by the speed fraction and
-## flipped while rolling backward. Zero at a standstill.
+## flipped while rolling backward, zero at a standstill; while the tank of a ground Unit is empty
+## (step 5), steer * stats.empty_turn_rate at any speed, so it turns on the spot.
 func _yaw_rate() -> float:
+	if _is_stranded():
+		return _steer * stats.empty_turn_rate
 	var speed_fraction: float = minf(absf(_speed) / stats.max_speed, 1.0)
 	return _steer * stats.turn_rate * speed_fraction * signf(_speed)
+
+
+## Step 5 of the movement model (Story 006 AC-2, AC-4), first in the tick: a Unit with a tank, Fuel
+## and a fuel_use above zero whose drive speed is not approximately zero (moving) burns
+## stats.fuel_use * delta, clamped at zero (an approximately zero remainder is exactly zero, so the
+## tank is empty on its nominal tick), and emits fuel_changed once. An empty flying Unit then calls
+## destroy(), on every tick, so one spawned with an empty tank crashes at once.
+func _burn_fuel(delta: float) -> void:
+	if not _has_tank():
+		return
+	if _fuel > 0.0 and stats.fuel_use > 0.0 and not is_zero_approx(_speed):
+		_fuel = maxf(_fuel - stats.fuel_use * delta, 0.0)
+		if is_zero_approx(_fuel):
+			_fuel = 0.0
+		fuel_changed.emit(_fuel, stats.fuel_capacity)
+	if stats.can_fly and _fuel <= 0.0:
+		destroy()
+
+
+## True while the Unit has a tank (Story 006): spawn() has run and its fuel_capacity is above zero.
+func _has_tank() -> bool:
+	return _has_spawned and stats.fuel_capacity > 0.0
+
+
+## True while this ground Unit's tank is empty (Story 006 AC-3): no throttle, turns on the spot.
+func _is_stranded() -> bool:
+	return is_fuel_empty and not stats.can_fly
 
 
 ## Turns this body into the given type (Story 005 AC-1): the stats and the controller settings

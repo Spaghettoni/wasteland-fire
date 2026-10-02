@@ -1,0 +1,21 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PROBE env godot=4.7.2-stable (official) physics_ticks=60 physics_engine=Jolt Physics args=-s /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a0bbb76e-4a11-49a3-9a86-8984abd2268d/scratchpad/dev-story-006/preflight/a/probe_zone.gd
+PROBE e2 truck_buggy add_to_tree=AB spawn_called=AB swap_positions=false -> { "UA,UB": 40 } (A and B first listed on different ticks in 0 of 40 runs)
+PROBE e2 truck_buggy add_to_tree=AB spawn_called=AB swap_positions=true -> { "UB,UA": 6, "UA,UB": 34 } (A and B first listed on different ticks in 0 of 40 runs)
+PROBE e2 truck_buggy add_to_tree=AB spawn_called=BA swap_positions=false -> { "UA,UB": 40 } (A and B first listed on different ticks in 0 of 40 runs)
+PROBE e2 truck_buggy add_to_tree=AB spawn_called=BA swap_positions=true -> { "UA,UB": 36, "UB,UA": 4 } (A and B first listed on different ticks in 0 of 40 runs)
+PROBE e2 truck_buggy add_to_tree=BA spawn_called=AB swap_positions=false -> { "UB,UA": 39, "UA,UB": 1 } (A and B first listed on different ticks in 0 of 40 runs)
+PROBE e2 truck_buggy add_to_tree=BA spawn_called=AB swap_positions=true -> { "UB,UA": 40 } (A and B first listed on different ticks in 0 of 40 runs)
+PROBE e2 truck_buggy add_to_tree=BA spawn_called=BA swap_positions=false -> { "UB,UA": 40 } (A and B first listed on different ticks in 0 of 40 runs)
+PROBE e2 truck_buggy add_to_tree=BA spawn_called=BA swap_positions=true -> { "UB,UA": 40 } (A and B first listed on different ticks in 0 of 40 runs)
+PROBE e2 truck_gyro add_to_tree=AB spawn_called=AB swap_positions=false -> { "UA,UB": 38, "UB,UA": 2 } (A and B first listed on different ticks in 0 of 40 runs)
+PROBE e2 truck_gyro add_to_tree=AB spawn_called=BA swap_positions=false -> { "UA,UB": 40 } (A and B first listed on different ticks in 0 of 40 runs)
+PROBE e2 truck_gyro add_to_tree=BA spawn_called=AB swap_positions=false -> { "UA,UB": 39, "UB,UA": 1 } (A and B first listed on different ticks in 0 of 40 runs)
+PROBE e2 truck_gyro add_to_tree=BA spawn_called=BA swap_positions=false -> { "UA,UB": 40 } (A and B first listed on different ticks in 0 of 40 runs)
+PROBE f2.truck drove in (throttle released at z<=5.5, coasted to rest after 112 ticks at z=1.67, box overlaps sphere=true, listed while moving=51 ticks), then polled every tick for 1300 ticks: sampled=1330 listed=1330 unlisted=0 first_unlisted_i=-1 moved=0.0000 m
+PROBE f2.truck drove in (throttle released at z<=5.5, coasted to rest after 112 ticks at z=1.67, box overlaps sphere=true, listed while moving=51 ticks), then blind 1300 ticks then read: sampled=30 listed=30 unlisted=0 first_unlisted_i=-1 moved=0.0000 m
+PROBE f2.gyrocopter drove in (throttle released at z<=5.5, coasted to rest after 100 ticks at z=0.66, box overlaps sphere=true, listed while moving=44 ticks), then polled every tick for 1300 ticks: sampled=1330 listed=1330 unlisted=0 first_unlisted_i=-1 moved=0.0000 m
+PROBE f2.gyrocopter drove in (throttle released at z<=5.5, coasted to rest after 100 ticks at z=0.66, box overlaps sphere=true, listed while moving=44 ticks), then blind 1300 ticks then read: sampled=30 listed=30 unlisted=0 first_unlisted_i=-1 moved=0.0000 m
+PROBE h.pause_ghost listed before=true | Unit benched with leave_play() in the tick the tree was paused (t=13466): still listed on 30 of 30 paused ticks | unpaused in tick 13496: first tick not listed = unpause tick + 1
+PROBE done ticks=13508

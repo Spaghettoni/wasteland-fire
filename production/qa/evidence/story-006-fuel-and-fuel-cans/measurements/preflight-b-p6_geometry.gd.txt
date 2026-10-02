@@ -1,0 +1,175 @@
+extends SceneTree
+
+const RADIUS: float = 1.6
+const CENTER_Y: float = 0.6
+const SPOTS: Array[Vector3] = [Vector3(0, 0, 0), Vector3(-16, 0, -8), Vector3(16, 0, 8), Vector3(-16, 0, 8), Vector3(16, 0, -8)]
+const FIXTURES: Array[Vector3] = [Vector3(6, 0, 0), Vector3(-6, 0, 0), Vector3(5, 0, 0), Vector3(-5, 0, 0), Vector3(-24, 0, 0), Vector3(20, 0, 0), Vector3(-34, 0, 12), Vector3(-12, 0, 8), Vector3(8, 0, 2), Vector3(-8, 0, 2), Vector3(0, 0, -6), Vector3(-12, 0, 10), Vector3(12, 0, 10), Vector3(-18, 0, 0), Vector3(18, 0, 0), Vector3(30, 0, 0)]
+const TYPE_PATHS: Array[String] = ["res://src/gameplay/units/data/motorbike_stats.tres", "res://src/gameplay/units/data/buggy_stats.tres", "res://src/gameplay/units/data/truck_stats.tres", "res://src/gameplay/units/data/gyrocopter_stats.tres"]
+
+
+func _initialize() -> void:
+	_run()
+
+
+func _box_aabb(cs: CollisionShape3D) -> AABB:
+	var box: BoxShape3D = cs.shape
+	var half: Vector3 = box.size * 0.5
+	var out: AABB = AABB()
+	var first: bool = true
+	for sx: float in [-1.0, 1.0]:
+		for sy: float in [-1.0, 1.0]:
+			for sz: float in [-1.0, 1.0]:
+				var p: Vector3 = cs.global_transform * Vector3(half.x * sx, half.y * sy, half.z * sz)
+				if first:
+					out = AABB(p, Vector3.ZERO)
+					first = false
+				else:
+					out = out.expand(p)
+	return out
+
+
+func _dist(p: Vector3, a: AABB) -> float:
+	var lo: Vector3 = a.position
+	var hi: Vector3 = a.end
+	return p.distance_to(Vector3(clampf(p.x, lo.x, hi.x), clampf(p.y, lo.y, hi.y), clampf(p.z, lo.z, hi.z)))
+
+
+func _min_clear(center: Vector3, boxes: Array) -> float:
+	var best: float = 1e9
+	for a: AABB in boxes:
+		best = minf(best, _dist(center, a) - RADIUS)
+	return best
+
+
+func _run() -> void:
+	var field: Node3D = load("res://src/gameplay/maps/greybox_field.tscn").instantiate()
+	var terrain: Node3D = load("res://src/gameplay/maps/terrain_stand_ins.tscn").instantiate()
+	root.add_child(field)
+	root.add_child(terrain)
+	await physics_frame
+	var zones: Array = []
+	var pads: Array = []
+	var beacons: Array = []
+	var points: Array = []
+	for base_name: String in ["Base1", "Base2"]:
+		var base: Node3D = field.get_node(base_name)
+		zones.append(_box_aabb(base.get_node("Zone/CollisionShape3D")))
+		var pad: MeshInstance3D = base.get_node("Pad")
+		pads.append(pad.global_transform * pad.get_aabb())
+		var beacon: MeshInstance3D = base.get_node("Beacon")
+		beacons.append(beacon.global_transform * beacon.get_aabb())
+		for pt: String in ["SpawnPoint", "SpareSpawnLeft", "SpareSpawnRight", "CanisterSeat"]:
+			points.append([base_name + "." + pt, (base.get_node(pt) as Node3D).global_position])
+	points.append(["PlayerStart", (field.get_node("PlayerStart") as Node3D).global_position])
+	points.append(["Player2Start", (field.get_node("Player2Start") as Node3D).global_position])
+	var cliff: Array = [_box_aabb(terrain.get_node("Cliff/CollisionShape3D"))]
+	var water: Array = [_box_aabb(terrain.get_node("Water/CollisionShape3D"))]
+	var walls: Array = []
+	for w: String in ["WallNorth", "WallSouth", "WallEast", "WallWest"]:
+		walls.append(_box_aabb(field.get_node(w + "/CollisionShape3D")))
+	print("PROBE P6 zone_aabbs=%s pad_aabbs=%s cliff=%s water=%s walls=%s" % [zones, pads, cliff, water, walls])
+	var types: Array = []
+	for path: String in TYPE_PATHS:
+		var st: UnitStats = load(path)
+		types.append([st.type_id, st.collision_size, st.collision_center.y])
+	for si: int in SPOTS.size():
+		var spot: Vector3 = SPOTS[si]
+		var center: Vector3 = Vector3(spot.x, CENTER_Y, spot.z)
+		var near_pt: String = ""
+		var near_d: float = 1e9
+		for pt: Array in points:
+			var d: float = center.distance_to(pt[1]) - RADIUS
+			if d < near_d:
+				near_d = d
+				near_pt = pt[0]
+		var near_spot: float = 1e9
+		for oi: int in SPOTS.size():
+			if oi != si:
+				near_spot = minf(near_spot, SPOTS[si].distance_to(SPOTS[oi]))
+		print("PROBE P6 spot=%s clearance_m(sphere_surface_to_obstacle): base_zone=%.2f pad=%.2f beacon=%.2f cliff=%.2f water=%.2f wall_inner_face=%.2f nearest_spawn_or_seat=%s(%.2f) nearest_other_spot_centre_dist=%.2f" % [spot, _min_clear(center, zones), _min_clear(center, pads), _min_clear(center, beacons), _min_clear(center, cliff), _min_clear(center, water), _min_clear(center, walls), near_pt, near_d, near_spot])
+	var worst: float = 1e9
+	var worst_ctx: String = ""
+	var overlaps: int = 0
+	var any_heading_overlaps: int = 0
+	var any_heading_worst: float = 1e9
+	for f: Vector3 in FIXTURES:
+		var best: float = 1e9
+		var ctx: String = ""
+		var near_si: int = 0
+		var near_dc: float = 1e9
+		for si: int in SPOTS.size():
+			var center: Vector3 = Vector3(SPOTS[si].x, CENTER_Y, SPOTS[si].z)
+			var dc: float = Vector3(f.x, 0.0, f.z).distance_to(Vector3(SPOTS[si].x, 0.0, SPOTS[si].z))
+			if dc < near_dc:
+				near_dc = dc
+				near_si = si
+			for t: Array in types:
+				var sz: Vector3 = t[1]
+				for o: int in 2:
+					var s2: Vector3 = sz if o == 0 else Vector3(sz.z, sz.y, sz.x)
+					var box: AABB = AABB(Vector3(f.x - s2.x * 0.5, float(t[2]) - s2.y * 0.5, f.z - s2.z * 0.5), s2)
+					var c: float = _dist(center, box) - RADIUS
+					if c <= 0.0:
+						overlaps += 1
+					if c < best:
+						best = c
+						ctx = "type=%s facing=%s spot=%d" % [t[0], "z" if o == 0 else "x", si]
+		var circ_best: float = 1e9
+		var circ_ctx: String = ""
+		for t: Array in types:
+			var csz: Vector3 = t[1]
+			var half_diag: float = Vector2(csz.x * 0.5, csz.z * 0.5).length()
+			for si: int in SPOTS.size():
+				var dcc: float = Vector2(f.x - SPOTS[si].x, f.z - SPOTS[si].z).length() - half_diag - RADIUS
+				if dcc < circ_best:
+					circ_best = dcc
+					circ_ctx = "type=%s half_diag=%.3f spot=%d" % [t[0], half_diag, si]
+		if circ_best <= 0.0:
+			any_heading_overlaps += 1
+		any_heading_worst = minf(any_heading_worst, circ_best)
+		if best < worst:
+			worst = best
+			worst_ctx = "fixture=%s %s" % [f, ctx]
+		print("PROBE P6 fixture=%s nearest_spot=%d centre_dist=%.2f min_unit_box_to_zone_clearance(axis aligned)=%.2f (%s) any_heading_clearance(circumscribed circle)=%.2f (%s)" % [f, near_si, near_dc, best, ctx, circ_best, circ_ctx])
+	print("PROBE P6 fixtures_summary count=%d overlapping_combinations(axis aligned)=%d worst_clearance=%.2f at [%s] | any_heading: fixtures_that_could_overlap=%d worst=%.3f" % [FIXTURES.size(), overlaps, worst, worst_ctx, any_heading_overlaps, any_heading_worst])
+	var spawn_worst: float = 1e9
+	var spawn_ctx: String = ""
+	for pt: Array in points:
+		if not String(pt[0]).contains("Spawn") and not String(pt[0]).contains("Start"):
+			continue
+		for si: int in SPOTS.size():
+			var center: Vector3 = Vector3(SPOTS[si].x, CENTER_Y, SPOTS[si].z)
+			for t: Array in types:
+				var sz: Vector3 = t[1]
+				var p: Vector3 = pt[1]
+				var box: AABB = AABB(Vector3(p.x - sz.x * 0.5, float(t[2]) - sz.y * 0.5, p.z - sz.z * 0.5), sz)
+				var c: float = _dist(center, box) - RADIUS
+				if c < spawn_worst:
+					spawn_worst = c
+					spawn_ctx = "point=%s type=%s spot=%d" % [pt[0], t[0], si]
+	print("PROBE P6 spawn_pads_summary worst_unit_box_to_zone_clearance=%.2f at [%s] (Units spawn facing -Z or +Z, boxes axis aligned)" % [spawn_worst, spawn_ctx])
+	var lines: PackedStringArray = []
+	var anchors: Array = []
+	for f: Vector3 in FIXTURES:
+		anchors.append(["fx" + str(f), f])
+	for pt: Array in points:
+		if String(pt[0]).ends_with("SpawnPoint") or String(pt[0]).ends_with("Start"):
+			anchors.append([pt[0], pt[1]])
+	for i: int in anchors.size():
+		for j: int in range(i + 1, anchors.size()):
+			var a: Vector3 = anchors[i][1]
+			var b: Vector3 = anchors[j][1]
+			a.y = 0.0
+			b.y = 0.0
+			if a.distance_to(b) < 0.01:
+				continue
+			for si: int in SPOTS.size():
+				var q: Vector3 = Geometry3D.get_closest_point_to_segment(SPOTS[si], a, b)
+				var d: float = q.distance_to(SPOTS[si])
+				if d < RADIUS + 1.2 and a.distance_to(SPOTS[si]) > RADIUS + 1.2 and b.distance_to(SPOTS[si]) > RADIUS + 1.2:
+					lines.append("%s->%s crosses spot%d lateral=%.2f" % [anchors[i][0], anchors[j][0], si, d])
+	print("PROBE P6 straight_lines_between_anchors_passing_within_2.8m_of_a_spot count=%d first=%s" % [lines.size(), lines.slice(0, 14)])
+	var axis_a: Vector3 = Vector3(0, 0, 20)
+	var axis_b: Vector3 = Vector3(0, 0, -20)
+	print("PROBE P6 base_to_base_axis spawn(0,0,20)->(0,0,-20) lateral_distance_to_spot0=%.2f (a Unit driving straight from a spawn point crosses the centre Can zone)" % Geometry3D.get_closest_point_to_segment(SPOTS[0], axis_a, axis_b).distance_to(SPOTS[0]))
+	quit(0)

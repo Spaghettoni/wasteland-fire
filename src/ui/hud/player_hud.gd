@@ -1,21 +1,27 @@
 class_name PlayerHud
 extends Control
-## One Player's HUD: that Player's hit points, as a bar with a "HP n / max" line on it, and where
+## One Player's HUD: that Player's hit points, as a bar with a "HP n / max" line on it, that
+## Player's Fuel, as a second bar with a "Fuel n / max" line on it right of the first, and where
 ## that Player stands with the Water Canisters, as one line of text; in the top band of that
 ## Player's own view and nowhere else.
 ##
 ## Implements: production/epics/wasteland-fire/story-004-water-canister-and-win.md AC-7 (each
 ## viewport has a HUD showing that Player's hit points and canister status: carrying the
 ## opponent's canister / own canister at home / own canister away) and AC-8 (all text and elements
-## fit inside a 640 x 720 viewport with no clipping or overflow); design/game-brief.md MVP feature
-## 4. Vocabulary: CONTEXT.md (Player, Unit, Base, Round, Water Canister, Carrier).
+## fit inside a 640 x 720 viewport with no clipping or overflow);
+## production/epics/wasteland-fire/story-006-fuel-and-fuel-cans.md AC-7 (each Player's HUD shows a
+## Fuel gauge beside the hit points in the band Story 004 built, right of the hit-point bar, at
+## x 332 to 624; it visibly empties while the Unit moves, refills on a Fuel Can, and nothing
+## clips or overflows); design/game-brief.md MVP features 4 and 6; design/rules.md "Resources".
+## Vocabulary: CONTEXT.md (Player, Unit, Base, Round, Flag, Carrier, Fuel, Fuel Can).
 ##
-## Display only (.claude/rules/ui-code.md). The hit points belong to the Unit and the canisters to
-## the MatchController. This HUD connects to the Unit's hit_points_changed and to the controller's
-## canister_picked_up, canister_dropped, canister_seated, round_started and unit_spawned, reads
-## canister_status() and, once, the Unit's hit points, and that is all it asks of them: it owns no
-## state another node reads, calls nothing that changes the Unit or the Round and reads no input.
-## Take it out of the scene and the Round plays on unchanged.
+## Display only (.claude/rules/ui-code.md). The hit points and the Fuel belong to the Unit and the
+## canisters to the MatchController. This HUD connects to the Unit's hit_points_changed and
+## fuel_changed and to the controller's canister_picked_up, canister_dropped, canister_seated,
+## round_started and unit_spawned, reads canister_status() and, once, the Unit's hit points and
+## Fuel, and that is all it asks of them: it owns no state another node reads, calls nothing that
+## changes the Unit or the Round and reads no input. Take it out of the scene and the Round plays
+## on unchanged.
 ##
 ## One instance per Player, directly under that Player's SubViewport beside that Player's camera
 ## and respawn countdown (split_screen.tscn: Player1Hud, Player2Hud). A Control in a SubViewport
@@ -26,13 +32,23 @@ extends Control
 ## instance.
 ##
 ## Bindings, all by signal, none by polling. Hit points: the Unit's hit_points_changed(hit_points,
-## max_hit_points) sets the bar (max_value before value, so the value is never clamped against a
-## stale maximum) and rebuilds the line, tr(hit_points_format) with both numbers rounded up
-## (ceili: a %d placeholder truncates, and a Unit alive with 0.4 hit points must never read 0);
+## max_hit_points) sets the hit-point bar (max_value before value, so the value is never clamped
+## against a stale maximum) and rebuilds its line, tr(hit_points_format) with both numbers rounded
+## up (ceili: a %d placeholder truncates, and a Unit alive with 0.4 hit points must never read 0);
 ## the first values are read once in _ready() from the Unit. The Unit emits once per change (a
 ## hit it survives, its destruction with zero, its spawn with the refill), so the bar shows the
-## last completed change and nothing in between. Canister status: the one line is chosen again
-## from match_controller.canister_status(player_index) whenever the controller emits
+## last completed change and nothing in between. Fuel (Story 006 AC-7): the Unit's
+## fuel_changed(fuel, capacity) sets the Fuel bar the same way, maximum first and only while the
+## capacity is above zero (a maximum of zero would draw a full bar), and rebuilds its line,
+## tr(fuel_format) with both numbers rounded up (a tank with 0.4 Fuel left still drives and must
+## never read 0; the Unit makes an approximately empty tank exactly zero, so the line reads 0 on
+## the tick the tank runs dry); the first values are read once in _ready() from the Unit's fuel
+## and fuel_capacity. The Unit emits on every physics tick it burns Fuel (while its drive speed
+## is not approximately zero), so the gauge empties while the Unit moves and holds while it
+## stands; once when a Fuel Can refuels it, so the gauge refills; with the starting tank at each
+## spawn; and with zero when it is destroyed or benched, so the gauge reads zero while the Player
+## waits to respawn or chooses its next Unit. Canister status: the one line is chosen again from
+## match_controller.canister_status(player_index) whenever the controller emits
 ## canister_picked_up, canister_dropped, canister_seated, round_started or unit_spawned, the five
 ## signals after which its answer can differ, and once in _ready().
 ##
@@ -46,32 +62,37 @@ extends Control
 ##                                  on its owner's Unit, and the Player carries nothing foreign
 ## Every change between them is the controller's and is announced by one of the five signals
 ## above, so the line follows it on the tick it happens. The Unit's destruction changes the hit
-## points only: the status line names the canisters, not the Unit, and a Player waiting to
-## respawn still reads where its canister is.
+## points and the Fuel only: the status line names the canisters, not the Unit, and a Player
+## waiting to respawn still reads where its canister is.
 ##
-## Text. The hit-point format ("HP %d / %d": the hit points left, then the maximum) and the three
-## status texts are data in player_hud.tscn; no player-facing string is written in this script.
-## Each goes through tr(): no translation system exists yet, so tr() returns the text unchanged,
-## and once one does each text is its key and this script needs no change. Every Label stores
-## word-smart autowrap, so a longer translation wraps inside its band instead of growing past
-## the view.
+## Text. The hit-point format ("HP %d / %d": the hit points left, then the maximum), the Fuel
+## format ("Fuel %d / %d": the Fuel left, then the capacity) and the three status texts are data
+## in player_hud.tscn; no player-facing string is written in this script. Each goes through tr():
+## no translation system exists yet, so tr() returns the text unchanged, and once one does each
+## text is its key and this script needs no change. Every Label stores word-smart autowrap, so a
+## longer translation wraps inside its band instead of growing past the view.
 ##
-## Layout, stored in player_hud.tscn, by anchors in the top band of the view: the bar and its line
-## at (16, 16), 300 x 24; the status line below it at y 46, from 16 px to 16 px from the edges;
-## nothing lower than about 90 px, so the middle of the view stays clear for the Unit and the
-## centred respawn countdown. It fits a 640 x 720 view with nothing clipped (AC-8; the Story 004
-## evidence doc keeps the measured rectangles). White text with a 6 px dark outline reads over
-## the sky, the grey field and either Player's coloured Base. mouse_filter is ignore on every
-## node, so the HUD never takes a click from what is under it.
+## Layout, stored in player_hud.tscn, by anchors in the top band of the view: the hit-point bar
+## and its line at (16, 16), 300 x 24; the Fuel bar and its line on the same row at (332, 16),
+## 292 x 24, 16 px clear of the hit-point bar and 16 px from the right edge (Story 006 AC-7); the
+## status line below both at y 46, from 16 px to 16 px from the edges; nothing lower than about
+## 90 px, so the middle of the view stays clear for the Unit and the centred respawn countdown.
+## A line's Label grows to the 26 px its 18 px text needs, which still leaves 4 px above the
+## status line. It fits a 640 x 720 view with nothing clipped (Story 004 AC-8; the Story 004
+## evidence doc keeps the measured rectangles, and for the Fuel gauge the Story 006 evidence doc
+## keeps the run). The two bars differ in colour, green for the hit points and amber for the
+## Fuel, and never by colour alone: each line names what it counts. White text with a 6 px dark
+## outline reads over the sky, the grey field and either Player's coloured Base. mouse_filter is
+## ignore on every node, so the HUD never takes a click from what is under it.
 
 ## The MatchController this HUD reads for the canister status: the node that emits
 ## canister_picked_up, canister_dropped, canister_seated, round_started and unit_spawned and
 ## answers canister_status(). Required: without it the HUD pushes an error and shows nothing.
 @export var match_controller: MatchController
 
-## The Unit whose hit points this HUD shows: the node that emits hit_points_changed. Required:
-## without it the HUD pushes an error and shows nothing. The scene stores this Player's Unit on
-## each instance, the Unit of player_index in the MatchController's arrays.
+## The Unit whose hit points and Fuel this HUD shows: the node that emits hit_points_changed and
+## fuel_changed. Required: without it the HUD pushes an error and shows nothing. The scene stores
+## this Player's Unit on each instance, the Unit of player_index in the MatchController's arrays.
 @export var unit: Unit
 
 ## Whose HUD this is, in the MatchController's numbering: 0 is Player 1, 1 is Player 2. Required,
@@ -86,6 +107,11 @@ extends Control
 ## "HP %d / %d" in player_hud.tscn. Looked up with tr(), so it is also the translation key.
 ## Required, with no default: the text is data in the scene and never a literal in this script.
 @export var hit_points_format: String = ""
+
+## The Fuel line with two placeholders (%d): the Fuel left, then the capacity; "Fuel %d / %d" in
+## player_hud.tscn (Story 006 AC-7). Looked up with tr(), so it is also the translation key.
+## Required, with no default: the text is data in the scene and never a literal in this script.
+@export var fuel_format: String = ""
 
 ## The status line while this Player's Unit carries the other Player's canister
 ## (CanisterStatus.CARRYING_ENEMY). Looked up with tr(). Required, with no default.
@@ -103,6 +129,8 @@ extends Control
 
 @onready var _bar: ProgressBar = %HitPointsBar
 @onready var _hit_points_label: Label = %HitPointsLabel
+@onready var _fuel_bar: ProgressBar = %FuelBar
+@onready var _fuel_label: Label = %FuelLabel
 @onready var _status_label: Label = %CanisterStatusLabel
 
 
@@ -113,6 +141,7 @@ func _ready() -> void:
 		visible = false
 		return
 	unit.hit_points_changed.connect(_on_hit_points_changed)
+	unit.fuel_changed.connect(_on_fuel_changed)
 	match_controller.canister_picked_up.connect(_on_canister_picked_up)
 	match_controller.canister_dropped.connect(_on_canister_dropped)
 	match_controller.canister_seated.connect(_on_canister_seated)
@@ -120,6 +149,7 @@ func _ready() -> void:
 	match_controller.unit_spawned.connect(_on_unit_spawned)
 	var max_hit_points: float = unit.stats.max_hit_points if unit.stats != null else 0.0
 	_on_hit_points_changed(unit.hit_points, max_hit_points)
+	_on_fuel_changed(unit.fuel, unit.fuel_capacity)
 	_show_status()
 
 
@@ -131,10 +161,29 @@ func _first_problem() -> String:
 		return "unit is not assigned"
 	if player_index < 0:
 		return "player_index is not set (store 0 for Player 1 or 1 for Player 2 in the scene)"
+	var problem: String = _format_problem()
+	if problem.is_empty():
+		problem = _status_text_problem()
+	return problem
+
+
+## What is wrong with the two line formats, as a sentence, or an empty string when nothing is:
+## each is required and needs two placeholders (the value, then the maximum).
+func _format_problem() -> String:
 	if hit_points_format.is_empty():
 		return "hit_points_format is not set (store the hit-point line, with two %d placeholders, in the scene)"
 	if hit_points_format.count("%") < 2:
 		return "hit_points_format '%s' lacks the two placeholders for the hit points and the maximum" % hit_points_format
+	if fuel_format.is_empty():
+		return "fuel_format is not set (store the Fuel line, with two %d placeholders, in the scene)"
+	if fuel_format.count("%") < 2:
+		return "fuel_format '%s' lacks the two placeholders for the Fuel and the capacity" % fuel_format
+	return ""
+
+
+## What is wrong with the three status texts, as a sentence, or an empty string when nothing is:
+## each is required.
+func _status_text_problem() -> String:
 	if carrying_text.is_empty():
 		return "carrying_text is not set (store the status line for carrying the enemy canister in the scene)"
 	if home_text.is_empty():
@@ -151,6 +200,16 @@ func _on_hit_points_changed(hit_points: float, max_hit_points: float) -> void:
 		_bar.max_value = max_hit_points
 	_bar.value = hit_points
 	_hit_points_label.text = tr(hit_points_format) % [ceili(hit_points), ceili(max_hit_points)]
+
+
+## Shows the Fuel (Story 006 AC-7): the gauge (maximum first) and its line with both numbers
+## rounded up. The maximum is left alone when the capacity is not above zero (a maximum of zero
+## draws a full bar).
+func _on_fuel_changed(fuel: float, capacity: float) -> void:
+	if capacity > 0.0:
+		_fuel_bar.max_value = capacity
+	_fuel_bar.value = fuel
+	_fuel_label.text = tr(fuel_format) % [ceili(fuel), ceili(capacity)]
 
 
 ## Chooses the status line again from the controller's answer for this Player.

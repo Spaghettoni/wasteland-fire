@@ -9,8 +9,9 @@ extends Node
 ##
 ## Scenarios, chosen with --scenario=NAME (after the "--"): layout, isolation, simultaneous, showcase, fps,
 ## bases, destruction, countdown, respawn_showcase, canister_run, hud, round_over, canister_showcase
-## and, since Story 005, units, weapons, gyro, choice and units_showcase. Each is a script under
-## tools/evidence/split_screen/,
+## and, since Story 005, units, weapons, gyro, choice and units_showcase; since Story 006, fuel,
+## fuel_cans and fuel_showcase.
+## Each is a script under tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
 ## line there. A scenario reaches this script, DriveStep, UnitTrack and check_kit.gd through preload
@@ -48,7 +49,11 @@ extends Node
 ## shared resources before the scene is instanced): the Motorbike's placeholder 100 hit points, the
 ## debug damage of 25 and the Motorbike's old collision mask, which the shipped data changed in
 ## Story 005 (40 hit points, the debug keys off, the cliffs_water layer in the mask); a scenario of
-## Story 005 or later runs on the shipped data.
+## Story 005 or later runs on the shipped data. Since Story 006 the legacy scenarios and those of
+## Story 005 (STORY_005_SCENARIOS) also run with no Fuel burn (_apply_no_fuel_data(): every type's
+## fuel_use is LEGACY_FUEL_USE, zero, on the same shared resources), a guard for a run long enough
+## for the shipped burn rate to empty a tank and stop or crash its Unit; their Units still get a
+## tank at every spawn, and a scenario of Story 006 or later runs on the shipped Fuel data.
 ##
 ## Output: SPLIT <scenario> t=<seconds> key=value ... (progress), CHECK <scenario> <check name> PASS|FAIL
 ## <detail> and exactly one last RESULT <scenario> ok|fail checks=<n> failed=<n> key=value ...; then quit with
@@ -82,6 +87,9 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"gyro": preload("res://tools/evidence/split_screen/gyro.gd"),
 	&"choice": preload("res://tools/evidence/split_screen/choice.gd"),
 	&"units_showcase": preload("res://tools/evidence/split_screen/units_showcase.gd"),
+	&"fuel": preload("res://tools/evidence/split_screen/fuel.gd"),
+	&"fuel_cans": preload("res://tools/evidence/split_screen/fuel_cans.gd"),
+	&"fuel_showcase": preload("res://tools/evidence/split_screen/fuel_showcase.gd"),
 }
 
 ## The shared step class (drive_step.gd): keys held for a time.
@@ -143,6 +151,16 @@ const MATCH_RULES_PATH: String = "res://src/gameplay/match/data/match_rules.tres
 ## debug keys off now that Story 005 brings weapons. PlayerMatchInput reads the gate once, in its
 ## _ready(), so the value must be in before the scene is instanced.
 const LEGACY_DEBUG_DAMAGE: float = 25.0
+## The Fuel burn rate every scenario written before Story 006 was measured with (LEGACY_SCENARIOS
+## and STORY_005_SCENARIOS; _apply_no_fuel_data()): their Units get a tank at every spawn and
+## nothing burns it, so a long run never empties one, which would stop a ground Unit and crash a
+## Gyrocopter (Story 006 AC-1 gave every type a fuel_use).
+const LEGACY_FUEL_USE: float = 0.0
+## The scenarios of Story 005, written after the Unit choice and before Fuel: they run on the
+## shipped data except the Fuel burn rate, which the runner sets to LEGACY_FUEL_USE for them as for
+## LEGACY_SCENARIOS (_apply_no_fuel_data()).
+const STORY_005_SCENARIOS: Array[StringName] = [&"units", &"weapons", &"gyro", &"choice",
+	&"units_showcase"]
 ## The constant a scenario script declares (const OWN_CHOICE: bool = true) to make the first choice
 ## of the Round itself: the runner then presses no fire key before run().
 const OWN_CHOICE_CONSTANT: StringName = &"OWN_CHOICE"
@@ -219,6 +237,8 @@ func _ready() -> void:
 	get_tree().create_timer(WATCHDOG_SECONDS).timeout.connect(_on_watchdog)
 	if LEGACY_SCENARIOS.has(scenario):
 		_apply_legacy_data()
+	if LEGACY_SCENARIOS.has(scenario) or STORY_005_SCENARIOS.has(scenario):
+		_apply_no_fuel_data()
 	split = SPLIT_SCENE.instantiate() as SplitScreen
 	if split.match_controller != null:
 		split.match_controller.unit_spawned.connect(_on_round_start_spawn)
@@ -269,6 +289,21 @@ func _apply_legacy_data() -> void:
 		push_error("split_screen_harness: %s did not load as MatchRules, so the legacy debug damage is not applied." % MATCH_RULES_PATH)
 		return
 	rules.debug_damage = LEGACY_DEBUG_DAMAGE
+
+
+## Gives the scenarios written before Story 006 (LEGACY_SCENARIOS and STORY_005_SCENARIOS) the Fuel
+## burn rate they were measured with, before the launch scene is instanced: LEGACY_FUEL_USE on every
+## UnitStats of match_rules.tres's unit_types, the shared resources the Units spawn with (one cached
+## object per type). Their Units still get a tank at every spawn and burn nothing, so their outputs
+## stay what they were. Rules that fail to load are an error, and nothing is applied.
+func _apply_no_fuel_data() -> void:
+	var rules: MatchRules = load(MATCH_RULES_PATH) as MatchRules
+	if rules == null:
+		push_error("split_screen_harness: %s did not load as MatchRules, so the legacy Fuel burn rate is not applied." % MATCH_RULES_PATH)
+		return
+	for stats: UnitStats in rules.unit_types:
+		if stats != null:
+			stats.fuel_use = LEGACY_FUEL_USE
 
 
 ## Logs a unit_spawned that arrives before the scenario starts: the start of the Round

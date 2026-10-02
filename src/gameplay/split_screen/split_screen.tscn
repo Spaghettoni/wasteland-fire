@@ -21,6 +21,7 @@
 [ext_resource type="Script" path="res://src/gameplay/combat/player_fire_input.gd" id="19_pfi"]
 [ext_resource type="Script" path="res://src/gameplay/match/player_choice_input.gd" id="20_pci"]
 [ext_resource type="PackedScene" path="res://src/ui/hud/unit_choice.tscn" id="21_choice"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/greybox_fuel_cans.tscn" id="22_fuelcans"]
 
 [node name="SplitScreen" type="Control" unique_id=9000001 node_paths=PackedStringArray("field", "player_1_unit", "player_2_unit", "player_1_camera", "player_2_camera", "match_controller")]
 layout_mode = 3
@@ -44,6 +45,8 @@ physics_interpolation_mode = 1
 unique_name_in_owner = true
 
 [node name="TerrainStandIns" parent="World" instance=ExtResource("16_terrain")]
+
+[node name="FuelCans" parent="World" instance=ExtResource("22_fuelcans")]
 
 [node name="Player1Unit" parent="World" unique_id=1111111111 instance=ExtResource("3_bike")]
 unique_name_in_owner = true

@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="FuelCanSettings" format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/fuel/fuel_can_settings.gd" id="1_fcset"]
+
+[resource]
+script = ExtResource("1_fcset")
+refill_amount = 40.0
+respawn_delay_seconds = 20.0

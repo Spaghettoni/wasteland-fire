@@ -1,0 +1,27 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PROBE PASS five_cans_at_spots | count=5; FuelCan1@(0.0, 0.0, 0.0) avail=true shown=true; FuelCan2@(-16.0, 0.0, -8.0) avail=true shown=true; FuelCan3@(16.0, 0.0, 8.0) avail=true shown=true; FuelCan4@(-16.0, 0.0, 8.0) avail=true shown=true; FuelCan5@(16.0, 0.0, -8.0) avail=true shown=true
+PROBE PASS zone_setup | layer=0 mask=18 process_mode=0 radius=1.60 refill=40.0 delay=20.0s
+PROBE PASS both_spawned | accepted=true waited=1 types=truck,motorbike fuel=50.000,50.000
+PROBE PASS truck_takes_can | start=50.000 before=47.400000 after=87.400000 gain=40.000000000 expected=40.000000 take_frame=63 stamp=1263 gap=1200 delay=1200 hidden=true in_physics=true drove=54 listed=["Player1Unit@3.4225"]
+PROBE PASS standing_unit_no_retake | listed=true speed=0.0000 takes=1 state=1 fuel=86.200/100.0 pos=(-16.0, 0.0, -6.13639)
+PROBE PASS full_tank_parked_leaves_can | listed=true available=true takes=0 fuel=100.000/100.0 topped=+50.000
+PROBE PASS full_tank_driving_leaves_can | topped up at every tick start: listed_ticks=22 available=true takes=0 pos=(16.0, 0.0, -38.69131)
+PROBE PASS gyro_takes_can_room_limited | type=gyrocopter pre_refuel=+30.0 before=76.166667 after=100.000000 gain=23.833333 expected=23.833333 takes=1 drove=48 listed=["Player2Unit@2.3000"] pos=(16.0, 0.0, 7.43222)
+PROBE PASS destroyed_unit_never_takes | listed before=true on the destroy tick=true next tick=false available=true takes=0 fuel=0.000 alive=false
+PROBE PASS truck_back_in_play | chosen=true waited=170 fuel=50.000 pos=(0.0, 0.0, 20.0)
+PROBE PASS respawn_ghost_never_takes | the Unit destroyed in FuelCan4 respawned at (0.0, 0.0, 20.0): available=true takes=0 fuel=50.000
+PROBE PASS two_units_nearer_p1 | FuelCan1 p1(truck)=+1.00 p2(gyrocopter)=-1.50 takes=1 taker=Player1Unit listed(order@dist)=["Player2Unit@1.5000", "Player1Unit@1.0000"] fuel p1=90.000 p2=50.000 frame=586
+PROBE PASS two_units_nearer_p2 | FuelCan4 p1(truck)=-1.60 p2(gyrocopter)=+1.00 takes=1 taker=Player2Unit listed(order@dist)=["Player2Unit@1.0000", "Player1Unit@1.6000"] fuel p1=50.000 p2=90.000 frame=597
+PROBE PASS two_units_nearer_p1_again | FuelCan5 p1(truck)=+0.90 p2(gyrocopter)=-1.30 takes=1 taker=Player1Unit listed(order@dist)=["Player2Unit@1.3000", "Player1Unit@0.9000"] fuel p1=90.000 p2=50.000 frame=608
+PROBE PASS two_units_exact_tie_name_first | FuelCan1 p1(truck)=-1.25 p2(gyrocopter)=+1.25 takes=1 taker=Player1Unit listed(order@dist)=["Player2Unit@1.2500", "Player1Unit@1.2500"] fuel p1=90.000 p2=50.000 frame=622
+PROBE PASS can_back_after_delay | take=63 stamp=1263 restocked_at=1263 back_after=1200 (delay 1200 = round(20.0 s x 60)) restocked=1 available=true shown=true pos=(-16.0, 0.0, -8.0) restock_frame=0 takes=1
+PROBE PASS round_started_restocks_every_can | round_started connections=["_on_round_started", "_on_round_started", "_on_round_started", "_on_round_started", "_on_round_started", "_on_round_started", "_free_shots", "_restock_fuel_cans"]; away before the call=["FuelCan1", "FuelCan3", "FuelCan4", "FuelCan5"]
+PROBE PASS monitoring_always_on | samples=6340 (cans x ticks) frames=1269
+PROBE TAKES FuelCan1 [{ "frame": 586, "unit": "Player1Unit", "fuel": 90.0, "phys": true, "listed": ["Player2Unit@1.5000", "Player1Unit@1.0000"], "stamp": 1786, "hidden": true, "state": 1 }, { "frame": 622, "unit": "Player1Unit", "fuel": 90.0, "phys": true, "listed": ["Player2Unit@1.2500", "Player1Unit@1.2500"], "stamp": 1822, "hidden": true, "state": 1 }]
+PROBE TAKES FuelCan2 [{ "frame": 63, "unit": "Player1Unit", "fuel": 87.4000000000001, "phys": true, "listed": ["Player1Unit@3.4225"], "stamp": 1263, "hidden": true, "state": 1 }]
+PROBE TAKES FuelCan3 [{ "frame": 355, "unit": "Player2Unit", "fuel": 100.0, "phys": true, "listed": ["Player2Unit@2.3000"], "stamp": 1555, "hidden": true, "state": 1 }]
+PROBE TAKES FuelCan4 [{ "frame": 597, "unit": "Player2Unit", "fuel": 90.0, "phys": true, "listed": ["Player2Unit@1.0000", "Player1Unit@1.6000"], "stamp": 1797, "hidden": true, "state": 1 }]
+PROBE TAKES FuelCan5 [{ "frame": 608, "unit": "Player1Unit", "fuel": 90.0, "phys": true, "listed": ["Player2Unit@1.3000", "Player1Unit@0.9000"], "stamp": 1808, "hidden": true, "state": 1 }]
+PROBE P1 alive frames [4, 5, 147, 386, 571, 578, 583, 589, 594, 600, 605, 611, 619, 625]
+PROBE DONE fails=0 frame=1269

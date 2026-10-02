@@ -1,0 +1,22 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PROBE env godot=4.7.2-stable (official) physics_ticks=60 physics_engine=Jolt Physics args=-s /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a0bbb76e-4a11-49a3-9a86-8984abd2268d/scratchpad/dev-story-006/preflight/a/probe_zone.gd
+PROBE a.truck cfg max_speed=10.90 box=(2.4, 1.6, 4.4) per_tick_m=0.182 layer=2 mask=35 ticks=257
+PROBE a.truck pf(physics_frame continuation) geo=[161..201] gob=[162..202]x41 ob=[162..202]x41 | lag_in vs own geo=1, vs pf geo=1 | lag_out vs own geo=1, vs pf geo=1 | ob_lag_in=1 | pen_in=0.357 pen_out=-0.023 spd_at_geo=10.90 mismatch=0 n_max=1
+PROBE a.truck pb(node before Unit) geo=[161..201] gob=[162..202]x41 ob=[162..202]x41 | lag_in vs own geo=1, vs pf geo=1 | lag_out vs own geo=1, vs pf geo=1 | ob_lag_in=1 | pen_in=0.357 pen_out=-0.023 spd_at_geo=10.90 mismatch=0 n_max=1
+PROBE a.truck pa(node after Unit) geo=[160..200] gob=[162..202]x41 ob=[162..202]x41 | lag_in vs own geo=2, vs pf geo=1 | lag_out vs own geo=2, vs pf geo=1 | ob_lag_in=2 | pen_in=0.538 pen_out=-0.205 spd_at_geo=10.90 mismatch=0 n_max=1
+PROBE a.buggy cfg max_speed=19.60 box=(1.8, 1.1, 3.0) per_tick_m=0.327 layer=2 mask=35 ticks=157
+PROBE a.buggy pf(physics_frame continuation) geo=[369..387] gob=[370..388]x19 ob=[370..388]x19 | lag_in vs own geo=1, vs pf geo=1 | lag_out vs own geo=1, vs pf geo=1 | ob_lag_in=1 | pen_in=0.591 pen_out=-0.271 spd_at_geo=19.60 mismatch=0 n_max=1
+PROBE a.buggy pb(node before Unit) geo=[369..387] gob=[370..388]x19 ob=[370..388]x19 | lag_in vs own geo=1, vs pf geo=1 | lag_out vs own geo=1, vs pf geo=1 | ob_lag_in=1 | pen_in=0.591 pen_out=-0.271 spd_at_geo=19.60 mismatch=0 n_max=1
+PROBE a.buggy pa(node after Unit) geo=[368..386] gob=[370..388]x19 ob=[370..388]x19 | lag_in vs own geo=2, vs pf geo=1 | lag_out vs own geo=2, vs pf geo=1 | ob_lag_in=2 | pen_in=0.918 pen_out=-0.598 spd_at_geo=19.60 mismatch=0 n_max=1
+PROBE a.motorbike cfg max_speed=24.00 box=(1.4, 1.0, 2.6) per_tick_m=0.400 layer=2 mask=35 ticks=136
+PROBE a.motorbike pf(physics_frame continuation) geo=[520..533] gob=[521..534]x14 ob=[521..534]x14 | lag_in vs own geo=1, vs pf geo=1 | lag_out vs own geo=1, vs pf geo=1 | ob_lag_in=1 | pen_in=0.700 pen_out=-0.100 spd_at_geo=24.00 mismatch=0 n_max=1
+PROBE a.motorbike pb(node before Unit) geo=[520..533] gob=[521..534]x14 ob=[521..534]x14 | lag_in vs own geo=1, vs pf geo=1 | lag_out vs own geo=1, vs pf geo=1 | ob_lag_in=1 | pen_in=0.700 pen_out=-0.100 spd_at_geo=24.00 mismatch=0 n_max=1
+PROBE a.motorbike pa(node after Unit) geo=[519..532] gob=[521..534]x14 ob=[521..534]x14 | lag_in vs own geo=2, vs pf geo=1 | lag_out vs own geo=2, vs pf geo=1 | ob_lag_in=2 | pen_in=1.100 pen_out=-0.500 spd_at_geo=24.00 mismatch=0 n_max=1
+PROBE c.truck pf: spawn-into-zone called at t=588: first geo(at that stream's sample)=t+1, first reported gob=t+2 ob=t+2 | spawn-out called at t=623: first unreported gob=t+2 ob=t+2 | listed_before_teleport_ticks=0
+PROBE c.truck pb: spawn-into-zone called at t=588: first geo(at that stream's sample)=t+0, first reported gob=t+2 ob=t+2 | spawn-out called at t=623: first unreported gob=t+2 ob=t+2 | listed_before_teleport_ticks=0
+PROBE c.truck pa: spawn-into-zone called at t=588: first geo(at that stream's sample)=t+0, first reported gob=t+2 ob=t+2 | spawn-out called at t=623: first unreported gob=t+2 ob=t+2 | listed_before_teleport_ticks=0
+PROBE c.gyrocopter pf: spawn-into-zone called at t=683: first geo(at that stream's sample)=t+1, first reported gob=t+2 ob=t+2 | spawn-out called at t=718: first unreported gob=t+2 ob=t+2 | listed_before_teleport_ticks=0
+PROBE c.gyrocopter pb: spawn-into-zone called at t=683: first geo(at that stream's sample)=t+0, first reported gob=t+2 ob=t+2 | spawn-out called at t=718: first unreported gob=t+2 ob=t+2 | listed_before_teleport_ticks=0
+PROBE c.gyrocopter pa: spawn-into-zone called at t=683: first geo(at that stream's sample)=t+0, first reported gob=t+2 ob=t+2 | spawn-out called at t=718: first unreported gob=t+2 ob=t+2 | listed_before_teleport_ticks=0
+PROBE done ticks=755

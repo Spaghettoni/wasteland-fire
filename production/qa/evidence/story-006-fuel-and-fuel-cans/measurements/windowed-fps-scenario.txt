@@ -1,0 +1,26 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+FPSSAMPLE t=1.0 fps=1 draw_calls=142 primitives=17942 objects=330
+SPLIT fps t=1.000 fps=118.0 draw_calls=120 primitives=5450 objects=297
+FPSSAMPLE t=2.0 fps=118 draw_calls=69 primitives=4692 objects=233
+SPLIT fps t=2.000 fps=120.0 draw_calls=81 primitives=10884 objects=245
+FPSSAMPLE t=3.0 fps=120 draw_calls=157 primitives=19802 objects=359
+SPLIT fps t=3.000 fps=120.0 draw_calls=155 primitives=21314 objects=359
+FPSSAMPLE t=4.0 fps=120 draw_calls=96 primitives=5064 objects=264
+SPLIT fps t=4.000 fps=120.0 draw_calls=79 primitives=4836 objects=245
+FPSSAMPLE t=5.0 fps=120 draw_calls=129 primitives=13250 objects=317
+SPLIT fps t=5.000 fps=120.0 draw_calls=158 primitives=19778 objects=357
+FPSSAMPLE t=6.0 fps=120 draw_calls=97 primitives=2016 objects=262
+SPLIT fps t=6.000 fps=120.0 draw_calls=98 primitives=5088 objects=266
+FPSSAMPLE t=7.0 fps=120 draw_calls=97 primitives=9590 objects=264
+SPLIT fps t=7.000 fps=120.0 draw_calls=119 primitives=12314 objects=302
+FPSSAMPLE t=8.0 fps=120 draw_calls=107 primitives=3734 objects=280
+SPLIT fps t=8.000 fps=120.0 draw_calls=89 primitives=1980 objects=259
+FPSSAMPLE t=9.0 fps=120 draw_calls=82 primitives=7862 objects=246
+SPLIT fps t=9.000 fps=115.0 draw_calls=81 primitives=7850 objects=245
+FPSSAMPLE t=10.0 fps=115 draw_calls=146 primitives=19550 objects=338
+SPLIT fps t=10.000 fps=120.0 draw_calls=122 primitives=4010 objects=303
+RESULT fps ok checks=0 failed=0 t=10.000 fps_avg=119.3 fps_avg_steady=119.4 fps_min=115.0 fps_min_steady=115.0 refresh_hz=120.0 draw_calls_max=158 primitives_max=21314 samples=10 display=macOS
+
+rc 0 stderr-noisy []

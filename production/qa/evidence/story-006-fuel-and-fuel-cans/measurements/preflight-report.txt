@@ -1,0 +1,254 @@
+========== A facts: 19
+
+[ENV] HOLDS -- The probes ran read-only on the pinned engine, against the real project, with the real Unit, UnitStats, MatchController and split_screen scenes.
+  MEASURED: Godot 4.7.2-stable official, physics/3d/physics_engine = Jolt Physics, physics_ticks_per_second 60, max_fps 0. 9 headless runs, each under a subprocess timeout. All rc=0, 0 ERROR/WARNING lines, no Godot process left. git status unchanged (only the pre-existing M on production/epics/wasteland-fire/story-006-fuel-and-fuel-cans.md). Scratch files: /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a0bbb76e-4a11-49a3-9a86-8984abd2268d/scratchpad/dev-story-006/preflight/a/ (probe_zone.gd, probe_frames.gd, probe_round.gd, run.py, out_*.txt).
+  NOTE: The probes use a hand-built Can stand-in (Area3D layer 0, mask 18, SphereShape3D r 1.6 at +0.6 m, a sibling Body Node3D) and an 80 x 1 x 80 floor on layer 1. No FuelCan script exists yet, so no real Can branch order was run.
+
+[P1a] HOLDS -- A Can zone polled once per tick with get_overlapping_bodies() sees a ground Unit driven at top speed straight through it, without skipping it, within one tick of the geometric overlap.
+  MEASURED: Truck 10.90 m/s (0.182 m/tick): box-vs-sphere overlap at start-of-tick positions on ticks 161..201 (41 ticks). The zone lists it on 162..202 (41 ticks). Lag 1 tick in and 1 out. 0.357 m inside at first listing, 0.023 m outside at the last. Buggy 19.60 m/s (0.327 m/tick): overlap 369..387 (19), listed 370..388, 0.591 m inside, last listing 0.271 m outside. Motorbike 24.00 m/s (0.400 m/tick): overlap 520..533 (14), listed 521..534, 0.700 m inside, 0.100 m outside. List length never above 1. get_overlapping_bodies().has(unit) equals overlaps_body(unit) on every sampled tick (0 mismatches over 257, 157 and 136 ticks).
+  NOTE: The lag is 1 tick after the first overlapping start-of-tick position, which is 2 ticks after the move_and_slide that created the overlap. The zone window is 0.23 to 0.68 s, so even the Motorbike (0.4 m per tick against a 3.2 m zone) is never skipped. The a-d lines of two separate fixed-fps processes were byte-identical (28 of 28).
+
+[P1a-sites] HOLDS -- Poll site matters: a node's _physics_process, a physics_frame continuation, get_overlapping_bodies() and overlaps_body() could differ in how early they see the Unit.
+  MEASURED: Truck: the continuation (pf) and a node ticking before the Unit (pb) both first list it on tick 162 and last on 202. A node ticking after the Unit (pa) also lists it on 162..202. Its own Unit position is one move ahead (0.538 m inside instead of 0.357), which reads as lag 2 against its own geometry but is the same list. Buggy 370..388, Motorbike 521..534 and Gyrocopter 686..705 are identical across pf, pb and pa. overlaps_body vs get_overlapping_bodies: 0 mismatches in every stream.
+  NOTE: No poll site is earlier. The Can's tree order relative to the Unit does not change which tick it first sees the Unit. The physics_frame continuation runs before every node's _physics_process of that tick. Polling in the Can's own _physics_process is as good as any alternative.
+
+[P1b] HOLDS -- A Gyrocopter (layer 16, mask 1) is reported by the Can zone with mask 18.
+  MEASURED: Gyrocopter 16.40 m/s (0.273 m/tick): overlap ticks 685..704 (20), listed 686..705 (20). 0.498 m inside at the first listing, 0.091 m outside at the last. Lag in 1, lag out 1. Same list in pf, pb and pa. 0 mismatches between the list and overlaps_body.
+  NOTE: Mask 18 = units (2) + gyrocopters (16). The Gyrocopter drives on the floor (GROUNDED) like the ground Units and passes through the zone the same way.
+
+[P1c-in] CONTRADICTED -- A Unit put into the zone by spawn() from far away is reported by the next tick's poll (T+1).
+  MEASURED: spawn(xf, stats) called in the physics_frame continuation of tick T, with the Unit alive 20 m away. Truck T=772: first listed 774 (T+2). Gyrocopter T=867: first listed 869 (T+2). Same for get_overlapping_bodies and overlaps_body, from the continuation and from nodes before and after the Unit. Never listed on the 20 ticks before.
+  NOTE: It takes 2 ticks, not 1. A node ticking after the call sees the box overlap at T, the continuation sample at T+1, and the zone reports at T+2. Harmless for the design (no spawn point is near a Can spot), but a harness scenario that spawns a Unit onto a Can must wait at least 3 ticks.
+
+[P1c-out] CONTRADICTED -- A Unit teleported out of the zone by spawn() stops being reported on the next tick (no ghost overlap).
+  MEASURED: spawn() out of the zone at tick T (Truck T=807, Gyrocopter T=902): still listed at T and at T+1, first unlisted at T+2, in all three poll streams (list and overlaps_body).
+  NOTE: One extra tick of ghost listing after a live Unit teleports away. Not reachable in the game today: a Unit is spawned only after it was destroyed or benched, and it has dropped from the list by then.
+
+[P1d-steady] HOLDS -- A Unit with collision layer and mask 0 (destroyed or benched) standing inside the zone is not listed.
+  MEASURED: Truck inside the zone for 25 ticks (listed 10 of 10 ticks before the call), then destroy() (and in a second run leave_play()) at tick T: layer=0 mask=0 alive=false visible=false, unlisted from T+1. 0 listed ticks over the following ~135 ticks standing inside. Moved by direct global_position to far away and back into the zone with layer=mask=0: 0 listed ticks of 150 (list and overlaps_body). Revive by spawn() in place: listed again at T+1.
+  NOTE: Holds in a running tree from T+1 on. See P1d-call-tick and P1h for the ghost on the call tick and across a pause.
+
+[P1d-call-tick] CONTRADICTED -- A destroyed or benched Unit is never in the list, not even on the tick it was destroyed.
+  MEASURED: destroy() and leave_play() at tick T: still listed on T, both right after the call in the same continuation and by nodes polling before and after the Unit in tick T. Unlisted at T+1, T+2 and T+3. spawn() away: listed at T and T+1, unlisted at T+2.
+  NOTE: A Can that polls after the Unit's own destroy() in the same tick (the Fuel crash from _burn_fuel at the start of the Unit's tick) still sees the dead Unit in the list. The is_alive test in the Can, and refuel() returning 0.0 for a dead Unit, are what make it safe.
+
+[P1e] CONTRADICTED -- Two Units in the zone on the same tick are listed in a stable order: the same on three runs, set by which Unit was added to the tree first.
+  MEASURED: Both Units were always first listed on the same tick (0 splits in 960 runs plus 24 first-pass runs). Order flips inside identical configurations: first pass 3 of 24 runs. Two further processes of 12 configs x 40 runs: 14 of 480 and 16 of 480 runs. The same config gave 40/0 in one process and 38/2 in the other (truck_buggy add AB, spawn AB). Majority order: for Truck+Buggy the Unit added to the tree first is listed first (add AB gives UA first in 35 to 40 of 40, add BA gives UB first in 39 to 40 of 40), independent of spawn call order. For Truck+Gyrocopter the Truck is first in 38 to 40 of 40 whatever the add order. Swapping the Units' positions raised flips to 4 to 6 of 40.
+  NOTE: The order is dominated by tree or body order (type order for a ground/Gyro pair) with a random flip of roughly 3 percent of runs (up to 15 percent in one config). It is not reproducible across runs or processes, so the winner of a same-tick tie is not deterministic.
+
+[P1f] HOLDS -- A Unit that stays inside the zone without moving is listed on every tick, also after a sibling visual is hidden and after the script ignored the list for hundreds of ticks (monitoring never toggled).
+  MEASURED: Truck and Gyrocopter spawned inside and left alone: polled every tick for 1330 ticks (22 s) gave listed 1330, unlisted 0, ob false 0, max list length 1. Blind run: no polling for 1300 ticks (21.7 s, sibling Body hidden at +50), then read once plus 30 more ticks gave listed 30 of 30. Unit moved 0.0000 m. Same after driving in, releasing the throttle and coasting to rest overlapping (Truck rest after 112 ticks at z=1.67, Gyrocopter after 100 ticks at z=0.66): 1330 of 1330 polled and 30 of 30 after the 1300-tick blind window. zone.monitoring still true at the end. The hidden sibling (visible=false) made no difference.
+  NOTE: Covers the Jolt sleeping worry: a resting kinematic Unit stays reported for far longer than the 20 s respawn delay.
+
+[P1g] HOLDS -- The same latency holds inside the real split_screen.tscn (SubViewports, cameras, HUD, MatchController).
+  MEASURED: Real split_screen.tscn instanced in the script, zone added under World at (0,0,0). Player 1 chose the Truck with choose(0,2): accepted, Unit alive 2 ticks later at (0,0,20) with basis.z=(0,0,1). Player1DriveInput ticking disabled, set_drive_input(1,0). Overlap ticks 7578..7618 (41), listed 7579..7619 (41). Lag 1 in and 1 out, 0.362 m inside at first listing, 0.028 m outside at the last, speed 10.90. pf equals pb, pa as in the plain world, 0 mismatches. 212 ticks sampled.
+  NOTE: PlayerDriveInput runs at priority unit.process_physics_priority - 1 and rewrites the drive command every tick, so a scenario that drives with set_drive_input() must switch that node's physics process off, or drive with real keys.
+
+[P1h] CONTRADICTED -- A Unit benched while the tree is paused (restart() benches during the Round-over pause) leaves the zone list at once.
+  MEASURED: Truck alive in the zone (listed). paused=true and leave_play() in the same tick (t=13466): still listed on 30 of 30 paused ticks. Unpaused at tick 13496: still listed at that tick, first unlisted at unpause+1.
+  NOTE: The zone list is frozen while the tree is paused: the physics server does not deliver the exit until it steps again. restart() benches Units and unpauses in one call, so a Can's first poll after the restart can still list a benched Unit. Harmless with the is_alive test.
+
+[P1-rt] HOLDS -- The zone timings measured at --fixed-fps 60 also hold in real time.
+  MEASURED: The pass-through (a) and teleport (c) probes repeated headless without --fixed-fps (12.8 s wall). All 15 metric lines (lag in/out, penetration depths, listed-tick counts, c-phase T+2 values) are identical to the fixed-fps run, down to the tick numbers (161..201 / 162..202).
+  NOTE: The numbers are in physics ticks, so they do not depend on frame rate.
+
+[P2a] HOLDS -- Engine.get_physics_frames() advances by exactly one per physics tick at --fixed-fps 60 (and in real time).
+  MEASURED: Fixed-fps: 300 ticks, frame deltas { 1: 299 }, process-frame deltas { 1: 299 }. Every continuation frame that had a node tick matched that node's Engine.get_physics_frames() (299 of 299). Real time (no --fixed-fps), 240 ticks in 3950 ms: frame deltas { 1: 239 }, process frames between ticks { 0: 2, 2: 138, 3: 98, 4: 1 } (two ticks ran inside one process frame twice). Engine.physics_ticks_per_second = 60, time_scale 1.
+  NOTE: A stamp of frames + roundi(seconds x ticks_per_second) is exact in ticks. The counter first reads 1 on the first tick, so a 0 sentinel for 'available' never collides with a real stamp.
+
+[P2b] HOLDS -- Engine.get_physics_frames() keeps advancing while get_tree().paused is true.
+  MEASURED: paused=true set from a node's _physics_process in tick 400. 120 consecutive physics_frame continuations arrived while paused, frames 402..521, deltas { 1: 119 }. The physics_frame signal itself keeps firing while paused. A default node's last tick before the pause was 400 and its first after the unpause was 521 (121 frames, 120 ticks not run).
+  NOTE: So a frame stamp counts paused ticks (see P2d).
+
+[P2c] HOLDS -- A node with the default process_mode does not run _physics_process while the tree is paused.
+  MEASURED: 120 paused ticks: default INHERIT 0 calls, explicit PAUSABLE 0, a node at priority -1 0, one at +1 0, a stamp node 0, ALWAYS 120. In the real tree: World process_mode 0, MatchController 0, RoundRestartInput 3 (ALWAYS), a stand-in under World 0, which ran 0 ticks in 200 paused ticks. A pause set mid-tick by a priority-0 node in tick 400: the priority -1 node ran in tick 400, the +1 node did not (last frame 399), ALWAYS did.
+  NOTE: The Can (INHERIT, under World) never polls or restocks during the Round-over pause. Nodes before MatchController in tree order still run in the tick that sets the pause.
+
+[P2d] HOLDS -- A frame-stamp test (Engine.get_physics_frames() >= stamp) behaves correctly across a pause of 120 ticks.
+  MEASURED: Stamp armed at frame 300 with +1200 (the 20 s delay): first true at frame 1500 exactly, after 1080 of the node's own ticks (1200 minus the 120 paused ticks). A stamp armed at 300 with +150 (frame 450, due during a pause that spanned frames 401..520): first true at frame 521, the node's first tick after the unpause (101 own ticks: 100 before the pause plus 1).
+  NOTE: The stamp is exact and the pause counts in full toward the delay. This differs from GarageQueue (read in garage_queue.gd), which receives NOTIFICATION_PAUSED/UNPAUSED through MatchController._notification and pushes its waits on by the paused ticks. The design's Can does not, which is harmless only because round_started restocks every Can.
+
+[P2e] HOLDS -- A Can restocked by stamp, with the tree paused by the Round-over screen and unpaused by restart(), comes back correctly.
+  MEASURED: Unpause from an ALWAYS node's own tick (priority 0, later in tree order, like RoundRestartInput) in frame 1567: Before(-1) did not run in that tick, Default(0, earlier in order) did not, After(+1) did, Always did. Default's first tick was 1568 (+1). Real tree: Round forced OVER and tree paused in tick 71, stand-in stamp 221 due during the pause, 0 stand-in ticks in 200 paused ticks. A real InputEventKey for round_restart (physical key 82 = R, from project.godot) parsed in the continuation of tick 271. round_started was emitted in frame 272 (the key acted one tick later). The tree was unpaused afterwards and is_round_over false. Stand-in ticks ran on 273 and 274, and its stamp test first read true at 273.
+  NOTE: restart() unpauses and then emits round_started synchronously, so _restock_fuel_cans() restocks every Can in tick 272, one tick before the Can's own first post-pause tick (273). Any stale stamp is irrelevant provided restock() clears restock_frame.
+
+[P1-retake] UNKNOWN -- A Unit parked in the zone through the whole delay with room left in its tank is refuelled again the moment the Can is restocked (taken twice, restocked once).
+  MEASURED: Not run against a real Can: none exists. The inputs were measured: a stationary Unit is listed on 1330 of 1330 ticks, the list is unchanged by the Can's own state, and the design's refuel() adds up to the capacity (start 50 plus a 40 refill leaves 90 of 100, so room 10 remains).
+  NOTE: Follows from persistent listing plus the design's branch order. It must be confirmed by the real can_cycle scenario. The exact tick (same tick or next) depends on whether restock() and the zone look share a tick in FuelCan._physics_process.
+
+--- CONTRADICTIONS (A)
+ * Design 5.2 'a Unit that is destroyed or benched (collision layer zero) is never in the list': it is still listed on the tick of destroy() or leave_play() (T), and unlisted only from T+1 (r1 probe: listed at T by the continuation and by nodes before and after the Unit). Across a pause the list is frozen: a Unit benched during a pause was listed on 30 of 30 paused ticks and dropped at unpause+1. The is_alive test in the Can is load-bearing, not redundant.
+ * Design 5.2 'If two Units are in the zone on the same tick the first in the list takes it': implementable, but the list order is not reproducible. It flipped inside identical configurations in 3 of 24, 14 of 480 and 16 of 480 runs (also between two separate processes). The same-tick winner is therefore not deterministic, and no check or design note may rely on it.
+ * Design 7.2 can_cycle sequence ('the same Unit standing in the zone does not take it again; the Can is back ... restocked emitted once'): it conflicts with the measured persistent listing (1330 of 1330 ticks). A Unit still parked in the zone with room in its tank would be refuelled again on or right after the restock tick, so `taken` fires twice and the Can is available for 0 or 1 ticks, unless the Unit leaves or its tank is full. This follows from the measurements and has not been run against a real Can (see P1-retake).
+ * Spawn-latency assumption (P1c-in, P1c-out): a Unit teleported into the zone by spawn() is reported at T+2, not on the next tick, and one teleported out stays listed at T and T+1. This matters only for harness scenarios that spawn a Unit onto or off a Can.
+
+--- GUARDRAILS (A)
+ * Poll pickup_zone.get_overlapping_bodies() once per tick from the Can's own _physics_process and never toggle monitoring: Truck, Buggy, Motorbike and Gyrocopter at top speed were listed for 41, 19, 14 and 20 ticks (0.18 to 0.40 m per tick against a 3.2 m zone), and get_overlapping_bodies() and overlaps_body() agreed on every sampled tick.
+ * Expect the zone to trail the Unit: a driven Unit is first listed 1 tick after its first overlapping start-of-tick position (0.36 m deep for the Truck, 0.70 m for the Motorbike), a spawn() into the zone is listed at T+2, and one out of it is still listed at T and T+1. Harness checks must allow at least 3 ticks, preferably 5, after any move or teleport before asserting listed or unlisted.
+ * Test unit.is_alive in the Can and treat refuel() returning 0.0 as the second guard: a destroyed or benched Unit is still in the list on the tick of the call (T, unlisted at T+1), and a Unit benched during a pause stays listed on all 30 paused ticks until unpause+1.
+ * Do not let the can_cycle scenario park a non-full Unit in the zone through the delay: a stationary Unit stays listed (1330 of 1330 ticks, also after a 1300-tick blind window and with the Body sibling hidden), so it would be refuelled again at the restock. Drive it out (or fill its tank) before the delay ends, and read `restocked` and `restock_frame` rather than is_available at a later tick.
+ * Never assert which Unit wins a same-tick tie: the list order flipped inside identical configurations (3 of 24, 14 of 480 and 16 of 480 runs). It follows tree order for same-type pairs and Truck-before-Gyrocopter for the mixed pair, and both Units always enter on the same tick. If the tie must reproduce, add an explicit tie-break in the Can (nearest to the Can origin, then Player index).
+ * Stamp restocks as Engine.get_physics_frames() + max(roundi(seconds * Engine.physics_ticks_per_second), 1) and test >=: the counter advanced exactly +1 per tick (299 of 299 fixed-fps, 239 of 239 real-time ticks). A stamp armed at 300 + 1200 first tested true at frame 1500 exactly. Scenarios must count physics_frame awaits, never wall time.
+ * A frame stamp keeps running while the tree is paused (frames 402..521 advanced +1 per tick through a 120-tick pause), so a 1200-tick delay fired after only 1080 played ticks, and a stamp due during the pause fires on the Can's first tick after the unpause. GarageQueue compensates through NOTIFICATION_PAUSED/UNPAUSED, the design's Can does not: keep restock() clearing restock_frame and emitting `restocked` only for a taken Can, and do not pause the tree inside can_cycle.
+ * Leave the Can's process_mode at INHERIT: a default node ran 0 _physics_process calls in 120 paused ticks (a stand-in under the real World: 0 in 200) against 120 for an ALWAYS node. A pause set mid-tick stops every later node in that tick's order, and the zone list is frozen for the whole pause.
+ * Restock every Can in the round_started handler: in the real tree the R key acts one tick after it is parsed (parsed 271, restart() in 272, which unpauses and then emits round_started in the same call). A Can under World does not run in the restart tick and its first tick is 273, so a scenario may read the Can as available from the round_started tick on.
+ * A scenario that drives a split-screen Unit with set_drive_input() must switch that Player's PlayerDriveInput physics process off (it rewrites the command every tick at priority unit - 1), or press real keys; no new Input Map action is needed.
+ * Predict the first listed tick in a scenario as the first tick whose start-of-tick Unit box overlaps the sphere (centre 0.6 m up, radius 1.6) plus 1, using a box-versus-sphere test on the positions read in a physics_frame continuation, never wall time.
+
+--- SUMMARY (A)
+ Both probes ran clean: 9 headless runs on Godot 4.7.2 with Jolt, 0 engine errors, repo untouched (only the pre-existing M on the story file).
+
+**Zone polling holds.**
+- A once-per-tick get_overlapping_bodies() poll sees every Unit type driven at top speed, without tunnelling. It lists the Unit 1 tick after its box first overlaps the sphere at the start of the tick, and for 1 tick after it leaves.
+- The listed windows are 41 ticks (Truck), 19 (Buggy), 14 (Motorbike) and 20 (Gyrocopter).
+- Continuation, node-before and node-after polls first see the Unit on the same tick, and overlaps_body() always agrees with the list. Inside the real split_screen.tscn and in real time the numbers are identical.
+- A stationary Unit stays listed for 1330 of 1330 ticks (also after a 1300-tick blind window and with the sibling hidden), with monitoring never touched.
+
+**Four corrections.**
+- A destroyed or benched Unit is still listed on the call tick, and its removal is frozen across a pause, so the Can's is_alive guard is required.
+- A spawn() into or out of the zone shows up 2 ticks later (T+2).
+- Same-tick tie order is not reproducible (about 3 percent flips even within one configuration), so no check may assert a winner.
+- The can_cycle sequence conflicts with persistent listing: a parked Unit with room in its tank is refuelled again at the restock. This is deduced, not run against a real Can.
+
+**Frame stamps are exact but not pause-aware.**
+- Engine.get_physics_frames() advances exactly +1 per tick, also in real time and also while the tree is paused.
+- A default-mode node never ticks while paused.
+- A 1200-tick stamp fired exactly at its frame, after only 1080 played ticks across a 120-tick pause. A stamp due during a pause fires on the Can's first tick after the unpause.
+- In the real tree restart() runs from RoundRestartInput's tick (key parsed at 271, restart at 272). It unpauses and emits round_started in the same call, so _restock_fuel_cans() restocks every Can before the Can's own first tick (273).
+- Unlike GarageQueue, the design's plain stamp does not compensate for pauses; that is harmless only because round_started restocks all Cans.
+========== B facts: 27
+
+[ENV] HOLDS -- The probes ran on the pinned engine, with Jolt, at 60 physics ticks per second, and wrote nothing in the repo.
+  MEASURED: godot --version = 4.7.2.stable.official.ed1daf0bf (matches VERSION.md 'Installed at pin time'); project.godot line 110 3d/physics_engine="Jolt Physics"; Engine.physics_ticks_per_second=60; TextServer = ICU / HarfBuzz / Graphite (Built-in). After every run git status --porcelain was identical to the start (only the pre-existing story-006 md change) and find -newer on the repo found no file.
+  NOTE: Probe scripts and the Unit subclass live only under the scratch dir (unit_probe.gd extends res://src/gameplay/units/unit.gd). Probes were headless, so anything that needs pixels is UNKNOWN (see P5c).
+
+[P3a] HOLDS -- A Unit that calls destroy() inside its own _physics_process and returns emits `destroyed` once, after hit_points_changed.
+  MEASURED: Real split_screen.tscn, Player 1 chosen as the Gyrocopter (unit_types[3], hp 70, can_fly true), Unit subclass crashing on frame 22: all on frame 22, in this order: u.hit_points_changed(0.0/70.0) -> u.destroyed -> c.unit_destroyed(0) secs=3.0 choosing=true alive=false. destroy_calls=1. Over the whole run `destroyed` fired 2 times for 2 destructions (one own-tick, one key).
+  NOTE: The design's extra fuel_changed(0.0, capacity) will sit between hit_points_changed and destroyed; not testable until written. The real MatchController handler runs synchronously inside the Unit's tick.
+
+[P3b] HOLDS -- set_physics_process(false) inside the Unit's own tick is harmless: no ERROR, no further tick, the body does not move on that tick.
+  MEASURED: Unit was moving (throttle 1.0) until the crash. Last Unit tick frame = 22 = the crash frame, and still 22 ten frames later. Distance between the position after tick 21 and the position after the crash = 0.000000 m; current_speed after = 0.0. State after: alive=false hp=0.0 visible=false collision_layer=0 mask=0 is_physics_processing=false. stdout+stderr scan of the P3 and P3b runs: 0 ERROR or WARNING lines.
+  NOTE: No 'space is null' Jolt error appeared (that error is documented for PROCESS_MODE_DISABLED, which destroy() does not use).
+
+[P3c] HOLDS -- A handler of `destroyed` that calls spawn() on the same Unit in the same tick works.
+  MEASURED: Plain world, frame 11: hit_points_changed(0.0/40.0), destroyed, hit_points_changed(40.0/40.0), then state alive=true hp=40 visible=true layer=2 mask=3 proc=true pos=(8,0,4). The Unit ticks again on frame 12 (ticks 10,11,12,13) with its first sample at (8,0,4), yaw 0.5. With new stats (Truck) on frame 36: hp 220/220, mask 35, collider (2.4,1.6,4.4), Model child present, type truck. 0 ERROR or WARNING lines.
+  NOTE: The MatchController does not respawn in the same tick, it waits the data delay; this only shows the Unit tolerates it.
+
+[P3d] HOLDS -- The real MatchController handles a destruction raised from the Unit's own tick exactly like one from a key (unit_destroyed once, respawn countdown starts, no ERROR or WARNING).
+  MEASURED: Signal sequence is identical (compare=true): [hit_points_changed(0.0/70.0), destroyed, unit_destroyed(0) secs=3.0 choosing=true alive=false] for the own-tick crash (frame 22) and for the real Tab key (frame 214). RespawnCountdown visible=true text='Respawn in 3'. canister_status before/after = [0,0] / [0,0] (OWN_AT_HOME for both Players), canister_dropped events = 0. unit_spawned came 180 ticks after the crash tick (expected round(3.0 x 60) = 180). After the respawn the Unit ticked again 3 ticks later (frame 205 vs spawn 202). 0 ERROR or WARNING lines.
+  NOTE: Covers AC-4: the drop path is a no-op for a Unit that carries nothing and the Flags' states are unchanged.
+
+[P3e] HOLDS -- (extra) Self-destruct and a fuel crash on the same frame cannot double count.
+  MEASURED: PlayerMatchInput runs at priority -1. Real key destroy on frame 214: last tick of the Unit was frame 213 (its own tick was skipped). Killer-node probe at priority -1 vs the Unit's 0: unit_ticked_that_frame=false, destroyed_signal_count=1, killer_calls=1, the Unit's own crash path added 0 calls.
+  NOTE: A Unit disabled by an earlier-priority node loses its tick for that same frame.
+
+[P3f] HOLDS -- (extra, trap) An own-tick crash counts as any other destruction, including the existing refusal for a Player the controller does not see as ALIVE.
+  MEASURED: Direct Unit.spawn() as Gyrocopter while the controller state was WAITING (benched, no choice), then crash: only u.destroyed, no unit_destroyed, and WARNING: MatchController 'MatchController': the Unit of player_index 0 was destroyed while that Player was not ALIVE (State 2), so the destruction is ignored. Same direct retype after the controller had the Player ALIVE: u.destroyed + c.unit_destroyed(0) once, no warning, unit_destroyed secs=2.88.
+  NOTE: Not a design error, a harness trap: a scenario that needs a Gyrocopter to run dry must get it into play through the Round (choose()/keys), never a bare Unit.spawn() while the Player is WAITING, or its 'no ERROR or WARNING in the output' check fails.
+
+[P4a] HOLDS -- is_zero_approx(_speed) is a safe test of 'standing still' for a coasting ground Unit with the throttle ignored.
+  MEASURED: Truck (max_speed 10.9, accel 9, coast 6) at full throttle: top speed after 73 ticks. Flag set, throttle held: 109 ticks to is_zero_approx, 110 ticks to exact 0.0; last speeds 0.2000000000000224, 0.1000000000000224, 2.2e-14, 0.0, 0.0; one sample nonzero-but-approx-zero. After the stop _speed stayed exactly 0.0 for all 118 observed ticks and the position never moved (0.00000000 m). Coast displacement (straight) 9.8100 m. Motorbike (first run, 24 m/s, 12 m/s^2): 120 / 121 ticks, residual 3.4e-14.
+  NOTE: The design uses is_zero_approx, which is the right test; an exact == 0.0 test would be one tick late.
+
+[P4a2] CONTRADICTED -- Design 4.3 / section 2: a coasting Unit burns until its speed reaches exactly zero, and move_toward lands exactly on 0.0.
+  MEASURED: The speed passes through a ~2.2e-14 m/s residual (Truck) or 3.4e-14 (Motorbike) for one tick before exact 0.0. Under the design's rule (burn when not is_zero_approx(_speed) at the start of the tick) the burn stops one tick BEFORE exact zero: 181 burn ticks over a 73-tick acceleration plus 110-tick coast (the first tick from rest and the last residual tick do not burn).
+  NOTE: Wording only, no behavioural harm. The doc of _burn_fuel and the evidence doc should say 'while the drive speed is not approximately zero'.
+
+[P4b] HOLDS -- An empty ground Unit turns on the spot at steer x empty_turn_rate with no position drift or jitter from move_and_slide at zero velocity.
+  MEASURED: Truck at rest (speed exactly 0.0), flag set, throttle held, steer 1.0, empty_turn_rate 0.45: 120 ticks, yaw rate 0.45000 rad/s (min = max = mean; 0.8925 rad over 119 intervals), horizontal drift 0.00000000 m, y range [0.000000, 0.000000], max per-tick step 0.0, max real velocity 0.0, 0 ticks off the floor. Without steer: 60 ticks, drift 0.0.
+  NOTE: Measured in open ground on the real greybox field after a real spawn() as the Truck.
+
+[P4c] HOLDS -- While still rolling, the empty yaw applies at the same rate.
+  MEASURED: Coast from 10.9 m/s with steer 1.0 held: 109 rolling ticks min = max = mean = 0.45000 rad/s, then 118 ticks at rest also 0.45000 rad/s. The non-empty law at top speed would give 0.89 rad/s.
+  NOTE: Yaw is independent of speed, as designed.
+
+[P4d] HOLDS -- A refuel that ends the empty state lets the Unit drive again at once.
+  MEASURED: Flag cleared with throttle 1.0 and steer 1.0 still held: speed on the first five ticks 0.150, 0.300, 0.450, 0.600, 0.750 m/s (9/60 per tick); the body moves from the first tick (dz -0.00155, -0.00466, ...).
+  NOTE: After the refill the Unit is back on the speed-fraction yaw law, so it can no longer pivot at standstill.
+
+[P4e] HOLDS -- (extra) Turning an empty Truck on the spot beside a wall is harmless.
+  MEASURED: Truck centre at x=38.5 (wall inner face x=40), flag set, steer 1.0, 300 ticks: x range [37.5077, 38.5000] (pushed 0.99 m away, at most 0.0145 m per tick), y range [0.0, 0.001], max box intrusion into the wall 0.0166 m, total yaw 2.2425 rad = 0.45 x 299/60 (full rate), final speed 0.0.
+  NOTE: No pop, no sinking, yaw not slowed, but the position does move, so 'its position stops' must be asserted in open ground.
+
+[P4f] CONTRADICTED -- Design section 2: _next_speed() uses _throttle in four places.
+  MEASURED: By reading unit.gd lines 474-483 there are five textual uses: blocked-reversal test, is_zero_approx(_throttle), the top-speed choice, the opposing test, and top_speed * _throttle in the return line. My probe replaced all five.
+  NOTE: Harmless: with an effective throttle of 0 the zero test returns before the later uses run, so only the first two decide the empty branch. Tell the implementer to search for every _throttle.
+
+[P5a] HOLDS -- 'Fuel 100 / 100' at font size 18 with a 6 px outline fits in the 292 px label without wrapping.
+  MEASURED: Real text server. Label made like HitPointsLabel (autowrap 3, centred): 'Fuel 100 / 100' = 120.00 px wide (132.00 with the 6 px outline each side), 1 line, label 292 px. Same text on a Label duplicated from the real HitPointsLabel: identical. 'Fuel 0 / 100' 99 px, 'Fuel 50 / 100' 109 px, 'Fuel 1000 / 1000' and 'Fuel 9999 / 9999' 140 px (152 with outline), all 1 line. Widest digit pair text over all ten digits 120.00 px (tabular digits). Existing 'HP 220 / 220' = 108.00 px in the 300 px label, 1 line (120 px with outline).
+  NOTE: Label.get_minimum_size() reads (1.0, 26.0) because of autowrap (width 1) and the 26 px line height. Real label rect is (332,16)-(624,42); HUD is 640 x 720; inside the view with a 16 px right margin, 16 px gap to the hit-point bar, no overlap with the status label, but the gap to it is 4 px (y 42 to 46), not the 6 px a 24 px rect implies (same as HitPointsLabel today).
+
+[P5b] HOLDS -- A ProgressBar with StyleBoxFlat background and fill overrides works with max_value set before value, and value 0 with max_value 100.
+  MEASURED: max 100, value 0 -> ratio 0.0 (the engine draws no fill at 0); value 37 -> ratio 0.37 = 108 px of 292; both overrides present; the bar's draw signal fired (1 then 2 times). Order: value 80 written under max 50 reads 50 and stays 50 after max 200 (ratio 0.25); max 50 then value 80 reads 50; max_value 0 with value 0 reads ratio 1.0.
+  NOTE: max_value must be written first, and only when capacity > 0, because max 0 reads as a full bar.
+
+[P5c] UNKNOWN -- The amber fill renders correctly (pixels) at 0, partial and full values.
+  MEASURED: Headless run uses the dummy renderer: state and draw signal verified only, no pixel was read.
+  NOTE: The story's retained UI screenshot is the only proof. A fill under about 8 px with corner radius 4 draws as a squashed pill; not verifiable here.
+
+[P6a] HOLDS -- The five Fuel Can spots are clear of both Bases (zone, pad, beacon), both spawn pads, the cliff block, the water strip and the walls.
+  MEASURED: Sphere r=1.6 at 0.6 m up; clearance = sphere surface to obstacle, m. (0,0,0): zone 12.40, pad 12.41, beacon 13.11, cliff 25.40, water 24.40, wall face 38.40, nearest spawn/spare/seat 18.41. (-16,0,-8): zone 10.06, pad 10.08, beacon 10.06, cliff 9.58, water 40.41, wall 22.40, spawn/seat 15.38. (16,0,8): 10.06 / 10.08 / 10.06 / cliff 41.45 / water 8.45 / wall 22.40 / 15.38. (-16,0,8): 10.06 / 10.08 / 19.76 / cliff 9.58 / water 40.41 / 22.40 / 15.38. (16,0,-8): 10.06 / 10.08 / 19.76 / 41.45 / water 8.45 / 22.40 / 15.38. Spots are at least 16.0 m apart (centre distances 16.00 and 17.89). Real AABBs read from the scenes: zones x -6..6, z 14..26 and -26..-14; cliff x -33..-27, z -6..6; water x 26..34, z -7..7; walls' inner faces at +-40. A Unit of any type on any spawn point or spare is at least 12.98 m clear (Truck at Base1.SpareSpawnLeft vs spot (-16,0,8)).
+  NOTE: Matches the design's coordinates exactly.
+
+[P6b] HOLDS -- No Fuel Can spot overlaps a fixture position an evidence scenario uses (Unit box within 1.6 m of the spot).
+  MEASURED: 16 fixtures, 4 types, 2 axis-aligned headings, 5 spots: 0 overlapping combinations. Min clearance axis-aligned / any heading (circumscribed circle): (+-6,0,0) 2.20 / 1.89; (+-5,0,0) 1.20 / 0.89; (-24,0,0) 7.34; (20,0,0) 4.84 / 4.84; (-34,0,12) 14.45; (-12,0,8) 0.20 / -0.106 (Truck, spot (-16,0,8)); (+-8,0,2) 4.25 / 4.14; (0,0,-6) 2.20 / 1.89; (-12,0,10) and (12,0,10) 0.37 / 0.37; (+-18,0,0) 4.25 / 4.14; (30,0,0) 12.02.
+  NOTE: Caveat: only a Truck at (-12,0,8) at a diagonal heading (about 12 to 45 degrees off the x axis) could reach 0.106 m into the zone of the Can at (-16,0,8). Axis-aligned it is 0.20 m clear.
+
+[P6c] CONTRADICTED -- (implicit in 5.4 and 7.3) The centre Can is not on a line the baseline scenarios drive.
+  MEASURED: Lateral distance from the centre spot (0,0,0) to the Base-to-Base axis (0,0,20)->(0,0,-20) is 0.00 m, and to the z=0 line through the +-5, +-6, +-18, 20, -24 and 30 fixtures 0.00 m; 67 anchor-to-anchor straight lines pass within 2.8 m of some spot.
+  NOTE: A Unit driving straight from a Base, or between the z=0 fixtures, will touch the centre Can. Physics is unaffected (P9a), only the refill and HUD number can change.
+
+[P7a] HOLDS -- A 50-unit tank lasts 25 s (use 2.0), 20 s (2.5), about 17 s (3.0) and 10 s (5.0) of motion.
+  MEASURED: Nominal 50/use*60 = 1500, 1200, 1000, 600 ticks. fuel = maxf(fuel - use*(1/60), 0.0) from 50.0 reaches exactly 0.0 at tick 1501, 1201, 1001 and 600. use/60 gives identical results. Fuel never goes negative (the unclamped last value is -0.0333, -0.0417, -0.05, -3.3e-13 and is clamped).
+  NOTE: Seconds hold; see P7b for the tick-level residual.
+
+[P7b] CONTRADICTED -- The tank is empty exactly on the nominal tick count.
+  MEASURED: After 1500, 1200, 1000 ticks the tank still holds 2.7e-13, 6.6e-13 and 7.0e-13 (use 2.0, 2.5, 3.0), so empty arrives one tick late (1501, 1201, 1001); use 5.0 is exactly 0.0 at tick 600.
+  NOTE: Tick-level only. Evidence checks must allow +1 or +2 ticks, and for the Gyrocopter the crash can come one tick after the nominal 600-tick burn.
+
+[P7c] HOLDS -- The HUD never shows 0 while fuel is above zero (ceili).
+  MEASURED: ceili at the last ticks: 1 for 0.1667, 0.0833, 0.0333 and for the 2.7e-13 residual, 0 at exact 0.0; tr('Fuel %d / %d') gives 'Fuel 100 / 100', 'Fuel 0 / 100', 'Fuel 1 / 100' for 0.4 and for 1e-14.
+  NOTE: The label reads 'Fuel 1 / 100' for the one extra residual tick.
+
+[P7d] HOLDS -- One fuel_changed emission per tick with two handlers costs nothing noticeable and warns about nothing.
+  MEASURED: 300 emissions (5 s of ticks) with 2 handlers = 66 us total (0.22 us each); 200000 emissions = 43418 us = 4.6 million emissions/s; HUD-like handler (bar.max_value, bar.value, label.text with tr and ceili) 20000 calls = 16397 us = 0.82 us per call = 1.2 million calls/s; no WARNING or ERROR.
+  NOTE: Headless, no drawing; the real cost of re-shaping the label text happens at draw time and was not measured.
+
+[P8] HOLDS -- Docs mention no 4.6 to 4.7 change to Area3D overlaps, get_overlapping_bodies, monitoring or CharacterBody3D that touches the design.
+  MEASURED: None names get_overlapping_bodies, monitoring or a CharacterBody3D API change. Nearest lines: physics.md:13 and breaking-changes.md:44 'Jolt: Area3D now reports overlaps with SoftBody3D (GH-114198)' (no SoftBody3D in src, tools or project.godot); physics.md:19 'Jolt body sync and overlaps: pending transform updates of newly added bodies are no longer dropped when a query runs during body state sync such as _integrate_forces (GH-115364); area-overlap fixes (GH-118285, GH-120243)' (no semantics stated); physics.md:18 'RigidBody3D picks up runtime Area3D damping changes ... (GH-118197)' (RigidBody3D only); physics.md:20 'run_on_separate_thread (default false): commands issued during physics processing run immediately instead of being queued (GH-117268)' (project.godot does not set it); physics.md:22 'GH-118155 moved the Jolt body_test_motion contact filtering into a collector and the PR warns of a significant risk of breaking people's character controllers' (measured no jitter, drift or intrusion in P4); physics.md:21 DEFAULT = GodotPhysics3D, project.godot:110 sets Jolt explicitly; breaking-changes.md:47 overrides inherit the typed return (GH-115763), the design adds no such override.
+  NOTE: Nothing in the docs contradicts the polling design; the one-tick overlap lag is measured in P9b, not documented.
+
+[P9a] HOLDS -- (extra) A Fuel Can zone (Area3D layer 0, mask 18, sphere 1.6 at 0.6 m) on a Unit's path changes the Unit's motion.
+  MEASURED: Same drive three times per type (no Can, with Can polled every tick, no Can again), full throttle through (0,0,0): maximum position difference no-Can vs with-Can = 0.000000000000 m for the never-spawned Motorbike (140 ticks), the spawned Truck (260 ticks) and the spawned Gyrocopter (160 ticks); the no-Can repeat control also 0.000000000000.
+  NOTE: The zone alone cannot change the strict outputs; only refill, HUD number and Can visibility can.
+
+[P9b] HOLDS -- (extra) Cans see both ground Units and Gyrocopters through get_overlapping_bodies() and the list lags the contact by a fixed number of ticks.
+  MEASURED: The Unit enters the list exactly 1 tick after its box first touches the sphere and leaves it exactly 1 tick after: Motorbike 15 ticks inside / 15 listed, Truck 42 / 42, Gyrocopter (layer 16, mask 18) 21 / 21; entry_latency 1, exit_latency 1 for all three.
+  NOTE: Reading the list on the next tick after contact is enough for a harness wait; the Gyrocopter is listed.
+
+--- CONTRADICTIONS (B)
+ * Design 4.3 and section 2: 'a Unit coasting down burns until its speed reaches exactly zero' and 'move_toward lands exactly on 0.0' (measured: the speed passes through a 2.2e-14 m/s residual for the Truck, 3.4e-14 for the Motorbike, one tick before exact 0.0, so under the is_zero_approx rule the burn stops one tick before exact zero: 109 burn-relevant coast ticks against 110 to exact zero).
+ * Design section 2: '_next_speed() uses _throttle in four places' (by reading unit.gd 474-483: five textual uses, the fifth is top_speed * _throttle in the return line; harmless because the zero test returns first when the effective throttle is 0).
+ * Implicit in 5.4 and 7.3 (strict outputs stay byte-identical): that no baseline Unit touches a Fuel Can. The centre Can (0,0,0) lies exactly on the Base-to-Base axis and on the z=0 fixture line (lateral 0.00 m). P9a shows the zone changes no trajectory (0.000000000000 m), so only the refill, the HUD number and the Can's visibility can differ.
+
+--- GUARDRAILS (B)
+ * Raise the Gyrocopter crash with destroy() from inside _burn_fuel and return from _physics_process right after it: in the real split screen that gave hit_points_changed(0.0/70.0), destroyed once and MatchController.unit_destroyed once (secs=3.0, choosing=true) on the crash frame 22, no later tick, 0.000000 m of movement on that tick, 0 ERROR or WARNING lines and a respawn exactly 180 ticks later, identical to the Tab-key path.
+ * Do not add a second guard for Self-destruct and a crash on the same frame: PlayerMatchInput runs at priority -1 and a Unit destroyed earlier in a frame skips its own tick (key destroy at frame 214, last Unit tick 213; killer-node probe unit_ticked_that_frame=false, destroyed_signal_count=1).
+ * Put a Gyrocopter that is meant to run dry in play through the Round (choose() or the choice keys), never a bare Unit.spawn() while its Player is WAITING: that crash printed WARNING 'the Unit of player_index 0 was destroyed while that Player was not ALIVE (State 2), so the destruction is ignored.' and emitted no unit_destroyed, whereas the same crash with the Player ALIVE was counted once with no warning.
+ * Decide 'moving' with not is_zero_approx(_speed) and never with == 0.0: a Truck coasting from 10.9 m/s at 6 m/s^2 is at 2.2e-14 m/s on tick 109 and exactly 0.0 only on tick 110 (Motorbike 3.4e-14 at 120, 0.0 at 121), so an exact test burns one extra tick.
+ * Word the doc of _burn_fuel and the evidence as 'burns while the drive speed is not approximately zero', and expect 181 burn ticks (not the 183 moving ticks) for a Truck that accelerates 73 ticks and coasts 110, because the first tick from rest and the last residual tick do not burn.
+ * Never assert tick-exact empties: fuel = maxf(fuel - use * delta, 0.0) from 50.0 leaves 2.7e-13, 6.6e-13 and 7.0e-13 at ticks 1500, 1200 and 1000 (use 2.0, 2.5, 3.0), so the tank is empty at tick 1501, 1201 and 1001 but at exactly 600 for use 5.0; allow at least one extra tick, and one tick's worth (use/60 = 0.033 to 0.083 units) in the burn-over-time check.
+ * The HUD reads 'Fuel 1 / 100' for the one residual tick because ceili(2.7e-13) is 1 and 'Fuel 0 / 100' only at exact zero; do not add an epsilon for that.
+ * Measure the empty yaw rate from heading differences with about 1e-3 rad/s tolerance and at least about 5 m from every wall, cliff and Unit: in open ground the Truck gave 0.45000 rad/s on all 227 sampled ticks (rolling and at rest), 0.00000000 m drift over 120 ticks and no jitter, but with its tail 1.5 m from the east wall the same turn pushed it 0.99 m away at up to 0.0145 m per tick (yaw still full rate, intrusion at most 0.0166 m), so 'its position stops' only holds away from obstacles.
+ * The scenario that refuels an empty Unit must not expect a turn at standstill afterwards: with the flag cleared and throttle held the Truck's speed was 0.150, 0.300, 0.450, 0.600, 0.750 m/s on the first five ticks and the yaw is back on the speed-fraction law.
+ * Write the gauge's max_value before value and only when the capacity is above zero: a value written first is clamped to the old maximum (80 under max 50 reads 50 and stays 50 after max 200) and max_value 0 reads ratio 1.0, a full bar.
+ * 'Fuel 100 / 100' is 120.00 px wide at 18 px (132 px with the 6 px outline) on one line in the 292 px label ('Fuel 1000 / 1000' is 140 px and still fits), but a Label's minimum height is 26 px, so the real rect is (332,16)-(624,42) and the gap to the status label at y=46 is 4 px, exactly as the hit-point label has today.
+ * The amber fill cannot be verified headless (the bar's draw signal fires, value 0 gives ratio 0.0, no pixels exist), so the retained UI screenshot of the story is the only proof of the look.
+ * The five Can spots need no move: they are at least 8.45 m from the water strip, 9.58 m from the cliff, 10.06 m from a Base zone, pad or beacon, 15.38 m from any spawn point, spare or seat, 22.4 m from a wall face and 16.0 m from each other.
+ * Fixture (-12,0,8) is the one tight place: a Truck there facing along x is 0.20 m clear of the Can at (-16,0,8) and at a diagonal heading could reach 0.106 m into its zone, while (-12,0,10) and (12,0,10) stay 0.37 m clear at any heading and every other fixture 0.89 m or more.
+ * The centre Can (0,0,0) sits exactly on the Base-to-Base axis and on the z=0 line through the +-5, +-6, +-18, 20, -24 and 30 fixtures (lateral 0.00 m), so a Unit driven along them takes it; re-run the strict outputs and read any difference as refill, HUD number or Can visibility, since the zone itself changed no trajectory (0.000000000000 m for Motorbike, Truck and Gyrocopter, control also 0).
+ * Poll the Can's overlap list expecting a one-tick lag: the Unit entered get_overlapping_bodies() exactly 1 tick after its box first touched the 1.6 m sphere and left 1 tick after it left (Motorbike, Truck and Gyrocopter alike, the layer-16 Gyrocopter included through mask 18).
+ * One fuel_changed emission per burning tick is cheap: 0.22 us per emission with two handlers (4.6 million per second) and 0.82 us per call for the bar-plus-label handler, with no warning.
+
+--- SUMMARY (B)
+ All engine assumptions in my probes (P3 to P8) hold on the pinned Godot 4.7.2 with Jolt, in headless runs that left the repo untouched. P3: destroy() from the Unit's own physics tick, followed by an early return, is clean. It emits hit_points_changed then destroyed once, the real MatchController handles it identically to the Tab key (180-tick respawn, countdown 'Respawn in 3', Flags unchanged, no ERROR or WARNING), and a spawn() inside the destroyed handler works. P4: the empty-ground rules behave as designed (yaw exactly 0.45 rad/s rolling or at rest, no drift or jitter, resume at once on refuel), but the coast reaches exactly 0.0 one tick after a 2e-14 m/s residual, so only is_zero_approx is a correct 'moving' test and the design's 'burns until exactly zero' wording is off by one tick. P5: 'Fuel 100 / 100' is 120 px (132 with outline) in the 292 px label on one line, the real label is 26 px tall (4 px gap to the status line), and the bar semantics hold (max_value first, guard capacity > 0); pixel rendering is UNKNOWN headless. P6: all five spots are clear of Bases, pads, cliff, water, walls and spawn points by 8.45 m or more and of every fixture, with one Truck-at-diagonal caveat at (-12,0,8) of 0.106 m; the centre Can sits exactly on the Base-to-Base axis and the z=0 fixture line. P7: tanks last 1500/1200/1000/600 ticks nominal but empty one tick late for three types (residual 1e-13), so tests need a tick of tolerance. P8: no doc change touches Area3D overlap or CharacterBody3D semantics. Extras: a Can-style zone on a Unit's path changes its trajectory by exactly 0.0 m and the overlap list lags contact by 1 tick on entry and exit; a Gyrocopter put in play by a bare Unit.spawn() while its Player is WAITING crashes into a MatchController WARNING and no unit_destroyed, so run-dry scenarios must go through the Round. Scratch files and raw outputs: /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a0bbb76e-4a11-49a3-9a86-8984abd2268d/scratchpad/dev-story-006/preflight/b/ (driver.py, out_*.txt)."

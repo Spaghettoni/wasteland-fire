@@ -1,0 +1,155 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+SPLIT fuel_showcase t=0.000 frame=0 phase=start p1_type=motorbike p1_x=0.00 p1_z=20.00 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=motorbike p2_x=0.00 p2_z=-20.00 p2_fuel=0.00 p2_hp=0 p2_alive=false cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=0.500 frame=60 phase=panels p1_type=motorbike p1_x=0.00 p1_z=20.00 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=motorbike p2_x=0.00 p2_z=-20.00 p2_fuel=0.00 p2_hp=0 p2_alive=false cans=AAAAA round=RUNNING
+FPSSAMPLE t=1.0 fps=45 draw_calls=155 primitives=25338 objects=484
+SPLIT fuel_showcase t=1.000 frame=120 phase=panels p1_type=motorbike p1_x=0.00 p1_z=20.00 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=motorbike p2_x=0.00 p2_z=-20.00 p2_fuel=0.00 p2_hp=0 p2_alive=false cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=1.500 frame=180 phase=panels p1_type=motorbike p1_x=0.00 p1_z=20.00 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=motorbike p2_x=0.00 p2_z=-20.00 p2_fuel=0.00 p2_hp=0 p2_alive=false cans=AAAAA round=RUNNING
+FPSSAMPLE t=2.0 fps=120 draw_calls=155 primitives=25338 objects=484
+SPLIT fuel_showcase t=2.000 frame=240 phase=panels p1_type=motorbike p1_x=0.00 p1_z=20.00 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=motorbike p2_x=0.00 p2_z=-20.00 p2_fuel=0.00 p2_hp=0 p2_alive=false cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=2.500 frame=300 phase=panels p1_type=motorbike p1_x=0.00 p1_z=20.00 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=motorbike p2_x=0.00 p2_z=-20.00 p2_fuel=0.00 p2_hp=0 p2_alive=false cans=AAAAA round=RUNNING
+FPSSAMPLE t=3.0 fps=120 draw_calls=155 primitives=25338 objects=484
+SPLIT fuel_showcase t=3.000 frame=360 phase=cursor p1_type=motorbike p1_x=0.00 p1_z=20.00 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=motorbike p2_x=0.00 p2_z=-20.00 p2_fuel=0.00 p2_hp=0 p2_alive=false cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=3.500 frame=420 phase=cursor p1_type=motorbike p1_x=0.00 p1_z=20.00 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=motorbike p2_x=0.00 p2_z=-20.00 p2_fuel=0.00 p2_hp=0 p2_alive=false cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=3.567 frame=430 phase=both_choose p1_type=motorbike p1_x=0.00 p1_z=20.00 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=motorbike p2_x=0.00 p2_z=-20.00 p2_fuel=0.00 p2_hp=0 p2_alive=false cans=AAAAA round=RUNNING event=p1_chose_motorbike
+SPLIT fuel_showcase t=3.567 frame=430 phase=both_choose p1_type=motorbike p1_x=0.00 p1_z=20.00 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=motorbike p2_x=0.00 p2_z=-20.00 p2_fuel=0.00 p2_hp=0 p2_alive=false cans=AAAAA round=RUNNING event=p2_chose_truck
+SPLIT fuel_showcase t=3.567 frame=430 phase=both_choose p1_type=motorbike p1_x=0.00 p1_z=20.00 p1_fuel=50.00 p1_hp=40 p1_alive=true p2_type=truck p2_x=0.00 p2_z=-20.00 p2_fuel=50.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING event=p1_spawned_as_motorbike
+SPLIT fuel_showcase t=3.567 frame=430 phase=both_choose p1_type=motorbike p1_x=0.00 p1_z=20.00 p1_fuel=50.00 p1_hp=40 p1_alive=true p2_type=truck p2_x=0.00 p2_z=-20.00 p2_fuel=50.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING event=p2_spawned_as_truck
+FPSSAMPLE t=4.0 fps=120 draw_calls=172 primitives=23106 objects=379
+SPLIT fuel_showcase t=4.000 frame=484 phase=spawned p1_type=motorbike p1_x=0.00 p1_z=20.00 p1_fuel=50.00 p1_hp=40 p1_alive=true p2_type=truck p2_x=0.00 p2_z=-20.00 p2_fuel=50.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=4.500 frame=544 phase=spawned p1_type=motorbike p1_x=0.00 p1_z=20.00 p1_fuel=50.00 p1_hp=40 p1_alive=true p2_type=truck p2_x=0.00 p2_z=-20.00 p2_fuel=50.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+FPSSAMPLE t=5.0 fps=120 draw_calls=172 primitives=23106 objects=379
+SPLIT fuel_showcase t=5.000 frame=604 phase=spawned p1_type=motorbike p1_x=0.00 p1_z=20.00 p1_fuel=50.00 p1_hp=40 p1_alive=true p2_type=truck p2_x=0.00 p2_z=-20.00 p2_fuel=50.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=5.500 frame=664 phase=placed p1_type=motorbike p1_x=-19.80 p1_z=19.80 p1_fuel=50.00 p1_hp=40 p1_alive=true p2_type=truck p2_x=32.51 p2_z=-32.81 p2_fuel=50.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+FPSSAMPLE t=6.0 fps=120 draw_calls=138 primitives=11886 objects=326
+SPLIT fuel_showcase t=6.000 frame=724 phase=p1_to_can p1_type=motorbike p1_x=-18.42 p1_z=18.42 p1_fuel=49.17 p1_hp=40 p1_alive=true p2_type=truck p2_x=31.85 p2_z=-33.40 p2_fuel=48.75 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=6.500 frame=784 phase=p1_to_can p1_type=motorbike p1_x=-14.90 p1_z=14.90 p1_fuel=48.17 p1_hp=40 p1_alive=true p2_type=truck p2_x=29.23 p2_z=-35.06 p2_fuel=47.25 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+FPSSAMPLE t=7.0 fps=120 draw_calls=149 primitives=13626 objects=345
+SPLIT fuel_showcase t=7.000 frame=844 phase=p1_to_can p1_type=motorbike p1_x=-11.35 p1_z=11.35 p1_fuel=47.17 p1_hp=40 p1_alive=true p2_type=truck p2_x=24.28 p2_z=-36.20 p2_fuel=45.75 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=7.500 frame=904 phase=p1_to_can p1_type=motorbike p1_x=-7.81 p1_z=7.81 p1_fuel=46.17 p1_hp=40 p1_alive=true p2_type=truck p2_x=18.98 p2_z=-35.09 p2_fuel=44.25 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+FPSSAMPLE t=8.0 fps=120 draw_calls=173 primitives=18438 objects=368
+SPLIT fuel_showcase t=8.000 frame=964 phase=p1_to_can p1_type=motorbike p1_x=-4.26 p1_z=4.26 p1_fuel=45.17 p1_hp=40 p1_alive=true p2_type=truck p2_x=14.69 p2_z=-31.81 p2_fuel=42.75 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=8.350 frame=1006 phase=p1_to_can p1_type=motorbike p1_x=-1.78 p1_z=1.78 p1_fuel=84.47 p1_hp=40 p1_alive=true p2_type=truck p2_x=12.73 p2_z=-28.56 p2_fuel=41.70 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING event=FuelCan1_taken_by_p1
+SPLIT fuel_showcase t=8.500 frame=1024 phase=p1_to_can p1_type=motorbike p1_x=-0.71 p1_z=0.71 p1_fuel=84.17 p1_hp=40 p1_alive=true p2_type=truck p2_x=12.21 p2_z=-27.01 p2_fuel=41.25 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+FPSSAMPLE t=9.0 fps=120 draw_calls=157 primitives=13614 objects=344
+SPLIT fuel_showcase t=9.000 frame=1084 phase=p1_to_can p1_type=motorbike p1_x=2.84 p1_z=-2.84 p1_fuel=83.17 p1_hp=40 p1_alive=true p2_type=truck p2_x=12.05 p2_z=-21.60 p2_fuel=39.75 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+SPLIT fuel_showcase t=9.500 frame=1144 phase=p1_to_can p1_type=motorbike p1_x=6.03 p1_z=-6.03 p1_fuel=82.17 p1_hp=40 p1_alive=true p2_type=truck p2_x=14.24 p2_z=-16.66 p2_fuel=38.25 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+FPSSAMPLE t=10.0 fps=120 draw_calls=135 primitives=7182 objects=312
+SPLIT fuel_showcase t=10.000 frame=1204 phase=p1_to_can p1_type=motorbike p1_x=7.29 p1_z=-7.29 p1_fuel=81.17 p1_hp=40 p1_alive=true p2_type=truck p2_x=18.33 p2_z=-13.13 p2_fuel=36.75 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+SPLIT fuel_showcase t=10.500 frame=1264 phase=can_gone p1_type=motorbike p1_x=7.30 p1_z=-7.30 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=23.55 p2_z=-11.71 p2_fuel=35.25 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+FPSSAMPLE t=11.0 fps=120 draw_calls=125 primitives=7038 objects=300
+SPLIT fuel_showcase t=11.000 frame=1324 phase=can_gone p1_type=motorbike p1_x=7.30 p1_z=-7.30 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=28.87 p2_z=-12.68 p2_fuel=33.75 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+SPLIT fuel_showcase t=11.500 frame=1384 phase=can_gone p1_type=motorbike p1_x=7.30 p1_z=-7.30 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=33.25 p2_z=-15.84 p2_fuel=32.25 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+FPSSAMPLE t=12.0 fps=120 draw_calls=141 primitives=10254 objects=316
+SPLIT fuel_showcase t=12.000 frame=1444 phase=can_gone p1_type=motorbike p1_x=7.30 p1_z=-7.30 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=35.85 p2_z=-20.58 p2_fuel=30.75 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+SPLIT fuel_showcase t=12.500 frame=1504 phase=p2_runs_dry p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=36.15 p2_z=-25.98 p2_fuel=29.25 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+FPSSAMPLE t=13.0 fps=120 draw_calls=111 primitives=8238 objects=274
+SPLIT fuel_showcase t=13.000 frame=1564 phase=p2_runs_dry p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=34.10 p2_z=-30.98 p2_fuel=27.75 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+SPLIT fuel_showcase t=13.500 frame=1624 phase=p2_runs_dry p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=30.10 p2_z=-34.61 p2_fuel=26.25 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+FPSSAMPLE t=14.0 fps=120 draw_calls=107 primitives=8262 objects=276
+SPLIT fuel_showcase t=14.000 frame=1684 phase=p2_runs_dry p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=24.93 p2_z=-36.17 p2_fuel=24.75 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+SPLIT fuel_showcase t=14.500 frame=1744 phase=p2_runs_dry p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=19.58 p2_z=-35.34 p2_fuel=23.25 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+FPSSAMPLE t=15.0 fps=120 draw_calls=128 primitives=11538 objects=297
+SPLIT fuel_showcase t=15.000 frame=1804 phase=p2_runs_dry p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=15.12 p2_z=-32.30 p2_fuel=21.75 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+SPLIT fuel_showcase t=15.500 frame=1864 phase=p2_runs_dry p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=12.39 p2_z=-27.63 p2_fuel=20.25 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+FPSSAMPLE t=16.0 fps=120 draw_calls=131 primitives=11694 objects=310
+SPLIT fuel_showcase t=16.000 frame=1924 phase=p2_runs_dry p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=11.95 p2_z=-22.25 p2_fuel=18.75 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+SPLIT fuel_showcase t=16.500 frame=1984 phase=p2_runs_dry p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=13.86 p2_z=-17.19 p2_fuel=17.25 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+FPSSAMPLE t=17.0 fps=120 draw_calls=123 primitives=6906 objects=289
+SPLIT fuel_showcase t=17.000 frame=2044 phase=p2_runs_dry p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=17.77 p2_z=-13.45 p2_fuel=15.75 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+SPLIT fuel_showcase t=17.500 frame=2104 phase=p2_runs_dry p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=22.90 p2_z=-11.76 p2_fuel=14.25 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+FPSSAMPLE t=18.0 fps=120 draw_calls=98 primitives=5058 objects=261
+SPLIT fuel_showcase t=18.000 frame=2164 phase=p2_runs_dry p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=28.26 p2_z=-12.44 p2_fuel=12.75 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+SPLIT fuel_showcase t=18.500 frame=2224 phase=p2_runs_dry p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=32.81 p2_z=-15.36 p2_fuel=11.25 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+FPSSAMPLE t=19.0 fps=120 draw_calls=113 primitives=8262 objects=276
+SPLIT fuel_showcase t=19.000 frame=2284 phase=p2_runs_dry p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=35.65 p2_z=-19.96 p2_fuel=9.75 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+SPLIT fuel_showcase t=19.500 frame=2344 phase=p2_runs_dry p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=36.24 p2_z=-25.33 p2_fuel=8.25 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+FPSSAMPLE t=20.0 fps=120 draw_calls=107 primitives=8186 objects=268
+SPLIT fuel_showcase t=20.000 frame=2404 phase=p2_runs_dry p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=34.46 p2_z=-30.44 p2_fuel=6.75 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+SPLIT fuel_showcase t=20.500 frame=2464 phase=p2_runs_dry p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=30.66 p2_z=-34.28 p2_fuel=5.25 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+FPSSAMPLE t=21.0 fps=120 draw_calls=105 primitives=8210 objects=270
+SPLIT fuel_showcase t=21.000 frame=2524 phase=p2_runs_dry p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=25.57 p2_z=-36.11 p2_fuel=3.75 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+SPLIT fuel_showcase t=21.500 frame=2584 phase=p2_runs_dry p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=20.20 p2_z=-35.57 p2_fuel=2.25 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+FPSSAMPLE t=22.0 fps=120 draw_calls=127 primitives=11534 objects=295
+SPLIT fuel_showcase t=22.000 frame=2644 phase=p2_runs_dry p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=15.57 p2_z=-32.77 p2_fuel=0.75 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+SPLIT fuel_showcase t=22.250 frame=2674 phase=p2_runs_dry p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=13.84 p2_z=-30.68 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING event=p2_run_dry_ended
+SPLIT fuel_showcase t=22.500 frame=2704 phase=p2_coasts p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=12.56 p2_z=-28.53 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+FPSSAMPLE t=23.0 fps=120 draw_calls=139 primitives=13156 objects=312
+SPLIT fuel_showcase t=23.000 frame=2764 phase=p2_coasts p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=11.14 p2_z=-24.93 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+SPLIT fuel_showcase t=23.500 frame=2824 phase=p2_coasts p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=10.78 p2_z=-22.59 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+FPSSAMPLE t=24.0 fps=120 draw_calls=123 primitives=9868 objects=290
+SPLIT fuel_showcase t=24.000 frame=2884 phase=p2_coasts p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+SPLIT fuel_showcase t=24.500 frame=2944 phase=p2_turns p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+FPSSAMPLE t=25.0 fps=120 draw_calls=122 primitives=9100 objects=289
+SPLIT fuel_showcase t=25.000 frame=3004 phase=p2_turns p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+SPLIT fuel_showcase t=25.500 frame=3064 phase=p2_turns p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+FPSSAMPLE t=26.0 fps=120 draw_calls=125 primitives=9124 objects=291
+SPLIT fuel_showcase t=26.000 frame=3124 phase=p2_turns p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+SPLIT fuel_showcase t=26.500 frame=3184 phase=p2_turns p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+FPSSAMPLE t=27.0 fps=120 draw_calls=131 primitives=5368 objects=293
+SPLIT fuel_showcase t=27.000 frame=3244 phase=p2_turns p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+SPLIT fuel_showcase t=27.500 frame=3304 phase=p2_turns p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=40 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+FPSSAMPLE t=28.0 fps=120 draw_calls=134 primitives=10744 objects=300
+SPLIT fuel_showcase t=28.000 frame=3364 phase=hit p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=15 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=TAAAA round=RUNNING
+SPLIT fuel_showcase t=28.350 frame=3406 phase=hit p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=15 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING event=FuelCan1_restocked
+SPLIT fuel_showcase t=28.500 frame=3424 phase=hit p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=81.03 p1_hp=15 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=28.683 frame=3446 phase=p1_self_destructs p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING event=p1_destroyed
+FPSSAMPLE t=29.0 fps=119 draw_calls=136 primitives=12010 objects=380
+SPLIT fuel_showcase t=29.000 frame=3483 phase=countdown p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=29.500 frame=3543 phase=cursor_moved p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+FPSSAMPLE t=30.0 fps=120 draw_calls=136 primitives=12010 objects=380
+SPLIT fuel_showcase t=29.950 frame=3597 phase=cursor_moved p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING event=p1_chose_gyrocopter
+SPLIT fuel_showcase t=30.000 frame=3603 phase=cursor_moved p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=30.500 frame=3663 phase=cursor_moved p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+FPSSAMPLE t=31.0 fps=120 draw_calls=136 primitives=11962 objects=356
+SPLIT fuel_showcase t=31.000 frame=3723 phase=cursor_moved p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=31.500 frame=3783 phase=cursor_moved p1_type=motorbike p1_x=19.00 p1_z=-24.00 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=31.683 frame=3805 phase=cursor_moved p1_type=gyrocopter p1_x=0.00 p1_z=20.00 p1_fuel=50.00 p1_hp=70 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING event=p1_spawned_as_gyrocopter
+FPSSAMPLE t=32.0 fps=120 draw_calls=173 primitives=19108 objects=367
+SPLIT fuel_showcase t=32.000 frame=3843 phase=gyro_spawned p1_type=gyrocopter p1_x=0.00 p1_z=20.00 p1_fuel=50.00 p1_hp=70 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=32.500 frame=3903 phase=gyro_spawned p1_type=gyrocopter p1_x=0.00 p1_z=20.00 p1_fuel=50.00 p1_hp=70 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+FPSSAMPLE t=33.0 fps=120 draw_calls=173 primitives=19108 objects=367
+SPLIT fuel_showcase t=33.000 frame=3963 phase=p1_flies p1_type=gyrocopter p1_x=0.00 p1_z=19.29 p1_fuel=48.58 p1_hp=70 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=33.500 frame=4023 phase=p1_flies p1_type=gyrocopter p1_x=0.00 p1_z=15.10 p1_fuel=46.08 p1_hp=70 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+FPSSAMPLE t=34.0 fps=120 draw_calls=169 primitives=12904 objects=354
+SPLIT fuel_showcase t=34.000 frame=4083 phase=p1_flies p1_type=gyrocopter p1_x=-0.93 p1_z=7.64 p1_fuel=43.58 p1_hp=70 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=34.500 frame=4143 phase=p1_flies p1_type=gyrocopter p1_x=-6.67 p1_z=2.07 p1_fuel=41.08 p1_hp=70 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+FPSSAMPLE t=35.0 fps=120 draw_calls=114 primitives=7514 objects=282
+SPLIT fuel_showcase t=35.000 frame=4203 phase=p1_flies p1_type=gyrocopter p1_x=-14.68 p1_z=2.04 p1_fuel=38.58 p1_hp=70 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=35.500 frame=4263 phase=p1_flies p1_type=gyrocopter p1_x=-20.47 p1_z=7.55 p1_fuel=36.08 p1_hp=70 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+FPSSAMPLE t=36.0 fps=120 draw_calls=115 primitives=7490 objects=280
+SPLIT fuel_showcase t=36.000 frame=4323 phase=p1_flies p1_type=gyrocopter p1_x=-20.83 p1_z=15.55 p1_fuel=33.58 p1_hp=70 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=36.500 frame=4383 phase=p1_flies p1_type=gyrocopter p1_x=-15.56 p1_z=21.56 p1_fuel=31.08 p1_hp=70 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+FPSSAMPLE t=37.0 fps=120 draw_calls=132 primitives=12232 objects=298
+SPLIT fuel_showcase t=37.000 frame=4443 phase=p1_flies p1_type=gyrocopter p1_x=-7.59 p1_z=22.25 p1_fuel=28.58 p1_hp=70 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=37.500 frame=4503 phase=p1_flies p1_type=gyrocopter p1_x=-1.36 p1_z=17.23 p1_fuel=26.08 p1_hp=70 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+FPSSAMPLE t=38.0 fps=120 draw_calls=174 primitives=17572 objects=365
+SPLIT fuel_showcase t=38.000 frame=4563 phase=p1_flies p1_type=gyrocopter p1_x=-0.35 p1_z=9.29 p1_fuel=23.58 p1_hp=70 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=38.500 frame=4623 phase=p1_flies p1_type=gyrocopter p1_x=-5.11 p1_z=2.86 p1_fuel=21.08 p1_hp=70 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+FPSSAMPLE t=39.0 fps=120 draw_calls=122 primitives=7636 objects=293
+SPLIT fuel_showcase t=39.000 frame=4683 phase=p1_flies p1_type=gyrocopter p1_x=-13.00 p1_z=1.53 p1_fuel=18.58 p1_hp=70 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=39.500 frame=4743 phase=p1_flies p1_type=gyrocopter p1_x=-19.62 p1_z=6.03 p1_fuel=16.08 p1_hp=70 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+FPSSAMPLE t=40.0 fps=120 draw_calls=109 primitives=7418 objects=274
+SPLIT fuel_showcase t=40.000 frame=4803 phase=p1_flies p1_type=gyrocopter p1_x=-21.28 p1_z=13.86 p1_fuel=13.58 p1_hp=70 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=40.500 frame=4863 phase=p1_flies p1_type=gyrocopter p1_x=-17.05 p1_z=20.65 p1_fuel=11.08 p1_hp=70 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+FPSSAMPLE t=41.0 fps=120 draw_calls=129 primitives=12196 objects=295
+SPLIT fuel_showcase t=41.000 frame=4923 phase=p1_flies p1_type=gyrocopter p1_x=-9.29 p1_z=22.62 p1_fuel=8.58 p1_hp=70 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=41.500 frame=4983 phase=p1_flies p1_type=gyrocopter p1_x=-2.33 p1_z=18.68 p1_fuel=6.08 p1_hp=70 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+FPSSAMPLE t=42.0 fps=120 draw_calls=182 primitives=20676 objects=370
+SPLIT fuel_showcase t=42.000 frame=5043 phase=p1_flies p1_type=gyrocopter p1_x=-0.04 p1_z=11.01 p1_fuel=3.58 p1_hp=70 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=42.500 frame=5103 phase=p1_flies p1_type=gyrocopter p1_x=-3.70 p1_z=3.89 p1_fuel=1.08 p1_hp=70 p1_alive=true p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=42.700 frame=5127 phase=p1_flies p1_type=gyrocopter p1_x=-6.47 p1_z=2.16 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING event=p1_destroyed
+FPSSAMPLE t=43.0 fps=120 draw_calls=128 primitives=8950 objects=377
+SPLIT fuel_showcase t=43.000 frame=5163 phase=end p1_type=gyrocopter p1_x=-6.47 p1_z=2.16 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=43.500 frame=5223 phase=end p1_type=gyrocopter p1_x=-6.47 p1_z=2.16 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+FPSSAMPLE t=44.0 fps=120 draw_calls=125 primitives=8914 objects=374
+SPLIT fuel_showcase t=44.000 frame=5283 phase=end p1_type=gyrocopter p1_x=-6.47 p1_z=2.16 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=44.500 frame=5343 phase=end p1_type=gyrocopter p1_x=-6.47 p1_z=2.16 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+FPSSAMPLE t=45.0 fps=120 draw_calls=125 primitives=8914 objects=374
+SPLIT fuel_showcase t=45.000 frame=5403 phase=end p1_type=gyrocopter p1_x=-6.47 p1_z=2.16 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=45.500 frame=5463 phase=end p1_type=gyrocopter p1_x=-6.47 p1_z=2.16 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+SPLIT fuel_showcase t=45.750 frame=5493 phase=end p1_type=gyrocopter p1_x=-6.47 p1_z=2.16 p1_fuel=0.00 p1_hp=0 p1_alive=false p2_type=truck p2_x=10.83 p2_z=-21.71 p2_fuel=0.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+RESULT fuel_showcase ok checks=0 failed=0 t=45.750 steps=both_choose:2,p1_through_can:219,p2_runs_dry:1001,p2_turns:211,p1_self_destructs:0,p1_gyrocopter:104,p1_crash:601 spawns=p1_motorbike,p2_truck,p1_gyrocopter take_gain=40.00 truck_turn=90.7deg truck_moved=0.0000 damage=25.0 destroyed=2/0 gyro_hp=70 crash_zero_calls=2 countdown_and_panel=true p1_fuel=0.00 p2_fuel=0.00 separation_min=7.17 wall_clearance_min=3.68
+
+rc 0 stderr-noisy []

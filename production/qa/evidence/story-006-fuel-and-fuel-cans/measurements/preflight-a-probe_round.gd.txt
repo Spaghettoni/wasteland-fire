@@ -1,0 +1,145 @@
+extends SceneTree
+## Preflight add-on for Story 006: the ghost on the call tick, and the real Round-over / restart() order.
+
+const UNIT_SCENE: PackedScene = preload("res://src/gameplay/units/motorbike.tscn")
+const SPLIT_PATH: String = "res://src/gameplay/split_screen/split_screen.tscn"
+const TRUCK_PATH: String = "res://src/gameplay/units/data/truck_stats.tres"
+const PARK: Vector3 = Vector3(30.0, 0.05, 30.0)
+
+
+class Rec extends Node:
+	var zone: Area3D
+	var unit: Unit
+	var log: Dictionary = {}
+
+	func _physics_process(_delta: float) -> void:
+		log[Engine.get_physics_frames()] = zone.get_overlapping_bodies().has(unit)
+
+
+class Stamper extends Node:
+	var stamp: int = -1
+	var ok_frame: int = -1
+	var calls: int = 0
+	var frames: PackedInt32Array = PackedInt32Array()
+
+	func _physics_process(_delta: float) -> void:
+		calls += 1
+		frames.append(Engine.get_physics_frames())
+		if stamp >= 0 and ok_frame < 0 and Engine.get_physics_frames() >= stamp:
+			ok_frame = Engine.get_physics_frames()
+
+
+func _p(id: String, text: String) -> void:
+	print("PROBE %s %s" % [id, text])
+
+
+func _initialize() -> void:
+	await _ghost_tick()
+	await _real_round_over()
+	quit(0)
+
+
+func _ghost_tick() -> void:
+	for mode: String in ["destroy", "leave_play", "spawn_away"]:
+		var w: Node3D = Node3D.new()
+		root.add_child(w)
+		var floor_body: StaticBody3D = StaticBody3D.new()
+		floor_body.collision_layer = 1
+		var cs: CollisionShape3D = CollisionShape3D.new()
+		var box: BoxShape3D = BoxShape3D.new()
+		box.size = Vector3(80.0, 1.0, 80.0)
+		cs.shape = box
+		cs.position = Vector3(0.0, -0.5, 0.0)
+		floor_body.add_child(cs)
+		w.add_child(floor_body)
+		var zone: Area3D = Area3D.new()
+		zone.collision_layer = 0
+		zone.collision_mask = 18
+		var zs: CollisionShape3D = CollisionShape3D.new()
+		var sphere: SphereShape3D = SphereShape3D.new()
+		sphere.radius = 1.6
+		zs.shape = sphere
+		zs.position = Vector3(0.0, 0.6, 0.0)
+		zone.add_child(zs)
+		w.add_child(zone)
+		var unit: Unit = UNIT_SCENE.instantiate() as Unit
+		unit.position = PARK
+		w.add_child(unit)
+		var rb: Rec = Rec.new()
+		rb.zone = zone
+		rb.unit = unit
+		rb.process_physics_priority = -100
+		w.add_child(rb)
+		var ra: Rec = Rec.new()
+		ra.zone = zone
+		ra.unit = unit
+		ra.process_physics_priority = 100
+		w.add_child(ra)
+		var stats_res: UnitStats = load(TRUCK_PATH) as UnitStats
+		await physics_frame
+		unit.leave_play()
+		await physics_frame
+		unit.spawn(Transform3D(Basis.IDENTITY, Vector3.ZERO), stats_res)
+		for i: int in 15:
+			await physics_frame
+		var t: int = Engine.get_physics_frames()
+		var before_call: bool = zone.get_overlapping_bodies().has(unit)
+		if mode == "destroy":
+			unit.destroy()
+		elif mode == "leave_play":
+			unit.leave_play()
+		else:
+			unit.spawn(Transform3D(Basis.IDENTITY, Vector3(0.0, 0.0, 20.0)), stats_res)
+		var same_cont_after_call: bool = zone.get_overlapping_bodies().has(unit)
+		for i: int in 4:
+			await physics_frame
+		var seq: PackedStringArray = PackedStringArray()
+		for k: int in range(0, 4):
+			seq.append("T+%d[before-node=%s after-node=%s]" % [k, str(rb.log.get(t + k, "n/a")), str(ra.log.get(t + k, "n/a"))])
+		_p("r1.ghost_on_call_tick", "mode=%s | listed just before the call (continuation, tick T)=%s | listed right after the call in the same continuation=%s | alive=%s | node polls: %s" % [mode, str(before_call), str(same_cont_after_call), str(unit.is_alive), " ".join(seq)])
+		w.queue_free()
+		await physics_frame
+		await physics_frame
+
+
+func _real_round_over() -> void:
+	var split: SplitScreen = (load(SPLIT_PATH) as PackedScene).instantiate() as SplitScreen
+	root.add_child(split)
+	await physics_frame
+	await physics_frame
+	var world: Node3D = split.get_node("World") as Node3D
+	var mc: MatchController = split.match_controller
+	var rri: Node = split.get_node("RoundRestartInput")
+	var st: Stamper = Stamper.new()
+	st.name = "CanStandIn"
+	world.add_child(st)
+	var rs_frames: Array = []
+	mc.round_started.connect(func() -> void: rs_frames.append(Engine.get_physics_frames()))
+	var tp: int = Engine.get_physics_frames()
+	st.stamp = tp + 150
+	mc.set("_round_state", MatchController.RoundState.OVER)
+	paused = true
+	var modes: String = "World=%d MatchController=%d RoundRestartInput=%d CanStandIn(under World)=%d" % [world.process_mode, mc.process_mode, rri.process_mode, st.process_mode]
+	var calls_at_pause: int = st.calls
+	for i: int in 200:
+		await physics_frame
+	var calls_after_pause: int = st.calls
+	var acts: Array[InputEvent] = InputMap.action_get_events(&"round_restart")
+	var ek: InputEventKey = (acts[0] as InputEventKey).duplicate() as InputEventKey
+	ek.pressed = true
+	ek.device = InputEvent.DEVICE_ID_KEYBOARD
+	Input.use_accumulated_input = false
+	var tk: int = Engine.get_physics_frames()
+	Input.parse_input_event(ek)
+	var rel: InputEventKey = ek.duplicate() as InputEventKey
+	rel.pressed = false
+	for i: int in 8:
+		await physics_frame
+		if i == 0:
+			Input.parse_input_event(rel)
+	var after_frames: PackedStringArray = PackedStringArray()
+	for f: int in st.frames:
+		if f >= tk - 1 and f <= tk + 3:
+			after_frames.append(str(f))
+	_p("r2.real_tree", "process_modes: %s | Round forced OVER and tree paused in tick %d; CanStandIn stamp=%d (due during the pause); its _physics_process calls during %d paused ticks=%d" % [modes, tp, st.stamp, 200, calls_after_pause - calls_at_pause])
+	_p("r2.real_tree", "restart key (real InputEventKey for action round_restart) parsed in the continuation of tick %d | round_started emitted in frames %s | tree paused afterwards=%s | round_over afterwards=%s | CanStandIn stamp test first true at frame %d | CanStandIn ticks run around the restart (frames): %s" % [tk, str(rs_frames), str(paused), str(mc.is_round_over()), st.ok_frame, " ".join(after_frames)])

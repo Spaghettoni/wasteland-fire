@@ -1,0 +1,74 @@
+extends SceneTree
+
+signal fuel_changed(fuel: float, capacity: float)
+
+
+class Sink:
+	var count: int = 0
+	var acc: float = 0.0
+
+	func on_a(fuel: float, capacity: float) -> void:
+		count += 1
+		acc += fuel / capacity
+
+	func on_b(fuel: float, capacity: float) -> void:
+		acc -= (capacity - fuel) * 0.0
+
+
+func _initialize() -> void:
+	_run()
+
+
+func _burn(use: float, mode: int) -> void:
+	var delta: float = 1.0 / float(Engine.physics_ticks_per_second)
+	var fuel: float = 50.0
+	var n: int = 0
+	var nominal_exact: float = 50.0 / use * 60.0
+	var nominal: int = roundi(nominal_exact)
+	var fuel_at_nominal: float = -1.0
+	var last_raw: float = 0.0
+	var min_raw: float = 1e9
+	var tail: PackedStringArray = []
+	while fuel > 0.0 and n < 100000:
+		var raw: float = (fuel - use * delta) if mode == 0 else (fuel - use / 60.0)
+		n += 1
+		last_raw = raw
+		min_raw = minf(min_raw, raw)
+		fuel = maxf(raw, 0.0)
+		if n == nominal:
+			fuel_at_nominal = fuel
+		if n >= nominal - 2:
+			tail.append("t%d:fuel=%s ceili=%d" % [n, fuel, ceili(fuel)])
+	print("PROBE P7 use=%s mode=%s nominal_ticks=%.6f (rounded %d) ticks_to_exact_zero=%d fuel_after_nominal_ticks=%s last_unclamped_value=%s ever_negative_after_clamp=false tail=[%s]" % [use, "use*delta" if mode == 0 else "use/60", nominal_exact, nominal, n, fuel_at_nominal, last_raw, " ; ".join(tail)])
+
+
+func _run() -> void:
+	print("PROBE P7 physics_ticks_per_second=%d delta=%s" % [Engine.physics_ticks_per_second, 1.0 / float(Engine.physics_ticks_per_second)])
+	for use: float in [2.0, 2.5, 3.0, 5.0]:
+		_burn(use, 0)
+	for use: float in [2.0, 2.5, 3.0, 5.0]:
+		_burn(use, 1)
+	var sink: Sink = Sink.new()
+	fuel_changed.connect(sink.on_a)
+	fuel_changed.connect(sink.on_b)
+	var t0: int = Time.get_ticks_usec()
+	for i: int in 300:
+		fuel_changed.emit(50.0 - float(i) * 0.03, 100.0)
+	var t1: int = Time.get_ticks_usec()
+	for i: int in 200000:
+		fuel_changed.emit(50.0 - float(i % 1500) * 0.03, 100.0)
+	var t2: int = Time.get_ticks_usec()
+	print("PROBE P7 signal_emit_2_handlers: 300 emissions (5 s of ticks) took %d us (%.2f us each, %.4f %% of one 16667 us tick budget for all 300 ticks together = %.5f %% per tick); 200000 emissions took %d us = %.0f emissions/s; handler_calls=%d" % [t1 - t0, float(t1 - t0) / 300.0, 100.0 * float(t1 - t0) / 300.0 / 16666.7, 100.0 * float(t1 - t0) / 300.0 / 16666.7, t2 - t1, 200000.0 / (float(t2 - t1) / 1e6), sink.count])
+	var bar: ProgressBar = ProgressBar.new()
+	var label: Label = Label.new()
+	root.add_child(bar)
+	root.add_child(label)
+	var t3: int = Time.get_ticks_usec()
+	for i: int in 20000:
+		var f: float = 100.0 - float(i % 1500) * 0.0666
+		bar.max_value = 100.0
+		bar.value = f
+		label.text = tr("Fuel %d / %d") % [ceili(f), ceili(100.0)]
+	var t4: int = Time.get_ticks_usec()
+	print("PROBE P7 hud_like_handler (bar.max_value, bar.value, label.text with tr and ceili) 20000 calls took %d us = %.2f us per call = %.0f calls/s; label_text_now='%s'" % [t4 - t3, float(t4 - t3) / 20000.0, 20000.0 / (float(t4 - t3) / 1e6), label.text])
+	quit(0)

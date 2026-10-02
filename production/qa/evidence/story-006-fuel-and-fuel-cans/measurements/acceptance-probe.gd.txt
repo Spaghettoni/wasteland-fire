@@ -1,0 +1,480 @@
+extends RefCounted
+## Verifier probe for Story 006 (scratch copy only, never in the repo): independent headless
+## measurements of AC-2 to AC-8 on the shipped data. Each CHECK is named probe_*.
+
+const Harness: GDScript = preload("res://tools/evidence/split_screen_harness.gd")
+const Kit: GDScript = preload("res://tools/evidence/split_screen/check_kit.gd")
+const Units: GDScript = preload("res://tools/evidence/split_screen/unit_kit.gd")
+const Canisters: GDScript = preload("res://tools/evidence/split_screen/canister_kit.gd")
+const Fuel: GDScript = preload("res://tools/evidence/split_screen/fuel_kit.gd")
+const OWN_CHOICE: bool = true
+const CAN_SPOTS: Array[Vector3] = [Vector3(0, 0, 0), Vector3(-16, 0, -8), Vector3(16, 0, 8),
+	Vector3(-16, 0, 8), Vector3(16, 0, -8)]
+
+var _h: Harness
+var _kit: Kit
+var _units: Units
+var _cans: Canisters
+var _fuel: Fuel
+var _log: ProbeLog
+var _fuel_cans: Array[FuelCan] = []
+var _unit_destroyed: Array[int] = [0, 0]
+var _takes: PackedStringArray = []
+var _take_gain: Array[float] = []
+var _take_room: Array[float] = []
+var _take_delay: Array[int] = []
+var _restocks: PackedStringArray = []
+var _pre: Array[float] = [0.0, 0.0]
+
+
+func run(harness: Node) -> void:
+	_h = harness as Harness
+	_log = ProbeLog.new()
+	OS.add_logger(_log)
+	_kit = Kit.new(harness)
+	_units = Units.new(harness, _kit)
+	_cans = Canisters.new(harness, _kit)
+	_fuel = Fuel.new(harness, _kit)
+	_h.report_ticks = 6000
+	_kit.on_tick = _note
+	for player: int in Kit.PLAYERS:
+		var p: int = player
+		_units.units[p].destroyed.connect(func() -> void: _unit_destroyed[p] += 1)
+	_fuel_cans = _fuel.cans()
+	for can: FuelCan in _fuel_cans:
+		var c: FuelCan = can
+		c.taken.connect(func(u: Unit) -> void: _on_taken(c, u))
+		c.restocked.connect(func() -> void: _restocks.append("%s@%d" % [c.name, _h.ticks]))
+	await _h.confirm_choices()
+	await _kit.advance(Kit.START_TICKS)
+	_first_spawn()
+	await _stand_and_hover()
+	await _throttle_coast()
+	_refuel_edges()
+	await _buggy_dry()
+	await _buggy_open()
+	await _buggy_refuel_and_tab()
+	await _gyro_dry()
+	await _stale_entry()
+	await _restart_restocks()
+	_hud_fit()
+	_can_facts()
+	var min_said: float = INF
+	for value: float in _fuel.fuels:
+		min_said = minf(min_said, value)
+	_verdict("quiet_and_never_negative", min_said >= 0.0 and _log.errors == 0 and _log.warnings == 0,
+		"min_fuel_said=%s errors=%d warnings=%d first=%s takes=%s restocks=%s" % [min_said, _log.errors,
+		_log.warnings, _log.first, ",".join(_takes), ",".join(_restocks)])
+	OS.remove_logger(_log)
+	_readonly()
+	_h.finish("probe=done")
+
+
+func _verdict(check_name: String, ok: bool, detail: String) -> void:
+	_h.check("probe_" + check_name, ok, detail)
+
+
+func _note() -> void:
+	_pre[0] = _units.units[0].fuel
+	_pre[1] = _units.units[1].fuel
+
+
+func _on_taken(c: FuelCan, u: Unit) -> void:
+	var p: int = _units.units.find(u)
+	_takes.append("%s:%s@%d" % [c.name, u.name, _h.ticks])
+	_take_gain.append(u.fuel - _pre[p])
+	_take_room.append(u.stats.fuel_capacity - _pre[p])
+	_take_delay.append(c.restock_frame - Engine.get_physics_frames())
+
+
+func _first_spawn() -> void:
+	var parts: PackedStringArray = []
+	var ok: bool = true
+	for p: int in Kit.PLAYERS:
+		var u: Unit = _units.units[p]
+		var start: float = _fuel.start_tank(p)
+		ok = ok and u.fuel == start and start == 50.0 and _fuel.counts[p] == 1 and _fuel.last_said(p) == start
+		ok = ok and u.fuel_capacity == 100.0
+		parts.append("p%d %s fuel=%s cap=%s said=%d last=%s" % [p + 1, u.type_id, u.fuel, u.fuel_capacity,
+			_fuel.counts[p], _fuel.last_said(p)])
+	_verdict("ac5_first_choice_tank", ok, " ".join(parts))
+
+
+func _stand_and_hover() -> void:
+	_units.retype(1, 3, Vector3(24, 0, -30), Vector3.LEFT)
+	await _kit.advance(5)
+	var u1: Unit = _units.units[0]
+	var u2: Unit = _units.units[1]
+	var f1: float = u1.fuel
+	var f2: float = u2.fuel
+	var count: int = _fuel.counts[0] + _fuel.counts[1]
+	await _kit.advance(600)
+	var emits: int = _fuel.counts[0] + _fuel.counts[1] - count
+	var ok: bool = emits == 0 and f1 == u1.fuel and f2 == u2.fuel and u2.stats.can_fly and u2.is_alive
+	_verdict("ac2_stand_and_hover_10s", ok, "600 ticks: p1 %s %s->%s, p2 %s %s->%s, fuel_changed=%d" % [
+		u1.type_id, f1, u1.fuel, u2.type_id, f2, u2.fuel, emits])
+
+
+func _throttle_coast() -> void:
+	var u: Unit = _units.units[0]
+	_units.retype(0, 0, Vector3(-6, 0, 32), Vector3.LEFT)
+	await _kit.advance(5)
+	var start_fuel: float = u.fuel
+	var start_count: int = _fuel.counts[0]
+	var moving_starts: int = 0
+	var bad: int = 0
+	var throttle_burns: int = 0
+	var per_tick: float = u.stats.fuel_use / 60.0
+	for i: int in 360:
+		_h.drive(0, 1 if i < 90 else 0, 0)
+		var moving: bool = not is_zero_approx(u.current_speed)
+		var before: float = u.fuel
+		var count: int = _fuel.counts[0]
+		await _kit.tick()
+		var burned: bool = _fuel.counts[0] > count
+		moving_starts += 1 if moving else 0
+		throttle_burns += 1 if burned and i < 90 else 0
+		if burned != moving or (burned and absf(before - u.fuel - per_tick) > 1e-9):
+			bad += 1
+	_h.drive(0, 0, 0)
+	var total: float = start_fuel - u.fuel
+	var burns: int = _fuel.counts[0] - start_count
+	var ok: bool = bad == 0 and burns == moving_starts and throttle_burns >= 89 and u.current_speed == 0.0
+	ok = ok and absf(total - per_tick * moving_starts) < 1e-6 and moving_starts > 90
+	_verdict("ac2_throttle_then_coast", ok, "%s 90 ticks throttle + coast: burns=%d (throttle part %d, expected 89-90) ticks starting with speed!=~0: %d, mismatching ticks=%d, burned=%.6f expected=%.6f (fuel_use %.2f x %d/60), end speed=%s" % [
+		u.type_id, burns, throttle_burns, moving_starts, bad, total, per_tick * moving_starts, u.stats.fuel_use,
+		moving_starts, u.current_speed])
+
+
+func _refuel_edges() -> void:
+	var u: Unit = _units.units[0]
+	var count: int = _fuel.counts[0]
+	var r_nan: float = u.refuel(NAN)
+	var r_neg: float = u.refuel(-5.0)
+	var r_zero: float = u.refuel(0.0)
+	var silent: int = _fuel.counts[0] - count
+	var before: float = u.fuel
+	count = _fuel.counts[0]
+	var r10: float = u.refuel(10.0)
+	var one: int = _fuel.counts[0] - count
+	var after10: float = u.fuel
+	var room: float = u.stats.fuel_capacity - after10
+	var r_big: float = u.refuel(1000.0)
+	var full: float = u.fuel
+	count = _fuel.counts[0]
+	var r_full: float = u.refuel(1.0)
+	var silent_full: int = _fuel.counts[0] - count
+	var ok: bool = r_nan == 0.0 and r_neg == 0.0 and r_zero == 0.0 and silent == 0 and r10 == 10.0 and one == 1
+	ok = ok and is_equal_approx(after10, before + 10.0) and is_equal_approx(r_big, room)
+	ok = ok and full == u.stats.fuel_capacity and r_full == 0.0 and silent_full == 0
+	_verdict("ac6_refuel_contract", ok, "nan->%s neg->%s zero->%s (signals %d); %.4f +refuel(10)=%s -> %.4f (1 signal: %d); refuel(1000)=%.4f (room %.4f) -> %s; full refuel(1)=%s signals %d" % [
+		r_nan, r_neg, r_zero, silent, before, r10, after10, one, r_big, room, full, r_full, silent_full])
+
+
+func _buggy_dry() -> void:
+	var u: Unit = _units.units[0]
+	await _kit.advance(5)
+	_units.retype(0, 1, Vector3(-20, 0, 36), Vector3.BACK)
+	await _kit.advance(5)
+	var count: int = _fuel.counts[0]
+	var ticks: int = 0
+	_h.drive(0, 1, 0)
+	while not u.is_fuel_empty and ticks < 1500:
+		await _kit.tick()
+		ticks += 1
+	var burns: int = _fuel.counts[0] - count
+	var from_speed: float = u.current_speed
+	var rises: int = 0
+	var to_zero: int = -1
+	count = _fuel.counts[0]
+	for i: int in 300:
+		var speed: float = u.current_speed
+		await _kit.tick()
+		rises += 1 if u.current_speed > speed else 0
+		if to_zero < 0 and u.current_speed == 0.0:
+			to_zero = i + 1
+	_h.drive(0, 0, 0)
+	var decay_burns: int = _fuel.counts[0] - count
+	var ok: bool = burns == 1200 and u.fuel == 0.0 and u.is_fuel_empty and rises == 0 and to_zero > 0
+	ok = ok and u.current_speed == 0.0 and decay_burns == 0 and u.type_id == &"buggy"
+	_verdict("ac3_buggy_runs_dry_then_throttle_ignored", ok, "%s pinned at z=%.2f, throttle held: empty after %d ticks, %d burning ticks (50/(%.2f/60)=1200), fuel=%s; throttle still held 300 ticks: speed %.3f -> 0.0 after %d ticks, rises=%d, burns=%d" % [
+		u.type_id, u.global_position.z, ticks, burns, u.stats.fuel_use, u.fuel, from_speed, to_zero, rises, decay_burns])
+
+
+func _buggy_open() -> void:
+	var u: Unit = _units.units[0]
+	_h.place(u, _units.pose(Vector3(-24, 0, 30), Vector3.RIGHT), _units.cameras[0])
+	_units.retype(1, 2, Vector3(-16, 0, 30), Vector3.LEFT)
+	await _kit.advance(5)
+	var at: Vector3 = u.global_position
+	var peak_f: float = await _fuel.hold(0, 1, 0, 30)
+	var moved_f: float = _fuel.ground_distance(at, u.global_position)
+	var peak_r: float = await _fuel.hold(0, -1, 0, 30)
+	var moved_r: float = _fuel.ground_distance(at, u.global_position)
+	_verdict("ac3_buggy_empty_throttle_reverse", peak_f == 0.0 and peak_r == 0.0 and moved_f < 0.01 and moved_r < 0.01 and u.is_fuel_empty,
+		"open ground: throttle 30 ticks peak=%s moved=%.5f; reverse 30 ticks peak=%s moved=%.5f" % [peak_f, moved_f, peak_r, moved_r])
+	var shots: int = _units.shots.size()
+	await _units.hold_fire(0, 1)
+	var damage: float = await _units.wait_hit(1)
+	shots = _units.shots.size() - shots
+	_verdict("ac3_buggy_empty_fires", shots > 0 and damage > 0.0, "shots=%d damage=%s to p2 %s at 8 m" % [shots, damage, _units.units[1].type_id])
+	at = u.global_position
+	_h.tracks[0].begin()
+	await _fuel.hold(0, 0, 1, 60)
+	var left: float = _h.tracks[0].yaw_total
+	_h.tracks[0].begin()
+	await _fuel.hold(0, 0, -1, 60)
+	var right: float = _h.tracks[0].yaw_total
+	var turned: float = _fuel.ground_distance(at, u.global_position)
+	var rate: float = u.stats.empty_turn_rate
+	var ok: bool = absf(left - rate) <= rate / 60.0 + 1e-6 and absf(right + rate) <= rate / 60.0 + 1e-6
+	ok = ok and turned < 0.01 and rate == 1.15 and u.current_speed == 0.0
+	_verdict("ac3_buggy_empty_turns_on_spot", ok, "steer left 60 ticks: yaw %.5f rad (empty_turn_rate %.2f rad/s x 1 s); right 60 ticks: yaw %.5f; moved %.5f m; speed %s" % [
+		left, rate, right, turned, u.current_speed])
+
+
+func _buggy_refuel_and_tab() -> void:
+	var u: Unit = _units.units[0]
+	var at: Vector3 = u.global_position
+	var added: float = u.refuel(0.51)
+	var live: bool = not u.is_fuel_empty
+	var count: int = _fuel.counts[0]
+	var peak: float = await _fuel.hold(0, 1, 0, 60)
+	var coast: Vector3i = await _fuel.coast(0, 10)
+	var burns: int = _fuel.counts[0] - count
+	var drove: float = _fuel.ground_distance(at, u.global_position)
+	var empty_again: bool = u.is_fuel_empty and u.fuel == 0.0
+	_verdict("ac3_refuel_drives_again_and_clamps", is_equal_approx(added, 0.51) and live and peak > 0.0 and drove > 0.05 and empty_again and burns == 13,
+		"refuel(0.51) added=%s not_empty=%s; throttle 60 ticks: peak %.3f m/s, drove %.3f m, burns=%d (expect 13: 12 x %.5f + a clamped last), fuel after=%s empty=%s coast=%s" % [
+		added, live, peak, drove, burns, u.stats.fuel_use / 60.0, u.fuel, empty_again, coast])
+	var d_before: int = _units.destroyed.size()
+	var s_before: int = _unit_destroyed[0]
+	var fuel_at_tab: float = u.fuel
+	await _kit.press_settled(Kit.KEYS_DESTRUCT_1)
+	var gone: bool = not u.is_alive and _units.destroyed.size() == d_before + 1 and _unit_destroyed[0] == s_before + 1
+	var gap: int = await _choose_again(0, Kit.KEYS_FIRE_1)
+	_verdict("ac8_tab_at_zero_fuel", gone and fuel_at_tab == 0.0 and absi(gap - 180) <= 1 and u.fuel == 50.0 and u.is_alive,
+		"Tab at fuel %s: destroyed=%s (unit_destroyed +%d, destroyed signal +%d); back as %s %d ticks later (180+-1) with fuel %s" % [
+		fuel_at_tab, gone, _units.destroyed.size() - d_before, _unit_destroyed[0] - s_before, u.type_id, gap, u.fuel])
+
+
+func _choose_again(player: int, keys: Array[Key]) -> int:
+	await _kit.advance(30)
+	await _kit.press_settled(keys)
+	if await _units.wait_alive(player, 240) < 0:
+		return -1
+	return _fuel.last_tick(_units.spawns, player) - _fuel.last_tick(_units.destroyed, player)
+
+
+func _gyro_dry() -> void:
+	var g: Unit = _units.units[1]
+	await _kit.advance(5)
+	_units.retype(1, 3, Vector3(20, 0, -36), Vector3.FORWARD)
+	await _kit.advance(5)
+	var flags: String = "%s/%s/%d" % [_cans.state_name(0), _cans.state_name(1), _cans.drops.size()]
+	var since: int = _fuel.changes.size()
+	var count: int = _fuel.counts[1]
+	var d_before: int = _units.destroyed.size()
+	var s_before: int = _unit_destroyed[1]
+	var noise_before: int = _log.errors + _log.warnings
+	var hp: float = g.hit_points
+	var ticks: int = 0
+	_h.drive(1, 1, 0)
+	while g.is_alive and ticks < 800:
+		hp = g.hit_points
+		await _kit.tick()
+		ticks += 1
+	_h.drive(1, 0, 0)
+	var emits: int = _fuel.counts[1] - count
+	var zero_tick: int = _fuel.first_zero_tick(1, since)
+	var crash_tick: int = _fuel.last_tick(_units.destroyed, 1)
+	var flags_after: String = "%s/%s/%d" % [_cans.state_name(0), _cans.state_name(1), _cans.drops.size()]
+	var quiet: bool = _log.errors + _log.warnings == noise_before
+	var ok: bool = not g.is_alive and emits == 601 and zero_tick == crash_tick and zero_tick > 0
+	ok = ok and _units.destroyed.size() == d_before + 1 and _unit_destroyed[1] == s_before + 1
+	ok = ok and hp == g.stats.max_hit_points and not g.can_carry and flags == flags_after and quiet
+	_verdict("ac4_gyro_crash", ok, "%s throttle held: gone after %d ticks, fuel_changed=%d (600 burns + 1 at destroy), zero said at tick %d, unit_destroyed at tick %d (+%d), destroyed signal +%d, hp before %s/%s, can_carry=%s, flags %s -> %s, new errors/warnings=%d" % [
+		g.type_id, ticks, emits, zero_tick, crash_tick, _units.destroyed.size() - d_before, _unit_destroyed[1] - s_before,
+		hp, g.stats.max_hit_points, g.can_carry, flags, flags_after, _log.errors + _log.warnings - noise_before])
+	await _kit.advance(30)
+	var hud: PlayerHud = _units.huds[1]
+	var label: Label = hud.find_child("FuelLabel", true, false) as Label
+	var bar: ProgressBar = hud.find_child("FuelBar", true, false) as ProgressBar
+	var dead_refuel: float = g.refuel(10.0)
+	var zero_line: String = hud.tr(hud.fuel_format) % [0, 100]
+	var countdown_seen: bool = _units.countdowns[1] != null and _units.countdowns[1].is_visible_in_tree()
+	var panel_seen: bool = _units.panels[1] != null and _units.panels[1].is_visible_in_tree()
+	_verdict("ac7_gauge_zero_while_waiting", label.text == zero_line and bar.value == 0.0 and dead_refuel == 0.0 and g.fuel == 0.0,
+		"30 ticks after the crash: line=\"%s\" bar=%s/%s; refuel(10) on the wreck=%s; countdown shown=%s panel shown=%s" % [
+		label.text, bar.value, bar.max_value, dead_refuel, countdown_seen, panel_seen])
+	var gap: int = await _choose_again(1, Kit.KEYS_FIRE_2)
+	_verdict("ac5_respawn_after_crash", absi(gap - 180) <= 1 and g.fuel == 50.0 and g.is_alive,
+		"p2 back as %s %d ticks after the crash (180+-1) with fuel %s" % [g.type_id, gap, g.fuel])
+
+
+func _stale_entry() -> void:
+	var u: Unit = _units.units[0]
+	var can: FuelCan = _fuel_cans[3]
+	await _kit.advance(5)
+	_units.retype(0, 0, Vector3(-16, 0, 16), Vector3.FORWARD)
+	await _kit.advance(5)
+	var ticks: int = 0
+	while _fuel.ground_distance(u.global_position, can.global_position) > 0.5 and ticks < 400:
+		u.refuel(u.fuel_capacity)
+		var err: float = _fuel.heading_error(0, can.global_position)
+		var steer: int = 0 if absf(err) < 0.05 else int(signf(err))
+		_h.drive(0, 1 if absf(u.current_speed) < 4.0 else 0, steer)
+		await _kit.tick()
+		ticks += 1
+	_h.drive(0, 0, 0)
+	var rest: int = 0
+	while not is_zero_approx(u.current_speed) and rest < 300:
+		u.refuel(u.fuel_capacity)
+		await _kit.tick()
+		rest += 1
+	for _i: int in 5:
+		u.refuel(u.fuel_capacity)
+		await _kit.tick()
+	var in_zone: bool = can.pickup_zone.overlaps_body(u)
+	var available_full: bool = can.is_available
+	u.refuel(u.fuel_capacity)
+	await _kit.press_settled(Kit.KEYS_DESTRUCT_1)
+	var dead: bool = not u.is_alive
+	var gap: int = await _choose_again(0, Kit.KEYS_FIRE_1)
+	var listed: int = 1 if can.pickup_zone.overlaps_body(u) else 0
+	var available_after: bool = can.is_available
+	for _i: int in 10:
+		await _kit.tick()
+		listed += 1 if can.pickup_zone.overlaps_body(u) else 0
+		available_after = available_after and can.is_available
+	var dist: float = _fuel.ground_distance(u.global_position, can.global_position)
+	_verdict("ac6_full_tank_leaves_can_and_no_stale_take", in_zone and available_full and dead and gap >= 0 and available_after and dist > 5.0,
+		"full Motorbike drove %d ticks onto %s, rested %d, in zone=%s, Can available=%s; Tab: dead=%s; respawned %d ticks later at %.2f m from the Can (fuel %s); zone listed it on %d of the 11 samples after the spawn; Can available throughout=%s" % [
+		ticks, can.name, rest, in_zone, available_full, dead, gap, dist, u.fuel, listed, available_after])
+
+
+func _restart_restocks() -> void:
+	var u1: Unit = _units.units[0]
+	var u2: Unit = _units.units[1]
+	await _kit.advance(5)
+	_units.retype(0, 0, Vector3(0, 0, 6), Vector3.FORWARD)
+	_units.retype(1, 0, Vector3(16, 0, -14), Vector3.BACK)
+	await _kit.advance(5)
+	var takes_before: int = _takes.size()
+	var d1: int = await _fuel.drive_to(0, _fuel_cans[0].global_position, 4.0, 0.5)
+	var c1: Vector3i = await _fuel.coast(0, 5)
+	var d2: int = await _fuel.drive_to(1, _fuel_cans[4].global_position, 4.0, 0.5)
+	var c2: Vector3i = await _fuel.coast(1, 5)
+	await _kit.advance(5)
+	var taken_ok: bool = not _fuel_cans[0].is_available and not _fuel_cans[4].is_available
+	taken_ok = taken_ok and not _fuel_cans[0].can_body.visible and not _fuel_cans[4].can_body.visible
+	var gains: PackedStringArray = []
+	var gains_ok: bool = _takes.size() - takes_before == 2
+	for i: int in range(takes_before, _takes.size()):
+		gains_ok = gains_ok and absf(_take_gain[i] - minf(40.0, _take_room[i])) < 1e-9 and absi(_take_delay[i] - 1200) <= 1
+		gains.append("%s gain=%.4f room=%.4f restock_in=%d" % [_takes[i], _take_gain[i], _take_room[i], _take_delay[i]])
+	_verdict("ac6_two_takes", taken_ok and gains_ok, "drives %d/%d ticks (coasts %s %s): %s; FuelCan1 hidden=%s FuelCan5 hidden=%s" % [
+		d1, d2, c1, c2, "; ".join(gains), not _fuel_cans[0].can_body.visible, not _fuel_cans[4].can_body.visible])
+	u1.refuel(u1.fuel_capacity)
+	u2.refuel(u2.fuel_capacity)
+	var restocks_before: int = _restocks.size()
+	_units.controller.round_started.emit()
+	await _kit.advance(5)
+	var all_back: bool = true
+	for i: int in _fuel_cans.size():
+		var c: FuelCan = _fuel_cans[i]
+		all_back = all_back and c.is_available and c.can_body.visible and c.restock_frame == 0
+		all_back = all_back and c.global_position.is_equal_approx(CAN_SPOTS[i])
+	_verdict("ac6_round_started_restocks_every_can", all_back and _restocks.size() - restocks_before == 2,
+		"after round_started: all five available, shown, restock_frame 0, at their spots=%s; restocked +%d (%s)" % [
+		all_back, _restocks.size() - restocks_before, ",".join(_restocks.slice(restocks_before))])
+
+
+func _hud_fit() -> void:
+	var parts: PackedStringArray = []
+	var ok: bool = true
+	for p: int in Kit.PLAYERS:
+		var u: Unit = _units.units[p]
+		u.refuel(u.fuel_capacity)
+		var hud: PlayerHud = _units.huds[p]
+		var label: Label = hud.find_child("FuelLabel", true, false) as Label
+		var bar: ProgressBar = hud.find_child("FuelBar", true, false) as ProgressBar
+		var hp_bar: Control = hud.find_child("HitPointsBar", true, false) as Control
+		var hp_label: Control = hud.find_child("HitPointsLabel", true, false) as Control
+		var status: Control = hud.find_child("CanisterStatusLabel", true, false) as Control
+		var view: Rect2 = Rect2(Vector2.ZERO, Vector2((hud.get_viewport() as SubViewport).size))
+		var lr: Rect2 = label.get_global_rect()
+		var br: Rect2 = bar.get_global_rect()
+		var font_size: int = label.get_theme_font_size(&"font_size")
+		var text_w: float = label.get_theme_font(&"font").get_string_size(label.text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, font_size).x
+		var width: float = text_w + 2.0 * label.get_theme_constant(&"outline_size")
+		var line: String = hud.tr(hud.fuel_format) % [ceili(u.fuel), ceili(u.fuel_capacity)]
+		var hp_rect: Rect2 = hp_bar.get_global_rect().merge(hp_label.get_global_rect())
+		var gauge: Rect2 = lr.merge(br)
+		var this_ok: bool = label.text == line and line == "Fuel 100 / 100" and width <= lr.size.x and label.get_line_count() == 1
+		this_ok = this_ok and view.encloses(gauge) and gauge.position.x >= 332.0 and gauge.end.x <= 624.0
+		this_ok = this_ok and br.position.y >= 16.0 and br.end.y <= 40.0 and lr.position.y >= 16.0 and lr.end.y <= 46.0
+		this_ok = this_ok and not gauge.intersects(hp_rect) and not gauge.intersects(status.get_global_rect())
+		this_ok = this_ok and bar.value == u.fuel and bar.max_value == u.fuel_capacity and view.size == Vector2(640, 720)
+		this_ok = this_ok and not bar.show_percentage and bar.mouse_filter == Control.MOUSE_FILTER_IGNORE and label.mouse_filter == Control.MOUSE_FILTER_IGNORE
+		ok = ok and this_ok
+		parts.append("p%d view=%s bar=%s label=%s hp=%s status=%s line=\"%s\" text %.0f px (+outline %.0f) in %.0f px, lines=%d, bar %s/%s" % [
+			p + 1, view, br, lr, hp_rect, status.get_global_rect(), label.text, text_w, width, lr.size.x,
+			label.get_line_count(), bar.value, bar.max_value])
+	_verdict("ac7_gauge_layout_full_line", ok, " | ".join(parts))
+
+
+func _can_facts() -> void:
+	var parts: PackedStringArray = []
+	var ok: bool = _fuel_cans.size() == 5 and _h.get_tree().get_nodes_in_group(&"fuel_cans").size() == 5
+	for i: int in _fuel_cans.size():
+		var c: FuelCan = _fuel_cans[i]
+		var shape: CollisionShape3D = c.pickup_zone.get_child(0) as CollisionShape3D
+		var sphere: SphereShape3D = shape.shape as SphereShape3D
+		var this_ok: bool = c.global_position.is_equal_approx(CAN_SPOTS[i]) and c.pickup_zone.monitoring
+		this_ok = this_ok and c.pickup_zone.collision_layer == 0 and c.pickup_zone.collision_mask == 18
+		this_ok = this_ok and sphere != null and is_equal_approx(sphere.radius, 1.6) and shape.position.is_equal_approx(Vector3(0, 0.6, 0))
+		this_ok = this_ok and c.process_mode == Node.PROCESS_MODE_INHERIT and c.settings.refill_amount == 40.0
+		this_ok = this_ok and c.settings.respawn_delay_seconds == 20.0
+		ok = ok and this_ok
+		parts.append("%s at %s monitoring=%s layer=%d mask=%d radius=%s centre=%s ok=%s" % [c.name, c.global_position,
+			c.pickup_zone.monitoring, c.pickup_zone.collision_layer, c.pickup_zone.collision_mask,
+			sphere.radius if sphere != null else -1.0, shape.position, this_ok])
+	var restocks: int = _restocks.size()
+	_fuel_cans[0].restock()
+	ok = ok and _restocks.size() == restocks and _fuel_cans[0].is_available
+	_verdict("ac6_can_facts", ok, "; ".join(parts) + "; restock() on an available Can signals %d" % (_restocks.size() - restocks))
+
+
+func _readonly() -> void:
+	var u: Unit = _units.units[0]
+	var c: FuelCan = _fuel_cans[1]
+	var f: float = u.fuel
+	var cap: float = u.fuel_capacity
+	var e: bool = u.is_fuel_empty
+	u.fuel = f + 7.0
+	u.fuel_capacity = cap + 7.0
+	u.is_fuel_empty = not e
+	var st: int = c.state
+	c.state = FuelCan.State.TAKEN
+	c.is_available = false
+	c.restock_frame = 77
+	var ok: bool = u.fuel == f and u.fuel_capacity == cap and u.is_fuel_empty == e and c.state == st and c.is_available
+	ok = ok and c.restock_frame == 0
+	_verdict("readonly_properties", ok, "fuel %s cap %s empty %s state %d available %s restock_frame %d (expected six ERROR lines above)" % [
+		u.fuel, u.fuel_capacity, u.is_fuel_empty, c.state, c.is_available, c.restock_frame])
+
+
+class ProbeLog extends Logger:
+	var errors: int = 0
+	var warnings: int = 0
+	var first: String = ""
+
+	func _log_error(p_function: String, p_file: String, p_line: int, p_code: String, p_rationale: String,
+			_editor_notify: bool, error_type: int, _script_backtraces: Array[ScriptBacktrace]) -> void:
+		if error_type == ERROR_TYPE_WARNING:
+			warnings += 1
+		else:
+			errors += 1
+		if first.is_empty():
+			first = "%s %s:%d %s %s" % [p_function, p_file, p_line, p_code, p_rationale]

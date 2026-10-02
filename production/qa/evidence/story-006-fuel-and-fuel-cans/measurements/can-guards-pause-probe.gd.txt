@@ -1,0 +1,312 @@
+extends SceneTree
+## Engine lens probe (scratch, outside the repo): Fuel Can pause behaviour, nearest-Unit rule,
+## the Fuel crash order, Unit fuel semantics. Run: godot --headless --fixed-fps 60 --path REPO -s THIS
+
+const UNIT_SCENE: String = "res://src/gameplay/units/motorbike.tscn"
+const CAN_SCENE: String = "res://src/gameplay/fuel/fuel_can.tscn"
+const TRUCK_PATH: String = "res://src/gameplay/units/data/truck_stats.tres"
+const GYRO_PATH: String = "res://src/gameplay/units/data/gyrocopter_stats.tres"
+
+var _frames: int = 0
+
+func _physics_process(_delta: float) -> bool:
+	_frames += 1
+	if _frames > 40000:
+		print("PROBE WATCHDOG expired")
+		return true
+	return false
+
+func _initialize() -> void:
+	_run()
+
+func _p(text: String) -> void:
+	print("PROBE ", text)
+
+func _ticks(n: int) -> void:
+	for i: int in n:
+		await physics_frame
+
+func _make_floor() -> void:
+	var body: StaticBody3D = StaticBody3D.new()
+	body.collision_layer = 1
+	body.collision_mask = 0
+	var shape: CollisionShape3D = CollisionShape3D.new()
+	var box: BoxShape3D = BoxShape3D.new()
+	box.size = Vector3(8000.0, 1.0, 8000.0)
+	shape.shape = box
+	shape.position = Vector3(0.0, -0.5, 0.0)
+	body.add_child(shape)
+	root.add_child(body)
+
+func _make_unit(unit_name: String, pos: Vector3) -> Unit:
+	var unit: Unit = (load(UNIT_SCENE) as PackedScene).instantiate() as Unit
+	unit.name = unit_name
+	root.add_child(unit)
+	unit.global_position = pos
+	return unit
+
+func _make_can(can_name: String, pos: Vector3, delay_seconds: float, refill: float) -> FuelCan:
+	var can: FuelCan = (load(CAN_SCENE) as PackedScene).instantiate() as FuelCan
+	can.name = can_name
+	var settings: FuelCanSettings = can.settings.duplicate() as FuelCanSettings
+	settings.respawn_delay_seconds = delay_seconds
+	settings.refill_amount = refill
+	can.settings = settings
+	root.add_child(can)
+	can.global_position = pos
+	return can
+
+func _run() -> void:
+	_p("ticks_per_second=%d" % Engine.physics_ticks_per_second)
+	_make_floor()
+	await _ticks(2)
+	await _probe_pause()
+	await _probe_nearest()
+	await _probe_crash()
+	await _probe_semantics()
+	_p("DONE")
+	quit(0)
+
+# ---------------------------------------------------------------- pause
+func _probe_pause() -> void:
+	var unit: Unit = _make_unit("PauseUnit", Vector3(500.0, 0.0, 500.0))
+	var can: FuelCan = _make_can("PauseCan", Vector3.ZERO, 2.0, 20.0)
+	var counts: Dictionary = {"taken": 0, "restocked": 0}
+	can.taken.connect(func(_u: Unit) -> void: counts["taken"] += 1)
+	can.restocked.connect(func() -> void: counts["restocked"] += 1)
+	await _ticks(3)
+	for variation: int in [1, 2]:
+		counts["taken"] = 0
+		counts["restocked"] = 0
+		can.restock()
+		unit.leave_play()
+		await _ticks(6)
+		counts["taken"] = 0
+		counts["restocked"] = 0
+		unit.spawn(Transform3D(Basis.IDENTITY, Vector3(0.0, 0.05, 0.0)))
+		var spawn_frame: int = Engine.get_physics_frames()
+		for i: int in 40:
+			await physics_frame
+			if counts["taken"] > 0:
+				break
+		var stamp: int = can.restock_frame
+		_p("pause v%d: spawn at F=%d, taken=%d seen at F=%d, restock_frame=%d (take frame %d), state=%d monitoring=%s fuel=%.2f"
+			% [variation, spawn_frame, counts["taken"], Engine.get_physics_frames(), stamp, stamp - 120, can.state, str(can.pickup_zone.monitoring), unit.fuel])
+		paused = true
+		var pause_frame: int = Engine.get_physics_frames()
+		var changed: int = 0
+		var taken_before: int = counts["taken"]
+		var restocked_before: int = counts["restocked"]
+		for i: int in 200:
+			await physics_frame
+			if can.state != FuelCan.State.TAKEN or counts["taken"] != taken_before or counts["restocked"] != restocked_before:
+				changed += 1
+		_p("pause v%d: paused F=%d..%d (stamp %d fell due inside), changes while paused=%d, state=%d, restock_frame=%d, unit.fuel=%.2f"
+			% [variation, pause_frame, Engine.get_physics_frames(), stamp, changed, can.state, can.restock_frame, unit.fuel])
+		if variation == 2:
+			unit.leave_play()
+			_p("pause v2: benched the Unit during the pause (alive=%s fuel=%.2f)" % [str(unit.is_alive), unit.fuel])
+		paused = false
+		var unpause_frame: int = Engine.get_physics_frames()
+		var line: String = ""
+		for i: int in 8:
+			await physics_frame
+			line += " [F=%d state=%d taken=%d restocked=%d fuel=%.2f]" % [Engine.get_physics_frames(), can.state, counts["taken"], counts["restocked"], unit.fuel]
+		_p("pause v%d: unpaused at F=%d, per tick after:%s" % [variation, unpause_frame, line])
+	unit.leave_play()
+	can.restock()
+	await _ticks(6)
+
+# ---------------------------------------------------------------- nearest
+func _probe_nearest() -> void:
+	var a: Unit = _make_unit("NearA", Vector3(-600.0, 0.0, -600.0))
+	var b: Unit = _make_unit("NearB", Vector3(-700.0, 0.0, -700.0))
+	var can: FuelCan = _make_can("NearCan", Vector3(-650.0, 0.0, -650.0), 1.0, 20.0)
+	var winners: Array[String] = []
+	await _ticks(3)
+	for round_index: int in 8:
+		var near_is_a: bool = round_index % 2 == 0
+		var spawn_a_first: bool = (round_index / 2) % 2 == 0
+		var centre: Vector3 = can.global_position
+		var near_pos: Vector3 = centre + Vector3(0.0, 0.05, 0.0)
+		var far_pos: Vector3 = centre + Vector3(0.0, 0.05, 2.7)
+		var pos_a: Vector3 = near_pos if near_is_a else far_pos
+		var pos_b: Vector3 = far_pos if near_is_a else near_pos
+		a.leave_play()
+		b.leave_play()
+		can.restock()
+		await _ticks(8)
+		var taken_by: Array[String] = []
+		var handler: Callable = func(u: Unit) -> void: taken_by.append(String(u.name))
+		can.taken.connect(handler)
+		if spawn_a_first:
+			a.spawn(Transform3D(Basis.IDENTITY, pos_a))
+			b.spawn(Transform3D(Basis.IDENTITY, pos_b))
+		else:
+			b.spawn(Transform3D(Basis.IDENTITY, pos_b))
+			a.spawn(Transform3D(Basis.IDENTITY, pos_a))
+		await _ticks(12)
+		can.taken.disconnect(handler)
+		winners.append("r%d near=%s first=%s -> taken_by=%s fuelA=%.1f fuelB=%.1f" % [round_index, "A" if near_is_a else "B", "A" if spawn_a_first else "B", str(taken_by), a.fuel, b.fuel])
+	for w: String in winners:
+		_p("nearest " + w)
+	a.leave_play()
+	b.leave_play()
+	await _ticks(4)
+
+# ---------------------------------------------------------------- crash
+func _probe_crash() -> void:
+	var gyro_stats: UnitStats = load(GYRO_PATH) as UnitStats
+	var unit: Unit = _make_unit("Gyro", Vector3(2000.0, 0.0, 2000.0))
+	var events: Array[String] = []
+	unit.hit_points_changed.connect(func(hp: float, mx: float) -> void: events.append("F%d hit_points_changed(%.1f, %.1f)" % [Engine.get_physics_frames(), hp, mx]))
+	unit.fuel_changed.connect(func(f: float, c: float) -> void: events.append("F%d fuel_changed(%.4f, %.1f)" % [Engine.get_physics_frames(), f, c]))
+	unit.destroyed.connect(func() -> void: events.append("F%d destroyed" % Engine.get_physics_frames()))
+	await _ticks(3)
+	unit.spawn(Transform3D(Basis.IDENTITY, Vector3(2000.0, 0.05, 2000.0)), gyro_stats)
+	await _ticks(3)
+	events.clear()
+	var positions: Array[Vector3] = []
+	var burn_ticks: int = 0
+	var last_fuel: float = unit.fuel
+	var crash_index: int = -1
+	for i: int in 1500:
+		unit.set_drive_input(1.0, 0.0)
+		await physics_frame
+		positions.append(unit.global_position)
+		if unit.fuel < last_fuel:
+			burn_ticks += 1
+		last_fuel = unit.fuel
+		if not unit.is_alive:
+			crash_index = i
+			break
+	await _ticks(10)
+	var moved_on_crash_tick: float = 0.0
+	if crash_index >= 1:
+		moved_on_crash_tick = positions[crash_index].distance_to(positions[crash_index - 1])
+	var fuel_events: int = 0
+	var destroyed_events: int = 0
+	for e: String in events:
+		if e.contains("fuel_changed"):
+			fuel_events += 1
+		if e.contains("destroyed"):
+			destroyed_events += 1
+	_p("crash: gyro spawned with %.1f of %.1f, burn ticks seen=%d (nominal %d), crash tick index=%d, moved on crash tick=%.9f m, visible=%s physics_processing=%s layer=%d mask=%d alive=%s"
+		% [50.0, unit.fuel_capacity, burn_ticks, 600, crash_index, moved_on_crash_tick, str(unit.visible), str(unit.is_physics_processing()), unit.collision_layer, unit.collision_mask, str(unit.is_alive)])
+	_p("crash: last 6 events in order (of %d, fuel_changed=%d destroyed=%d):" % [events.size(), fuel_events, destroyed_events])
+	for e: String in events.slice(maxi(events.size() - 6, 0)):
+		_p("    " + e)
+	# a Gyrocopter spawned with an empty tank crashes on its first tick
+	var empty_stats: UnitStats = gyro_stats.duplicate() as UnitStats
+	empty_stats.spawn_fuel_fraction = 0.0
+	events.clear()
+	unit.spawn(Transform3D(Basis.IDENTITY, Vector3(2100.0, 0.05, 2000.0)), empty_stats)
+	var spawn_frame: int = Engine.get_physics_frames()
+	var start: Vector3 = unit.global_position
+	await _ticks(4)
+	_p("crash: spawned with an empty tank at F=%d, alive after 4 ticks=%s moved=%.9f events=%s" % [spawn_frame, str(unit.is_alive), unit.global_position.distance_to(start), str(events)])
+	unit.leave_play()
+	await _ticks(2)
+
+# ---------------------------------------------------------------- semantics
+func _yaw_of(unit: Unit) -> float:
+	var facing: Vector3 = -unit.global_transform.basis.z
+	return atan2(-facing.x, -facing.z)
+
+func _probe_semantics() -> void:
+	# a. the driving toy's Unit: never spawned, no tank
+	var toy: Unit = _make_unit("ToyLike", Vector3(-3000.0, 0.0, 3000.0))
+	var toy_events: Array[int] = [0]
+	toy.fuel_changed.connect(func(_f: float, _c: float) -> void: toy_events[0] += 1)
+	await _ticks(3)
+	for i: int in 300:
+		toy.set_drive_input(1.0, 0.0)
+		await physics_frame
+	_p("toy-like (never spawned): speed=%.2f fuel=%.2f capacity=%.2f empty=%s fuel_changed=%d" % [toy.current_speed, toy.fuel, toy.fuel_capacity, str(toy.is_fuel_empty), toy_events[0]])
+	# b/c. spawned Truck: read-only properties and the refuel table
+	var truck_stats: UnitStats = load(TRUCK_PATH) as UnitStats
+	var unit: Unit = _make_unit("SemTruck", Vector3(3000.0, 0.0, 3000.0))
+	await _ticks(3)
+	unit.spawn(Transform3D(Basis.IDENTITY, Vector3(3000.0, 0.05, 3000.0)), truck_stats)
+	await _ticks(5)
+	var counts: Array[int] = [0]
+	unit.fuel_changed.connect(func(_f: float, _c: float) -> void: counts[0] += 1)
+	var before: Array[float] = [unit.fuel, unit.fuel_capacity]
+	unit.fuel = 7.0
+	unit.fuel_capacity = 7.0
+	unit.is_fuel_empty = true
+	_p("read-only: fuel %.2f->%.2f capacity %.2f->%.2f empty=%s (each assignment pushed an error above)" % [before[0], unit.fuel, before[1], unit.fuel_capacity, str(unit.is_fuel_empty)])
+	var table: Array = [0.0, -5.0, NAN, 20.0, 1000.0, 5.0]
+	var rows: String = ""
+	for amount: float in table:
+		var c0: int = counts[0]
+		var added: float = unit.refuel(amount)
+		rows += " refuel(%s)=%.2f emitted=%d fuel=%.2f;" % [str(amount), added, counts[0] - c0, unit.fuel]
+	_p("refuel table (50 of 100):" + rows)
+	var c1: int = counts[0]
+	var toy_added: float = toy.refuel(10.0)
+	_p("refuel on a never-spawned Unit=%.2f; " % toy_added)
+	unit.leave_play()
+	var benched_added: float = unit.refuel(10.0)
+	_p("refuel on a benched Unit=%.2f (fuel_changed total after bench=%d)" % [benched_added, counts[0] - c1])
+	await _ticks(3)
+	# d. empty ground Unit, from a small tank so the run is short
+	var small: UnitStats = truck_stats.duplicate() as UnitStats
+	small.spawn_fuel_fraction = 0.05
+	unit.spawn(Transform3D(Basis.IDENTITY, Vector3(3000.0, 0.05, 3000.0)), small)
+	await _ticks(5)
+	var drive_ticks: int = 0
+	for i: int in 400:
+		unit.set_drive_input(1.0, 0.0)
+		await physics_frame
+		drive_ticks += 1
+		if unit.is_fuel_empty:
+			break
+	_p("empty: truck from 5.0 at 3.0/s empty after %d driving ticks (nominal 100 burning ticks + the first tick from rest), speed then=%.3f" % [drive_ticks, unit.current_speed])
+	var speed_zero_tick: int = -1
+	var stood: Vector3 = Vector3.ZERO
+	var max_after_zero: float = 0.0
+	var rises: int = 0
+	var prev_speed: float = unit.current_speed
+	for i: int in 200:
+		unit.set_drive_input(1.0, 0.0)
+		await physics_frame
+		if unit.current_speed > prev_speed + 1e-9:
+			rises += 1
+		prev_speed = unit.current_speed
+		if speed_zero_tick < 0 and unit.current_speed == 0.0:
+			speed_zero_tick = i
+			stood = unit.global_position
+		elif speed_zero_tick >= 0:
+			max_after_zero = maxf(max_after_zero, unit.global_position.distance_to(stood))
+	_p("empty: throttle held 200 ticks: speed hit exactly 0 at tick %d, speed rises=%d, max drift after that=%.12f m, fuel=%.4f" % [speed_zero_tick, rises, max_after_zero, unit.fuel])
+	var yaw_prev: float = _yaw_of(unit)
+	var deltas: Array[float] = []
+	var stand: Vector3 = unit.global_position
+	var drift: float = 0.0
+	for i: int in 120:
+		unit.set_drive_input(0.0, 1.0)
+		await physics_frame
+		var yaw_now: float = _yaw_of(unit)
+		deltas.append(angle_difference(yaw_prev, yaw_now))
+		yaw_prev = yaw_now
+		drift = maxf(drift, unit.global_position.distance_to(stand))
+	var mn: float = deltas.min()
+	var mx: float = deltas.max()
+	_p("empty turn: steer 1 for 120 ticks at a standstill: per tick min=%.9f max=%.9f expected=%.9f drift=%.12f m" % [mn, mx, small.empty_turn_rate / 60.0, drift])
+	var added_empty: float = unit.refuel(10.0)
+	_p("empty->refuel(10)=%.2f is_fuel_empty=%s immediately" % [added_empty, str(unit.is_fuel_empty)])
+	var yaw_after: float = _yaw_of(unit)
+	var turned: float = 0.0
+	for i: int in 30:
+		unit.set_drive_input(0.0, 1.0)
+		await physics_frame
+		var yaw_now2: float = _yaw_of(unit)
+		turned = maxf(turned, absf(angle_difference(yaw_after, yaw_now2)))
+		yaw_after = yaw_now2
+	_p("after refuel: steer only at a standstill for 30 ticks, max per-tick yaw=%.9f (speed-fraction law: 0)" % turned)
+	var v0: float = unit.current_speed
+	for i: int in 30:
+		unit.set_drive_input(1.0, 0.0)
+		await physics_frame
+	_p("after refuel: throttle 30 ticks: speed %.3f -> %.3f fuel=%.3f" % [v0, unit.current_speed, unit.fuel])

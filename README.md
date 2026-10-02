@@ -34,7 +34,7 @@ The rules of record are in `design/rules.md`, the one-page brief in
 | 003 | Bases, destruction and respawn, self-destruct | Done |
 | 004 | The Flag and the win, per-Player HUD, round-over screen | Done, code still calls it the Water Canister |
 | 005 | Four Units and the counter triangle | Done |
-| 006 | Fuel and Fuel Cans | Planned |
+| 006 | Fuel and Fuel Cans | Done |
 | 007 | Map 01 with the Team colours | Planned |
 | 008 | Tokens, the Garage and the loss | Planned |
 
@@ -58,6 +58,12 @@ destruction, with the choice panel at the bottom of their own view. R restarts
 from the round-over screen. Keys 1 and 2 used to damage each Player's own Unit
 for testing; they are off now that weapons exist, and `debug_damage` in
 `src/gameplay/match/data/match_rules.tres` brings them back.
+
+Every Unit spawns with half a tank. The amber Fuel gauge beside the hit points
+empties while the Unit moves and holds while it stands still. Drive over an amber
+Fuel Can to refill from it; the Can comes back at the same spot after about 20
+seconds. A ground Unit with no Fuel stops but can still turn and fire, and a
+Gyrocopter with no Fuel crashes. Self-destruct still works with an empty tank.
 
 ## Running it
 

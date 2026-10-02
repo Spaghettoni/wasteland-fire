@@ -1,0 +1,35 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+SPLIT fuel_cans t=1.000 phase=take p1_x=-16.00 p1_z=13.32 p1_speed=4.33 p1_yaw=0.0 p2_x=0.00 p2_z=-20.00 p2_speed=0.00 p2_yaw=0.0
+SPLIT fuel_cans t=2.000 phase=take p1_x=-16.00 p1_z=9.22 p1_speed=4.07 p1_yaw=0.0 p2_x=0.00 p2_z=-20.00 p2_speed=0.00 p2_yaw=0.0
+SPLIT fuel_cans t=3.000 phase=take p1_x=-16.00 p1_z=7.84 p1_speed=0.00 p1_yaw=0.0 p2_x=0.00 p2_z=-20.00 p2_speed=0.00 p2_yaw=0.0
+SPLIT fuel_cans t=4.000 phase=take p1_x=-16.00 p1_z=6.25 p1_speed=4.33 p1_yaw=0.0 p2_x=0.00 p2_z=-20.00 p2_speed=0.00 p2_yaw=0.0
+SPLIT fuel_cans t=5.000 phase=take p1_x=-16.00 p1_z=2.36 p1_speed=1.93 p1_yaw=0.0 p2_x=0.00 p2_z=-20.00 p2_speed=0.00 p2_yaw=0.0
+SPLIT fuel_cans t=6.000 phase=full_pass p1_x=-16.00 p1_z=2.22 p1_speed=0.00 p1_yaw=0.0 p2_x=16.00 p2_z=-11.32 p2_speed=4.33 p2_yaw=-0.0
+SPLIT fuel_cans t=7.000 phase=full_pass p1_x=-16.00 p1_z=2.22 p1_speed=0.00 p1_yaw=0.0 p2_x=16.00 p2_z=-7.84 p2_speed=0.33 p2_yaw=-0.0
+SPLIT fuel_cans t=8.000 phase=full_pass p1_x=-16.00 p1_z=2.22 p1_speed=0.00 p1_yaw=0.0 p2_x=16.00 p2_z=-7.84 p2_speed=0.00 p2_yaw=-0.0
+SPLIT fuel_cans t=9.000 phase=full_pass p1_x=-16.00 p1_z=2.22 p1_speed=0.00 p1_yaw=0.0 p2_x=16.00 p2_z=-7.84 p2_speed=0.00 p2_yaw=-0.0
+SPLIT fuel_cans t=10.000 phase=stale_entry p1_x=-16.00 p1_z=2.22 p1_speed=0.00 p1_yaw=0.0 p2_x=16.00 p2_z=-7.84 p2_speed=0.00 p2_yaw=-0.0
+SPLIT fuel_cans t=11.000 phase=stale_entry p1_x=-16.00 p1_z=2.22 p1_speed=0.00 p1_yaw=0.0 p2_x=16.00 p2_z=-7.84 p2_speed=0.00 p2_yaw=-0.0
+SPLIT fuel_cans t=12.000 phase=stale_entry p1_x=-16.00 p1_z=2.22 p1_speed=0.00 p1_yaw=0.0 p2_x=16.00 p2_z=-7.84 p2_speed=0.00 p2_yaw=-0.0
+SPLIT fuel_cans t=13.000 phase=restock p1_x=-16.00 p1_z=2.22 p1_speed=0.00 p1_yaw=0.0 p2_x=0.00 p2_z=-20.00 p2_speed=0.00 p2_yaw=0.0
+SPLIT fuel_cans t=14.000 phase=restock p1_x=-16.00 p1_z=2.22 p1_speed=0.00 p1_yaw=0.0 p2_x=0.00 p2_z=-20.00 p2_speed=0.00 p2_yaw=0.0
+SPLIT fuel_cans t=15.000 phase=restock p1_x=-16.00 p1_z=2.22 p1_speed=0.00 p1_yaw=0.0 p2_x=0.00 p2_z=-20.00 p2_speed=0.00 p2_yaw=0.0
+SPLIT fuel_cans t=16.000 phase=restock p1_x=-16.00 p1_z=2.22 p1_speed=0.00 p1_yaw=0.0 p2_x=0.00 p2_z=-20.00 p2_speed=0.00 p2_yaw=0.0
+SPLIT fuel_cans t=17.000 phase=restock p1_x=-16.00 p1_z=2.22 p1_speed=0.00 p1_yaw=0.0 p2_x=0.00 p2_z=-20.00 p2_speed=0.00 p2_yaw=0.0
+SPLIT fuel_cans t=18.000 phase=restock p1_x=-16.00 p1_z=2.22 p1_speed=0.00 p1_yaw=0.0 p2_x=0.00 p2_z=-20.00 p2_speed=0.00 p2_yaw=0.0
+SPLIT fuel_cans t=19.000 phase=restock p1_x=-16.00 p1_z=2.22 p1_speed=0.00 p1_yaw=0.0 p2_x=0.00 p2_z=-20.00 p2_speed=0.00 p2_yaw=0.0
+SPLIT fuel_cans t=20.000 phase=restock p1_x=-16.00 p1_z=2.22 p1_speed=0.00 p1_yaw=0.0 p2_x=0.00 p2_z=-20.00 p2_speed=0.00 p2_yaw=0.0
+SPLIT fuel_cans t=21.000 phase=restock p1_x=-16.00 p1_z=2.22 p1_speed=0.00 p1_yaw=0.0 p2_x=0.00 p2_z=-20.00 p2_speed=0.00 p2_yaw=0.0
+SPLIT fuel_cans t=22.000 phase=gyro_take p1_x=-16.00 p1_z=2.22 p1_speed=0.00 p1_yaw=0.0 p2_x=16.00 p2_z=0.33 p2_speed=3.00 p2_yaw=-0.0
+SPLIT fuel_cans t=23.000 phase=gyro_take p1_x=-16.00 p1_z=2.22 p1_speed=0.00 p1_yaw=0.0 p2_x=16.00 p2_z=4.36 p2_speed=4.20 p2_yaw=-0.0
+SPLIT fuel_cans t=24.000 phase=gyro_take p1_x=-16.00 p1_z=2.22 p1_speed=0.00 p1_yaw=0.0 p2_x=16.00 p2_z=8.23 p2_speed=2.33 p2_yaw=-0.0
+SPLIT fuel_cans t=25.000 phase=delivery p1_x=0.00 p1_z=-20.97 p1_speed=3.87 p1_yaw=0.0 p2_x=16.00 p2_z=8.55 p2_speed=0.00 p2_yaw=-0.0
+SPLIT fuel_cans t=26.000 phase=delivery p1_x=-0.00 p1_z=6.90 p1_speed=4.20 p1_yaw=180.0 p2_x=16.00 p2_z=8.55 p2_speed=0.00 p2_yaw=-0.0
+SPLIT fuel_cans t=27.000 phase=delivery p1_x=-0.00 p1_z=11.00 p1_speed=3.93 p1_yaw=180.0 p2_x=16.00 p2_z=8.55 p2_speed=0.00 p2_yaw=-0.0
+CHECK fuel_cans can_cycle PASS start: FuelCan1=(0,0) AVAILABLE FuelCan2=(-16,-8) AVAILABLE FuelCan3=(16,8) AVAILABLE FuelCan4=(-16,8) AVAILABLE FuelCan5=(16,-8) AVAILABLE | take: FuelCan4 by p1 motorbike after 116 ticks: +40.0000 (room 52.7333, refill 40.0), hidden=true; stood 60 ticks, listed 60, takes=1 | full pass: p2 motorbike kept full onto FuelCan5: listed 188 ticks, in the zone=true 0.16 m from its centre at 0.00 m/s, available=true, takes=0 (Fuel 100.00) | respawn out of the zone: Enter destroyed p2 in FuelCan5's zone (gone=true); back as motorbike 20.00 m away with Fuel 50.0: listed on 1, available on 10 of the 10 ticks after, takes=0 | restock: FuelCan4 back 1200 ticks after its take (restock_frame - take frame = 1200; 20.0 s = 1200+-1), restocked=1, at (-16,8) shown=true available=true restock_frame=0 | gyro: p2 gyrocopter (+30.0 by refuel()) took FuelCan3 after 119 ticks: +27.1667 (room 27.1667, refill 40.0), hidden=true | restart: steal 62 ticks, run home 106 ticks, round_over=1; R: round_started +1, restocked FuelCan3 at tick 1648 (due by delay 2595), FuelCan3 at (16,8) shown=true available=true restock_frame=0
+CHECK fuel_cans fuel_hud PASS spawn: p1 motorbike alive=true bar=50.00/100 line="Fuel 50 / 100" p2 motorbike alive=true bar=50.00/100 line="Fuel 50 / 100" | layout: p1 view=0,0-640,720 gauge=332,16-624,42 hit_points=16,16-316,42 status=16,46-624,76 p2 view=0,0-640,720 gauge=332,16-624,42 hit_points=16,16-316,42 status=16,46-624,76 | p1 driving, 295 ticks traced: falls=232 rises=1, the rise +39.96 (gain 40.0000, bar step 0.01) | p2 full: line="Fuel 100 / 100" 132 of 292 px, lines=1 | choosing: p1 motorbike alive=false bar=0.00/100 line="Fuel 0 / 100" p2 gyrocopter alive=false bar=0.00/100 line="Fuel 0 / 100" | chosen again: p1 motorbike alive=true bar=50.00/100 line="Fuel 50 / 100" p2 motorbike alive=true bar=50.00/100 line="Fuel 50 / 100" | every tick: reads=1643 misreads p1=0 p2=0
+RESULT fuel_cans ok checks=2 failed=0 t=27.550 takes=2 restocks=2 round_started=1 p1=motorbike p1_fuel=50.00 p2=motorbike p2_fuel=50.00
+
+rc 0 stderr-noisy []

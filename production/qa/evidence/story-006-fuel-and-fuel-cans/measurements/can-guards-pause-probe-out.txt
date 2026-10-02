@@ -1,0 +1,39 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PROBE ticks_per_second=60
+PROBE pause v1: spawn at F=11, taken=1 seen at F=15, restock_frame=134 (take frame 14), state=1 monitoring=true fuel=70.00
+PROBE pause v1: paused F=15..215 (stamp 134 fell due inside), changes while paused=0, state=1, restock_frame=134, unit.fuel=70.00
+PROBE pause v1: unpaused at F=215, per tick after: [F=216 state=0 taken=1 restocked=1 fuel=70.00] [F=217 state=1 taken=2 restocked=1 fuel=90.00] [F=218 state=1 taken=2 restocked=1 fuel=90.00] [F=219 state=1 taken=2 restocked=1 fuel=90.00] [F=220 state=1 taken=2 restocked=1 fuel=90.00] [F=221 state=1 taken=2 restocked=1 fuel=90.00] [F=222 state=1 taken=2 restocked=1 fuel=90.00] [F=223 state=1 taken=2 restocked=1 fuel=90.00]
+PROBE pause v2: spawn at F=229, taken=1 seen at F=232, restock_frame=351 (take frame 231), state=1 monitoring=true fuel=70.00
+PROBE pause v2: paused F=232..432 (stamp 351 fell due inside), changes while paused=0, state=1, restock_frame=351, unit.fuel=70.00
+PROBE pause v2: benched the Unit during the pause (alive=false fuel=0.00)
+PROBE pause v2: unpaused at F=432, per tick after: [F=433 state=0 taken=1 restocked=1 fuel=0.00] [F=434 state=0 taken=1 restocked=1 fuel=0.00] [F=435 state=0 taken=1 restocked=1 fuel=0.00] [F=436 state=0 taken=1 restocked=1 fuel=0.00] [F=437 state=0 taken=1 restocked=1 fuel=0.00] [F=438 state=0 taken=1 restocked=1 fuel=0.00] [F=439 state=0 taken=1 restocked=1 fuel=0.00] [F=440 state=0 taken=1 restocked=1 fuel=0.00]
+PROBE nearest r0 near=A first=A -> taken_by=["NearA"] fuelA=70.0 fuelB=50.0
+PROBE nearest r1 near=B first=A -> taken_by=["NearB"] fuelA=50.0 fuelB=70.0
+PROBE nearest r2 near=A first=B -> taken_by=["NearA"] fuelA=70.0 fuelB=50.0
+PROBE nearest r3 near=B first=B -> taken_by=["NearB"] fuelA=50.0 fuelB=70.0
+PROBE nearest r4 near=A first=A -> taken_by=["NearA"] fuelA=70.0 fuelB=50.0
+PROBE nearest r5 near=B first=A -> taken_by=["NearB"] fuelA=50.0 fuelB=70.0
+PROBE nearest r6 near=A first=B -> taken_by=["NearA"] fuelA=70.0 fuelB=50.0
+PROBE nearest r7 near=B first=B -> taken_by=["NearB"] fuelA=50.0 fuelB=70.0
+PROBE crash: gyro spawned with 50.0 of 100.0, burn ticks seen=600 (nominal 600), crash tick index=600, moved on crash tick=0.000000000 m, visible=false physics_processing=false layer=0 mask=0 alive=false
+PROBE crash: last 6 events in order (of 603, fuel_changed=601 destroyed=1):
+PROBE     F1217 fuel_changed(0.1667, 100.0)
+PROBE     F1218 fuel_changed(0.0833, 100.0)
+PROBE     F1219 fuel_changed(0.0000, 100.0)
+PROBE     F1219 hit_points_changed(0.0, 70.0)
+PROBE     F1219 fuel_changed(0.0000, 100.0)
+PROBE     F1219 destroyed
+PROBE crash: spawned with an empty tank at F=1230, alive after 4 ticks=false moved=0.000000000 events=["F1230 hit_points_changed(70.0, 70.0)", "F1230 fuel_changed(0.0000, 100.0)", "F1230 hit_points_changed(0.0, 70.0)", "F1230 fuel_changed(0.0000, 100.0)", "F1230 destroyed"]
+PROBE toy-like (never spawned): speed=24.00 fuel=100.00 capacity=100.00 empty=false fuel_changed=0
+PROBE read-only: fuel 50.00->50.00 capacity 100.00->100.00 empty=false (each assignment pushed an error above)
+PROBE refuel table (50 of 100): refuel(0.0)=0.00 emitted=0 fuel=50.00; refuel(-5.0)=0.00 emitted=0 fuel=50.00; refuel(nan)=0.00 emitted=0 fuel=50.00; refuel(20.0)=20.00 emitted=1 fuel=70.00; refuel(1000.0)=30.00 emitted=1 fuel=100.00; refuel(5.0)=0.00 emitted=0 fuel=100.00;
+PROBE refuel on a never-spawned Unit=0.00; 
+PROBE refuel on a benched Unit=0.00 (fuel_changed total after bench=1)
+PROBE empty: truck from 5.0 at 3.0/s empty after 101 driving ticks (nominal 100 burning ticks + the first tick from rest), speed then=10.800
+PROBE empty: throttle held 200 ticks: speed hit exactly 0 at tick 108, speed rises=0, max drift after that=0.000000000000 m, fuel=0.0000
+PROBE empty turn: steer 1 for 120 ticks at a standstill: per tick min=0.007499941 max=0.007500052 expected=0.007500000 drift=0.000997843803 m
+PROBE empty->refuel(10)=10.00 is_fuel_empty=false immediately
+PROBE after refuel: steer only at a standstill for 30 ticks, max per-tick yaw=0.000000000 (speed-fraction law: 0)
+PROBE after refuel: throttle 30 ticks: speed 0.000 -> 4.500 fuel=8.550
+PROBE DONE

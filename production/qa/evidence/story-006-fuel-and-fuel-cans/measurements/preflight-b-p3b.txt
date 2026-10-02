@@ -1,0 +1,9 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PROBE P3b variant1_spawn_in_handler crash_frame=11 events=[11:hit_points_changed(0.0/40.0) | 11:destroyed alive=false hp=0.0 visible=false layer=0 mask=0 proc=false pos=(0.0, 0.0, -0.116667) type=motorbike | 11:hit_points_changed(40.0/40.0) | 11:after_spawn_in_handler alive=true hp=40.0 visible=true layer=2 mask=3 proc=true pos=(8.0, 0.0, 4.0) type=motorbike]
+PROBE P3b variant1 ticks_around_crash=[10, 11, 12, 13] first_sample_after=[12, 0.0, 8.0, 0.0, 4.0, 0.50000001524537, true, 0.0] final=alive=true hp=40.0 visible=true layer=2 mask=3 proc=true pos=(8.0, 0.0, 4.0) type=motorbike
+PROBE P3b variant2_spawn_with_new_type_in_handler crash_frame=36 events=[36:hit_points_changed(0.0/40.0) | 36:destroyed alive=false hp=0.0 visible=false layer=0 mask=0 proc=false pos=(8.0, 0.0, 4.0) type=motorbike | 36:hit_points_changed(220.0/220.0) | 36:after_spawn_in_handler alive=true hp=220.0 visible=true layer=2 mask=35 proc=true pos=(8.0, 0.0, 4.0) type=truck]
+PROBE P3b variant2 final=alive=true hp=220.0 visible=true layer=2 mask=35 proc=true pos=(8.0, 0.0, 4.0) type=truck shape_size=(2.4, 1.6, 4.4) has_model=true destroy_calls=2
+PROBE P3b variant3_earlier_priority_node_destroys_then_unit_would_crash_same_frame frame=67 unit_priority=0 killer_priority=-1 unit_ticked_that_frame=false destroyed_signal_count=1 killer_calls=1 unit_crash_calls=2 alive=false proc=false
+
+--STDERR--

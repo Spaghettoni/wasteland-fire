@@ -1,0 +1,21 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PROBE P5 text_server=ICU / HarfBuzz / Graphite (Built-in) fallback_font=true
+PROBE P5 hud size=(640.0, 720.0) visible=true hp_bar_rect=[P: (16.0, 16.0), S: (300.0, 24.0)] hp_label_rect=[P: (16.0, 16.0), S: (300.0, 26.0)] status_rect=[P: (16.0, 46.0), S: (608.0, 30.0)] hp_label_text_now='HP 0 / 40'
+PROBE P5 existing_hp_label text='HP 220 / 220' ink_width_px=108.00 box_px=300 lines=1 min_size=(1.0, 26.0) font_size=18 outline=6 width_plus_outline=120.00 fits_in_box=true
+PROBE P5 existing_hp_label text='HP 100 / 100' ink_width_px=108.00 box_px=300 lines=1 min_size=(1.0, 26.0) font_size=18 outline=6 width_plus_outline=120.00 fits_in_box=true
+PROBE P5 fuel_label_dup rect=[P: (332.0, 16.0), S: (292.0, 26.0)] autowrap=3 halign=1 valign=1
+PROBE P5 fuel_label_dup text='Fuel 100 / 100' ink_width_px=120.00 box_px=292 lines=1 min_size=(1.0, 26.0) font_size=18 outline=6 width_plus_outline=132.00 fits_in_box=true
+PROBE P5 fuel_label_dup text='Fuel 0 / 100' ink_width_px=99.00 box_px=292 lines=1 min_size=(1.0, 26.0) font_size=18 outline=6 width_plus_outline=111.00 fits_in_box=true
+PROBE P5 fuel_label_dup text='Fuel 50 / 100' ink_width_px=109.00 box_px=292 lines=1 min_size=(1.0, 26.0) font_size=18 outline=6 width_plus_outline=121.00 fits_in_box=true
+PROBE P5 fuel_label_dup text='Fuel 1000 / 1000' ink_width_px=140.00 box_px=292 lines=1 min_size=(1.0, 26.0) font_size=18 outline=6 width_plus_outline=152.00 fits_in_box=true
+PROBE P5 fuel_label_dup text='Fuel 9999 / 9999' ink_width_px=140.00 box_px=292 lines=1 min_size=(1.0, 26.0) font_size=18 outline=6 width_plus_outline=152.00 fits_in_box=true
+PROBE P5 fuel_label_from_scratch text='Fuel 100 / 100' ink_width_px=120.00 box_px=292 lines=1 min_size=(1.0, 26.0) font_size=18 outline=6 width_plus_outline=132.00 fits_in_box=true
+PROBE P5 widest_3digit_pair_text digit=0 width_px=120.00 (all ten digits measured)
+PROBE P5 geometry design_rect=[P: (332.0, 16.0), S: (292.0, 24.0)] inside_view=true overlaps_hp_bar=false overlaps_status=false gap_to_hp_bar_px=16.0 gap_to_status_px=6.0 right_margin_px=16.0 | real_label_rect_after_layout=[P: (332.0, 16.0), S: (292.0, 26.0)] inside_view=true overlaps_status=false gap_to_status_px=4.0
+PROBE P5 bar max=100 value=0 -> value=0.0 ratio=0.0 draws=1 override_fill_is_set=true override_bg_is_set=true
+PROBE P5 bar value=37 -> value=37.0 ratio=0.37 draws=2 expected_fill_px=108.0
+PROBE P5 order value_first(80 then max 50)=50.0 max_first(max 50 then 80)=50.0 grow(50/50 then max 200)=50.0 ratio=0.25 zero_max(max 0,val 0) max=0.0 ratio=1.0
+PROBE P5 ceili_text fmt='Fuel %d / %d': full=Fuel 100 / 100 empty=Fuel 0 / 100 tiny(0.4)=Fuel 1 / 100 drift(1e-14)=Fuel 1 / 100
+
+--STDERR--

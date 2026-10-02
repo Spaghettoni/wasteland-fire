@@ -1,0 +1,126 @@
+extends SceneTree
+
+var _scratch: String = ""
+var _events: Array[String] = []
+var _split: Control
+var _unit: Unit
+var _ctl: MatchController
+
+
+func _initialize() -> void:
+	var args: PackedStringArray = OS.get_cmdline_user_args()
+	_scratch = args[0] if args.size() > 0 else ""
+	_run()
+
+
+func _log(tag: String) -> void:
+	_events.append("%d:%s" % [Engine.get_physics_frames(), tag])
+
+
+func _wait(count: int) -> void:
+	for _i: int in count:
+		await physics_frame
+
+
+func _wait_until(pred: Callable, limit: int) -> int:
+	for i: int in limit:
+		if pred.call():
+			return i
+		await physics_frame
+	return -1
+
+
+func _key(code: Key, pressed: bool) -> void:
+	var event: InputEventKey = InputEventKey.new()
+	event.physical_keycode = code
+	event.pressed = pressed
+	Input.parse_input_event(event)
+
+
+func _strip(events: Array) -> Array[String]:
+	var out: Array[String] = []
+	for e: String in events:
+		out.append(e.substr(e.find(":") + 1))
+	return out
+
+
+func _last_frame(tag_start: String) -> int:
+	for i: int in range(_events.size() - 1, -1, -1):
+		var e: String = _events[i]
+		if e.substr(e.find(":") + 1).begins_with(tag_start):
+			return int(e.substr(0, e.find(":")))
+	return -1
+
+
+func _run() -> void:
+	var probe_script: GDScript = load(_scratch + "/unit_probe.gd")
+	var packed: PackedScene = load("res://src/gameplay/split_screen/split_screen.tscn")
+	_split = packed.instantiate()
+	_unit = _split.get_node("World/Player1Unit")
+	var stats: UnitStats = _unit.stats
+	var team: Material = _unit.team_material
+	_unit.set_script(probe_script)
+	_unit.set("stats", stats)
+	_unit.set("team_material", team)
+	_ctl = _split.get("match_controller")
+	_unit.hit_points_changed.connect(func(hp: float, mx: float) -> void: _log("u.hit_points_changed(%s/%s)" % [hp, mx]))
+	_unit.destroyed.connect(func() -> void: _log("u.destroyed"))
+	_ctl.unit_destroyed.connect(func(p: int) -> void: _log("c.unit_destroyed(%d) secs=%s choosing=%s alive=%s" % [p, _ctl.seconds_until_respawn(p), _ctl.is_choosing(p), _ctl.is_alive(p)]))
+	_ctl.unit_spawned.connect(func(p: int) -> void: _log("c.unit_spawned(%d)" % p))
+	_ctl.unit_chosen.connect(func(p: int, t: int) -> void: _log("c.unit_chosen(%d,%d)" % [p, t]))
+	_ctl.canister_dropped.connect(func(c: int) -> void: _log("c.canister_dropped(%d)" % c))
+	_ctl.canister_picked_up.connect(func(a: int, b: int) -> void: _log("c.canister_picked_up(%d,%d)" % [a, b]))
+	root.add_child(_split)
+	await _wait(5)
+	print("PROBE P3 setup probe_loaded=%s unit_script_is_probe=%s ctl_ok=%s" % [probe_script != null, _unit.get_script() == probe_script, _ctl != null])
+	_ctl.choose(0, 3)
+	_ctl.choose(1, 0)
+	var alive_after: int = await _wait_until(func() -> bool: return _ctl.is_alive(0) and _ctl.is_alive(1), 200)
+	await _wait(10)
+	print("PROBE P3 spawned alive_after_ticks=%d type=%s can_fly=%s hp=%s layer=%d mask=%d proc=%s" % [alive_after, _unit.type_id, _unit.stats.can_fly, _unit.hit_points, _unit.collision_layer, _unit.collision_mask, _unit.is_physics_processing()])
+	var status_before: Array = [_ctl.canister_status(0), _ctl.canister_status(1)]
+	_unit.set_drive_input(1.0, 0.0)
+	await _wait(3)
+	var start: int = _events.size()
+	var crash_frame: int = Engine.get_physics_frames() + 3
+	_unit.set("crash_at_frame", crash_frame)
+	await _wait_until(func() -> bool: return not _ctl.is_alive(0), 30)
+	var seen_frame: int = Engine.get_physics_frames()
+	var samples: Array = _unit.get("samples")
+	var last_sample: Array = samples[samples.size() - 1]
+	var last_pos: Vector3 = Vector3(last_sample[2], last_sample[3], last_sample[4])
+	var ticks: Array = _unit.get("tick_frames")
+	var phase1: Array[String] = _strip(_events.slice(start))
+	print("PROBE P3 own_tick_crash crash_frame=%d seen_not_alive_at=%d destroy_calls=%s last_unit_tick_frame=%s moved_on_crash_tick=%.6f speed_after=%s" % [crash_frame, seen_frame, _unit.get("destroy_calls"), ticks[ticks.size() - 1], (_unit.global_position - last_pos).length(), _unit.current_speed])
+	print("PROBE P3 own_tick_crash events=[%s]" % " | ".join(_events.slice(start)))
+	print("PROBE P3 unit_state alive=%s hp=%s visible=%s layer=%d mask=%d proc=%s" % [_unit.is_alive, _unit.hit_points, _unit.visible, _unit.collision_layer, _unit.collision_mask, _unit.is_physics_processing()])
+	await process_frame
+	await process_frame
+	var cd: Control = _split.find_child("Player1Countdown", true, false)
+	print("PROBE P3 countdown visible=%s text='%s' ctl_secs=%s choosing=%s" % [cd.visible, cd.get("text"), _ctl.seconds_until_respawn(0), _ctl.is_choosing(0)])
+	await _wait(10)
+	ticks = _unit.get("tick_frames")
+	print("PROBE P3 after_10_ticks last_unit_tick_frame=%s (crash_frame=%d) status_before=%s status_after=%s dropped_events=%d" % [ticks[ticks.size() - 1], crash_frame, status_before, [_ctl.canister_status(0), _ctl.canister_status(1)], _events.filter(func(e: String) -> bool: return e.contains("canister_dropped")).size()])
+	_ctl.choose(0, 3)
+	var respawn_after: int = await _wait_until(func() -> bool: return _ctl.is_alive(0), 400)
+	var spawned_frame: int = _last_frame("c.unit_spawned(0)")
+	ticks = _unit.get("tick_frames")
+	print("PROBE P3 respawn ticks_from_crash_tick_to_unit_spawned=%d expected=%d (3.0 s x 60) wait_loop=%d unit_ticking_again=%s alive=%s hp=%s" % [spawned_frame - crash_frame, roundi(3.0 * 60.0), respawn_after, ticks[ticks.size() - 1] >= spawned_frame, _unit.is_alive, _unit.hit_points])
+	await _wait(3)
+	ticks = _unit.get("tick_frames")
+	print("PROBE P3 after_controller_respawn unit_last_tick_frame=%s spawned_frame=%d ticking_again=%s pos=%s" % [ticks[ticks.size() - 1], spawned_frame, ticks[ticks.size() - 1] > spawned_frame, _unit.global_position])
+	await _wait(7)
+	var start2: int = _events.size()
+	_key(KEY_TAB, true)
+	await _wait_until(func() -> bool: return not _ctl.is_alive(0), 30)
+	_key(KEY_TAB, false)
+	var phase2: Array[String] = _strip(_events.slice(start2))
+	ticks = _unit.get("tick_frames")
+	var kframe: int = _last_frame("u.destroyed")
+	print("PROBE P3 key_destroy_frame=%d last_unit_tick_frame=%s (equal means the Unit still ticked in the frame an earlier-priority key node destroyed it; smaller means its tick was skipped) match_input_priority_offset=-1" % [kframe, ticks[ticks.size() - 1]])
+	print("PROBE P3 key_path events=[%s]" % " | ".join(_events.slice(start2)))
+	print("PROBE P3 compare own_tick_sequence_equals_key_sequence=%s own=%s key=%s" % [phase1 == phase2, phase1, phase2])
+	var n_destroyed: int = _events.filter(func(e: String) -> bool: return e.contains("u.destroyed")).size()
+	var n_unit_destroyed: int = _events.filter(func(e: String) -> bool: return e.contains("c.unit_destroyed(0)")).size()
+	print("PROBE P3 totals u.destroyed=%d c.unit_destroyed(0)=%d (2 destructions: one own-tick, one key)" % [n_destroyed, n_unit_destroyed])
+	quit(0)

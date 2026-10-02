@@ -1,0 +1,211 @@
+extends SceneTree
+
+const TRUCK: String = "res://src/gameplay/units/data/truck_stats.tres"
+const EMPTY_TURN_RATE: float = 0.45
+
+var _scratch: String = ""
+var _world: Node3D
+
+
+func _initialize() -> void:
+	var args: PackedStringArray = OS.get_cmdline_user_args()
+	_scratch = args[0] if args.size() > 0 else ""
+	_run()
+
+
+func _wait(count: int) -> void:
+	for _i: int in count:
+		await physics_frame
+
+
+func _spawn_truck(at: Vector3, yaw: float) -> Unit:
+	var unit: Unit = load("res://src/gameplay/units/motorbike.tscn").instantiate()
+	var stats: UnitStats = unit.stats
+	unit.set_script(load(_scratch + "/unit_probe.gd"))
+	unit.set("stats", stats)
+	_world.add_child(unit)
+	await _wait(2)
+	unit.spawn(Transform3D(Basis(Vector3.UP, yaw), at), load(TRUCK))
+	unit.set("empty_turn_rate", EMPTY_TURN_RATE)
+	return unit
+
+
+func _pos(s: Array) -> Vector3:
+	return Vector3(s[2], s[3], s[4])
+
+
+func _samples(unit: Unit) -> Array:
+	return unit.get("samples")
+
+
+func _report_coast(label: String, unit: Unit) -> void:
+	var samples: Array = _samples(unit)
+	var flag_frame: int = unit.get("flag_frame")
+	var max_speed: float = unit.stats.max_speed
+	var i_top: int = -1
+	var i0: int = -1
+	var i_zero: int = -1
+	var i_approx: int = -1
+	var odd: int = 0
+	var burn_ticks: int = 0
+	for i: int in samples.size():
+		var s: Array = samples[i]
+		var speed: float = s[1]
+		if i_top < 0 and speed >= max_speed - 1e-9:
+			i_top = i
+		if s[0] == flag_frame:
+			i0 = i
+		if i0 >= 0 and i_approx < 0 and is_zero_approx(speed):
+			i_approx = i
+		if i0 >= 0 and i_zero < 0 and speed == 0.0:
+			i_zero = i
+		if speed != 0.0 and is_zero_approx(speed):
+			odd += 1
+		if i >= 1 and not is_zero_approx(float((samples[i - 1] as Array)[1])):
+			burn_ticks += 1
+	var tail: PackedStringArray = []
+	for k: int in range(maxi(i_zero - 3, 0), mini(i_zero + 2, samples.size())):
+		tail.append("%.17f" % float((samples[k] as Array)[1]))
+	var start_pos: Vector3 = _pos(samples[i0 - 1])
+	var stop_pos: Vector3 = _pos(samples[i_zero])
+	var moved_after: float = 0.0
+	var all_zero_after: bool = true
+	for k: int in range(i_zero, samples.size()):
+		moved_after = maxf(moved_after, (_pos(samples[k]) - stop_pos).length())
+		if float((samples[k] as Array)[1]) != 0.0:
+			all_zero_after = false
+	print("PROBE P4 %s type=%s ticks_to_top_speed=%d speed_before_flag=%.6f coast_ticks_to_exact_zero=%d coast_ticks_to_zero_approx=%d exact_zero_reached=%s displacement_m=%.4f speeds_around_stop=[%s] nonzero_but_zero_approx_samples=%d stays_exactly_zero_after=%s max_move_after_stop=%.8f ticks_after_stop_observed=%d burn_ticks_under_design_rule(start speed not zero_approx)=%d" % [label, unit.type_id, i_top + 1, float((samples[i0 - 1] as Array)[1]), i_zero - i0 + 1, i_approx - i0 + 1, i_zero >= 0, (start_pos - stop_pos).length(), ", ".join(tail), odd, all_zero_after, moved_after, samples.size() - i_zero, burn_ticks])
+
+
+func _report_rest(label: String, unit: Unit, from_i: int) -> void:
+	var samples: Array = _samples(unit)
+	var first: Vector3 = _pos(samples[from_i])
+	var drift: float = 0.0
+	var y_min: float = 1e9
+	var y_max: float = -1e9
+	var step_max: float = 0.0
+	var vel_max: float = 0.0
+	var off_floor: int = 0
+	var speeds_zero: bool = true
+	for k: int in range(from_i, samples.size()):
+		var s: Array = samples[k]
+		var p: Vector3 = _pos(s)
+		drift = maxf(drift, Vector2(p.x - first.x, p.z - first.z).length())
+		y_min = minf(y_min, p.y)
+		y_max = maxf(y_max, p.y)
+		if k > from_i:
+			step_max = maxf(step_max, (p - _pos(samples[k - 1])).length())
+		vel_max = maxf(vel_max, float(s[7]))
+		if not bool(s[6]):
+			off_floor += 1
+		if float(s[1]) != 0.0:
+			speeds_zero = false
+	var total_yaw: float = 0.0
+	for k: int in range(from_i + 1, samples.size()):
+		total_yaw += angle_difference(float((samples[k - 1] as Array)[5]), float((samples[k] as Array)[5]))
+	var n: int = samples.size() - from_i
+	print("PROBE P4 %s ticks=%d horizontal_drift_m=%.8f y_range=[%.6f, %.6f] max_step_m=%.8f max_real_velocity=%.8f ticks_off_floor=%d speed_always_exact_zero=%s total_yaw_rad=%.5f yaw_rate_rad_s=%.5f" % [label, n, drift, y_min, y_max, step_max, vel_max, off_floor, speeds_zero, total_yaw, total_yaw / (float(n - 1) / 60.0)])
+
+
+func _report_rates(label: String, unit: Unit, from_i: int) -> void:
+	var samples: Array = _samples(unit)
+	var start_i: int = from_i
+	if start_i < 0:
+		var flag_frame: int = unit.get("flag_frame")
+		for i: int in samples.size():
+			if (samples[i] as Array)[0] == flag_frame:
+				start_i = i
+				break
+	var out: PackedStringArray = []
+	for rolling: bool in [true, false]:
+		var vals: Array[float] = []
+		for i: int in range(maxi(start_i, 1), samples.size()):
+			var cur: Array = samples[i]
+			if (absf(float(cur[1])) > 0.0) != rolling:
+				continue
+			vals.append(angle_difference(float((samples[i - 1] as Array)[5]), float(cur[5])) * 60.0)
+		var lo: float = 1e9
+		var hi: float = -1e9
+		var sum: float = 0.0
+		for v: float in vals:
+			lo = minf(lo, v)
+			hi = maxf(hi, v)
+			sum += v
+		out.append("%s: n=%d min=%.5f max=%.5f mean=%.5f" % ["rolling" if rolling else "at_rest", vals.size(), lo, hi, sum / maxf(float(vals.size()), 1.0)])
+	print("PROBE P4 %s yaw_rate_rad_s %s (empty_turn_rate=%s; the non-empty law at top speed would give turn_rate=%s)" % [label, " || ".join(out), EMPTY_TURN_RATE, unit.stats.turn_rate])
+
+
+func _report_wall(unit: Unit, wall_x: float) -> void:
+	var samples: Array = _samples(unit)
+	var x_max: float = -1e9
+	var x_min: float = 1e9
+	var y_min: float = 1e9
+	var y_max: float = -1e9
+	var step_max: float = 0.0
+	var pen_max: float = -1e9
+	var total_yaw: float = 0.0
+	for k: int in samples.size():
+		var s: Array = samples[k]
+		var p: Vector3 = _pos(s)
+		x_max = maxf(x_max, p.x)
+		x_min = minf(x_min, p.x)
+		y_min = minf(y_min, p.y)
+		y_max = maxf(y_max, p.y)
+		var yaw: float = float(s[5])
+		var extent: float = 1.2 * absf(cos(yaw)) + 2.2 * absf(sin(yaw))
+		pen_max = maxf(pen_max, p.x + extent - wall_x)
+		if k > 0:
+			step_max = maxf(step_max, (p - _pos(samples[k - 1])).length())
+			total_yaw += angle_difference(float((samples[k - 1] as Array)[5]), yaw)
+	var last: Array = samples[samples.size() - 1]
+	print("PROBE P4 C_truck_turn_on_spot_beside_wall start_x=38.5 wall_inner_face_x=%.1f ticks=%d x_range=[%.4f, %.4f] y_range=[%.5f, %.5f] max_step_m=%.5f max_box_intrusion_into_wall_m=%.4f total_yaw_rad=%.4f expected_yaw_rad_for_%d_intervals=%.4f final_pos=%s final_speed=%s" % [wall_x, samples.size(), x_min, x_max, y_min, y_max, step_max, pen_max, total_yaw, samples.size() - 1, EMPTY_TURN_RATE * float(samples.size() - 1) / 60.0, _pos(last), last[1]])
+
+
+func _run() -> void:
+	_world = Node3D.new()
+	root.add_child(_world)
+	_world.add_child(load("res://src/gameplay/maps/greybox_field.tscn").instantiate())
+	var unit: Unit = await _spawn_truck(Vector3(0, 0, 25), 0.0)
+	await _wait(10)
+	print("PROBE P4 truck max_speed=%s acceleration=%s coast_deceleration=%s turn_rate=%s alive=%s type=%s pos=%s" % [unit.stats.max_speed, unit.stats.acceleration, unit.stats.coast_deceleration, unit.stats.turn_rate, unit.is_alive, unit.type_id, unit.global_position])
+	_samples(unit).clear()
+	unit.set("arm_empty_at_top", true)
+	unit.set_drive_input(1.0, 0.0)
+	await _wait(300)
+	_report_coast("A_truck_straight_coast", unit)
+	var rest_start: int = _samples(unit).size()
+	await _wait(60)
+	_report_rest("B0_truck_rest_no_steer_throttle_held", unit, rest_start)
+	rest_start = _samples(unit).size()
+	unit.set_drive_input(1.0, 1.0)
+	await _wait(120)
+	_report_rest("B2_truck_rest_steer_left_throttle_held", unit, rest_start)
+	_report_rates("B2_truck_rest", unit, rest_start)
+	var resume_start: int = _samples(unit).size()
+	unit.set("empty_flag", false)
+	await _wait(5)
+	var sp: PackedStringArray = []
+	for k: int in range(resume_start, _samples(unit).size()):
+		sp.append("speed=%.3f dz=%.5f" % [float((_samples(unit)[k] as Array)[1]), float((_samples(unit)[k] as Array)[4]) - float((_samples(unit)[resume_start - 1] as Array)[4])])
+	print("PROBE P4 D_truck_refuel_resume (empty_flag cleared, throttle and steer still held) first_ticks=[%s]" % " ; ".join(sp))
+	unit.queue_free()
+	await _wait(3)
+	var rolling: Unit = await _spawn_truck(Vector3(0, 0, 25), 0.0)
+	await _wait(10)
+	_samples(rolling).clear()
+	rolling.set("arm_empty_at_top", true)
+	rolling.set("steer_on_arm", 1.0)
+	rolling.set_drive_input(1.0, 0.0)
+	await _wait(300)
+	_report_coast("B1_truck_curved_coast_steer_left", rolling)
+	_report_rates("B1_truck_rolling_then_rest", rolling, -1)
+	rolling.queue_free()
+	await _wait(3)
+	var wall_unit: Unit = await _spawn_truck(Vector3(38.5, 0, 0), 0.0)
+	await _wait(10)
+	_samples(wall_unit).clear()
+	wall_unit.set("empty_flag", true)
+	wall_unit.set_drive_input(1.0, 1.0)
+	await _wait(300)
+	_report_wall(wall_unit, 40.0)
+	quit(0)

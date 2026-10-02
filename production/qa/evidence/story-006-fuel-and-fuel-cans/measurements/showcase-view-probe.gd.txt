@@ -1,0 +1,55 @@
+extends SceneTree
+## Throwaway probe, Story 006 slice C3 (not part of the project): runs fuel_showcase through the real
+## harness and samples on every physics frame what the frames can show: the middle Can inside
+## Player 1's camera frustum during the approach, each camera's line of sight to its Unit against
+## the map and cliff layers (mask 33), cameras beyond the walls, and each Unit's nearest approach to
+## each Can (ground plane).
+var harness: Node
+var approach: Vector2i = Vector2i.ZERO
+var occluded: Array[int] = [0, 0]
+var samples: Array[int] = [0, 0]
+var beyond_wall: Array[int] = [0, 0]
+var nearest: Dictionary[String, float] = {}
+var takes: PackedStringArray = []
+var hooked: bool = false
+
+func _initialize() -> void:
+	harness = (load("res://tools/evidence/split_screen_harness.tscn") as PackedScene).instantiate()
+	root.add_child(harness)
+	physics_frame.connect(_on_physics)
+
+func _on_physics() -> void:
+	var split: Node = harness.get("split")
+	if split == null:
+		return
+	var cans: Array[Node] = get_nodes_in_group(&"fuel_cans")
+	if not hooked:
+		hooked = true
+		for can: Node in cans:
+			can.taken.connect(func(u: Node) -> void: takes.append("%s by %s t=%.3f" % [can.name, u.name, harness.call("time")]))
+	var units: Array[Node3D] = [split.player_1_unit, split.player_2_unit]
+	var cams: Array[Camera3D] = [split.player_1_camera, split.player_2_camera]
+	var middle: Node3D = cans.filter(func(c: Node) -> bool: return c.name == "FuelCan1")[0]
+	if harness.get("phase") == &"p1_to_can" and middle.is_available:
+		approach.y += 1
+		approach.x += 1 if cams[0].is_position_in_frustum(middle.global_position + Vector3(0.0, 0.5, 0.0)) else 0
+	var space: PhysicsDirectSpaceState3D = units[0].get_world_3d().direct_space_state
+	for p: int in 2:
+		if not units[p].is_alive:
+			continue
+		samples[p] += 1
+		var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(cams[p].global_position, units[p].global_position + Vector3(0.0, 0.5, 0.0), 33)
+		occluded[p] += 0 if space.intersect_ray(query).is_empty() else 1
+		beyond_wall[p] += 1 if maxf(absf(cams[p].global_position.x), absf(cams[p].global_position.z)) > 40.0 else 0
+		for can: Node3D in cans:
+			var key: String = "p%d-%s" % [p + 1, can.name]
+			var gap: Vector3 = units[p].global_position - can.global_position
+			nearest[key] = minf(nearest.get(key, INF), Vector2(gap.x, gap.z).length())
+
+func _finalize() -> void:
+	print("PROBE approach_ticks=%d middle_can_in_p1_frustum=%d" % [approach.y, approach.x])
+	print("PROBE alive_samples p1=%d p2=%d line_of_sight_blocked p1=%d p2=%d camera_beyond_wall p1=%d p2=%d" % [samples[0], samples[1], occluded[0], occluded[1], beyond_wall[0], beyond_wall[1]])
+	var keys: Array[String] = nearest.keys()
+	keys.sort()
+	print("PROBE nearest_ground_m " + " ".join(keys.map(func(k: String) -> String: return "%s=%.2f" % [k, nearest[k]])))
+	print("PROBE takes " + "; ".join(takes))

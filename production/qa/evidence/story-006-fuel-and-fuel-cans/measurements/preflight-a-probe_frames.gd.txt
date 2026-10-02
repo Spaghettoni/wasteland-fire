@@ -1,0 +1,191 @@
+extends SceneTree
+## Preflight P2 for Story 006: frame stamps and pause. Prints PROBE lines only.
+
+class Counter extends Node:
+	var calls: int = 0
+	var frames: PackedInt32Array = PackedInt32Array()
+	var proc_frames: PackedInt32Array = PackedInt32Array()
+
+	func _physics_process(_delta: float) -> void:
+		calls += 1
+		frames.append(Engine.get_physics_frames())
+		proc_frames.append(Engine.get_process_frames())
+
+
+class Stamper extends Node:
+	var stamp: int = -1
+	var calls: int = 0
+	var calls_at_arm: int = 0
+	var ok_frame: int = -1
+	var ok_calls: int = -1
+
+	func arm(at_frame: int) -> void:
+		stamp = at_frame
+		calls_at_arm = calls
+		ok_frame = -1
+
+	func _physics_process(_delta: float) -> void:
+		calls += 1
+		if stamp >= 0 and ok_frame < 0 and Engine.get_physics_frames() >= stamp:
+			ok_frame = Engine.get_physics_frames()
+			ok_calls = calls - calls_at_arm
+
+
+class Pauser extends Node:
+	var pause_at: int = -1
+	var paused_in_frame: int = -1
+
+	func _physics_process(_delta: float) -> void:
+		if paused_in_frame < 0 and pause_at >= 0 and Engine.get_physics_frames() >= pause_at:
+			paused_in_frame = Engine.get_physics_frames()
+			get_tree().paused = true
+
+
+class Unpauser extends Node:
+	var unpause_at: int = -1
+	var unpaused_in_frame: int = -1
+
+	func _physics_process(_delta: float) -> void:
+		if unpaused_in_frame < 0 and unpause_at >= 0 and Engine.get_physics_frames() >= unpause_at and get_tree().paused:
+			unpaused_in_frame = Engine.get_physics_frames()
+			get_tree().paused = false
+
+
+var _steady_only: bool = false
+
+
+func _p(id: String, text: String) -> void:
+	print("PROBE %s %s" % [id, text])
+
+
+func _counter(nname: String, mode: Node.ProcessMode, prio: int) -> Counter:
+	var c: Counter = Counter.new()
+	c.name = nname
+	c.process_mode = mode
+	c.process_physics_priority = prio
+	root.add_child(c)
+	return c
+
+
+func _initialize() -> void:
+	for a: String in OS.get_cmdline_user_args():
+		if a == "--steady-only":
+			_steady_only = true
+	await _run()
+	quit(0)
+
+
+func _run() -> void:
+	var info: Dictionary = Engine.get_version_info()
+	_p("p2.env", "godot=%s physics_ticks_per_second=%d max_fps=%d time_scale=%.2f args=%s root_process_mode=%d" % [info["string"], Engine.physics_ticks_per_second, Engine.max_fps, Engine.time_scale, " ".join(OS.get_cmdline_args()), root.process_mode])
+	var base: Counter = _counter("Default", Node.PROCESS_MODE_INHERIT, 0)
+	var pausable: Counter = _counter("Pausable", Node.PROCESS_MODE_PAUSABLE, 0)
+	var always: Counter = _counter("Always", Node.PROCESS_MODE_ALWAYS, 0)
+	var before: Counter = _counter("Before", Node.PROCESS_MODE_INHERIT, -1)
+	var after: Counter = _counter("After", Node.PROCESS_MODE_INHERIT, 1)
+	var pauser: Pauser = Pauser.new()
+	pauser.name = "Pauser"
+	root.add_child(pauser)
+	var s_long: Stamper = Stamper.new()
+	s_long.name = "StampLong"
+	root.add_child(s_long)
+	var s_short: Stamper = Stamper.new()
+	s_short.name = "StampShort"
+	root.add_child(s_short)
+	var ticks: int = 240 if _steady_only else 300
+	var cont_frames: PackedInt32Array = PackedInt32Array()
+	var f_deltas: Dictionary = {}
+	var p_deltas: Dictionary = {}
+	var f_prev: int = -1
+	var p_prev: int = -1
+	var t0: int = Time.get_ticks_msec()
+	for i: int in ticks:
+		await physics_frame
+		var f: int = Engine.get_physics_frames()
+		var pf: int = Engine.get_process_frames()
+		cont_frames.append(f)
+		if f_prev >= 0:
+			f_deltas[f - f_prev] = int(f_deltas.get(f - f_prev, 0)) + 1
+			p_deltas[pf - p_prev] = int(p_deltas.get(pf - p_prev, 0)) + 1
+		f_prev = f
+		p_prev = pf
+	var wall_ms: int = Time.get_ticks_msec() - t0
+	var same_frame: int = 0
+	for f: int in cont_frames:
+		if base.frames.has(f):
+			same_frame += 1
+	var proc_per_tick: PackedInt32Array = PackedInt32Array()
+	for k: int in range(1, base.proc_frames.size()):
+		proc_per_tick.append(base.proc_frames[k] - base.proc_frames[k - 1])
+	var pmin: int = 0
+	var pmax: int = 0
+	if proc_per_tick.size() > 0:
+		pmin = proc_per_tick[0]
+		pmax = proc_per_tick[0]
+		for v: int in proc_per_tick:
+			pmin = mini(pmin, v)
+			pmax = maxi(pmax, v)
+	_p("p2.steady", "ticks=%d wall_ms=%d physics_frame_delta_histogram=%s process_frame_delta_histogram=%s continuation_frame_seen_by_node_physics_process=%d/%d node_calls=%d first_frame=%d last_frame=%d node_to_node_process_frames_per_tick min=%d max=%d" % [ticks, wall_ms, str(f_deltas), str(p_deltas), same_frame, cont_frames.size(), base.calls, cont_frames[0], cont_frames[cont_frames.size() - 1], pmin, pmax])
+	if _steady_only:
+		return
+	# ---- pause test: pause set from a node's tick, like MatchController at Round over
+	var s0: int = Engine.get_physics_frames()
+	s_long.arm(s0 + 1200)
+	s_short.arm(s0 + 150)
+	pauser.pause_at = s0 + 100
+	var guard: int = 0
+	while not paused and guard < 400:
+		await physics_frame
+		guard += 1
+	var tp: int = pauser.paused_in_frame
+	var snap_calls: Dictionary = {"base": base.calls, "pausable": pausable.calls, "always": always.calls, "before": before.calls, "after": after.calls, "s_long": s_long.calls, "s_short": s_short.calls}
+	var after_last: int = after.frames[after.frames.size() - 1]
+	var before_last: int = before.frames[before.frames.size() - 1]
+	var always_last: int = always.frames[always.frames.size() - 1]
+	var pause_cont: PackedInt32Array = PackedInt32Array()
+	for i: int in 120:
+		await physics_frame
+		pause_cont.append(Engine.get_physics_frames())
+	var d_paused: Dictionary = {}
+	for k: int in range(1, pause_cont.size()):
+		d_paused[pause_cont[k] - pause_cont[k - 1]] = int(d_paused.get(pause_cont[k] - pause_cont[k - 1], 0)) + 1
+	var calls_in_pause: Dictionary = {"base": base.calls - int(snap_calls["base"]), "pausable": pausable.calls - int(snap_calls["pausable"]), "always": always.calls - int(snap_calls["always"]), "before": before.calls - int(snap_calls["before"]), "after": after.calls - int(snap_calls["after"]), "s_long": s_long.calls - int(snap_calls["s_long"])}
+	var f_unpause: int = Engine.get_physics_frames()
+	_p("p2.pause", "pause_set_in_tick=%d (by a node at priority 0) | at the next continuation paused=%s | in the pause tick: Before(prio -1) last frame=%d After(prio +1) last frame=%d Always last frame=%d -> After_ran_in_pause_tick=%s | physics_frame continuations during pause=%d, frame deltas=%s, frames %d..%d | _physics_process calls during %d paused ticks: %s" % [tp, str(paused), before_last, after_last, always_last, str(after_last == tp), pause_cont.size(), str(d_paused), pause_cont[0], pause_cont[pause_cont.size() - 1], pause_cont.size(), str(calls_in_pause)])
+	paused = false
+	var base_calls_at_unpause: int = base.calls
+	guard = 0
+	while (s_long.ok_frame < 0 or s_short.ok_frame < 0) and guard < 1500:
+		await physics_frame
+		guard += 1
+	var first_resume_idx: int = base_calls_at_unpause
+	var first_resume_frame: int = base.frames[first_resume_idx] if first_resume_idx < base.frames.size() else -1
+	var prev_frame: int = base.frames[first_resume_idx - 1]
+	_p("p2.unpause", "unpaused in the continuation of frame %d | Default node: last frame before pause=%d, first frame after unpause=%d (gap %d frames, %d of them ticks it did not run)" % [f_unpause, prev_frame, first_resume_frame, first_resume_frame - prev_frame, first_resume_frame - prev_frame - 1])
+	_p("p2.stamp_long", "armed at frame %d with stamp=frame+1200 (the 20 s respawn delay), pause of %d ticks began in tick %d: stamp reached test first true at frame %d (stamp-%d=%d) after %d of the node's own ticks (1200 - paused ticks = %d)" % [s0, pause_cont.size() + 1, tp, s_long.ok_frame, s0, s_long.ok_frame - s0, s_long.ok_calls, 1200 - (pause_cont.size() + 1)])
+	_p("p2.stamp_short", "armed at frame %d with stamp=frame+150 (reached DURING the pause, which began in tick %d and ended with the unpause in frame %d): test first true at frame %d = first_resume_frame %d?=%s, after %d of the node's own ticks (it had run %d before the pause)" % [s0, tp, f_unpause, s_short.ok_frame, first_resume_frame, str(s_short.ok_frame == first_resume_frame), s_short.ok_calls, int(snap_calls["s_short"]) - s_short.calls_at_arm])
+	# ---- second cycle: the unpause comes from an ALWAYS node's own tick, as RoundRestartInput does
+	var unp: Unpauser = Unpauser.new()
+	unp.name = "Unpauser"
+	unp.process_mode = Node.PROCESS_MODE_ALWAYS
+	root.add_child(unp)
+	pauser.paused_in_frame = -1
+	pauser.pause_at = Engine.get_physics_frames() + 5
+	guard = 0
+	while not paused and guard < 100:
+		await physics_frame
+		guard += 1
+	unp.unpause_at = Engine.get_physics_frames() + 60
+	guard = 0
+	while paused and guard < 300:
+		await physics_frame
+		guard += 1
+	await physics_frame
+	await physics_frame
+	var tu: int = unp.unpaused_in_frame
+	var nxt: int = -1
+	for f2: int in base.frames:
+		if f2 > tu:
+			nxt = f2
+			break
+	_p("p2.unpause_from_tick", "tree unpaused from an ALWAYS node's _physics_process (priority 0, later in tree order) in frame %d | ran in that same tick: Before(prio -1)=%s Default(prio 0, earlier in tree order)=%s After(prio +1)=%s Always=%s | Default node's first tick after the unpause = frame %d (unpause frame + %d)" % [tu, str(before.frames.has(tu)), str(base.frames.has(tu)), str(after.frames.has(tu)), str(always.frames.has(tu)), nxt, nxt - tu])

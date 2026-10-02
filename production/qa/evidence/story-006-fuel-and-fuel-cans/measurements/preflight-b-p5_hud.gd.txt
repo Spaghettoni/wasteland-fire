@@ -1,0 +1,123 @@
+extends SceneTree
+
+
+func _initialize() -> void:
+	_run()
+
+
+func _measure(label: Label, text: String) -> String:
+	label.text = text
+	await process_frame
+	await process_frame
+	var font: Font = label.get_theme_font(&"font")
+	var fs: int = label.get_theme_font_size(&"font_size")
+	var outline: int = label.get_theme_constant(&"outline_size")
+	var w: float = font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, fs).x
+	return "text='%s' ink_width_px=%.2f box_px=%.0f lines=%d min_size=%s font_size=%d outline=%d width_plus_outline=%.2f fits_in_box=%s" % [text, w, label.size.x, label.get_line_count(), label.get_minimum_size(), fs, outline, w + 2.0 * outline, (w + 2.0 * outline) <= label.size.x]
+
+
+func _run() -> void:
+	var ts: TextServer = TextServerManager.get_primary_interface()
+	print("PROBE P5 text_server=%s fallback_font=%s" % [ts.get_name(), ThemeDB.fallback_font != null])
+	var vp: SubViewport = SubViewport.new()
+	vp.size = Vector2i(640, 720)
+	root.add_child(vp)
+	var mc: MatchController = MatchController.new()
+	root.add_child(mc)
+	var unit: Unit = load("res://src/gameplay/units/motorbike.tscn").instantiate()
+	root.add_child(unit)
+	var hud: Control = load("res://src/ui/hud/player_hud.tscn").instantiate()
+	hud.set("match_controller", mc)
+	hud.set("unit", unit)
+	hud.set("player_index", 0)
+	vp.add_child(hud)
+	await process_frame
+	await process_frame
+	var hp_label: Label = hud.get_node("%HitPointsLabel")
+	var hp_bar: ProgressBar = hud.get_node("%HitPointsBar")
+	var status: Label = hud.get_node("%CanisterStatusLabel")
+	print("PROBE P5 hud size=%s visible=%s hp_bar_rect=%s hp_label_rect=%s status_rect=%s hp_label_text_now='%s'" % [hud.size, hud.visible, hp_bar.get_global_rect(), hp_label.get_global_rect(), status.get_global_rect(), hp_label.text])
+	print("PROBE P5 existing_hp_label " + await _measure(hp_label, "HP 220 / 220"))
+	print("PROBE P5 existing_hp_label " + await _measure(hp_label, "HP 100 / 100"))
+	var fuel_label: Label = hp_label.duplicate()
+	fuel_label.unique_name_in_owner = false
+	fuel_label.offset_left = 332.0
+	fuel_label.offset_right = 624.0
+	hud.add_child(fuel_label)
+	await process_frame
+	print("PROBE P5 fuel_label_dup rect=%s autowrap=%d halign=%d valign=%d" % [fuel_label.get_global_rect(), fuel_label.autowrap_mode, fuel_label.horizontal_alignment, fuel_label.vertical_alignment])
+	for text: String in ["Fuel 100 / 100", "Fuel 0 / 100", "Fuel 50 / 100", "Fuel 1000 / 1000", "Fuel 9999 / 9999"]:
+		print("PROBE P5 fuel_label_dup " + await _measure(fuel_label, text))
+	var scratch: Label = Label.new()
+	scratch.add_theme_font_size_override(&"font_size", 18)
+	scratch.add_theme_constant_override(&"outline_size", 6)
+	scratch.add_theme_color_override(&"font_outline_color", Color(0.05, 0.05, 0.06, 1))
+	scratch.add_theme_color_override(&"font_color", Color.WHITE)
+	scratch.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	scratch.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	scratch.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	scratch.position = Vector2(332, 16)
+	scratch.size = Vector2(292, 24)
+	hud.add_child(scratch)
+	await process_frame
+	print("PROBE P5 fuel_label_from_scratch " + await _measure(scratch, "Fuel 100 / 100"))
+	var font: Font = scratch.get_theme_font(&"font")
+	var widest: float = 0.0
+	var widest_digit: int = 0
+	for d: int in 10:
+		var w: float = font.get_string_size("Fuel %d%d%d / %d%d%d" % [d, d, d, d, d, d], HORIZONTAL_ALIGNMENT_LEFT, -1.0, 18).x
+		if w > widest:
+			widest = w
+			widest_digit = d
+	print("PROBE P5 widest_3digit_pair_text digit=%d width_px=%.2f (all ten digits measured)" % [widest_digit, widest])
+	var fuel_rect: Rect2 = Rect2(332, 16, 292, 24)
+	var view: Rect2 = Rect2(0, 0, 640, 720)
+	var real_rect: Rect2 = fuel_label.get_global_rect()
+	print("PROBE P5 geometry design_rect=%s inside_view=%s overlaps_hp_bar=%s overlaps_status=%s gap_to_hp_bar_px=%.1f gap_to_status_px=%.1f right_margin_px=%.1f | real_label_rect_after_layout=%s inside_view=%s overlaps_status=%s gap_to_status_px=%.1f" % [fuel_rect, view.encloses(fuel_rect), fuel_rect.intersects(hp_bar.get_global_rect()), fuel_rect.intersects(status.get_global_rect()), fuel_rect.position.x - hp_bar.get_global_rect().end.x, status.get_global_rect().position.y - fuel_rect.end.y, view.end.x - fuel_rect.end.x, real_rect, view.encloses(real_rect), real_rect.intersects(status.get_global_rect()), status.get_global_rect().position.y - real_rect.end.y])
+	var bar: ProgressBar = ProgressBar.new()
+	var bg: StyleBoxFlat = StyleBoxFlat.new()
+	bg.bg_color = Color(0.05, 0.05, 0.06, 0.75)
+	bg.set_corner_radius_all(4)
+	var fill: StyleBoxFlat = StyleBoxFlat.new()
+	fill.bg_color = Color(0.96, 0.7, 0.18, 1)
+	fill.set_corner_radius_all(4)
+	bar.add_theme_stylebox_override(&"background", bg)
+	bar.add_theme_stylebox_override(&"fill", fill)
+	bar.show_percentage = false
+	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bar.position = Vector2(332, 16)
+	bar.size = Vector2(292, 24)
+	var draws: Array[int] = [0]
+	bar.draw.connect(func() -> void: draws[0] += 1)
+	hud.add_child(bar)
+	bar.max_value = 100.0
+	bar.value = 0.0
+	await process_frame
+	await process_frame
+	print("PROBE P5 bar max=100 value=0 -> value=%s ratio=%s draws=%d override_fill_is_set=%s override_bg_is_set=%s" % [bar.value, bar.get_as_ratio(), draws[0], bar.has_theme_stylebox_override(&"fill"), bar.has_theme_stylebox_override(&"background")])
+	bar.value = 37.0
+	await process_frame
+	print("PROBE P5 bar value=37 -> value=%s ratio=%s draws=%d expected_fill_px=%.1f" % [bar.value, bar.get_as_ratio(), draws[0], bar.get_as_ratio() * bar.size.x])
+	var b_value_first: ProgressBar = ProgressBar.new()
+	b_value_first.value = 80.0
+	b_value_first.max_value = 50.0
+	var b_max_first: ProgressBar = ProgressBar.new()
+	b_max_first.max_value = 50.0
+	b_max_first.value = 80.0
+	var b_grow: ProgressBar = ProgressBar.new()
+	b_grow.max_value = 50.0
+	b_grow.value = 50.0
+	b_grow.max_value = 200.0
+	var b_zero: ProgressBar = ProgressBar.new()
+	b_zero.max_value = 0.0
+	b_zero.value = 0.0
+	print("PROBE P5 order value_first(80 then max 50)=%s max_first(max 50 then 80)=%s grow(50/50 then max 200)=%s ratio=%s zero_max(max 0,val 0) max=%s ratio=%s" % [b_value_first.value, b_max_first.value, b_grow.value, b_grow.get_as_ratio(), b_zero.max_value, b_zero.get_as_ratio()])
+	print("PROBE P5 ceili_text fmt='Fuel %%d / %%d': full=%s empty=%s tiny(0.4)=%s drift(1e-14)=%s" % [tr("Fuel %d / %d") % [ceili(100.0), ceili(100.0)], tr("Fuel %d / %d") % [ceili(0.0), ceili(100.0)], tr("Fuel %d / %d") % [ceili(0.4), ceili(100.0)], tr("Fuel %d / %d") % [ceili(1e-14), ceili(100.0)]])
+	for n: Node in [b_value_first, b_max_first, b_grow, b_zero]:
+		n.free()
+	vp.queue_free()
+	mc.queue_free()
+	unit.queue_free()
+	await process_frame
+	await process_frame
+	quit(0)

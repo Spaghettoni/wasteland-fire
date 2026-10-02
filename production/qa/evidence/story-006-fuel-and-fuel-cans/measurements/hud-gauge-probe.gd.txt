@@ -1,0 +1,366 @@
+extends SceneTree
+## Story 006 slice B probe (throwaway, never in the repo): the Fuel gauge of both PlayerHuds on the
+## real split screen, headless at --fixed-fps 60 with the shipped data. Exit code = failed checks.
+
+const SPLIT_SCENE: String = "res://src/gameplay/split_screen/split_screen.tscn"
+const HUD_SCENE: String = "res://src/ui/hud/player_hud.tscn"
+const AMBER: Color = Color(0.96, 0.7, 0.18, 1.0)
+
+var _split: SplitScreen
+var _mc: MatchController
+var _units: Array[Unit] = []
+var _huds: Array[PlayerHud] = []
+var _fails: int = 0
+var _emits: Array[int] = [0, 0]
+var _mismatch: Array[int] = [0, 0]
+var _rises: Array[int] = [0, 0]
+var _prev: Array[float] = [0.0, 0.0]
+
+
+func _initialize() -> void:
+    _run()
+
+
+func _check(label: String, ok: bool, detail: String) -> void:
+    print("PROBE %s %s | %s" % ["PASS" if ok else "FAIL", label, detail])
+    if not ok:
+        _fails += 1
+
+
+func _tick(n: int) -> void:
+    for _k: int in n:
+        await physics_frame
+
+
+func _type_index(type_id: StringName) -> int:
+    var types: Array[UnitStats] = _mc.unit_types()
+    for i: int in types.size():
+        if types[i].type_id == type_id:
+            return i
+    return -1
+
+
+func _bar(p: int) -> ProgressBar:
+    return _huds[p].find_child("FuelBar", true, false) as ProgressBar
+
+
+func _label(p: int) -> Label:
+    return _huds[p].find_child("FuelLabel", true, false) as Label
+
+
+func _ctl(p: int, node_name: String) -> Control:
+    return _huds[p].find_child(node_name, true, false) as Control
+
+
+func _expected_text(p: int) -> String:
+    return _huds[p].tr(_huds[p].fuel_format) % [ceili(_units[p].fuel), ceili(_units[p].fuel_capacity)]
+
+
+func _reading(p: int) -> String:
+    var b: ProgressBar = _bar(p)
+    return "p%d unit=%.4f/%.1f bar=%.4f/%.1f label=\"%s\"" % [p + 1, _units[p].fuel, _units[p].fuel_capacity, b.value, b.max_value, _label(p).text]
+
+
+func _shows_unit(p: int) -> bool:
+    var b: ProgressBar = _bar(p)
+    return (_label(p).text == _expected_text(p) and is_equal_approx(b.max_value, _units[p].fuel_capacity)
+        and absf(b.value - _units[p].fuel) <= b.step * 0.5 + 0.000001)
+
+
+func _rect(r: Rect2) -> String:
+    return "(%.0f,%.0f %.0fx%.0f)" % [r.position.x, r.position.y, r.size.x, r.size.y]
+
+
+func _clean() -> bool:
+    return _mismatch[0] == 0 and _mismatch[1] == 0 and _rises[0] == 0 and _rises[1] == 0
+
+
+func _watch() -> void:
+    for p: int in 2:
+        if not _shows_unit(p):
+            _mismatch[p] += 1
+            if _mismatch[p] <= 3:
+                print("PROBE NOTE mismatch frame=%d %s" % [Engine.get_physics_frames(), _reading(p)])
+        if _bar(p).value > _prev[p] + 0.0000001:
+            _rises[p] += 1
+        _prev[p] = _bar(p).value
+
+
+func _cans_available() -> String:
+    var states: PackedStringArray = []
+    for n: Node in get_nodes_in_group(&"fuel_cans"):
+        states.append("%s=%s" % [n.name, (n as FuelCan).is_available])
+    return ",".join(states)
+
+
+func _run() -> void:
+    print("PROBE INFO -s root window before: size=%s visible_rect=%s" % [root.size, root.get_visible_rect()])
+    root.size = Vector2i(1280, 720)
+    print("PROBE INFO root window set to: size=%s visible_rect=%s" % [root.size, root.get_visible_rect()])
+    _split = (load(SPLIT_SCENE) as PackedScene).instantiate() as SplitScreen
+    root.add_child(_split)
+    await process_frame
+    root.size = Vector2i(1280, 720)
+    print("PROBE INFO after the first frame the window is set again, as the harness does: size=%s" % [root.size])
+    await _tick(5)
+    _mc = _split.match_controller
+    _units.append(_split.get_node("%Player1Unit") as Unit)
+    _units.append(_split.get_node("%Player2Unit") as Unit)
+    _huds.append(_split.get_node("Views/Player1View/SubViewport/Player1Hud") as PlayerHud)
+    _huds.append(_split.get_node("Views/Player2View/SubViewport/Player2Hud") as PlayerHud)
+    for p: int in 2:
+        _units[p].fuel_changed.connect(func(_f: float, _c: float) -> void: _emits[p] += 1)
+    _step_wiring()
+    _step_choosing()
+    await _step_spawn()
+    await _step_drive()
+    await _step_refuel()
+    _step_max_first()
+    await _step_destroy_respawn()
+    _step_layout()
+    await _step_text_fit()
+    _step_style()
+    await _step_validation()
+    _step_cost()
+    print("PROBE DONE fails=%d frame=%d" % [_fails, Engine.get_physics_frames()])
+    _split.queue_free()
+    await process_frame
+    await process_frame
+    quit(_fails)
+
+
+func _step_wiring() -> void:
+    var own: bool = (_units[0].fuel_changed.is_connected(_huds[0]._on_fuel_changed)
+        and _units[1].fuel_changed.is_connected(_huds[1]._on_fuel_changed))
+    var cross: bool = (_units[0].fuel_changed.is_connected(_huds[1]._on_fuel_changed)
+        or _units[1].fuel_changed.is_connected(_huds[0]._on_fuel_changed))
+    _check("wiring", own and not cross, "each HUD on its own Unit's fuel_changed=%s cross-wired=%s connections p1=%d p2=%d (HUD + this probe's counter)" % [
+        own, cross, _units[0].fuel_changed.get_connections().size(), _units[1].fuel_changed.get_connections().size()])
+
+
+func _step_choosing() -> void:
+    var ok: bool = true
+    var parts: PackedStringArray = []
+    for p: int in 2:
+        ok = ok and _mc.is_choosing(p) and _label(p).text == "Fuel 0 / 100" and _bar(p).value == 0.0 and _bar(p).max_value == 100.0 and _shows_unit(p)
+        parts.append("%s choosing=%s hp_label=\"%s\"" % [_reading(p), _mc.is_choosing(p), (_ctl(p, "HitPointsLabel") as Label).text])
+    _check("round_start_choosing_reads_zero", ok, "frame=%d %s" % [Engine.get_physics_frames(), " ".join(parts)])
+
+
+func _step_spawn() -> void:
+    var accepted: bool = _mc.choose(0, _type_index(&"motorbike")) and _mc.choose(1, _type_index(&"truck"))
+    var before: Array[int] = [_emits[0], _emits[1]]
+    var waited: int = 0
+    while waited < 120 and not (_mc.is_alive(0) and _mc.is_alive(1)):
+        await _tick(1)
+        waited += 1
+    await _tick(2)
+    var ok: bool = accepted
+    var parts: PackedStringArray = []
+    for p: int in 2:
+        ok = ok and _label(p).text == "Fuel 50 / 100" and is_equal_approx(_bar(p).value, 50.0) and _shows_unit(p)
+        parts.append("%s type=%s fuel_changed_since_choice=%d" % [_reading(p), _units[p].type_id, _emits[p] - before[p]])
+    _check("spawn_reads_partial_tank", ok, "accepted=%s alive_after=%d ticks | %s" % [accepted, waited, " ".join(parts)])
+    _prev = [_bar(0).value, _bar(1).value]
+
+
+func _step_drive() -> void:
+    var start: Array[float] = [_bar(0).value, _bar(1).value]
+    Input.action_press(&"p1_throttle")
+    Input.action_press(&"p1_steer_left")
+    for _k: int in 60:
+        await _tick(1)
+        _watch()
+    var a_end: Array[float] = [_bar(0).value, _bar(1).value]
+    var p2_still: bool = is_equal_approx(a_end[1], 50.0) and _label(1).text == "Fuel 50 / 100"
+    _check("p1_drives_alone_60_ticks", a_end[0] < start[0] and p2_still and _clean(), "p1 bar %.4f -> %.4f label=\"%s\" speed=%.2f | p2 untouched: %s | mismatched_ticks=%s rising_ticks=%s" % [
+        start[0], a_end[0], _label(0).text, _units[0].current_speed, _reading(1), _mismatch, _rises])
+    Input.action_press(&"p2_throttle")
+    for _k: int in 45:
+        await _tick(1)
+        _watch()
+    var b_end: Array[float] = [_bar(0).value, _bar(1).value]
+    _check("both_drive_45_ticks", b_end[0] < a_end[0] and b_end[1] < a_end[1] and _clean(), "p1 %.4f -> %.4f (fuel_use %.1f) | p2 %.4f -> %.4f (fuel_use %.1f) | %s | %s | mismatched_ticks=%s rising_ticks=%s" % [
+        a_end[0], b_end[0], _units[0].stats.fuel_use, a_end[1], b_end[1], _units[1].stats.fuel_use, _reading(0), _reading(1), _mismatch, _rises])
+    Input.action_release(&"p1_throttle")
+    Input.action_release(&"p2_throttle")
+    var coast: int = 0
+    while coast < 600 and not (is_zero_approx(_units[0].current_speed) and is_zero_approx(_units[1].current_speed)):
+        await _tick(1)
+        _watch()
+        coast += 1
+    Input.action_release(&"p1_steer_left")
+    await _tick(3)
+    _watch()
+    var held: Array[float] = [_bar(0).value, _bar(1).value]
+    var texts: PackedStringArray = [_label(0).text, _label(1).text]
+    for _k: int in 60:
+        await _tick(1)
+        _watch()
+    var still: bool = (_bar(0).value == held[0] and _bar(1).value == held[1] and _label(0).text == texts[0] and _label(1).text == texts[1])
+    _check("coast_then_stand_60_ticks", still and _clean(), "coast_ticks=%d then 60 ticks standing unchanged=%s: %s | %s | cans %s | p1_pos=%s p2_pos=%s" % [
+        coast, still, _reading(0), _reading(1), _cans_available(), _units[0].global_position.snapped(Vector3.ONE * 0.01), _units[1].global_position.snapped(Vector3.ONE * 0.01)])
+
+
+func _step_refuel() -> void:
+    await _tick(1)
+    var before: float = _units[0].fuel
+    var bar_before: float = _bar(0).value
+    var text_before: String = _label(0).text
+    var p2_text: String = _label(1).text
+    var p2_bar: float = _bar(1).value
+    var added: float = _units[0].refuel(40.0)
+    var ok: bool = is_equal_approx(added, 40.0) and _shows_unit(0) and _bar(0).value > bar_before and _label(1).text == p2_text and _bar(1).value == p2_bar
+    _check("refuel_rises_same_call", ok, "p1 %.4f + %.4f: bar %.4f -> %.4f label \"%s\" -> \"%s\" | p2 unchanged: %s" % [
+        before, added, bar_before, _bar(0).value, text_before, _label(0).text, _reading(1)])
+
+
+func _step_max_first() -> void:
+    var hud: PlayerHud = _huds[0]
+    var b: ProgressBar = _bar(0)
+    hud._on_fuel_changed(150.0, 200.0)
+    var a: String = "max=%.1f value=%.1f label=\"%s\"" % [b.max_value, b.value, _label(0).text]
+    var ok_a: bool = b.max_value == 200.0 and b.value == 150.0 and _label(0).text == "Fuel 150 / 200"
+    hud._on_fuel_changed(0.0, 0.0)
+    var c: String = "max=%.1f value=%.1f label=\"%s\"" % [b.max_value, b.value, _label(0).text]
+    var ok_c: bool = b.max_value == 200.0 and b.value == 0.0
+    hud._on_fuel_changed(_units[0].fuel, _units[0].fuel_capacity)
+    var ok_r: bool = _shows_unit(0)
+    var pb: ProgressBar = ProgressBar.new()
+    pb.value = 150.0
+    pb.max_value = 200.0
+    var value_first: float = pb.value
+    pb.free()
+    _check("max_value_before_value", ok_a and ok_c and ok_r, "(150, 200): %s | (0, 0) leaves the maximum: %s | restored: %s | control: a bare ProgressBar given value 150 before max 200 holds %.1f" % [
+        a, c, _reading(0), value_first])
+
+
+func _step_destroy_respawn() -> void:
+    await _tick(1)
+    var held: float = _units[0].fuel
+    var p2_text: String = _label(1).text
+    _units[0].destroy()
+    var zero_ok: bool = _label(0).text == "Fuel 0 / 100" and _bar(0).value == 0.0 and _bar(0).max_value == 100.0 and _label(1).text == p2_text
+    var z: String = _reading(0)
+    var tries: int = 0
+    var accepted: bool = false
+    var not_zero: int = 0
+    while not accepted and tries < 300:
+        await _tick(1)
+        tries += 1
+        not_zero += 0 if _label(0).text == "Fuel 0 / 100" else 1
+        accepted = _mc.choose(0, _type_index(&"motorbike"))
+    var waited: int = 0
+    while waited < 600 and not _mc.is_alive(0):
+        await _tick(1)
+        waited += 1
+        not_zero += 0 if (_label(0).text == "Fuel 0 / 100" or _mc.is_alive(0)) else 1
+    await _tick(2)
+    var back_ok: bool = _label(0).text == "Fuel 50 / 100" and is_equal_approx(_bar(0).value, 50.0) and _shows_unit(0)
+    _check("destroy_reads_zero_then_respawn_partial", zero_ok and accepted and back_ok and not_zero == 0, "held %.4f; destroyed: %s (p2 unchanged \"%s\"); waiting ticks not reading zero=%d; chose after %d ticks, alive %d ticks later; respawned: %s" % [
+        held, z, _label(1).text, not_zero, tries, waited, _reading(0)])
+
+
+func _step_layout() -> void:
+    for p: int in 2:
+        var view: Rect2 = Rect2(Vector2.ZERO, Vector2((_huds[p].get_viewport() as SubViewport).size))
+        var fb: Rect2 = _bar(p).get_global_rect()
+        var fl: Rect2 = _label(p).get_global_rect()
+        var hb: Rect2 = _ctl(p, "HitPointsBar").get_global_rect()
+        var hl: Rect2 = _ctl(p, "HitPointsLabel").get_global_rect()
+        var sl: Rect2 = _ctl(p, "CanisterStatusLabel").get_global_rect()
+        var overlaps: int = 0
+        for o: Rect2 in [hb, hl, sl]:
+            overlaps += (1 if fb.intersects(o) else 0) + (1 if fl.intersects(o) else 0)
+        var bar_exact: bool = fb.is_equal_approx(Rect2(332, 16, 292, 24))
+        var bar_in_band: bool = fb.position.x >= 332.0 and fb.end.x <= 624.0 and fb.position.y >= 16.0 and fb.end.y <= 40.0
+        var label_ok: bool = fl.position.is_equal_approx(Vector2(332, 16)) and is_equal_approx(fl.size.x, 292.0) and fl.end.y <= sl.position.y
+        var inside: bool = view.size == Vector2(640, 720) and view.encloses(fb) and view.encloses(fl)
+        var shown: bool = _bar(p).is_visible_in_tree() and _label(p).is_visible_in_tree()
+        _check("layout_p%d" % (p + 1), bar_exact and bar_in_band and label_ok and inside and overlaps == 0 and shown, "view=%s FuelBar=%s FuelLabel=%s HitPointsBar=%s HitPointsLabel=%s CanisterStatusLabel=%s overlaps=%d gap_to_hp_bar=%.0f gap_to_right_edge=%.0f gap_label_to_status=%.0f" % [
+            _rect(view), _rect(fb), _rect(fl), _rect(hb), _rect(hl), _rect(sl), overlaps, fb.position.x - hb.end.x, view.end.x - fb.end.x, sl.position.y - fl.end.y])
+
+
+func _step_text_fit() -> void:
+    var lab: Label = _label(0)
+    var text: String = _huds[0].tr(_huds[0].fuel_format) % [100, 100]
+    var font: Font = lab.get_theme_font(&"font")
+    var size: int = lab.get_theme_font_size(&"font_size")
+    var outline: int = lab.get_theme_constant(&"outline_size")
+    var w: float = font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, size).x
+    var wrap: Label = lab.duplicate() as Label
+    wrap.unique_name_in_owner = false
+    wrap.name = "ProbeWrapLabel"
+    wrap.text = text
+    var nowrap: Label = lab.duplicate() as Label
+    nowrap.unique_name_in_owner = false
+    nowrap.name = "ProbeNoWrapLabel"
+    nowrap.autowrap_mode = TextServer.AUTOWRAP_OFF
+    nowrap.text = text
+    _huds[0].add_child(wrap)
+    _huds[0].add_child(nowrap)
+    await process_frame
+    await process_frame
+    var lines: int = wrap.get_line_count()
+    var wrap_rect: Rect2 = wrap.get_global_rect()
+    var min_size: Vector2 = nowrap.get_minimum_size()
+    wrap.queue_free()
+    nowrap.queue_free()
+    await process_frame
+    _check("text_fits_292", w + 2.0 * outline <= 292.0 and lines == 1 and min_size.x <= 292.0, "\"%s\" font_size=%d outline=%d string_width=%.1f with_outline=%.1f no-wrap minimum=%s; in a copy of the real label rect=%s lines=%d" % [
+        text, size, outline, w, w + 2.0 * outline, min_size, _rect(wrap_rect), lines])
+
+
+func _step_style() -> void:
+    var b: ProgressBar = _bar(0)
+    var hp: ProgressBar = _ctl(0, "HitPointsBar") as ProgressBar
+    var fill: StyleBoxFlat = b.get_theme_stylebox(&"fill") as StyleBoxFlat
+    var hp_fill: StyleBoxFlat = hp.get_theme_stylebox(&"fill") as StyleBoxFlat
+    var same_bg: bool = b.get_theme_stylebox(&"background") == hp.get_theme_stylebox(&"background")
+    var radii: bool = (fill != null and fill.corner_radius_top_left == 4 and fill.corner_radius_top_right == 4
+        and fill.corner_radius_bottom_right == 4 and fill.corner_radius_bottom_left == 4)
+    var lab: Label = _label(0)
+    var hl: Label = _ctl(0, "HitPointsLabel") as Label
+    var same_text: bool = (lab.get_theme_color(&"font_color") == hl.get_theme_color(&"font_color")
+        and lab.get_theme_color(&"font_outline_color") == hl.get_theme_color(&"font_outline_color")
+        and lab.get_theme_constant(&"outline_size") == hl.get_theme_constant(&"outline_size")
+        and lab.get_theme_font_size(&"font_size") == hl.get_theme_font_size(&"font_size")
+        and lab.horizontal_alignment == hl.horizontal_alignment and lab.vertical_alignment == hl.vertical_alignment
+        and lab.autowrap_mode == hl.autowrap_mode)
+    var ok: bool = (fill != null and fill.bg_color.is_equal_approx(AMBER) and radii and same_bg and not b.show_percentage
+        and b.mouse_filter == Control.MOUSE_FILTER_IGNORE and lab.mouse_filter == Control.MOUSE_FILTER_IGNORE and same_text)
+    _check("style", ok, "fill=%s (hit-point fill %s) radii_4=%s background_shared_with_hp_bar=%s show_percentage=%s mouse_filter bar=%d label=%d label_style_equals_hp_label=%s bar_step=%s" % [
+        fill.bg_color if fill != null else Color.BLACK, hp_fill.bg_color, radii, same_bg, b.show_percentage, b.mouse_filter, lab.mouse_filter, same_text, b.step])
+
+
+func _step_validation() -> void:
+    print("PROBE NOTE the next two ERROR lines are expected (fuel_format left empty, then with one placeholder)")
+    var packed: PackedScene = load(HUD_SCENE) as PackedScene
+    var results: PackedStringArray = []
+    var ok: bool = true
+    for bad: String in ["", "Fuel %d"]:
+        var inst: PlayerHud = packed.instantiate() as PlayerHud
+        inst.name = "ProbeHud"
+        inst.match_controller = _mc
+        inst.unit = _units[1]
+        inst.player_index = 1
+        inst.fuel_format = bad
+        root.add_child(inst)
+        var connected: bool = _units[1].fuel_changed.is_connected(inst._on_fuel_changed) or _units[1].hit_points_changed.is_connected(inst._on_hit_points_changed)
+        ok = ok and not inst.visible and not connected
+        results.append("fuel_format=\"%s\" hidden=%s connected=%s" % [bad, not inst.visible, connected])
+        inst.queue_free()
+        await process_frame
+    _check("fuel_format_validated", ok, " | ".join(results))
+
+
+func _step_cost() -> void:
+    var hud: PlayerHud = _huds[0]
+    var n: int = 20000
+    var t0: int = Time.get_ticks_usec()
+    for i: int in n:
+        hud._on_fuel_changed(50.0 - float(i) * 0.0025, 100.0)
+    var per: float = float(Time.get_ticks_usec() - t0) / float(n)
+    hud._on_fuel_changed(_units[0].fuel, _units[0].fuel_capacity)
+    print("PROBE INFO handler_cost_us_per_call=%.3f over %d calls (format, tr, bar value, label text)" % [per, n])
+    _check("restored_after_cost_loop", _shows_unit(0), _reading(0))

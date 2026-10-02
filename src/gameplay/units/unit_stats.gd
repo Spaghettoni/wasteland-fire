@@ -28,6 +28,16 @@ extends Resource
 ## first_problem() is the one rule of what is usable: MatchController and Unit.spawn() apply it, and
 ## Unit._ready() keeps its own inline copy of the same three tests.
 ##
+## Story 006 AC-1, AC-3 and AC-5 (production/epics/wasteland-fire/story-006-fuel-and-fuel-cans.md;
+## design/rules.md "Resources" and "Destruction and respawn") add the Fuel group: the size of each
+## type's tank (fuel_capacity), what it burns per second while the Unit moves (fuel_use, the
+## source's field name; the Gyrocopter's is the highest of the four), the share of the tank a
+## freshly spawned Unit starts with (spawn_fuel_fraction, so dying is never a free refuel) and how
+## fast a ground Unit with an empty tank turns on the spot (empty_turn_rate). A type whose
+## fuel_capacity is zero has no Fuel system: nothing burns and a Unit of it is never empty, as
+## before Story 006. empty_turn_rate is unused by a flying type (can_fly), which crashes when its
+## tank runs dry instead of standing still. The four .tres hold starting values, to tune by playing.
+##
 ## Data only. A Unit reads these numbers and never writes them. One .tres is shared by every
 ## Unit that references it, so treat it as read-only at runtime (duplicate() it for a private
 ## copy).
@@ -166,9 +176,10 @@ extends Resource
 
 ## Whether this type flies (Story 005 AC-1 and AC-5; design/rules.md "Units": "Flying means only
 ## crossing cliffs and water"): true for the Gyrocopter only. What flying does is in its layers
-## below (its collision_mask leaves the cliffs_water layer out); this flag is for Story 006's
-## crash rule (a Gyrocopter with no Fuel falls), and in Story 005 nothing but the evidence reads
-## it. False by default (class doc), so a type that flies must say so in its .tres.
+## below (its collision_mask leaves the cliffs_water layer out); the Unit reads this flag only for
+## Story 006's empty-tank rule: a flying Unit whose tank runs dry is destroyed, where a ground Unit
+## stops but can still turn (Unit._burn_fuel() and _is_stranded()). False by default (class doc),
+## so a type that flies must say so in its .tres.
 @export var can_fly: bool = false
 
 ## The greybox visual of this type (models/<type>_model.tscn): a Model root with MeshInstance3D
@@ -207,6 +218,41 @@ extends Resource
 ## inside a Gyrocopter parked in its Garage although the two never collide; Story 005 AC-5 and
 ## AC-6). Zero by default (class doc), and zero means test the Unit's own layer, as Story 003 did.
 @export_flags_3d_physics var spot_mask: int = 0
+
+@export_group("Fuel")
+
+## Size of this type's Fuel tank, in Fuel units (Story 006 AC-1,
+## production/epics/wasteland-fire/story-006-fuel-and-fuel-cans.md; design/rules.md "Resources"):
+## the most Fuel a Unit of this type holds, the top of its Fuel gauge and what a Fuel Can fills it
+## up to. Zero by default (class doc), and zero means this type has no Fuel system: a Unit of it
+## burns nothing and is never empty, as before Story 006. A Unit has a tank only once it has spawned
+## (Unit.spawn()), so a Unit nobody spawns (the driving toy's) burns nothing whatever this says.
+@export_range(0.0, 1000.0, 1.0, "or_greater", "suffix:fuel") var fuel_capacity: float = 0.0
+
+## Fuel units this type burns per second while the Unit moves (the source's field name; Story 006
+## AC-1 and AC-2; design/rules.md "Resources": every Unit burns Fuel while moving, the Gyrocopter
+## the most). Moving reads the drive speed: a Unit burns while its drive speed is not approximately
+## zero, so one coasting to a stop burns until it stands and one held against a wall with the
+## throttle on keeps burning, and a Unit standing still burns nothing. The Gyrocopter's is the
+## highest of the four. Zero by default (class doc): a type whose .tres has no line never burns its
+## tank.
+@export_range(0.0, 100.0, 0.01, "or_greater", "suffix:fuel/s") var fuel_use: float = 0.0
+
+## The share of fuel_capacity a Unit of this type starts with every time it spawns, from 0 to 1
+## (Story 006 AC-5; design/rules.md "Destruction and respawn": a fresh Unit spawns with a fixed
+## partial tank, so dying is never a free refuel, even for a Unit refuelled to full before it was
+## destroyed). The Unit clamps it to that range. Zero by default (class doc): a type whose .tres has
+## no line spawns with an empty tank, which leaves a ground Unit unable to drive and crashes a
+## flying one on its first tick.
+@export_range(0.0, 1.0, 0.01) var spawn_fuel_fraction: float = 0.0
+
+## How fast a ground Unit of this type turns on the spot while its tank is empty, in radians per
+## second with steering fully held (Story 006 AC-3; design/rules.md "Destruction and respawn": a
+## ground Unit with no Fuel stops but can still turn and fire). Unlike turn_rate it does not scale
+## with speed, so an empty Unit turns at a standstill. Unused by a flying type (can_fly), which
+## crashes when its tank runs dry: the Gyrocopter's .tres leaves it out. Zero by default (class
+## doc): an empty ground Unit of a type whose .tres has no line cannot turn.
+@export_range(0.0, 10.0, 0.01, "or_greater", "suffix:rad/s") var empty_turn_rate: float = 0.0
 
 
 ## The reason these stats cannot drive a Unit, or an empty String when they can: max_speed,
