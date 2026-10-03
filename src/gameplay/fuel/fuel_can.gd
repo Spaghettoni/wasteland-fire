@@ -1,8 +1,8 @@
 class_name FuelCan
 extends Node3D
 ## A Fuel Can: a pickup at a fixed spot that refills the Unit touching it, vanishes, and is back
-## at the same spot after a delay from data. This node is the thing itself, a greybox amber
-## box with a touch zone, and it holds whether it stands at its spot (AVAILABLE) or is away
+## at the same spot after a delay from data. This node is the thing itself, a red box with a
+## touch zone, and it holds whether it stands at its spot (AVAILABLE) or is away
 ## (TAKEN) and the physics frame it comes back on.
 ##
 ## Implements: production/epics/wasteland-fire/story-006-fuel-and-fuel-cans.md AC-6 (a Unit that
@@ -62,9 +62,10 @@ extends Node3D
 ## The scene (fuel_can.tscn), origin on the ground at the Can's spot, its root in the node group
 ## "fuel_cans" (the scene stores it):
 ##   FuelCan (this Node3D)
-##     Body (Node3D): the Fuel Can's body, hidden while TAKEN: an amber box 0.8 m wide, 1.0 m
-##       tall and 0.4 m deep with a dark cap and a dark handle on top, unlike the Flag's cylinder
-##       with its cream lid
+##     Body (Node3D): the Fuel Can's body, hidden while TAKEN: a red box 0.8 m wide, 1.0 m tall
+##       and 0.4 m deep with a dark cap and a dark handle on top, unlike the Flag's round tank
+##       (production/epics/wasteland-fire/story-007-the-map.md AC-11: the Fuel Cans are red and wear
+##       no Team colour)
 ##     PickupZone (Area3D): a sphere of radius 1.6 m centred 0.6 m up, on no physics layer
 ##       (layer 0: nothing detects it) watching mask 18, ground Units (2) and Gyrocopters (16);
 ##       it only reports

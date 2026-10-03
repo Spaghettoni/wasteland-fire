@@ -1,0 +1,14 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/units/models/kit_unit_model.gd" id="1_model"]
+[ext_resource type="PackedScene" path="res://assets/art/vehicles/wasteland_buggy/wasteland_buggy.tscn" id="2_kit"]
+
+[node name="BuggyKitModel" type="Node3D"]
+script = ExtResource("1_model")
+kit_scene = ExtResource("2_kit")
+rust_seed = 11
+model_scale = 0.72
+material_remap = Dictionary[String, String]({
+"flag": "orange",
+"rust_orange": "steel_dark"
+})

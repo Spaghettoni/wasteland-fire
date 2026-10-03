@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="FordSettings" format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/maps/ford_settings.gd" id="1_ford_settings"]
+
+[resource]
+script = ExtResource("1_ford_settings")
+speed_fraction = 0.5

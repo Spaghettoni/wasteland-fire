@@ -35,12 +35,13 @@ The rules of record are in `design/rules.md`, the one-page brief in
 | 004 | The Flag and the win, per-Player HUD, round-over screen | Done, code still calls it the Water Canister |
 | 005 | Four Units and the counter triangle | Done |
 | 006 | Fuel and Fuel Cans | Done |
-| 007 | Map 01 with the Team colours | Planned |
+| 007 | Map 01 with the Team colours | Done |
 | 008 | Tokens, the Garage and the loss | Planned |
 
-Everything is greybox until the loop is proven. The vehicle concept models
-under `assets/art/` are built from Godot primitives and are not in the game
-yet.
+Map 01 and the four Units have their low-poly look: the Map is built from
+Godot's built-in meshes with textures generated in code, and the Units are the
+concept models under `assets/art/`, merged into a few surfaces each when the
+game loads. The older evidence scenarios still run on the greybox field.
 
 ## Controls
 
@@ -64,6 +65,15 @@ empties while the Unit moves and holds while it stands still. Drive over an ambe
 Fuel Can to refill from it; the Can comes back at the same spot after about 20
 seconds. A ground Unit with no Fuel stops but can still turn and fire, and a
 Gyrocopter with no Fuel crashes. Self-destruct still works with an empty tank.
+
+Map 01 is an island about 300 by 100 metres. Orange is Player 1 at the west
+Base and Teal is Player 2 at the east Base; each Base is a walled compound with
+one gate facing the centre, a roofless Garage and a water tower over the Flag.
+A canyon road runs along the north and a cracked salt flat fills the middle,
+with a Fuel depot of five Cans at its centre and wrecks, containers and scrap
+walls for cover. Two shallow fords across the flat slow ground Units to half
+speed. A rocky ridge in the south, cut by two channels, is crossed only by the
+Gyrocopter, and the sea around the island stops every Unit.
 
 ## Running it
 

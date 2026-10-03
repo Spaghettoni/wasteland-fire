@@ -2,11 +2,11 @@ class_name WaterCanister
 extends Node3D
 ## The Water Canister, one per Base, that a Motorbike picks up by touching it, carries on its tail,
 ## drops where it is destroyed and, when it is the opponent's, delivers to its own Base to win the
-## Round. This node is the thing itself: a greybox barrel with a cream lid and a touch zone. It
-## holds where it is (at home, carried, dropped) and the Unit carrying it, and nothing else.
+## Round. This node is the thing itself: a small water tank in its owner's colour and a touch zone.
+## It holds where it is (at home, carried, dropped) and the Unit carrying it, and nothing else.
 ##
 ## Implements: production/epics/wasteland-fire/story-004-water-canister-and-win.md AC-1 (a visible
-## canister in its Player's colour: apply_color() paints the body, the Lid keeps its cream), AC-2
+## canister in its Player's colour: apply_color() paints the body, the steel parts stay steel), AC-2
 ## (picked up by touching: is_touching() says whether a Unit is in the PickupZone, carry_by() puts
 ## the canister on the Unit, where it rides at the Unit's carry_offset), AC-3 (drop_at() stands it
 ## where the Carrier was destroyed, and nothing here ever moves it home) and AC-4 (seat_at() stands
@@ -34,11 +34,13 @@ extends Node3D
 ## The scene (water_canister.tscn), origin at the centre of the base so a seat or a drop position is
 ## a point on the ground:
 ##   WaterCanister (this Node3D)
-##     Body (MeshInstance3D): a 0.9 m wide, 1.1 m tall cylinder standing on the origin, light grey
-##       until apply_color() paints it in the owning Player's colour
-##     Lid (MeshInstance3D): a 0.76 m wide, 0.12 m thick cap on top, cream (Color(0.96, 0.92, 0.72),
-##       the Unit's nose), so a canister reads as a canister in either Player colour, on either pad
-##       and on a Unit's tail
+##     Body (MeshInstance3D): a 0.56 m wide, 0.72 m tall cylinder from 0.10 m up, light grey
+##       until apply_color() paints it in the owning Player's colour (on Map 01 its Team colour:
+##       production/epics/wasteland-fire/story-007-the-map.md AC-12, the Flag is a carryable water
+##       tank about 1 m tall)
+##     Stand, BandLow, BandHigh, Lid (MeshInstance3D): its dark steel parts, a base ring, two bands
+##       0.6 m across and a domed lid, 0.94 m tall in all; never painted, so the Flag reads as the
+##       same tank in either Player colour, on its seat and on a Unit's tail
 ##     PickupZone (Area3D): a 1 m sphere about the body's middle, on physics layer 4 ("canisters",
 ##       project.godot) watching layer 2 ("units"); it only reports
 ## No solid collision anywhere. Picking up is touching (AC-2): a Unit drives into the canister and
@@ -101,8 +103,8 @@ enum State {
 ## "units", a 1 m sphere): is_touching() reads it. The scene sets it to the PickupZone child.
 @export var pickup_zone: Area3D
 
-## The barrel mesh apply_color() paints in the owning Player's colour. The scene sets it to the
-## Body child; the Lid is not exported because nothing paints it.
+## The body mesh apply_color() paints in the owning Player's colour. The scene sets it to the
+## Body child; the steel parts are not exported because nothing paints them.
 @export var body_mesh: MeshInstance3D
 
 ## Where the canister is (State): AT_HOME from _ready() until the controller moves it. Read-only:
@@ -135,9 +137,9 @@ func _ready() -> void:
 		push_error("WaterCanister '%s': pickup_zone or body_mesh is not assigned, so the canister can neither report a touch nor take a colour." % name)
 
 
-## Paints the Body in the given material, a material_override on body_mesh only (the Lid keeps its
-## cream, so the canister reads the same in both colours), so each Base's canister shows whose it
-## is (AC-1). The Base calls it in _ready() with the material it puts on its pad and beacon. The
+## Paints the Body in the given material, a material_override on body_mesh only (the steel parts
+## stay steel, so the canister reads the same in both colours), so each Base's canister shows whose
+## it is (AC-1). The Base calls it in _ready() with the material it puts on its pad and beacon. The
 ## mesh resources are shared by every instance of the scene, so a material on the mesh would paint
 ## both canisters alike; the override is per instance. The material is shared too: never write to
 ## it.

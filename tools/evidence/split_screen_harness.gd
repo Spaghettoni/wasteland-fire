@@ -10,7 +10,8 @@ extends Node
 ## Scenarios, chosen with --scenario=NAME (after the "--"): layout, isolation, simultaneous, showcase, fps,
 ## bases, destruction, countdown, respawn_showcase, canister_run, hud, round_over, canister_showcase
 ## and, since Story 005, units, weapons, gyro, choice and units_showcase; since Story 006, fuel,
-## fuel_cans and fuel_showcase.
+## fuel_cans and fuel_showcase; since Story 007, on Map 01, map_layout, map_edges, map_ford,
+## map_bases, map_cover, map_showcase, map_legibility and map_fps.
 ## Each is a script under tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
@@ -23,6 +24,9 @@ extends Node
 ## the Unit run as under a real keyboard. Gameplay code names actions, never keys; tools are the only place
 ## key codes appear. Events carry InputEvent.DEVICE_ID_KEYBOARD (16), the id Godot 4.7 gives a keyboard, and
 ## Input.use_accumulated_input is off, so an event acts at once (measured on 4.7.2; Story 002 evidence doc).
+## A window that loses focus makes the engine release every pressed key, so the runner checks its
+## record of held keys against the engine's (Input.is_physical_key_pressed()) in set_key() and
+## after every tick, and presses a dropped key again (TD-009); a headless run never loses focus.
 ##
 ## Time is simulated: scenarios await the physics_frame signal and count ticks, so the numbers are the same
 ## at any frame rate and a headless --fixed-fps 60 run is faster than real time. The continuation after
@@ -54,6 +58,18 @@ extends Node
 ## fuel_use is LEGACY_FUEL_USE, zero, on the same shared resources), a guard for a run long enough
 ## for the shipped burn rate to empty a tank and stop or crash its Unit; their Units still get a
 ## tank at every spawn, and a scenario of Story 006 or later runs on the shipped Fuel data.
+##
+## The Map (Story 007). The launch scene's World now holds Map 01 as its first child (the node
+## Map, src/gameplay/maps/map_01/map_01.tscn), and every scenario written before it was measured
+## on the 80 m greybox composition: the greybox field with its two Bases, the terrain stand-ins
+## and the five greybox Fuel Cans. For those (GREYBOX_SCENARIOS) the runner rebuilds that
+## composition inside the freshly instanced launch scene, before it enters the tree and begins the
+## Round (_apply_greybox_composition()), with the nodes, names and tree order their outputs were
+## measured with, and gives every Unit type back its greybox model (_apply_greybox_models(), on
+## the shared UnitStats before the scene is instanced), so the outputs stay what they were; a
+## scenario of Story 007 or later is not listed and runs on Map 01. A scenario script may declare
+## const WATCHDOG_SECONDS: float, in simulated seconds, for a watchdog of its own when a run across
+## Map 01 needs longer.
 ##
 ## Output: SPLIT <scenario> t=<seconds> key=value ... (progress), CHECK <scenario> <check name> PASS|FAIL
 ## <detail> and exactly one last RESULT <scenario> ok|fail checks=<n> failed=<n> key=value ...; then quit with
@@ -90,6 +106,14 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"fuel": preload("res://tools/evidence/split_screen/fuel.gd"),
 	&"fuel_cans": preload("res://tools/evidence/split_screen/fuel_cans.gd"),
 	&"fuel_showcase": preload("res://tools/evidence/split_screen/fuel_showcase.gd"),
+	&"map_layout": preload("res://tools/evidence/split_screen/map_layout.gd"),
+	&"map_edges": preload("res://tools/evidence/split_screen/map_edges.gd"),
+	&"map_ford": preload("res://tools/evidence/split_screen/map_ford.gd"),
+	&"map_bases": preload("res://tools/evidence/split_screen/map_bases.gd"),
+	&"map_cover": preload("res://tools/evidence/split_screen/map_cover.gd"),
+	&"map_showcase": preload("res://tools/evidence/split_screen/map_showcase.gd"),
+	&"map_legibility": preload("res://tools/evidence/split_screen/map_legibility.gd"),
+	&"map_fps": preload("res://tools/evidence/split_screen/map_fps.gd"),
 }
 
 ## The shared step class (drive_step.gd): keys held for a time.
@@ -102,8 +126,12 @@ const EXIT_FAILED: int = 1
 ## Exit code for a missing or unknown scenario.
 const EXIT_USAGE: int = 2
 ## A scenario still running after this many simulated seconds has hung (a script error stops a
-## coroutine without a word): the watchdog prints a failing RESULT and quits.
+## coroutine without a word): the watchdog prints a failing RESULT and quits. A scenario script
+## that declares its own (WATCHDOG_CONSTANT) gets that instead.
 const WATCHDOG_SECONDS: float = 120.0
+## The constant a scenario script may declare (const WATCHDOG_SECONDS: float = ...) for a watchdog
+## of its own, in simulated seconds; a value that is not a number above zero is ignored.
+const WATCHDOG_CONSTANT: StringName = &"WATCHDOG_SECONDS"
 
 ## Player 1's index, into the tracks and the layouts.
 const PLAYER_1: int = 0
@@ -167,6 +195,41 @@ const OWN_CHOICE_CONSTANT: StringName = &"OWN_CHOICE"
 ## Raw physics ticks confirm_choices() waits for the chosen Units to appear before it gives up: the
 ## bench settle, the key's tick and margin.
 const CHOICE_LIMIT_TICKS: int = 120
+## The scenarios written before Story 007, each measured on the 80 m greybox composition (the
+## greybox field with its two Bases, the terrain stand-ins and the five greybox Fuel Cans): the
+## runner rebuilds that composition for them (_apply_greybox_composition()), so their outputs stay
+## what they were. fps, Story 002's windowed frame-rate tool, was measured on the greybox field too
+## and keeps it. A scenario that is not listed runs on the main composition, Map 01.
+const GREYBOX_SCENARIOS: Array[StringName] = [&"layout", &"isolation", &"simultaneous",
+	&"showcase", &"fps", &"bases", &"destruction", &"countdown", &"respawn_showcase",
+	&"canister_run", &"hud", &"round_over", &"canister_showcase", &"units", &"weapons", &"gyro",
+	&"choice", &"units_showcase", &"fuel", &"fuel_cans", &"fuel_showcase"]
+## The greybox field the older scenarios were measured on: Story 001's flat 80 m field with the two
+## Bases of Story 003. It extends MapField, so the launch scene takes it as its field.
+const GREYBOX_FIELD_SCENE: PackedScene = preload("res://src/gameplay/maps/greybox_field.tscn")
+## The terrain stand-ins of Story 005 (the 4 m cliff block and the water strip).
+const TERRAIN_STAND_INS_SCENE: PackedScene = preload("res://src/gameplay/maps/terrain_stand_ins.tscn")
+## The five greybox Fuel Cans of Story 006.
+const GREYBOX_FUEL_CANS_SCENE: PackedScene = preload("res://src/gameplay/maps/greybox_fuel_cans.tscn")
+## The Token stock every Map holds (Story 007 AC-9): the greybox field gets it too, so the stock
+## reads the same (the source's example) whichever composition runs.
+const TOKEN_STOCK_PATH: String = "res://src/gameplay/maps/data/token_stock.tres"
+## Player 1's colour as the older scenarios were measured with it (Story 002's body material): the
+## launch scene gives Player 1's Unit the Team Orange of Story 007, and the runner puts this back as
+## its team_material for the greybox composition.
+const PLAYER_1_BODY_MATERIAL: Material = preload("res://src/gameplay/split_screen/data/player_1_body_material.tres")
+## Player 2's colour as the older scenarios were measured with it, put back in place of the Team
+## Teal of Story 007 (see PLAYER_1_BODY_MATERIAL).
+const PLAYER_2_BODY_MATERIAL: Material = preload("res://src/gameplay/split_screen/data/player_2_body_material.tres")
+## The greybox model of each Unit type (by UnitStats.type_id) the older scenarios were measured
+## with: the shipped data points UnitStats.model at the concept-kit models of Story 007, and the
+## runner puts these back for GREYBOX_SCENARIOS (_apply_greybox_models()).
+const GREYBOX_MODELS: Dictionary[StringName, PackedScene] = {
+	&"motorbike": preload("res://src/gameplay/units/models/motorbike_model.tscn"),
+	&"buggy": preload("res://src/gameplay/units/models/buggy_model.tscn"),
+	&"truck": preload("res://src/gameplay/units/models/truck_model.tscn"),
+	&"gyrocopter": preload("res://src/gameplay/units/models/gyrocopter_model.tscn"),
+}
 
 ## Position of the throttle key in a layout (PLAYER_1_KEYS, PLAYER_2_KEYS).
 const SLOT_THROTTLE: int = 0
@@ -211,13 +274,16 @@ var round_start_spawns: Array[int] = []
 var separation_min: float = INF
 ## The least room any Unit's origin left to a wall since the run began, metres.
 var wall_clearance_min: float = INF
-## Which physical keys the harness holds down now, so an event is sent only on a change.
+## Which physical keys the harness holds down now, so an event is sent only on a change; set_key()
+## and _reassert_held_keys() check it against the engine's own key state (TD-009).
 var _held: Dictionary[int, bool] = {}
 ## One flag per Player: true while the runner itself holds that Player's fire key for a choice
 ## (confirm_choices()). That key is released on the tick the controller accepts the choice; a fire
 ## key a scenario holds is never touched.
 var _choice_key_held: Array[bool] = [false, false]
 var _ticks_per_second: int = 60
+## The running scenario's watchdog, simulated seconds (_scenario_watchdog_seconds()).
+var _watchdog_seconds: float = WATCHDOG_SECONDS
 var _checks: int = 0
 var _failed: int = 0
 var _finished: bool = false
@@ -234,12 +300,17 @@ func _ready() -> void:
 		get_tree().quit(EXIT_USAGE)
 		return
 	Input.use_accumulated_input = false
-	get_tree().create_timer(WATCHDOG_SECONDS).timeout.connect(_on_watchdog)
+	_watchdog_seconds = _scenario_watchdog_seconds(SCENARIOS[scenario])
+	get_tree().create_timer(_watchdog_seconds).timeout.connect(_on_watchdog)
 	if LEGACY_SCENARIOS.has(scenario):
 		_apply_legacy_data()
 	if LEGACY_SCENARIOS.has(scenario) or STORY_005_SCENARIOS.has(scenario):
 		_apply_no_fuel_data()
+	if GREYBOX_SCENARIOS.has(scenario):
+		_apply_greybox_models()
 	split = SPLIT_SCENE.instantiate() as SplitScreen
+	if GREYBOX_SCENARIOS.has(scenario):
+		_apply_greybox_composition(split)
 	if split.match_controller != null:
 		split.match_controller.unit_spawned.connect(_on_round_start_spawn)
 		split.match_controller.unit_chosen.connect(_on_choice_confirmed)
@@ -304,6 +375,55 @@ func _apply_no_fuel_data() -> void:
 	for stats: UnitStats in rules.unit_types:
 		if stats != null:
 			stats.fuel_use = LEGACY_FUEL_USE
+
+
+## Rebuilds the greybox composition inside a freshly instanced launch scene, for GREYBOX_SCENARIOS,
+## before it enters the tree (SplitScreen._ready() begins the Round when it does): frees World's
+## Map at once (remove_child() and free(), so none of its nodes stays in a node group for a frame),
+## instances the greybox field, the terrain stand-ins and the greybox Fuel Cans under their old
+## names at World child indices 0, 1 and 2 (the tree order the outputs were measured with), gives
+## the field the Token stock, makes the new nodes owned by the launch scene and points split.field
+## at the greybox field: the export was resolved to the Map when the scene was instanced, so it
+## would dangle once the Map is freed. It also gives both Units back the Player body materials the
+## older outputs were measured with as their team_material (PLAYER_1_BODY_MATERIAL,
+## PLAYER_2_BODY_MATERIAL), in place of the Team materials of Story 007 the launch scene sets
+## (Story 007 AC-11: those two files stay as they are for the greybox composition).
+func _apply_greybox_composition(root: SplitScreen) -> void:
+	var world: Node3D = root.get_node("World") as Node3D
+	var map: Node = world.get_node("Map")
+	world.remove_child(map)
+	map.free()
+	var field: GreyboxField = GREYBOX_FIELD_SCENE.instantiate() as GreyboxField
+	field.name = &"GreyboxField"
+	field.unique_name_in_owner = true
+	field.token_stock = load(TOKEN_STOCK_PATH) as TokenStock
+	var terrain: Node = TERRAIN_STAND_INS_SCENE.instantiate()
+	terrain.name = &"TerrainStandIns"
+	var fuel_cans: Node = GREYBOX_FUEL_CANS_SCENE.instantiate()
+	fuel_cans.name = &"FuelCans"
+	var stand_ins: Array[Node] = [field, terrain, fuel_cans]
+	for index: int in stand_ins.size():
+		world.add_child(stand_ins[index])
+		world.move_child(stand_ins[index], index)
+		stand_ins[index].owner = root
+	root.field = field
+	root.player_1_unit.team_material = PLAYER_1_BODY_MATERIAL
+	root.player_2_unit.team_material = PLAYER_2_BODY_MATERIAL
+
+
+## Gives every UnitStats of match_rules.tres's unit_types back its greybox model (GREYBOX_MODELS,
+## by type_id) for GREYBOX_SCENARIOS, on the shared resources before the launch scene is instanced,
+## as _apply_no_fuel_data() does for the Fuel: the units scenario prints each model's bounds, and
+## the launch scene's warm-up and every spawn then instance the models the outputs were measured
+## with. A type with no greybox model keeps its own; rules that fail to load are an error.
+func _apply_greybox_models() -> void:
+	var rules: MatchRules = load(MATCH_RULES_PATH) as MatchRules
+	if rules == null:
+		push_error("split_screen_harness: %s did not load as MatchRules, so the greybox models are not applied." % MATCH_RULES_PATH)
+		return
+	for stats: UnitStats in rules.unit_types:
+		if stats != null and GREYBOX_MODELS.has(stats.type_id):
+			stats.model = GREYBOX_MODELS[stats.type_id]
 
 
 ## Logs a unit_spawned that arrives before the scenario starts: the start of the Round
@@ -384,6 +504,16 @@ func _read_scenario() -> StringName:
 	return &""
 
 
+## The watchdog of a scenario, simulated seconds: the WATCHDOG_SECONDS constant its script
+## declares (WATCHDOG_CONSTANT) when that is a number above zero, else the runner's own
+## WATCHDOG_SECONDS.
+func _scenario_watchdog_seconds(script: GDScript) -> float:
+	var declared: Variant = script.get_script_constant_map().get(WATCHDOG_CONSTANT, WATCHDOG_SECONDS)
+	if (typeof(declared) == TYPE_FLOAT or typeof(declared) == TYPE_INT) and float(declared) > 0.0:
+		return float(declared)
+	return WATCHDOG_SECONDS
+
+
 ## The usage line: the tool name, then SCENARIO_ARGUMENT and the names of SCENARIOS separated by "|".
 func _usage() -> String:
 	var names: PackedStringArray = []
@@ -402,10 +532,13 @@ func time() -> float:
 	return float(ticks) / float(_ticks_per_second)
 
 
-## Waits the given number of physics ticks, sampling both Units after each one. A coroutine: await it.
+## Waits the given number of physics ticks, sampling both Units after each one; each tick first
+## presses again any held key the engine dropped (_reassert_held_keys(), TD-009). A coroutine:
+## await it.
 func advance_ticks(count: int) -> void:
 	for _tick: int in count:
 		await get_tree().physics_frame
+		_reassert_held_keys()
 		ticks += 1
 		_sample()
 
@@ -440,16 +573,38 @@ func print_progress() -> void:
 
 
 ## Presses or releases one physical key by pushing a real key event through the Input singleton,
-## the way the OS does. Sends nothing when the key is already in that state.
+## the way the OS does. Sends nothing when the key is already in that state, both in the runner's
+## record (_held) and in the engine (Input.is_physical_key_pressed()): a window that loses focus
+## makes the engine release every pressed key while the record still holds them, and the
+## comparison sends the key again instead of trusting the record (TD-009,
+## docs/tech-debt-register.md). advance_ticks() re-asserts every held key after each tick too.
 func set_key(key: Key, pressed: bool) -> void:
-	if _held.get(key, false) == pressed:
+	if _held.get(key, false) == pressed and Input.is_physical_key_pressed(key) == pressed:
 		return
 	_held[key] = pressed
+	_send_key(key, pressed)
+
+
+## Pushes one real key event for a physical key through the Input singleton, on the keyboard's
+## device (InputEvent.DEVICE_ID_KEYBOARD), as the OS would.
+func _send_key(key: Key, pressed: bool) -> void:
 	var event: InputEventKey = InputEventKey.new()
 	event.physical_keycode = key
 	event.pressed = pressed
 	event.device = InputEvent.DEVICE_ID_KEYBOARD
 	Input.parse_input_event(event)
+
+
+## Presses again every key the runner holds (_held) that the engine no longer reports as pressed
+## (TD-009): a window focus change releases every pressed key in the engine, and a held throttle
+## or steer would otherwise stay up for the rest of its step. Nothing is sent while the two agree,
+## which is every tick of a run that never loses focus (every headless run), so such a run sends
+## exactly the events it sent before. It runs right after each physics_frame of advance_ticks(),
+## before the nodes' _physics_process of that tick, so a key pressed again acts in that tick.
+func _reassert_held_keys() -> void:
+	for key: int in _held.keys():
+		if _held[key] and not Input.is_physical_key_pressed(key as Key):
+			_send_key(key as Key, true)
 
 
 ## Holds one Player's throttle and steer keys: throttle 1 forward, -1 reverse; steer 1 left, -1
@@ -534,9 +689,10 @@ func finish(fields: String) -> void:
 	get_tree().quit(0 if _failed == 0 else EXIT_FAILED)
 
 
-## Fires when the scenario has not finished in WATCHDOG_SECONDS: a hung coroutine fails loudly.
+## Fires when the scenario has not finished in its watchdog time (_watchdog_seconds, the runner's
+## WATCHDOG_SECONDS unless the scenario declares its own): a hung coroutine fails loudly.
 func _on_watchdog() -> void:
 	if _finished:
 		return
-	check("watchdog", false, "the scenario did not finish within %.0f simulated seconds" % WATCHDOG_SECONDS)
+	check("watchdog", false, "the scenario did not finish within %.0f simulated seconds" % _watchdog_seconds)
 	finish("reason=watchdog")

@@ -1,0 +1,154 @@
+[gd_scene format=3]
+
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/rust.tres" id="1_rust"]
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/container.tres" id="2_container"]
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/scrap.tres" id="3_scrap"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_wreck"]
+material = ExtResource("1_rust")
+size = Vector3(6, 1.3, 3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wreck"]
+size = Vector3(6, 1.3, 3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_container"]
+material = ExtResource("2_container")
+size = Vector3(12, 2, 2.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_container"]
+size = Vector3(12, 2, 2.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_scrap_wall"]
+material = ExtResource("3_scrap")
+size = Vector3(2.5, 2, 12)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_scrap_wall"]
+size = Vector3(2.5, 2, 12)
+
+[node name="Cover" type="Node3D"]
+
+[node name="Wrecks" type="Node3D" parent="."]
+
+[node name="WreckWestOuterSouth" type="StaticBody3D" parent="Wrecks"]
+transform = Transform3D(0.8660254, 0, 0.5, 0, 1, 0, -0.5, 0, 0.8660254, -80, 0.65, 5)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckWestOuterSouth"]
+mesh = SubResource("BoxMesh_wreck")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Wrecks/WreckWestOuterSouth"]
+shape = SubResource("BoxShape3D_wreck")
+
+[node name="WreckWestMiddleNorth" type="StaticBody3D" parent="Wrecks"]
+transform = Transform3D(0.8660254, 0, -0.5, 0, 1, 0, 0.5, 0, 0.8660254, -53, 0.65, -8)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckWestMiddleNorth"]
+mesh = SubResource("BoxMesh_wreck")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Wrecks/WreckWestMiddleNorth"]
+shape = SubResource("BoxShape3D_wreck")
+
+[node name="WreckWestInnerSouth" type="StaticBody3D" parent="Wrecks"]
+transform = Transform3D(0.7071068, 0, -0.7071068, 0, 1, 0, 0.7071068, 0, 0.7071068, -26, 0.65, 7.6)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckWestInnerSouth"]
+mesh = SubResource("BoxMesh_wreck")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Wrecks/WreckWestInnerSouth"]
+shape = SubResource("BoxShape3D_wreck")
+
+[node name="WreckWestInnerNorth" type="StaticBody3D" parent="Wrecks"]
+transform = Transform3D(0.9396926, 0, 0.3420201, 0, 1, 0, -0.3420201, 0, 0.9396926, -22, 0.65, -10)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckWestInnerNorth"]
+mesh = SubResource("BoxMesh_wreck")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Wrecks/WreckWestInnerNorth"]
+shape = SubResource("BoxShape3D_wreck")
+
+[node name="WreckEastOuterSouth" type="StaticBody3D" parent="Wrecks"]
+transform = Transform3D(0.8660254, 0, -0.5, 0, 1, 0, 0.5, 0, 0.8660254, 80, 0.65, 5)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckEastOuterSouth"]
+mesh = SubResource("BoxMesh_wreck")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Wrecks/WreckEastOuterSouth"]
+shape = SubResource("BoxShape3D_wreck")
+
+[node name="WreckEastMiddleNorth" type="StaticBody3D" parent="Wrecks"]
+transform = Transform3D(0.8660254, 0, 0.5, 0, 1, 0, -0.5, 0, 0.8660254, 53, 0.65, -8)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckEastMiddleNorth"]
+mesh = SubResource("BoxMesh_wreck")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Wrecks/WreckEastMiddleNorth"]
+shape = SubResource("BoxShape3D_wreck")
+
+[node name="WreckEastInnerSouth" type="StaticBody3D" parent="Wrecks"]
+transform = Transform3D(0.7071068, 0, 0.7071068, 0, 1, 0, -0.7071068, 0, 0.7071068, 26, 0.65, 7.6)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckEastInnerSouth"]
+mesh = SubResource("BoxMesh_wreck")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Wrecks/WreckEastInnerSouth"]
+shape = SubResource("BoxShape3D_wreck")
+
+[node name="WreckEastInnerNorth" type="StaticBody3D" parent="Wrecks"]
+transform = Transform3D(0.9396926, 0, -0.3420201, 0, 1, 0, 0.3420201, 0, 0.9396926, 22, 0.65, -10)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckEastInnerNorth"]
+mesh = SubResource("BoxMesh_wreck")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Wrecks/WreckEastInnerNorth"]
+shape = SubResource("BoxShape3D_wreck")
+
+[node name="Containers" type="Node3D" parent="."]
+
+[node name="ContainerWest" type="StaticBody3D" parent="Containers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -58, 1, 0)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="Containers/ContainerWest"]
+mesh = SubResource("BoxMesh_container")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Containers/ContainerWest"]
+shape = SubResource("BoxShape3D_container")
+
+[node name="ContainerEast" type="StaticBody3D" parent="Containers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, 1, 0)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="Containers/ContainerEast"]
+mesh = SubResource("BoxMesh_container")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Containers/ContainerEast"]
+shape = SubResource("BoxShape3D_container")
+
+[node name="ScrapWalls" type="Node3D" parent="."]
+
+[node name="ScrapWallWest" type="StaticBody3D" parent="ScrapWalls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 1, 12)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="ScrapWalls/ScrapWallWest"]
+mesh = SubResource("BoxMesh_scrap_wall")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ScrapWalls/ScrapWallWest"]
+shape = SubResource("BoxShape3D_scrap_wall")
+
+[node name="ScrapWallEast" type="StaticBody3D" parent="ScrapWalls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1, 12)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="ScrapWalls/ScrapWallEast"]
+mesh = SubResource("BoxMesh_scrap_wall")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ScrapWalls/ScrapWallEast"]
+shape = SubResource("BoxShape3D_scrap_wall")

@@ -1,0 +1,45 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+Movie Maker mode enabled, recording movie in 1280×720 @ 60 FPS...
+SPLIT map_showcase t=1.000 frame=59 phase=panels moment=panels p1_type=motorbike p1_x=-125.00 p1_z=0.00 p1_heading=90 p2_type=motorbike p2_x=125.00 p2_z=0.00 p2_heading=270 round=RUNNING
+SPLIT map_showcase t=1.033 frame=63 phase=panels event=p1_appears_as_motorbike p1_type=motorbike p1_x=-125.00 p1_z=0.00 p1_heading=90 p2_type=buggy p2_x=125.00 p2_z=0.00 p2_heading=270 round=RUNNING
+SPLIT map_showcase t=1.033 frame=63 phase=panels event=p2_appears_as_buggy p1_type=motorbike p1_x=-125.00 p1_z=0.00 p1_heading=90 p2_type=buggy p2_x=125.00 p2_z=0.00 p2_heading=270 round=RUNNING
+SPLIT map_showcase t=2.033 frame=123 phase=garage_spawn moment=garage_spawn p1_type=motorbike p1_x=-125.00 p1_z=0.00 p1_heading=90 p2_type=buggy p2_x=125.00 p2_z=0.00 p2_heading=270 round=RUNNING
+SPLIT map_showcase t=3.133 frame=189 phase=under_towers moment=under_towers p1_type=gyrocopter p1_x=-109.50 p1_z=0.00 p1_heading=90 p2_type=motorbike p2_x=109.50 p2_z=0.00 p2_heading=270 round=RUNNING
+SPLIT map_showcase t=4.233 frame=255 phase=gates moment=gates p1_type=buggy p1_x=-90.00 p1_z=0.00 p1_heading=270 p2_type=truck p2_x=90.00 p2_z=0.00 p2_heading=90 round=RUNNING
+SPLIT map_showcase t=5.333 frame=321 phase=towers_north_west moment=towers_north_west p1_type=truck p1_x=-92.00 p1_z=-15.00 p1_heading=234 p2_type=buggy p2_x=92.00 p2_z=-15.00 p2_heading=126 round=RUNNING
+SPLIT map_showcase t=6.433 frame=387 phase=towers_south_west moment=towers_south_west p1_type=truck p1_x=-92.00 p1_z=15.00 p1_heading=306 p2_type=buggy p2_x=92.00 p2_z=15.00 p2_heading=54 round=RUNNING
+SPLIT map_showcase t=7.533 frame=453 phase=towers_north_east moment=towers_north_east p1_type=truck p1_x=88.00 p1_z=-15.00 p1_heading=266 p2_type=buggy p2_x=-88.00 p2_z=-15.00 p2_heading=94 round=RUNNING
+SPLIT map_showcase t=8.633 frame=519 phase=towers_south_east moment=towers_south_east p1_type=truck p1_x=88.00 p1_z=15.00 p1_heading=274 p2_type=buggy p2_x=-88.00 p2_z=15.00 p2_heading=86 round=RUNNING
+SPLIT map_showcase t=9.733 frame=585 phase=towers_centre moment=towers_centre p1_type=truck p1_x=0.00 p1_z=-11.00 p1_heading=264 p2_type=buggy p2_x=0.00 p2_z=-16.00 p2_heading=98 round=RUNNING
+SPLIT map_showcase t=10.833 frame=651 phase=depot moment=depot p1_type=motorbike p1_x=-20.00 p1_z=0.00 p1_heading=90 p2_type=truck p2_x=20.00 p2_z=0.00 p2_heading=270 round=RUNNING
+SPLIT map_showcase t=11.933 frame=717 phase=fords moment=fords p1_type=buggy p1_x=-40.00 p1_z=-12.00 p1_heading=180 p2_type=motorbike p2_x=40.00 p2_z=-12.00 p2_heading=180 round=RUNNING
+SPLIT map_showcase t=14.633 frame=880 phase=road event=p2_bend_1 p1_type=truck p1_x=-94.17 p1_z=-26.00 p1_heading=90 p2_type=buggy p2_x=76.66 p2_z=-28.50 p2_heading=301 round=RUNNING
+SPLIT map_showcase t=15.450 frame=929 phase=road event=p2_bend_2 p1_type=truck p1_x=-85.27 p1_z=-26.00 p1_heading=90 p2_type=buggy p2_x=62.84 p2_z=-36.04 p2_heading=277 round=RUNNING
+SPLIT map_showcase t=16.283 frame=979 phase=road event=p1_bend_1 p1_type=truck p1_x=-76.67 p1_z=-28.47 p1_heading=59 p2_type=buggy p2_x=46.52 p2_z=-35.96 p2_heading=266 round=RUNNING
+SPLIT map_showcase t=16.667 frame=1002 phase=road event=p2_bend_3 p1_type=truck p1_x=-73.25 p1_z=-30.88 p1_heading=53 p2_type=buggy p2_x=39.29 p2_z=-34.06 p2_heading=246 round=RUNNING
+SPLIT map_showcase t=17.517 frame=1053 phase=road event=p2_bend_4 p1_type=truck p1_x=-65.38 p1_z=-35.60 p1_heading=75 p2_type=buggy p2_x=23.94 p2_z=-27.98 p2_heading=266 round=RUNNING
+SPLIT map_showcase t=17.750 frame=1067 phase=road event=p1_bend_2 p1_type=truck p1_x=-62.88 p1_z=-36.05 p1_heading=83 p2_type=buggy p2_x=19.46 p2_z=-28.01 p2_heading=272 round=RUNNING
+SPLIT map_showcase t=19.933 frame=1198 phase=road event=p1_bend_3 p1_type=truck p1_x=-39.37 p1_z=-34.10 p1_heading=113 p2_type=buggy p2_x=14.84 p2_z=-28.18 p2_heading=272 round=RUNNING
+SPLIT map_showcase t=21.467 frame=1290 phase=road event=p1_bend_4 p1_type=truck p1_x=-23.98 p1_z=-27.98 p1_heading=94 p2_type=buggy p2_x=14.84 p2_z=-28.18 p2_heading=272 round=RUNNING
+SPLIT map_showcase t=23.233 frame=1395 phase=road_end moment=road_end p1_type=truck p1_x=-18.28 p1_z=-28.06 p1_heading=87 p2_type=buggy p2_x=14.84 p2_z=-28.18 p2_heading=272 round=RUNNING
+SPLIT map_showcase t=24.333 frame=1461 phase=gyro_start moment=gyro_start p1_type=gyrocopter p1_x=-14.00 p1_z=-4.00 p1_heading=0 p2_type=gyrocopter p2_x=70.00 p2_z=6.00 p2_heading=180 round=RUNNING
+SPLIT map_showcase t=25.850 frame=1553 phase=gyro_crossing event=p1_over_rock p1_type=gyrocopter p1_x=-14.00 p1_z=-20.04 p1_heading=0 p2_type=gyrocopter p2_x=70.00 p2_z=22.04 p2_heading=180 round=RUNNING
+SPLIT map_showcase t=25.850 frame=1553 phase=gyro_crossing event=p2_over_rock p1_type=gyrocopter p1_x=-14.00 p1_z=-20.04 p1_heading=0 p2_type=gyrocopter p2_x=70.00 p2_z=22.04 p2_heading=180 round=RUNNING
+SPLIT map_showcase t=26.100 frame=1568 phase=gyro_crossing event=p1_off_rock p1_type=gyrocopter p1_x=-14.00 p1_z=-24.14 p1_heading=0 p2_type=gyrocopter p2_x=70.00 p2_z=26.14 p2_heading=180 round=RUNNING
+SPLIT map_showcase t=26.583 frame=1597 phase=gyro_crossing event=p1_over_rock p1_type=gyrocopter p1_x=-14.00 p1_z=-32.07 p1_heading=0 p2_type=gyrocopter p2_x=70.00 p2_z=34.07 p2_heading=180 round=RUNNING
+SPLIT map_showcase t=28.400 frame=1705 phase=gyro_end moment=gyro_end p1_type=gyrocopter p1_x=-14.00 p1_z=-44.89 p1_heading=0 p2_type=gyrocopter p2_x=70.00 p2_z=44.62 p2_heading=180 round=RUNNING
+SPLIT map_showcase t=31.083 frame=1867 phase=flags_in event=p2_takes_flag_of_p1 p1_type=motorbike p1_x=110.98 p1_z=0.00 p1_heading=90 p2_type=motorbike p2_x=-110.98 p2_z=0.00 p2_heading=270 round=RUNNING
+SPLIT map_showcase t=31.083 frame=1867 phase=flags_in event=p1_takes_flag_of_p2 p1_type=motorbike p1_x=110.98 p1_z=0.00 p1_heading=90 p2_type=motorbike p2_x=-110.98 p2_z=0.00 p2_heading=270 round=RUNNING
+SPLIT map_showcase t=32.283 frame=1938 phase=flags_taken moment=flags_taken p1_type=motorbike p1_x=111.46 p1_z=0.00 p1_heading=90 p2_type=motorbike p2_x=-111.46 p2_z=0.00 p2_heading=270 round=RUNNING
+RESULT map_showcase ok checks=0 failed=0 t=32.283 moments=15 spawns=p1_motorbike,p2_buggy road_done=true,true rock_ticks=61,90 flag_ticks=167 destroyed=0
+--------------------------------------------------------------------------------
+Done recording movie at path: /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a0bbb76e-4a11-49a3-9a86-8984abd2268d/scratchpad/dev-story-007/final/movie_showcase/f.png
+1940 frames at 60 FPS (movie length: 00:00:32:20), recorded in 00:03:05 (17% of real-time speed).
+CPU render time: 0.03 seconds (average: 0.02 ms/frame)
+GPU render time: 0.00 seconds (average: 0.00 ms/frame)
+Encoding time: 172.16 seconds (average: 88.74 ms/frame)
+--------------------------------------------------------------------------------
+
+--- stderr ---

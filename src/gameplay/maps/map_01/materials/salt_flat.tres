@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://src/gameplay/maps/map_01/textures/salt_span.tres" id="1_salt_span_texture"]
+
+[resource]
+albedo_texture = ExtResource("1_salt_span_texture")
+roughness = 1.0
+texture_filter = 5

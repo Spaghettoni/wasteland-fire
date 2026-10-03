@@ -1,9 +1,12 @@
 class_name Base
 extends Node3D
-## A Player's home on the Map: where that Player's Units start the Round and respawn. A greybox of
-## a flat coloured pad that marks the place on the ground, a tall coloured beacon that marks it
-## from across the field, the marker a Unit is put on (and the spare ones it is put on when that
-## one is taken), and an invisible zone over it.
+## A Player's home on the Map: where that Player's Units start the Round and respawn. It holds the
+## marker a Unit is put on (and the spare ones it is put on when that one is taken), an invisible
+## zone over it, the Player's Water Canister (the Flag) on its seat, and the meshes in the Player's
+## colour that show whose Base it is: a pad on the ground, a beacon that marks it from across the
+## Map and any further parts the scene lists. Two scenes carry this script: the greybox Base of
+## stories 003 to 006 (base.tscn) and Map 01's walled compound (map_01/compound_base.tscn, Story
+## 007).
 ##
 ## Implements: production/epics/wasteland-fire/story-003-bases-destruction-respawn.md AC-1 (two
 ## greybox Bases stand on the plane, one per Player, visually distinct in the Player colours, each
@@ -16,11 +19,19 @@ extends Node3D
 ## production/epics/wasteland-fire/story-004-water-canister-and-win.md AC-1 (at Round start each
 ## Base holds one visible Water Canister in its Player's colour: the Canister child on its seat,
 ## painted in _ready()) and AC-4 (where the owner's canister is re-seated: canister_seat);
-## design/rules.md "Resources" (one Water Canister sits in each Base). Vocabulary: CONTEXT.md
-## (Player, Unit, Base, Map, Water Canister: a Base holds that Player's Water Canister at the start
-## of a Round).
+## design/rules.md "Resources" (one Water Canister sits in each Base);
+## production/epics/wasteland-fire/story-007-the-map.md AC-6 (Map 01's Bases are walled compounds
+## with one gate that faces the centre, whose walls stop every Unit and every shot, with a Garage
+## where the Units appear and the Flag's seat under a water tower: compound_base.tscn), AC-11 (a
+## Base wears its Team colour where the illustrated drawing puts it, on the four corner towers and
+## the dashed rectangle in front of the Garage and on the water tower's roof, its walls dark and its
+## Garage rust: color_meshes)
+## and AC-12 (the water tower's tank is the beacon, in place of story 003's pillar);
+## design/rules.md "Teams and visual style". Vocabulary: CONTEXT.md (Player, Unit, Base, Map,
+## Garage, Flag, Team colour: a Base holds that Player's Flag at the start of a Round; the Flag is
+## the Water Canister in code until story 008 renames it).
 ##
-## The scene (base.tscn):
+## The greybox scene (base.tscn):
 ##   Base (this Node3D): its transform places and turns the whole Base
 ##     Pad (MeshInstance3D): a flat 12 x 12 m slab, 2 cm thick, a hair above the floor
 ##     Beacon (MeshInstance3D): a 1.5 x 8 x 1.5 m pillar on the pad's front right corner
@@ -31,19 +42,40 @@ extends Node3D
 ##     CanisterSeat (Marker3D): 4.5 m behind the spawn point (local +Z), on the pad, facing local -Z
 ##     Canister (an instance of water_canister.tscn): this Base's Water Canister, standing on the
 ##       seat
-## The script checks that these are wired and paints the pad, the beacon and the canister's body in
-## _ready(), and says whether its spawn points lie on its pad (first_spawn_problem()); a Base has no
-## behaviour of its own. The Map places it, the MatchController asks it for spawn_point,
-## spare_spawn_points, canister and canister_seat and polls zone (Story 004: a delivery into the own
-## Base), and Story 005 listens to zone.
+## Map 01's compound (compound_base.tscn), a walled yard 32 m across and 30 m deep, its gate in
+## local -Z:
+##   Base (this Node3D): its transform places and turns the whole Base, the gate to the centre
+##     SpawnPoint, SpareSpawnLeft, SpareSpawnRight (Marker3D): on the Garage floor, 5 m behind
+##       the Base origin (local +Z) and 4 m apart, facing local -Z, out of the Garage to the gate
+##     Pad (MeshInstance3D): hidden, the Garage floor's 12 x 10 m footprint (first_spawn_problem()
+##       measures the spawn points against it)
+##     Zone (Area3D): a 29.4 x 4 x 27.5 m box over the inside of the walls
+##     CanisterSeat (Marker3D) and Canister: 7 m in front of the Base origin (local -Z), between
+##       the water tower's four legs
+##     Walls: the back wall, the two side walls, the two gate walls either side of the 11 m gate
+##       and the four corner towers on the wall corners, each a StaticBody3D with its box and Mesh
+##     Garage: its floor (GarageFloor), three walls, open to the gate and roofless, and Marking,
+##       the dashed rectangle on the ground in front of it (Dash01 to Dash14, one shared mesh)
+##     WaterTower: four legs (StaticBody3D), the Tank (MeshInstance3D), the beacon, its lowest
+##       point 8 m or more up, above where the chase camera rides, its Roof (one of color_meshes)
+##       and a steel platform, band and braces, all with no collision
+## The script checks that the references are wired, paints the pad, the beacon, each mesh of
+## color_meshes and the canister's body in _ready(), and says whether its spawn points lie on its
+## pad (first_spawn_problem()); a Base has no behaviour of its own. The Map places it, the
+## MatchController asks it for spawn_point, spare_spawn_points, canister and canister_seat and
+## polls zone (Story 004: a delivery into the own Base), and Story 005 listens to zone.
 ##
-## No collision on the Pad or the Beacon. A Base is ground a Unit drives over, not an obstacle, and
-## the Story 001 evidence harness drives on this same field: a solid slab or pillar in the
-## playfield would change where its runs end. A Unit that drives into the Beacon passes through
-## it: it is a landmark, there only so a Base can be found from anywhere on the 80 x 80 m field.
-## It stands on the front right corner and not at the back edge, because a Unit's chase camera
-## sits behind the Unit and a pillar behind the spawn point would stand between a Player and their
-## own Unit.
+## Collision. In base.tscn only the Zone has a shape: a greybox Base is ground a Unit drives over,
+## not an obstacle, and the Story 001 evidence harness drives on this same field: a solid slab or
+## pillar in the playfield would change where its runs end. A Unit that drives into the Beacon
+## passes through it: it is a landmark, there only so a Base can be found from anywhere on the
+## 80 x 80 m field. It stands on the front right corner and not at the back edge, because a Unit's
+## chase camera sits behind the Unit and a pillar behind the spawn point would stand between a
+## Player and their own Unit. compound_base.tscn is walled: its walls, corner towers, Garage walls
+## and the water tower's legs are StaticBody3D on physics layer 1 (the Map's) and stop every Unit,
+## the Gyrocopter included, and every shot (Story 007 AC-6), so a Unit comes and goes through the
+## gate; the pad, the tank, the Marking and the Garage floor have no shape, and the tank stands
+## higher than the chase camera rides, so it never comes between a Player and their own Unit.
 ##
 ## Spawn points. A Unit is put down at spawn_point, or, when another Unit stands on spawn_point on
 ## the tick the respawn falls due, at the first free spare spawn point, on that same tick
@@ -53,15 +85,19 @@ extends Node3D
 ## never a silent drift: GreyboxField points spawn_point at a loose marker, for a reason its
 ## comment gives, and nothing else ties the two. It is the start of the Round that asks, not
 ## _ready(): a tool that moves that loose marker before the field enters the tree (the Story 001
-## drive harness does) must not raise an error in a scene that has no Round. The scene's spares
-## stand further from the spawn point and from each other than a Unit is long, so one Unit cannot
-## stand on two of them and a Round of two Players always has a free spot.
+## drive harness does) must not raise an error in a scene that has no Round. In both scenes the two
+## spares stand 4 m left and right of the spawn point, 8 m apart, so no Unit (the largest, the
+## Truck, is 2.4 x 4.4 m) can stand on both of them and a Round of two Players always has a free
+## spot.
 ##
-## Player colour. The BoxMesh resources are shared by every instance of the scene, so a material on
-## the mesh would paint every Base alike. color_material is applied instead as a material_override
-## on this instance's Pad and Beacon, and on the body of its Canister (WaterCanister.apply_color();
-## the Lid keeps its cream), in _ready(), and the Map sets it per instance (greybox_field.tscn gives
-## the Bases the Player body materials of Story 002).
+## Player colour. The mesh resources are shared by every instance of a scene, so a material on the
+## mesh would paint every Base alike. color_material is applied instead as a material_override on
+## this instance's Pad and Beacon, on each mesh of color_meshes, and on the body of its Canister
+## (WaterCanister.apply_color(); its steel parts stay steel), in _ready(), and the Map sets it per
+## instance: greybox_field.tscn gives the Bases the Player body materials of Story 002, and Map 01
+## the Team colours of Story 007 (team_orange_material.tres for Base A, team_teal_material.tres for
+## Base B). Because the override is per instance, compound_base.tscn's corner towers wear the Team
+## colour while the walls, which share their material, stay dark.
 ##
 ## Zone. An Area3D on physics layer 3 ("zones", project.godot) that watches layer 2 ("units"). It
 ## reports Units entering and leaving and never touches them: no Unit's collision mask includes
@@ -75,22 +111,24 @@ extends Node3D
 ## is put in or out (measured on Godot 4.7.2 with Jolt; the Story 004 evidence doc keeps the runs),
 ## so a consumer polls and never counts on the same tick.
 ##
-## Water Canister (Story 004). Each Base holds its Player's canister: the Canister child, an
-## instance of water_canister.tscn, stands on CanisterSeat at the start of the Round and whenever
-## its owner brings it home, and _ready() paints its body in color_material so a canister shows
-## whose it is (AC-1). The seat is 4.5 m behind the spawn point (local +Z: a Unit on it faces -Z,
-## away from it), inside the pad and the zone, and clear of the spawn point and both spares: the
-## pick-up sphere is 1 m and a Unit 2.6 m long, so a Unit put on any spawn point does not touch its
-## own canister. The Base never moves the canister: the MatchController seats it (seat_at() at
+## Water Canister (Story 004; the Flag of Story 007). Each Base holds its Player's canister: the
+## Canister child, an instance of water_canister.tscn, stands on CanisterSeat at the start of the
+## Round and whenever its owner brings it home, and _ready() paints its body in color_material so
+## a canister shows whose it is (AC-1). In base.tscn the seat is 4.5 m behind the spawn point
+## (local +Z: a Unit on it faces -Z, away from it), inside the pad and the zone; in
+## compound_base.tscn it is under the water tower, 12 m in front of the spawn points, inside the
+## zone. Both are clear of the spawn point and both spares: the pick-up sphere is 1 m and a Unit at
+## most 4.4 m long, so a Unit put on any spawn point does not touch its own canister. The Base
+## never moves the canister: the MatchController seats it (seat_at() at
 ## canister_seat's global transform), gives it to a Unit and drops it where the Carrier was
 ## destroyed, and a dropped canister stays a child of this Base wherever on the Map it lies.
 
 ## Where a Unit is put when it starts the Round or respawns at this Base: its global transform is
 ## the Unit's position and heading, the Unit facing the marker's local -Z as every Unit faces its
-## own. The scene sets it to the SpawnPoint child, at the Base origin; a Map may point it at
-## another Marker3D instead (GreyboxField does), and the SpawnPoint child then stays unused. It
-## must lie on the pad (first_spawn_problem() reports it when it does not). The MatchController
-## reads it.
+## own. Both scenes set it to the SpawnPoint child (at the Base origin in base.tscn, on the Garage
+## floor in compound_base.tscn); a Map may point it at another Marker3D instead (GreyboxField
+## does), and the SpawnPoint child then stays unused. It must lie on the pad (first_spawn_problem()
+## reports it when it does not). The MatchController reads it.
 @export var spawn_point: Marker3D
 
 ## Where a Unit is put when it respawns while another Unit stands on spawn_point: the
@@ -98,8 +136,8 @@ extends Node3D
 ## free one, so a parked Unit cannot hold a respawn up (Story 003 AC-3 and AC-4). Each is a
 ## Marker3D whose global transform is the Unit's position and heading, like spawn_point, and each
 ## must lie on the pad. Optional, but a Base without one keeps a blocked Player waiting until the
-## spawn point frees, and _ready() warns. Keep them further apart than a Unit is long (the scene
-## puts two, left and right of the spawn point).
+## spawn point frees, and _ready() warns. Keep them clear of each other for the largest Unit (both
+## scenes put two, 4 m left and right of the spawn point: class doc).
 @export var spare_spawn_points: Array[Marker3D] = []
 
 ## The zone over the pad that reports Units entering and leaving this Base. The MatchController
@@ -107,11 +145,13 @@ extends Node3D
 ## swap. Its layer (3, "zones") and mask (2, "units") are set in the scene.
 @export var zone: Area3D
 
-## The flat slab the Base stands on. It gets color_material in _ready(). No collision, by design.
+## The flat slab that marks the Base on the ground. It gets color_material in _ready(). No
+## collision, by design. compound_base.tscn hides it (the Garage floor shows there) and keeps it
+## because first_spawn_problem() measures the spawn points against its box, the Garage floor's.
 @export var pad: MeshInstance3D
 
-## The tall pillar that marks the Base from afar. It gets color_material in _ready(). No collision,
-## by design.
+## What marks the Base from afar: base.tscn's tall pillar, compound_base.tscn's water tower tank
+## (Story 007 AC-12). It gets color_material in _ready(). No collision, by design.
 @export var beacon: MeshInstance3D
 
 ## This Base's Water Canister (Story 004 AC-1): the Canister child, an instance of
@@ -122,15 +162,25 @@ extends Node3D
 @export var canister: WaterCanister
 
 ## Where this Base's Water Canister stands at the start of a Round and whenever it is brought home:
-## its global transform is the canister's (upright, the origin on the pad). The scene puts it 4.5 m
-## behind the spawn point, inside the pad and the zone and clear of the spawn point and both spares
-## (class doc). The MatchController reads it.
+## its global transform is the canister's (upright, the origin on the ground). base.tscn puts it
+## 4.5 m behind the spawn point, on the pad, and compound_base.tscn under the water tower; both
+## inside the zone and clear of the spawn point and both spares (class doc). The MatchController
+## reads it.
 @export var canister_seat: Marker3D
 
-## The Player colour of this Base, put on the pad and the beacon as a material_override when the
-## Base enters the tree, so it is read once. Set it on each instance: base.tscn carries none,
-## because a default in the scene would leave two Bases alike (Story 003 AC-1).
+## The Player colour of this Base (on Map 01 its Team colour, Story 007 AC-11), put on the pad,
+## the beacon and each mesh of color_meshes as a material_override, and on the canister's body,
+## when the Base enters the tree, so it is read once. Set it on each instance: neither scene
+## carries one, because a default in the scene would leave two Bases alike (Story 003 AC-1).
 @export var color_material: Material
+
+## Further meshes that wear this Base's colour (Story 007 AC-11): compound_base.tscn lists its four
+## corner towers and the dashes of the rectangle in front of its Garage, where the illustrated
+## drawing puts the Team colour, and its water tower's roof. _ready() puts color_material on each
+## as a material_override, per instance, so the walls, which share the corner towers' material,
+## stay dark. Optional and empty by default: base.tscn lists none and paints what it always did.
+## An entry that is not assigned is skipped with a warning.
+@export var color_meshes: Array[MeshInstance3D] = []
 
 
 func _ready() -> void:
@@ -145,6 +195,7 @@ func _ready() -> void:
 		return
 	pad.material_override = color_material
 	beacon.material_override = color_material
+	_paint_color_meshes()
 	if canister == null or canister_seat == null:
 		push_warning("Base '%s': canister or canister_seat is not assigned, so this Base holds no Water Canister to paint, and the Round needs both (MatchController.begin() reads them)." % name)
 		return
@@ -178,8 +229,8 @@ func first_spawn_problem() -> String:
 
 
 ## The name of the first required reference that is not assigned, or an empty string when all four
-## are. color_material and the spare spawn points are not among them: a Base works without a colour,
-## it only looks plain.
+## are. color_material, color_meshes and the spare spawn points are not among them: a Base works
+## without a colour, it only looks plain.
 func _first_unassigned() -> String:
 	if spawn_point == null:
 		return "spawn_point"
@@ -190,3 +241,15 @@ func _first_unassigned() -> String:
 	if beacon == null:
 		return "beacon"
 	return ""
+
+
+## Puts color_material on each mesh of color_meshes as a material_override, on this instance only,
+## so the parts that share a mesh or a material with it keep their own look. An entry that is not
+## assigned is skipped with a warning that names its index.
+func _paint_color_meshes() -> void:
+	for index: int in color_meshes.size():
+		var mesh: MeshInstance3D = color_meshes[index]
+		if mesh == null:
+			push_warning("Base '%s': color_meshes entry %d is not assigned, so that part keeps its own look." % [name, index])
+			continue
+		mesh.material_override = color_material

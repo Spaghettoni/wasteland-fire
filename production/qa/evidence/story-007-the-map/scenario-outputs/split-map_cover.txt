@@ -1,0 +1,33 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+SPLIT map_cover t=2.933 run=WreckWestOuterSouth type=gyrocopter player=1 hit=16.40 contact_tick=87 stop_ticks=1 gap=1.200 half=1.200 end=0.00
+SPLIT map_cover t=2.933 shot=WreckWestOuterSouth player=1 end_x=-80.750 end_y=0.500 end_z=3.701 face_offset=-0.000
+SPLIT map_cover t=2.933 run=WreckEastOuterSouth type=motorbike player=2 hit=24.00 contact_tick=72 stop_ticks=1 gap=1.300 half=1.300 end=0.00
+SPLIT map_cover t=2.933 shot=WreckEastOuterSouth player=2 end_x=80.750 end_y=0.500 end_z=3.701 face_offset=-0.000
+SPLIT map_cover t=5.700 run=WreckWestOuterSouth type=motorbike player=1 hit=24.00 contact_tick=72 stop_ticks=1 gap=1.300 half=1.300 end=0.00
+SPLIT map_cover t=5.700 shot=WreckWestOuterSouth player=1 end_x=-80.750 end_y=0.500 end_z=3.701 face_offset=-0.000
+SPLIT map_cover t=5.700 run=WreckEastOuterSouth type=gyrocopter player=2 hit=16.40 contact_tick=87 stop_ticks=1 gap=1.200 half=1.200 end=0.00
+SPLIT map_cover t=5.700 shot=WreckEastOuterSouth player=2 end_x=80.750 end_y=0.500 end_z=3.701 face_offset=-0.000
+SPLIT map_cover t=8.467 run=ContainerWest type=gyrocopter player=1 hit=16.40 contact_tick=87 stop_ticks=1 gap=1.200 half=1.200 end=0.00
+SPLIT map_cover t=8.467 shot=ContainerWest player=1 end_x=-58.000 end_y=0.500 end_z=1.250 face_offset=0.000
+SPLIT map_cover t=8.467 run=ContainerEast type=buggy player=2 hit=19.60 contact_tick=80 stop_ticks=0 gap=1.503 half=1.500 end=0.00
+SPLIT map_cover t=8.467 shot=ContainerEast player=2 end_x=58.000 end_y=0.500 end_z=1.250 face_offset=0.000
+SPLIT map_cover t=11.233 run=ContainerWest type=buggy player=1 hit=19.60 contact_tick=80 stop_ticks=0 gap=1.503 half=1.500 end=0.00
+SPLIT map_cover t=11.233 shot=ContainerWest player=1 end_x=-58.000 end_y=0.500 end_z=1.250 face_offset=0.000
+SPLIT map_cover t=11.233 run=ContainerEast type=gyrocopter player=2 hit=16.40 contact_tick=87 stop_ticks=1 gap=1.200 half=1.200 end=0.00
+SPLIT map_cover t=11.233 shot=ContainerEast player=2 end_x=58.000 end_y=0.500 end_z=1.250 face_offset=0.000
+SPLIT map_cover t=14.000 run=ScrapWallWest type=gyrocopter player=1 hit=16.40 contact_tick=87 stop_ticks=1 gap=1.200 half=1.200 end=0.00
+SPLIT map_cover t=14.000 shot=ScrapWallWest player=1 end_x=-13.250 end_y=0.500 end_z=15.000 face_offset=0.000
+SPLIT map_cover t=14.000 run=ScrapWallEast type=truck player=2 hit=10.90 contact_tick=118 stop_ticks=1 gap=2.201 half=2.200 end=0.00
+SPLIT map_cover t=14.000 shot=ScrapWallEast player=2 end_x=13.250 end_y=0.500 end_z=15.000 face_offset=0.000
+SPLIT map_cover t=16.767 run=ScrapWallWest type=truck player=1 hit=10.90 contact_tick=118 stop_ticks=1 gap=2.201 half=2.200 end=0.00
+SPLIT map_cover t=16.767 shot=ScrapWallWest player=1 end_x=-13.250 end_y=0.500 end_z=15.000 face_offset=0.000
+SPLIT map_cover t=16.767 run=ScrapWallEast type=gyrocopter player=2 hit=16.40 contact_tick=87 stop_ticks=1 gap=1.200 half=1.200 end=0.00
+SPLIT map_cover t=16.767 shot=ScrapWallEast player=2 end_x=13.250 end_y=0.500 end_z=15.000 face_offset=0.000
+SPLIT map_cover t=18.267 depot=FuelCanDepot1 taken_after=1.38 wall_contacts=0
+SPLIT map_cover t=19.767 depot=FuelCanDepot2 taken_after=1.38 wall_contacts=0
+SPLIT map_cover t=21.267 depot=FuelCanDepot4 taken_after=1.38 wall_contacts=0
+SPLIT map_cover t=22.767 depot=FuelCanDepot5 taken_after=1.38 wall_contacts=0
+SPLIT map_cover t=24.267 depot=FuelCanDepot3 taken_after=1.38 wall_contacts=0
+CHECK map_cover cover_stops PASS WreckWestOuterSouth and WreckEastOuterSouth: 4 runs met the face at >= 1.000 of top speed, stop ticks <= 1, gap off the half-length <= 0.000 m, end speed <= 0.00 m/s; 4 shots ended <= 0.000 m off the face | ContainerWest and ContainerEast: 4 runs met the face at >= 1.000 of top speed, stop ticks <= 1, gap off the half-length <= 0.003 m, end speed <= 0.00 m/s; 4 shots ended <= 0.000 m off the face | ScrapWallWest and ScrapWallEast: 4 runs met the face at >= 1.000 of top speed, stop ticks <= 1, gap off the half-length <= 0.001 m, end speed <= 0.00 m/s; 4 shots ended <= 0.000 m off the face | depot: the passing Truck took FuelCanDepot1 1.38 s, FuelCanDepot2 1.38 s, FuelCanDepot4 1.38 s, FuelCanDepot5 1.38 s, FuelCanDepot3 1.38 s
+RESULT map_cover ok checks=1 failed=0 t=24.267 runs=12 shots=12 depot_takes=5

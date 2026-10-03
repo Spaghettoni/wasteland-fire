@@ -1,0 +1,56 @@
+import re, math
+ROOT = "/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire"
+t = open(ROOT + "/src/gameplay/maps/map_01/map_01_terrain.tscn").read()
+blk = t[t.index('[node name="CanyonRoad"'):]
+poly = [float(v) for v in re.search(r"polygon = PackedVector2Array\(([^)]*)\)", blk).group(1).split(",")]
+pts = list(zip(poly[0::2], poly[1::2]))
+print("ROAD polygon", pts)
+def segd(p, a, b):
+    ax, ay = a; bx, by = b; px, py = p
+    dx, dy = bx - ax, by - ay; L2 = dx * dx + dy * dy
+    u = max(0, min(1, ((px - ax) * dx + (py - ay) * dy) / L2)) if L2 else 0
+    return math.hypot(px - ax - u * dx, py - ay - u * dy)
+cl = [(-102, -26), (-80, -26), (-67, -36), (-43, -36), (-28, -28), (28, -28), (43, -36), (67, -36), (80, -26), (102, -26)]
+n = len(pts); half = n // 2
+side1 = pts[:half]; side2 = pts[half:]
+def chain_d(p, ch): return min(segd(p, ch[i], ch[i + 1]) for i in range(len(ch) - 1))
+for p in cl:
+    print("  centreline %s: dist to side A %.3f, side B %.3f" % (p, chain_d(p, side1), chain_d(p, side2)))
+# fuel reach: tick-exact model of unit.gd (_burn_fuel first, then move_toward at acceleration, coast when stranded)
+S = {"motorbike": (24.0, 20.0, 12.0, 2.0, False), "buggy": (19.6, 17.0, 10.0, 2.5, False), "truck": (10.9, 9.0, 6.0, 3.0, False), "gyrocopter": (16.4, 15.0, 8.0, 5.0, True)}
+dt = 1.0 / 60.0
+def drive(vmax, acc, coast, use, fly, fuel=50.0, fords=(), target=None):
+    v = 0.0; x = 0.0; f = fuel; tick = 0; refuelled = False
+    while tick < 60 * 600:
+        if f > 0 and use > 0 and abs(v) > 1e-12:
+            f = max(f - use * dt, 0.0)
+        if fly and f <= 0:
+            break
+        stranded = f <= 0 and not fly
+        top = vmax
+        if not fly and any(a <= x <= b for a, b in fords):
+            top = vmax * 0.5
+        if stranded:
+            v = max(v - coast * dt, 0.0)
+        else:
+            v = min(v + acc * dt, top) if v <= top else top
+        x += v * dt; tick += 1
+        if target is not None and x >= target:
+            return x, tick * dt, f
+        if stranded and v <= 0:
+            break
+    return x, tick * dt, f
+routes = {"nearest Can (canyon road west, ~59 m via the gate)": (59.3, ()), "nearest depot Can (-3,-3) ~122 m on the gate axis, west ford": (122.0, ((79.0, 91.0),)), "opponent's Flag (113,0) 238 m, both fords": (238.0, ((79.0, 91.0), (159.0, 171.0)))}
+print("AC-8 reach on the spawn tank (50 Fuel), full throttle from the SpawnPoint, model of unit.gd at 60 Hz:")
+for k, (vmax, acc, coast, use, fly) in S.items():
+    x, tt, _ = drive(vmax, acc, coast, use, fly)
+    row = ["%-10s open ground %.1f m in %.1f s" % (k, x, tt)]
+    for name, (dist, fords) in routes.items():
+        xr, tr, fr = drive(vmax, acc, coast, use, fly, fords=fords, target=dist)
+        ok = xr >= dist
+        row.append("%s: %s (%.1f m%s)" % (name.split(" (")[0].split(" ~")[0], "yes" if ok else "NO", xr, ", %.1f Fuel left" % fr if ok else ""))
+    xd, td, fd = drive(vmax, acc, coast, use, fly, fords=((79.0, 91.0),), target=122.0)
+    if xd >= 122.0:
+        x2, t2, f2 = drive(vmax, acc, coast, use, fly, fuel=fd + 40.0, fords=((37.0, 49.0),), target=116.0)
+        row.append("Flag via the depot's Can (+40): %s" % ("yes" if x2 >= 116.0 else "NO (%.1f of 116 m)" % x2))
+    print("  " + " | ".join(row))

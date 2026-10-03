@@ -1,0 +1,13 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+P| MODEL motorbike built=true parts_remapped=1 part_remap_entries=1 accent_surfaces=1
+P| MODEL buggy built=true parts_remapped=0 part_remap_entries=0 accent_surfaces=1
+P| MODEL truck built=true parts_remapped=0 part_remap_entries=0 accent_surfaces=1
+P| MODEL gyrocopter built=true parts_remapped=0 part_remap_entries=0 accent_surfaces=1
+P| NEG_BEGIN bad part remap (size off by 0.01)
+P| NEG_END built=true parts_remapped=0
+P| NEG_BEGIN palette lacking rim, teal_dark, orange_dark
+P| NEG_END palette_size=3
+P| RISE box_lead0=(1.3992, 1.321247, 2.3958) queries=89040 touching=46418 max_results=11 saturated_at_64=0 max_dup_one_cliff=11 two_cliffs_in_box=266 hidden_at_8=0 top_differs_8_vs_64=0
+P| RISE histogram (results, bucket of 8 -> queries): ["0-7:46215", "8-15:203"]
+P| RISE example hidden at 8: 

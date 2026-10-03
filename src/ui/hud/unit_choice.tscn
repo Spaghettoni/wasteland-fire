@@ -62,6 +62,7 @@ slot_style = SubResource("StyleBoxFlat_slot")
 cursor_style = SubResource("StyleBoxFlat_cursor")
 
 [node name="Panel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5

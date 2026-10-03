@@ -12,7 +12,10 @@ extends Control
 ## production/epics/wasteland-fire/story-006-fuel-and-fuel-cans.md AC-7 (each Player's HUD shows a
 ## Fuel gauge beside the hit points in the band Story 004 built, right of the hit-point bar, at
 ## x 332 to 624; it visibly empties while the Unit moves, refills on a Fuel Can, and nothing
-## clips or overflows); design/game-brief.md MVP features 4 and 6; design/rules.md "Resources".
+## clips or overflows); production/epics/wasteland-fire/story-007-the-map.md AC-11 (each Player's
+## HUD carries that Player's Team colour, here as an edge round the band, and the hit-point green
+## and the Fuel amber stay; open question 17); design/game-brief.md MVP features 4 and 6;
+## design/rules.md "Resources" and "Teams and visual style".
 ## Vocabulary: CONTEXT.md (Player, Unit, Base, Round, Flag, Carrier, Fuel, Fuel Can).
 ##
 ## Display only (.claude/rules/ui-code.md). The hit points and the Fuel belong to the Unit and the
@@ -84,6 +87,22 @@ extends Control
 ## Fuel, and never by colour alone: each line names what it counts. White text with a 6 px dark
 ## outline reads over the sky, the grey field and either Player's coloured Base. mouse_filter is
 ## ignore on every node, so the HUD never takes a click from what is under it.
+##
+## Team edge (Story 007 AC-11). When the scene sets edge_style, this HUD draws it in its own
+## _draw(), under every element, round the band: the smallest rectangle that holds every element of
+## the band (each Control child of this HUD), grown on each side by the style's margin
+## (StyleBox.get_margin(), the content margin). split_screen.tscn stores each Player's Team edge on
+## that Player's HUD and on its Unit choice panel, one file per Team:
+## src/ui/hud/data/team_orange_edge.tres for Player 1 and team_teal_edge.tres for Player 2, a 3 px
+## border in the Team colour (the albedo of the Team materials in src/gameplay/split_screen/data/)
+## with no fill and 8 px of margin, so the edge runs from (8, 8) to (632, 84) in a 640 x 720 view,
+## inside it. It is only an edge: the bars keep their green and amber, the text its white, and the
+## view shows through the band as before. A band element that changes size (a longer translation
+## that wraps) queues a redraw, so the edge follows the band. The edge is drawn and is not a node,
+## so the HUD's children are still the five elements of the band: the two bars, their lines and the
+## status line. A Control a later story adds under this HUD in player_hud.tscn joins the band, and
+## the redraw when it changes size, with no change to this script. With edge_style null, the
+## default, nothing is drawn: the look before Story 007.
 
 ## The MatchController this HUD reads for the canister status: the node that emits
 ## canister_picked_up, canister_dropped, canister_seated, round_started and unit_spawned and
@@ -127,6 +146,12 @@ extends Control
 ## Required, with no default.
 @export var away_text: String = ""
 
+@export_group("Look")
+## The Team edge this HUD draws round its band (Story 007 AC-11; the class doc's Team edge): a
+## StyleBox, in split_screen.tscn the Player's Team edge, src/ui/hud/data/team_orange_edge.tres or
+## team_teal_edge.tres. Optional: null, the default, draws nothing (the look before Story 007).
+@export var edge_style: StyleBox
+
 @onready var _bar: ProgressBar = %HitPointsBar
 @onready var _hit_points_label: Label = %HitPointsLabel
 @onready var _fuel_bar: ProgressBar = %FuelBar
@@ -151,6 +176,41 @@ func _ready() -> void:
 	_on_hit_points_changed(unit.hit_points, max_hit_points)
 	_on_fuel_changed(unit.fuel, unit.fuel_capacity)
 	_show_status()
+	if edge_style != null:
+		for element: Control in _band_elements():
+			element.resized.connect(queue_redraw)
+		queue_redraw()
+
+
+## Draws edge_style round the band, grown on each side by the style's margin (the class doc's Team
+## edge); draws nothing while edge_style is null.
+func _draw() -> void:
+	if edge_style == null:
+		return
+	var edge: Rect2 = _band_rect().grow_individual(edge_style.get_margin(SIDE_LEFT),
+			edge_style.get_margin(SIDE_TOP), edge_style.get_margin(SIDE_RIGHT),
+			edge_style.get_margin(SIDE_BOTTOM))
+	draw_style_box(edge_style, edge)
+
+
+## The elements of the band, in tree order: every Control child of this HUD (the class doc's Team
+## edge); today the hit-point bar and its line, the Fuel bar and its line, and the status line.
+func _band_elements() -> Array[Control]:
+	var elements: Array[Control] = []
+	for child: Node in get_children():
+		if child is Control:
+			elements.append(child as Control)
+	return elements
+
+
+## The band in this HUD's own coordinates: the smallest rectangle that holds every element of the
+## band. It starts from the hit-point bar, one of them, because merging an empty Rect2 would add
+## the origin.
+func _band_rect() -> Rect2:
+	var band: Rect2 = _bar.get_rect()
+	for element: Control in _band_elements():
+		band = band.merge(element.get_rect())
+	return band
 
 
 ## What is wrong with the exports, as a sentence, or an empty string when nothing is.

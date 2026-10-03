@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://src/gameplay/split_screen/split_screen.gd" id="1_split"]
-[ext_resource type="PackedScene" path="res://src/gameplay/maps/greybox_field.tscn" id="2_field"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/map_01/map_01.tscn" id="2_map"]
 [ext_resource type="PackedScene" path="res://src/gameplay/units/motorbike.tscn" id="3_bike"]
 [ext_resource type="Script" path="res://src/gameplay/units/player_drive_input.gd" id="4_pdi"]
 [ext_resource type="Script" path="res://src/gameplay/camera/chase_camera.gd" id="5_cam"]
@@ -15,13 +15,15 @@
 [ext_resource type="PackedScene" path="res://src/ui/hud/player_hud.tscn" id="13_hud"]
 [ext_resource type="PackedScene" path="res://src/ui/hud/round_over_screen.tscn" id="14_ros"]
 [ext_resource type="Script" path="res://src/gameplay/match/round_restart_input.gd" id="15_rri"]
-[ext_resource type="PackedScene" path="res://src/gameplay/maps/terrain_stand_ins.tscn" id="16_terrain"]
 [ext_resource type="Script" path="res://src/gameplay/combat/weapon.gd" id="17_weapon"]
 [ext_resource type="PackedScene" path="res://src/gameplay/combat/shot.tscn" id="18_shot"]
 [ext_resource type="Script" path="res://src/gameplay/combat/player_fire_input.gd" id="19_pfi"]
 [ext_resource type="Script" path="res://src/gameplay/match/player_choice_input.gd" id="20_pci"]
 [ext_resource type="PackedScene" path="res://src/ui/hud/unit_choice.tscn" id="21_choice"]
-[ext_resource type="PackedScene" path="res://src/gameplay/maps/greybox_fuel_cans.tscn" id="22_fuelcans"]
+[ext_resource type="Material" path="res://src/gameplay/split_screen/data/team_orange_material.tres" id="22_team_orange"]
+[ext_resource type="Material" path="res://src/gameplay/split_screen/data/team_teal_material.tres" id="23_team_teal"]
+[ext_resource type="StyleBoxFlat" path="res://src/ui/hud/data/team_orange_edge.tres" id="24_edge_orange"]
+[ext_resource type="StyleBoxFlat" path="res://src/ui/hud/data/team_teal_edge.tres" id="25_edge_teal"]
 
 [node name="SplitScreen" type="Control" unique_id=9000001 node_paths=PackedStringArray("field", "player_1_unit", "player_2_unit", "player_1_camera", "player_2_camera", "match_controller")]
 layout_mode = 3
@@ -31,7 +33,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_split")
-field = NodePath("%GreyboxField")
+field = NodePath("%Map")
 player_1_unit = NodePath("%Player1Unit")
 player_2_unit = NodePath("%Player2Unit")
 player_1_camera = NodePath("%Player1Camera")
@@ -41,20 +43,16 @@ match_controller = NodePath("%MatchController")
 [node name="World" type="Node3D" parent="." unique_id=9000002]
 physics_interpolation_mode = 1
 
-[node name="GreyboxField" parent="World" unique_id=1102110747 instance=ExtResource("2_field")]
+[node name="Map" parent="World" instance=ExtResource("2_map")]
 unique_name_in_owner = true
-
-[node name="TerrainStandIns" parent="World" instance=ExtResource("16_terrain")]
-
-[node name="FuelCans" parent="World" instance=ExtResource("22_fuelcans")]
 
 [node name="Player1Unit" parent="World" unique_id=1111111111 instance=ExtResource("3_bike")]
 unique_name_in_owner = true
-team_material = ExtResource("7_m1")
+team_material = ExtResource("22_team_orange")
 
 [node name="Player2Unit" parent="World" unique_id=1222222222 instance=ExtResource("3_bike")]
 unique_name_in_owner = true
-team_material = ExtResource("8_m2")
+team_material = ExtResource("23_team_teal")
 
 [node name="Player1DriveInput" type="Node" parent="World" unique_id=9000011 node_paths=PackedStringArray("unit")]
 script = ExtResource("4_pdi")
@@ -154,12 +152,14 @@ player_index = 0
 match_controller = NodePath("%MatchController")
 unit = NodePath("%Player1Unit")
 player_index = 0
+edge_style = ExtResource("24_edge_orange")
 
 [node name="Player1UnitChoice" parent="Views/Player1View/SubViewport" node_paths=PackedStringArray("match_controller", "choice_input") instance=ExtResource("21_choice")]
 match_controller = NodePath("%MatchController")
 choice_input = NodePath("%Player1ChoiceInput")
 player_index = 0
 action_prefix = &"p1_"
+edge_style = ExtResource("24_edge_orange")
 
 [node name="Player1RoundOver" parent="Views/Player1View/SubViewport" unique_id=9000061 node_paths=PackedStringArray("match_controller") instance=ExtResource("14_ros")]
 match_controller = NodePath("%MatchController")
@@ -187,12 +187,14 @@ player_index = 1
 match_controller = NodePath("%MatchController")
 unit = NodePath("%Player2Unit")
 player_index = 1
+edge_style = ExtResource("25_edge_teal")
 
 [node name="Player2UnitChoice" parent="Views/Player2View/SubViewport" node_paths=PackedStringArray("match_controller", "choice_input") instance=ExtResource("21_choice")]
 match_controller = NodePath("%MatchController")
 choice_input = NodePath("%Player2ChoiceInput")
 player_index = 1
 action_prefix = &"p2_"
+edge_style = ExtResource("25_edge_teal")
 
 [node name="Player2RoundOver" parent="Views/Player2View/SubViewport" unique_id=9000062 node_paths=PackedStringArray("match_controller") instance=ExtResource("14_ros")]
 match_controller = NodePath("%MatchController")

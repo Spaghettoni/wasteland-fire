@@ -89,3 +89,15 @@ _Avoid_: depot, jerrycan, gas can, water canister
 **Map (mapa)**:
 A bounded playfield holding Base A, Base B, their Garages and the fixed Fuel Can places; it also sets each Player's Token stock. The First Playable has one, Map 01.
 _Avoid_: level, arena, world, stage
+
+**Gate**:
+The one opening in a Base's wall, in the wall that faces the Map's centre; every Unit leaves and enters its Base through it. On Map 01 about 11 m wide (drawn at 10 m and widened so the Truck clears it).
+_Avoid_: door, entrance, exit
+
+**Ford**:
+A shallow creek crossing on the Map. A ground Unit inside a Ford drives at no more than a fraction of its top speed (Map 01: half, a starting value to tune); the Gyrocopter crosses at full speed. Map 01 has two, across the salt flat between the canyon and the ridge.
+_Avoid_: creek, river, mud, shallows
+
+**Cover**:
+A static obstacle on the Map that stops every Unit, the Gyrocopter included, and every shot, and is never destroyed. On Map 01 the eight wrecks, the two long containers and the two scrap walls; the drawings' wrecks are cover, not destroyed Units.
+_Avoid_: obstacle, barricade, prop, destructible

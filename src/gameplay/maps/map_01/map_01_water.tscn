@@ -1,0 +1,50 @@
+[gd_scene format=3]
+
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/sea.tres" id="1_sea"]
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/channel.tres" id="2_channel"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_sea"]
+material = ExtResource("1_sea")
+size = Vector2(1000, 1000)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_channel"]
+size = Vector3(12, 1.5, 28)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_channel"]
+material = ExtResource("2_channel")
+size = Vector2(12, 28)
+
+[node name="Water" type="Node3D"]
+
+[node name="Sea" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.12, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_sea")
+
+[node name="ChannelWest" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 0, 34)
+collision_layer = 32
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ChannelWest"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+shape = SubResource("BoxShape3D_channel")
+
+[node name="Surface" type="MeshInstance3D" parent="ChannelWest"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_channel")
+
+[node name="ChannelEast" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, 34)
+collision_layer = 32
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ChannelEast"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+shape = SubResource("BoxShape3D_channel")
+
+[node name="Surface" type="MeshInstance3D" parent="ChannelEast"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_channel")

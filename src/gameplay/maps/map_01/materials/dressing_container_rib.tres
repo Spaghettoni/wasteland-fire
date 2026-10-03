@@ -1,0 +1,12 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://src/gameplay/maps/map_01/textures/scrap.tres" id="1_scrap_texture"]
+
+[resource]
+albedo_color = Color(0.38, 0.7, 0.62, 1)
+albedo_texture = ExtResource("1_scrap_texture")
+roughness = 1.0
+uv1_scale = Vector3(0.0625, 0.0625, 0.0625)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5

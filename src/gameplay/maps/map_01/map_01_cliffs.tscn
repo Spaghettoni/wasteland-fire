@@ -1,0 +1,51 @@
+[gd_scene format=3]
+
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/rock.tres" id="1_rock"]
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/ridge.tres" id="2_ridge"]
+
+[node name="Cliffs" type="Node3D"]
+
+[node name="RockCanyonNorth" type="CSGPolygon3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.5, 0)
+use_collision = true
+collision_layer = 32
+collision_mask = 0
+polygon = PackedVector2Array(-100, -30, -81.3605, -30, -68.3605, -40, -42, -40, -27, -32, 27, -32, 42, -40, 68.3605, -40, 81.3605, -30, 100, -30, 95, -44, 95, -48, -95, -48, -95, -44)
+depth = 2.5
+material = ExtResource("1_rock")
+
+[node name="RockCanyonSouth" type="CSGPolygon3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.5, 0)
+use_collision = true
+collision_layer = 32
+collision_mask = 0
+polygon = PackedVector2Array(-96, -22, -78.6395, -22, -65.6395, -32, -44, -32, -29, -24, 29, -24, 44, -32, 65.6395, -32, 78.6395, -22, 96, -22, 96, -20, -96, -20)
+depth = 2.5
+material = ExtResource("1_rock")
+
+[node name="RidgeWest" type="CSGPolygon3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.5, 0)
+use_collision = true
+collision_layer = 32
+collision_mask = 0
+polygon = PackedVector2Array(-100, 32, -95, 22, -46, 22, -46, 48, -93.8885, 48)
+depth = 2.5
+material = ExtResource("2_ridge")
+
+[node name="RidgeCentre" type="CSGPolygon3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.5, 0)
+use_collision = true
+collision_layer = 32
+collision_mask = 0
+polygon = PackedVector2Array(-34, 22, 0, 21, 34, 22, 34, 48, -34, 48)
+depth = 2.5
+material = ExtResource("2_ridge")
+
+[node name="RidgeEast" type="CSGPolygon3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.5, 0)
+use_collision = true
+collision_layer = 32
+collision_mask = 0
+polygon = PackedVector2Array(93.8885, 48, 46, 48, 46, 22, 95, 22, 100, 32)
+depth = 2.5
+material = ExtResource("2_ridge")

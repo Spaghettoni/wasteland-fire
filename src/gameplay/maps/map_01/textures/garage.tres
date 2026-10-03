@@ -1,0 +1,26 @@
+[gd_resource type="NoiseTexture2D" format=3]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_garage"]
+noise_type = 2
+seed = 81
+frequency = 0.012
+fractal_type = 0
+fractal_octaves = 1
+fractal_lacunarity = 2.0
+fractal_gain = 0.5
+cellular_distance_function = 2
+cellular_jitter = 0.5
+cellular_return_type = 4
+
+[sub_resource type="Gradient" id="Gradient_garage"]
+offsets = PackedFloat32Array(0.0, 0.05, 0.14, 1.0)
+colors = PackedColorArray(0.179, 0.094, 0.06, 1, 0.23, 0.119, 0.068, 1, 0.45, 0.23, 0.111, 1, 0.518, 0.272, 0.128, 1)
+
+[resource]
+width = 512
+height = 512
+seamless = true
+seamless_blend_skirt = 0.1
+generate_mipmaps = true
+color_ramp = SubResource("Gradient_garage")
+noise = SubResource("FastNoiseLite_garage")

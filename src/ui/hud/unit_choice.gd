@@ -11,7 +11,9 @@ extends Control
 ## available: this panel is the picture of that choice) and AC-8 (which Unit a Player drives shows:
 ## the row names every type of the data and the ready line names the one about to appear); Story
 ## 004 AC-8 (all text and elements fit inside a 640 x 720 viewport with no clipping or overflow);
-## design/game-brief.md MVP feature 5 (the four Units); design/rules.md "Tokens and the Garage".
+## production/epics/wasteland-fire/story-007-the-map.md AC-11 (each Player's choice panel carries
+## that Player's Team colour, here as an edge; open question 17); design/game-brief.md MVP feature 5
+## (the four Units); design/rules.md "Tokens and the Garage" and "Teams and visual style".
 ## Vocabulary: CONTEXT.md (Player, Unit, Garage, Round).
 ##
 ## Display only (.claude/rules/ui-code.md). The Round and the choice belong to the MatchController
@@ -88,6 +90,17 @@ extends Control
 ## and a border, not hue alone). mouse_filter is ignore on the root, the panel and every container,
 ## so the panel never takes a click from what is under it. The scene stores visible = false: that
 ## is what the view shows before the Round begins.
+##
+## Team edge (Story 007 AC-11). When the scene sets edge_style, it is drawn over the panel across
+## the panel's own rectangle, from the panel's draw signal: after the panel's own style and before
+## its lines, and again on every redraw, so it follows the panel as it grows and shrinks between the
+## choosing and the ready state. split_screen.tscn stores each Player's Team edge on that Player's
+## panel and on its HUD, one file per Team: src/ui/hud/data/team_orange_edge.tres for Player 1 and
+## team_teal_edge.tres for Player 2, a 3 px border in the Team colour with no fill and the panel's
+## 8 px corners (its content margins frame the HUD's band and play no part here). The panel keeps
+## its dark fill and its rectangle, and the marked slot its white 2 px border, so the Team colour
+## never marks a slot. With edge_style null, the default, nothing is drawn: the look before
+## Story 007.
 
 const _SUFFIX_STEER_LEFT: String = "steer_left"
 const _SUFFIX_STEER_RIGHT: String = "steer_right"
@@ -142,6 +155,12 @@ const _SUFFIX_FIRE: String = "fire"
 ## shows nothing.
 @export var cursor_style: StyleBox
 
+## The Team edge drawn over the panel (Story 007 AC-11; the class doc's Team edge): a StyleBox, in
+## split_screen.tscn the Player's Team edge, src/ui/hud/data/team_orange_edge.tres or
+## team_teal_edge.tres. Optional: null, the default, draws nothing (the look before Story 007).
+@export var edge_style: StyleBox
+
+@onready var _panel: PanelContainer = %Panel
 @onready var _title_label: Label = %TitleLabel
 @onready var _slots: HBoxContainer = %Slots
 @onready var _slot_template: PanelContainer = %SlotTemplate
@@ -166,8 +185,18 @@ func _ready() -> void:
 	match_controller.unit_spawned.connect(_on_unit_spawned)
 	match_controller.round_over.connect(_on_round_over)
 	choice_input.cursor_moved.connect(_on_cursor_moved)
+	if edge_style != null:
+		_panel.draw.connect(_draw_edge)
+		_panel.queue_redraw()
 	_rebuild_slots(match_controller.unit_types())
 	_refresh()
+
+
+## Draws edge_style over the panel across the panel's own rectangle (the class doc's Team edge).
+## Connected to the panel's draw signal, so it runs after the panel's own style and before its
+## lines, every time the panel redraws.
+func _draw_edge() -> void:
+	_panel.draw_style_box(edge_style, Rect2(Vector2.ZERO, _panel.size))
 
 
 ## What is wrong with the exports, the texts, the scene or the Input Map, as a sentence, or an empty
@@ -217,8 +246,8 @@ func _first_scene_problem() -> String:
 		return "slot_style is not assigned (store the slot style of the scene)"
 	if cursor_style == null:
 		return "cursor_style is not assigned (store the cursor style of the scene)"
-	if _title_label == null or _slots == null or _slot_template == null or _hint_label == null:
-		return "the scene lacks the title, the slot row, the slot template or the hint label"
+	if _scene_lacks_nodes():
+		return "the scene lacks the panel, the title, the slot row, the slot template or the hint label"
 	_steer_left_action = _action_name(_SUFFIX_STEER_LEFT)
 	_steer_right_action = _action_name(_SUFFIX_STEER_RIGHT)
 	_fire_action = _action_name(_SUFFIX_FIRE)
@@ -226,6 +255,13 @@ func _first_scene_problem() -> String:
 		if not InputMap.has_action(action):
 			return "Input Map action '%s' does not exist, so no key can be named" % action
 	return ""
+
+
+## Whether the scene lacks a node this panel uses: the panel, the title, the slot row, the slot
+## template or the hint label.
+func _scene_lacks_nodes() -> bool:
+	return (_panel == null or _title_label == null or _slots == null or _slot_template == null
+			or _hint_label == null)
 
 
 func _action_name(suffix: String) -> StringName:

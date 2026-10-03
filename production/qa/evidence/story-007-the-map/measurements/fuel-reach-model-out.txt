@@ -1,0 +1,16 @@
+ROAD polygon [(-102.0, -30.0), (-81.3605, -30.0), (-68.3605, -40.0), (-42.0, -40.0), (-27.0, -32.0), (27.0, -32.0), (42.0, -40.0), (68.3605, -40.0), (81.3605, -30.0), (102.0, -30.0), (102.0, -22.0), (78.6395, -22.0), (65.6395, -32.0), (44.0, -32.0), (29.0, -24.0), (-29.0, -24.0), (-44.0, -32.0), (-65.6395, -32.0), (-78.6395, -22.0), (-102.0, -22.0)]
+  centreline (-102, -26): dist to side A 4.000, side B 4.000
+  centreline (-80, -26): dist to side A 4.225, side B 4.000
+  centreline (-67, -36): dist to side A 4.000, side B 4.225
+  centreline (-43, -36): dist to side A 4.000, side B 4.123
+  centreline (-28, -28): dist to side A 4.123, side B 4.000
+  centreline (28, -28): dist to side A 4.123, side B 4.000
+  centreline (43, -36): dist to side A 4.000, side B 4.123
+  centreline (67, -36): dist to side A 4.000, side B 4.225
+  centreline (80, -26): dist to side A 4.225, side B 4.000
+  centreline (102, -26): dist to side A 4.000, side B 4.000
+AC-8 reach on the spawn tank (50 Fuel), full throttle from the SpawnPoint, model of unit.gd at 60 Hz:
+  motorbike  open ground 610.0 m in 27.0 s | nearest Can: yes (59.4 m, 43.9 Fuel left) | nearest depot Can: yes (122.3 m, 37.4 Fuel left) | opponent's Flag: yes (238.0 m, 26.4 Fuel left) | Flag via the depot's Can (+40): yes
+  buggy      open ground 400.2 m in 22.0 s | nearest Can: yes (59.4 m, 41.0 Fuel left) | nearest depot Can: yes (122.0 m, 31.2 Fuel left) | opponent's Flag: yes (238.2 m, 14.5 Fuel left) | Flag via the depot's Can (+40): yes
+  truck      open ground 185.1 m in 18.5 s | nearest Can: yes (59.4 m, 31.9 Fuel left) | nearest depot Can: yes (122.1 m, 10.9 Fuel left) | opponent's Flag: NO (162.8 m) | Flag via the depot's Can (+40): yes
+  gyrocopter open ground 155.2 m in 10.0 s | nearest Can: yes (59.5 m, 29.2 Fuel left) | nearest depot Can: yes (122.1 m, 10.2 Fuel left) | opponent's Flag: NO (155.2 m) | Flag via the depot's Can (+40): yes

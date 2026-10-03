@@ -1,0 +1,125 @@
+extends SceneTree
+## Fix pass 1 probe: (a) the four kit models build with no error and their part remap counts;
+## (b) the new KitMerge diagnostics fire on a bad part remap and on a palette missing accent keys;
+## (c) the Gyrocopter's real rise query box over Map 01: results per query at 64 and at 8 slots.
+
+const TYPES: Array[String] = ["motorbike", "buggy", "truck", "gyrocopter"]
+
+
+func _initialize() -> void:
+	_run.call_deferred()
+
+
+func p(s: String) -> void:
+	print("P| " + s)
+
+
+func _run() -> void:
+	var map: Node3D = (load("res://src/gameplay/maps/map_01/map_01.tscn") as PackedScene).instantiate() as Node3D
+	root.add_child(map)
+	var frame: Node3D = Node3D.new()
+	frame.position = Vector3(0, 0, 400)
+	root.add_child(frame)
+	var models: Dictionary = {}
+	for t: String in TYPES:
+		var m: Node3D = (load("res://src/gameplay/units/models/%s_kit_model.tscn" % t) as PackedScene).instantiate() as Node3D
+		frame.add_child(m)
+		models[t] = m
+	for i: int in 4:
+		await physics_frame
+	await process_frame
+	for t: String in TYPES:
+		var m: Node3D = models[t]
+		var b: KitMerge.Built = m.get("_built")
+		p("MODEL %s built=%s parts_remapped=%d part_remap_entries=%d accent_surfaces=%d" % [t, b != null, b.parts_remapped, (m.get("part_remap") as Array).size(), b.accent.get_surface_count()])
+	# (b) negative checks of the new diagnostics
+	p("NEG_BEGIN bad part remap (size off by 0.01)")
+	var host: Node3D = Node3D.new()
+	root.add_child(host)
+	var bad: Array[Dictionary] = [{"size": Vector3(0.37, 0.02, 0.28), "at": Vector3(0, 1.015, 0.03), "key": "lamp"}]
+	var kit: PackedScene = load("res://assets/art/vehicles/wasteland_motorbike/wasteland_motorbike.tscn")
+	var nb: KitMerge.Built = KitMerge.get_or_build(host, kit, 11, {}, bad)
+	p("NEG_END built=%s parts_remapped=%d" % [nb != null, nb.parts_remapped if nb != null else -1])
+	p("NEG_BEGIN palette lacking rim, teal_dark, orange_dark")
+	var gs: GDScript = GDScript.new()
+	gs.source_code = "extends Node3D\nvar _m: Dictionary = {\"teal\": 1, \"orange\": 2, \"steel\": 3}\n"
+	gs.reload()
+	var fake: Node3D = Node3D.new()
+	fake.set_script(gs)
+	var pal: Dictionary = KitMerge._palette_of(fake, "res://fake_kit.tscn")
+	p("NEG_END palette_size=%d" % pal.size())
+	fake.free()
+	# (c) the real rise box over the Map
+	var g: Node3D = models["gyrocopter"]
+	var built: KitMerge.Built = g.get("_built")
+	var sc: float = g.get("model_scale")
+	var off: Vector3 = g.get("offset")
+	var lead_max: float = g.get("rise_lead_max")
+	var space: PhysicsDirectSpaceState3D = root.get_world_3d().direct_space_state
+	var box: BoxShape3D = BoxShape3D.new()
+	var q: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
+	q.shape = box
+	q.collision_mask = 32
+	var queries: int = 0
+	var touching: int = 0
+	var max_n: int = 0
+	var saturated: int = 0
+	var max_dup: int = 0
+	var hidden8: int = 0
+	var top_differs: int = 0
+	var multi_cliff: int = 0
+	var example: String = ""
+	var hist: Dictionary = {}
+	for lead_len: float in [0.0, lead_max]:
+		for h: int in 8:
+			var basis: Basis = Basis(Vector3.UP, h * PI / 4.0)
+			var local_lead: Vector3 = Vector3(0, 0, -lead_len)
+			var low: Vector3 = built.hull.position * sc + off + local_lead.min(Vector3.ZERO)
+			var high: Vector3 = built.hull.end * sc + off + local_lead.max(Vector3.ZERO)
+			box.size = Vector3(high.x - low.x, 20.0, high.z - low.z)
+			var centre: Vector3 = Vector3((low.x + high.x) / 2.0, 10.0, (low.z + high.z) / 2.0)
+			for xi: int in range(-52, 53):
+				for zi: int in range(-26, 27):
+					var origin: Vector3 = Vector3(xi * 2.0, 0.0, zi * 2.0)
+					q.transform = Transform3D(basis, origin + basis * centre)
+					var h64: Array[Dictionary] = space.intersect_shape(q, 64)
+					queries += 1
+					if h64.is_empty():
+						continue
+					touching += 1
+					var h8: Array[Dictionary] = space.intersect_shape(q, 8)
+					max_n = maxi(max_n, h64.size())
+					var bucket: int = h64.size() / 8 * 8
+					hist[bucket] = int(hist.get(bucket, 0)) + 1
+					if h64.size() >= 64:
+						saturated += 1
+					var counts: Dictionary = {}
+					var top64: float = -INF
+					for hit: Dictionary in h64:
+						var c: GeometryInstance3D = hit.get("collider") as GeometryInstance3D
+						if c != null:
+							counts[c.name] = int(counts.get(c.name, 0)) + 1
+							top64 = maxf(top64, (c.global_transform * c.get_aabb()).end.y)
+					var set8: Dictionary = {}
+					var top8: float = -INF
+					for hit: Dictionary in h8:
+						var c: GeometryInstance3D = hit.get("collider") as GeometryInstance3D
+						if c != null:
+							set8[c.name] = true
+							top8 = maxf(top8, (c.global_transform * c.get_aabb()).end.y)
+					for k: Variant in counts:
+						max_dup = maxi(max_dup, int(counts[k]))
+					if counts.size() > 1:
+						multi_cliff += 1
+					if set8.size() != counts.size():
+						hidden8 += 1
+						if example.is_empty():
+							example = "at=%s heading=%d lead=%.0f n64=%d counts=%s set8=%s" % [origin, h * 45, lead_len, h64.size(), counts, set8.keys()]
+					if not is_equal_approx(top64, top8) and not (top64 == -INF and top8 == -INF):
+						top_differs += 1
+	p("RISE box_lead0=%s queries=%d touching=%d max_results=%d saturated_at_64=%d max_dup_one_cliff=%d two_cliffs_in_box=%d hidden_at_8=%d top_differs_8_vs_64=%d" % [built.hull.size * sc, queries, touching, max_n, saturated, max_dup, multi_cliff, hidden8, top_differs])
+	var keys: Array = hist.keys()
+	keys.sort()
+	p("RISE histogram (results, bucket of 8 -> queries): %s" % [keys.map(func(k: Variant) -> String: return "%d-%d:%d" % [k, int(k) + 7, hist[k]])])
+	p("RISE example hidden at 8: " + example)
+	quit(0)

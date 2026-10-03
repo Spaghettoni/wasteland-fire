@@ -1,0 +1,35 @@
+extends SceneTree
+## Scratch K4: what intersect_ray and intersect_shape return as the collider over a CSG cliff and a channel.
+var _map: Node3D
+var _f: int = 0
+func _initialize() -> void:
+	_map = (load("res://src/gameplay/maps/map_01/map_01.tscn") as PackedScene).instantiate() as Node3D
+	root.add_child(_map)
+func _find(n: Node, want: String) -> Node:
+	if n.name == want:
+		return n
+	for c: Node in n.get_children():
+		var r: Node = _find(c, want)
+		if r != null:
+			return r
+	return null
+func _physics_process(_d: float) -> bool:
+	_f += 1
+	if _f < 4:
+		return false
+	var space: PhysicsDirectSpaceState3D = _map.get_world_3d().direct_space_state
+	for nm: String in ["RidgeCentre", "RockCanyonSouth", "ChannelWest"]:
+		var n: Node3D = _find(_map, nm) as Node3D
+		var at: Vector3 = n.global_position
+		if n is GeometryInstance3D:
+			at = (n.global_transform * (n as GeometryInstance3D).get_aabb()).get_center()
+		else:
+			for c: Node in n.get_children():
+				if c is CollisionShape3D:
+					at = (c as Node3D).global_position
+		var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(Vector3(at.x, 10, at.z), Vector3(at.x, -1, at.z), 32)
+		var hit: Dictionary = space.intersect_ray(q)
+		var col: Object = hit.get("collider")
+		print("RAY over %s at (%.1f, %.1f): collider=%s class=%s is_GeometryInstance3D=%s hit_y=%.3f" % [nm, at.x, at.z, (col as Node).name if col else "none", col.get_class() if col else "-", col is GeometryInstance3D, (hit.get("position", Vector3.ZERO) as Vector3).y])
+	quit()
+	return false

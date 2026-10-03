@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="UnitStats" format=3]
 
 [ext_resource type="Script" path="res://src/gameplay/units/unit_stats.gd" id="1_us"]
-[ext_resource type="PackedScene" path="res://src/gameplay/units/models/buggy_model.tscn" id="2_model"]
+[ext_resource type="PackedScene" path="res://src/gameplay/units/models/buggy_kit_model.tscn" id="2_model"]
 
 [resource]
 script = ExtResource("1_us")

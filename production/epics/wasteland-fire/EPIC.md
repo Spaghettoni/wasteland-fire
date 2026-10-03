@@ -34,5 +34,5 @@ Two friends on one couch drive wasteland Motorbikes, Buggies, Trucks and Gyrocop
 | 004 | Water Canister and the win (the Flag of v0.1) | Integration | Complete | N/A (minimal) |
 | 005 | Four Units and the triangle | Logic | Complete | N/A (minimal) |
 | 006 | Fuel and Fuel Cans | Logic | Complete | N/A (minimal) |
-| 007 | Map 01 | Visual/Feel | Ready | N/A (minimal) |
+| 007 | Map 01 | Visual/Feel | Complete | N/A (minimal) |
 | 008 | Tokens, the Garage and the loss | Integration | Ready | N/A (minimal) |

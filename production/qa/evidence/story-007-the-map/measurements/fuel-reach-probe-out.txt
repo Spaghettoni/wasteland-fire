@@ -1,0 +1,6 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK lens_reach lens_reach PASS type=truck start_x=-100.000 dist=147.005 alive=true alive_ticks=1084 still=30 max_dz=0.0000 | type=gyrocopter start_x=-100.000 dist=155.171 alive=false alive_ticks=600 still=0 max_dz=0.0000
+RESULT lens_reach ok checks=1 failed=0 t=28.450 done
+
+--- stderr

@@ -34,7 +34,9 @@ extends CharacterBody3D
 ## tank from the type's data, burned only while moving; an empty ground Unit stops but turns and
 ## fires, an empty Gyrocopter crashes through destroy(), a spawn gives a fixed partial tank, and
 ## destroy() works at zero Fuel), AC-6 (refuel()) and AC-7 (fuel_changed, what the HUD shows);
-## design/rules.md "Units", "Destruction and respawn" and "Resources". Vocabulary: CONTEXT.md.
+## production/epics/wasteland-fire/story-007-the-map.md AC-5 (a ford holds a ground Unit to a
+## fraction of its top speed through limit_speed(), movement model step 6); design/rules.md
+## "Units", "Destruction and respawn" and "Resources". Vocabulary: CONTEXT.md.
 ##
 ## Driven by command, not by input: the Unit never reads a key or an Input action and keeps no
 ## singleton state. Whoever drives it (PlayerDriveInput for a Player, later a bot or a test)
@@ -71,6 +73,14 @@ extends CharacterBody3D
 ##      forward and reverse are ignored) and turns at steer * empty_turn_rate in step 2 at any
 ##      speed; it still fires and can self-destruct. An empty flying Unit calls destroy() (the
 ##      Fuel crash) and the rest of its tick does not run.
+##   6. The speed cap (Story 007 AC-5), after steps 4 and 1: limit_speed(fraction) holds the
+##      speed they give to stats.max_speed * fraction forward and stats.reverse_max_speed *
+##      fraction in reverse, on the tick of the call and the next one. A cap not called again
+##      lapses by itself, and on every other tick the speed is exactly what steps 4 and 1 give.
+##      A Map's ford calls it each tick on every live Unit it lists (Ford), so a Unit entering at
+##      top speed drops to the cap in one tick and, once out, accelerates back as usual. Step 2
+##      keeps stats.max_speed as its denominator, so the turning radius, max_speed / turn_rate,
+##      is the same at any cap. Nothing names a type: the ford's collision mask picks the Units.
 ##
 ## Ground handling: the body stays in the default GROUNDED motion mode with every other
 ## CharacterBody3D setting at its default except floor_snap_length and wall_min_slide_angle,
@@ -331,6 +341,12 @@ var _fuel: float = 0.0
 ## True once spawn() has put the Unit in play (Story 006): from then on the Unit has a tank while
 ## its type's fuel_capacity is above zero. Never set on a Unit nobody spawns (the driving toy's).
 var _has_spawned: bool = false
+## The fraction of the top speed the last limit_speed() call allowed (movement model step 6), 1.0
+## before the first call. It applies only while _speed_cap_frame is at most one tick old.
+var _speed_cap: float = 1.0
+## The physics frame (Engine.get_physics_frames()) of the last limit_speed() call, or -1 before
+## the first: the cap applies on that tick and the next one, then lapses by itself.
+var _speed_cap_frame: int = -1
 
 
 func _ready() -> void:
@@ -374,6 +390,21 @@ func _physics_process(delta: float) -> void:
 func set_drive_input(throttle: float, steer: float) -> void:
 	_throttle = clampf(throttle, -AXIS_LIMIT, AXIS_LIMIT)
 	_steer = clampf(steer, -AXIS_LIMIT, AXIS_LIMIT)
+
+
+## Caps the drive speed for this physics tick and the next one (movement model step 6, Story 007
+## AC-5): to stats.max_speed * fraction forward and stats.reverse_max_speed * fraction in reverse.
+## A Map's ford calls it every tick on each live Unit it lists (Ford), so the cap holds while the
+## Unit is listed and lapses by itself on the second tick after the last call; a later call
+## replaces the fraction. Call it before the Unit's own physics tick (from a node earlier in the
+## tree) for the cap to bite on this tick. A fraction outside (0, 1], NaN included, is ignored
+## with one error and changes nothing.
+func limit_speed(fraction: float) -> void:
+	if not (fraction > 0.0 and fraction <= 1.0):
+		push_error("Unit '%s': limit_speed() ignored: the fraction %s is outside (0, 1], so the cap is unchanged." % [name, fraction])
+		return
+	_speed_cap = fraction
+	_speed_cap_frame = Engine.get_physics_frames()
 
 
 ## Stops the Unit dead after a teleport: zeroes speed, velocity, the held command and the blocked
@@ -559,10 +590,21 @@ func is_spot_taken(at: Transform3D, for_stats: UnitStats = null) -> bool:
 	return not get_world_3d().direct_space_state.intersect_shape(query, 1).is_empty()
 
 
-## Speed after this tick, per the movement model in the class doc: step 4 first (a blocked Unit
-## throttled the other way starts from zero), then step 1. Every rule reads the effective
-## throttle: the held one, or zero while the tank of a ground Unit is empty (step 5).
+## Speed after this tick, per the movement model in the class doc: steps 4 and 1
+## (_approach_speed()), then step 6, which clamps that speed to the cap while one is active
+## (_is_speed_capped()) and returns it untouched on every other tick, so an uncapped Unit
+## computes exactly what it did before Story 007.
 func _next_speed(delta: float) -> float:
+	var speed: float = _approach_speed(delta)
+	if _is_speed_capped():
+		return clampf(speed, -stats.reverse_max_speed * _speed_cap, stats.max_speed * _speed_cap)
+	return speed
+
+
+## The speed steps 4 and 1 of the movement model give for this tick, before step 6: step 4 first
+## (a blocked Unit throttled the other way starts from zero), then step 1. Every rule reads the
+## effective throttle: the held one, or zero while the tank of a ground Unit is empty (step 5).
+func _approach_speed(delta: float) -> float:
 	var throttle: float = 0.0 if _is_stranded() else _throttle
 	var speed: float = _speed
 	if _blocked and signf(throttle) * signf(speed) < 0.0:
@@ -573,6 +615,12 @@ func _next_speed(delta: float) -> float:
 	var opposing: bool = signf(throttle) * signf(speed) < 0.0
 	var rate: float = stats.braking if opposing else stats.acceleration
 	return move_toward(speed, top_speed * throttle, rate * delta)
+
+
+## True while the last limit_speed() call is at most one physics tick old (movement model step 6):
+## on the tick of the call and the next one. False before the first call.
+func _is_speed_capped() -> bool:
+	return _speed_cap_frame >= 0 and Engine.get_physics_frames() - _speed_cap_frame <= 1
 
 
 ## Yaw rate in radians per second, positive turning left: steer scaled by the speed fraction and

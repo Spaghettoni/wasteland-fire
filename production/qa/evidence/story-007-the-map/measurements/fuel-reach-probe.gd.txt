@@ -1,0 +1,54 @@
+extends RefCounted
+## Verifier probe scenario (scratch copy only): a Truck and a Gyrocopter on their spawn tanks at
+## full throttle east along z -16 from x -100 (through both fords) until empty and stopped or down.
+
+const Harness: GDScript = preload("res://tools/evidence/split_screen_harness.gd")
+const Kit: GDScript = preload("res://tools/evidence/split_screen/check_kit.gd")
+const Map: GDScript = preload("res://tools/evidence/split_screen/map_kit.gd")
+const OWN_CHOICE: bool = true
+const WATCHDOG_SECONDS: float = 400.0
+
+var _h: Harness
+var _k: Kit
+var _m: Map
+
+
+func run(harness: Node) -> void:
+    _h = harness as Harness
+    _k = Kit.new(harness)
+    _m = Map.new(harness, _k)
+    await _h.confirm_choices()
+    await _k.advance(Kit.START_TICKS)
+    var notes: PackedStringArray = []
+    for t: int in [2, 3]:
+        notes.append(await _reach(t))
+    _h.check("lens_reach", true, " | ".join(notes))
+    _h.finish("done")
+
+
+func _reach(t: int) -> String:
+    var types: Array[int] = [t, -1]
+    var spots: Array[Vector3] = [Vector3(-100, 0, -16), Vector3.ZERO]
+    var facings: Array[Vector3] = [Vector3.RIGHT, Vector3.FORWARD]
+    await _m.stage(types, spots, facings, false)
+    var unit: Unit = _m.units[0]
+    var x0: float = unit.global_position.x
+    var max_x: float = x0
+    var still: int = 0
+    var ticks: int = 0
+    var alive_ticks: int = 0
+    var max_dz: float = 0.0
+    _h.drive(0, 1, 0)
+    while ticks < 3600:
+        await _k.tick()
+        ticks += 1
+        if not unit.is_alive:
+            break
+        alive_ticks = ticks
+        max_x = maxf(max_x, unit.global_position.x)
+        max_dz = maxf(max_dz, absf(unit.global_position.z + 16.0))
+        still = still + 1 if absf(unit.current_speed) < 0.000001 else 0
+        if still >= 30:
+            break
+    _h.release_all()
+    return "type=%s start_x=%.3f dist=%.3f alive=%s alive_ticks=%d still=%d max_dz=%.4f" % [unit.stats.type_id, x0, max_x - x0, unit.is_alive, alive_ticks, still, max_dz]

@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/maps/ford.gd" id="1_ford"]
+[ext_resource type="Resource" path="res://src/gameplay/maps/data/ford_settings.tres" id="2_ford_settings"]
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/ford.tres" id="3_ford_material"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_zone"]
+size = Vector3(12, 3, 40)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_water"]
+material = ExtResource("3_ford_material")
+size = Vector2(12, 40)
+
+[node name="Ford" type="Area3D"]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_ford")
+settings = ExtResource("2_ford_settings")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("BoxShape3D_zone")
+
+[node name="Water" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_water")

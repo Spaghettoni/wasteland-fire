@@ -22,8 +22,8 @@ extends Control
 ## same reason: they are how the pieces are laid out and seen on the screen, which is this scene's
 ## business, and none of them depends on the Round. The layout of the scene:
 ##   SplitScreen (this Control, filling the window)
-##     World (Node3D): the field with its two Bases, the terrain stand-ins, the greybox Fuel Cans,
-##       both Units, both PlayerDriveInputs, both PlayerMatchInputs, both Weapons with their
+##     World (Node3D): the Map first (map_01.tscn: its ground, its two Bases and its Fuel Cans),
+##       then both Units, both PlayerDriveInputs, both PlayerMatchInputs, both Weapons with their
 ##       PlayerFireInputs and both PlayerChoiceInputs
 ##     Views (HBoxContainer): a SubViewportContainer per Player, each holding a SubViewport that
 ##       holds that Player's ChaseCamera, respawn countdown, HUD, Unit choice panel and Round-over
@@ -32,6 +32,14 @@ extends Control
 ##     MatchController (Node): who is alive, who is choosing or waiting to respawn and the Round's
 ##       canisters
 ##     RoundRestartInput (Node): the restart key of a Round that is over; the last child
+##
+## The Map (production/epics/wasteland-fire/story-007-the-map.md AC-9 and its Map contract). field
+## is typed MapField, the class every Map's root carries, so any Map scene can be World's field and
+## replacing the Map scene needs no change here. This scene reads only the Map's two Bases and
+## hands them to the MatchController; each Base brings its Flag, its zone, its pad and its
+## SpawnPoint markers itself (Base). The Map's Token stock (MapField.token_stock) is Story 008's to
+## read. The Map is World's first child (the node Map, unique name %Map), so a Map node that acts
+## on the Units in its physics tick runs before the Units do, in every tick.
 ##
 ## One world, two views (AC-1, AC-2). World sits in the window's own World3D, outside both
 ## SubViewports, and neither SubViewport sets own_world_3d or a world_3d, so both render the
@@ -76,13 +84,14 @@ extends Control
 ## emits round_started: no shot of the Round before flies on into the next one and hits a Unit
 ## just chosen on its Base.
 ##
-## Fuel Cans (Story 006). World holds FuelCans (greybox_fuel_cans.tscn), five Fuel Cans at fixed
-## spots clear of the Bases, their Garages and the terrain stand-ins: the greybox stand-in for the
-## Map's Fuel Can markers until the real Map replaces it (Story 007). Each Can polls its own zone,
-## refills the Unit that touches it and comes back on its own after its delay (FuelCan), and its
-## root belongs to the node group FUEL_CAN_GROUP (fuel_can.tscn stores it). The Round-over pause
-## stops the Cans with the tree, so when the MatchController emits round_started again this scene
-## calls restock() on the whole group: a Round that starts again has every Can back at its spot
+## Fuel Cans (Story 006). The Map brings its own Fuel Cans at fixed spots (Map 01's are in
+## production/epics/wasteland-fire/story-007-the-map.md; Story 006 kept five greybox Cans in this
+## scene until Map 01 replaced them). Each Can polls its own zone, refills the Unit that touches it
+## and comes back on its own after its delay (FuelCan), and its root belongs to the node group
+## FUEL_CAN_GROUP (fuel_can.tscn stores it), so this scene finds every Can of whichever Map is the
+## field with no node path. The Round-over pause stops the Cans with the tree, so when the
+## MatchController emits round_started again this scene calls restock() on the whole group: a
+## Round that starts again has every Can back at its spot
 ## (production/epics/wasteland-fire/story-006-fuel-and-fuel-cans.md AC-6).
 
 ## The node group every Shot in flight belongs to; _free_shots() frees it at every Round start.
@@ -92,10 +101,11 @@ const SHOT_GROUP: StringName = &"shots"
 ## whenever a Round starts again.
 const FUEL_CAN_GROUP: StringName = &"fuel_cans"
 
-## The field both Units drive on. It carries the two Bases (player_1_base and player_2_base) where
-## each Player's Unit starts the Round and respawns. It sits under World, so it is in the shared
-## world.
-@export var field: GreyboxField
+## The Map both Units drive on, typed MapField so any Map scene can be it (Story 007 AC-9). It
+## carries the two Bases (player_1_base and player_2_base) where each Player's Unit starts the
+## Round and respawns, and the Map's Token stock, which this scene does not read. It sits under
+## World, so it is in the shared world.
+@export var field: MapField
 
 ## The Unit Player 1 drives. It sits under World, beside Player 1's PlayerDriveInput.
 @export var player_1_unit: Unit
@@ -125,6 +135,7 @@ func _ready() -> void:
 	var units: Array[Unit] = [player_1_unit, player_2_unit]
 	var bases: Array[Base] = [field.player_1_base, field.player_2_base]
 	var cameras: Array[ChaseCamera] = [player_1_camera, player_2_camera]
+	_warm_up_models()
 	match_controller.begin(units, bases, cameras)
 	match_controller.round_started.connect(_free_shots)
 	match_controller.round_started.connect(_restock_fuel_cans)
@@ -150,6 +161,22 @@ func _first_unassigned() -> String:
 	if match_controller == null:
 		return "match_controller"
 	return ""
+
+
+## Instances each of the match's Unit types' model scenes once and frees it at once, before the
+## Round begins (Story 007 AC-14): a model built from the author's concept kit (KitUnitModel) builds
+## its meshes the first time its kit enters the tree, at a cost a spawn would show, and caches them
+## (measured on 4.7.2; the Story 007 evidence doc keeps the run), so the builds fall here, hidden by
+## the Round's start, and never at a spawn in the Round. Each model is under this scene for its
+## build only: it is never drawn and prints nothing.
+func _warm_up_models() -> void:
+	for stats: UnitStats in match_controller.unit_types():
+		if stats == null or stats.model == null:
+			continue
+		var model: Node = stats.model.instantiate()
+		add_child(model)
+		remove_child(model)
+		model.free()
 
 
 ## Frees every Shot still in flight (the SHOT_GROUP nodes) when a Round starts or restarts, so the

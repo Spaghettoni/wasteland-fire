@@ -7,18 +7,40 @@ albedo_color = Color(0.8, 0.8, 0.8, 1)
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_body"]
 material = SubResource("StandardMaterial3D_body")
-top_radius = 0.45
-bottom_radius = 0.45
-height = 1.1
+top_radius = 0.28
+bottom_radius = 0.28
+height = 0.72
+radial_segments = 12
+rings = 0
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lid"]
-albedo_color = Color(0.96, 0.92, 0.72, 1)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_steel"]
+albedo_color = Color(0.3, 0.31, 0.33, 1)
+metallic = 0.5
+roughness = 0.6
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_lid"]
-material = SubResource("StandardMaterial3D_lid")
-top_radius = 0.38
-bottom_radius = 0.38
+[sub_resource type="CylinderMesh" id="CylinderMesh_stand"]
+material = SubResource("StandardMaterial3D_steel")
+top_radius = 0.22
+bottom_radius = 0.28
+height = 0.1
+radial_segments = 12
+rings = 0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_band"]
+material = SubResource("StandardMaterial3D_steel")
+top_radius = 0.3
+bottom_radius = 0.3
+height = 0.06
+radial_segments = 12
+rings = 0
+
+[sub_resource type="SphereMesh" id="SphereMesh_lid"]
+material = SubResource("StandardMaterial3D_steel")
+radius = 0.28
 height = 0.12
+radial_segments = 12
+rings = 3
+is_hemisphere = true
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_pickup"]
 radius = 1.0
@@ -28,13 +50,29 @@ script = ExtResource("1_wc")
 pickup_zone = NodePath("PickupZone")
 body_mesh = NodePath("Body")
 
+[node name="Stand" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_stand")
+
 [node name="Body" type="MeshInstance3D" parent="." unique_id=1790233101]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.46, 0)
 mesh = SubResource("CylinderMesh_body")
 
+[node name="BandLow" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.24, 0)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_band")
+
+[node name="BandHigh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.68, 0)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_band")
+
 [node name="Lid" type="MeshInstance3D" parent="." unique_id=873355201]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.16, 0)
-mesh = SubResource("CylinderMesh_lid")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.82, 0)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_lid")
 
 [node name="PickupZone" type="Area3D" parent="." unique_id=1219775043]
 collision_layer = 8

@@ -1,0 +1,20 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+SPLIT map_bases t=2.150 exit type=motorbike marker=SpawnPoint p1_s=2.050 p1_contacts=0 p1_gap=1.000 p2_s=2.050 p2_contacts=0 p2_gap=1.000
+SPLIT map_bases t=4.300 exit type=motorbike marker=SpareSpawnLeft p1_s=2.050 p1_contacts=0 p1_gap=0.800 p2_s=2.050 p2_contacts=0 p2_gap=0.800
+SPLIT map_bases t=6.450 exit type=motorbike marker=SpareSpawnRight p1_s=2.050 p1_contacts=0 p1_gap=0.800 p2_s=2.050 p2_contacts=0 p2_gap=0.800
+SPLIT map_bases t=8.917 exit type=buggy marker=SpawnPoint p1_s=2.367 p1_contacts=0 p1_gap=0.800 p2_s=2.367 p2_contacts=0 p2_gap=0.800
+SPLIT map_bases t=11.383 exit type=buggy marker=SpareSpawnLeft p1_s=2.367 p1_contacts=0 p1_gap=0.600 p2_s=2.367 p2_contacts=0 p2_gap=0.600
+SPLIT map_bases t=13.850 exit type=buggy marker=SpareSpawnRight p1_s=2.367 p1_contacts=0 p1_gap=0.600 p2_s=2.367 p2_contacts=0 p2_gap=0.600
+SPLIT map_bases t=17.767 exit type=truck marker=SpawnPoint p1_s=3.817 p1_contacts=0 p1_gap=0.500 p2_s=3.817 p2_contacts=0 p2_gap=0.500
+SPLIT map_bases t=21.683 exit type=truck marker=SpareSpawnLeft p1_s=3.817 p1_contacts=0 p1_gap=0.300 p2_s=3.817 p2_contacts=0 p2_gap=0.300
+SPLIT map_bases t=25.600 exit type=truck marker=SpareSpawnRight p1_s=3.817 p1_contacts=0 p1_gap=0.300 p2_s=3.817 p2_contacts=0 p2_gap=0.300
+SPLIT map_bases t=28.383 exit type=gyrocopter marker=SpawnPoint p1_s=2.683 p1_contacts=0 p1_gap=0.900 p2_s=2.683 p2_contacts=0 p2_gap=0.900
+SPLIT map_bases t=31.167 exit type=gyrocopter marker=SpareSpawnLeft p1_s=2.683 p1_contacts=0 p1_gap=0.700 p2_s=2.683 p2_contacts=0 p2_gap=0.700
+SPLIT map_bases t=33.950 exit type=gyrocopter marker=SpareSpawnRight p1_s=2.683 p1_contacts=0 p1_gap=0.700 p2_s=2.683 p2_contacts=0 p2_gap=0.700
+CHECK map_bases base_exits PASS 24 runs, two at a time, straight from standstill to Base-local z -30, no steer key; seconds from SpawnPoint, SpareSpawnLeft, SpareSpawnRight as Base1/Base2: motorbike 2.05/2.05 2.05/2.05 2.05/2.05 s, least gap 0.800 m; buggy 2.37/2.37 2.37/2.37 2.37/2.37 s, least gap 0.600 m; truck 3.82/3.82 3.82/3.82 3.82/3.82 s, least gap 0.300 m; gyrocopter 2.68/2.68 2.68/2.68 2.68/2.68 s, least gap 0.700 m; wall-contact ticks 0, most drift 0.0000 m
+SPLIT map_bases t=40.333 raid legs=in,out pick_z=-8.20 deepest_z=-0.40 reversed_m=27.60 out_z=-28.00
+SPLIT map_bases t=42.217 raid leg=turn x=94.27 z=-16.73 off_home_deg=17.80
+SPLIT map_bases t=52.267 raid leg=home ticks=603 northmost_z=-17.11 cover_m=3.07 win_z=-14.20
+CHECK map_bases base_flag_run PASS Motorbike from Base2-local z -50 on its gate axis: the Round's pick-up of Player 2's Flag at local z -8.20 (seat z -7.00, in the zone under the tank true); braked to z -0.40, then a reverse was needed (no forward-only route at the 8.57 m turn radius): 27.60 m in reverse, no steer key, out to z -28.00 (28.65 m in all, with the U-turn's stop), the gate axis 2.20 m (centre) from the nearest cover box; full lock north to 17.80 deg off home; refuel() added 12.50; home along z -15.5 by the pursuit: northmost z -17.11, centre at least 3.07 m from every cover box; delivered at Base1-local z -14.20, won true after 18.22 s, Flag carried true; wall-contact ticks 0; the scenario never called carry_by()
+RESULT map_bases ok checks=2 failed=0 t=52.267 exit_runs=24 exit_contacts=0 raid_s=18.22 reverse_m=27.60

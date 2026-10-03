@@ -1,0 +1,185 @@
+=== 2026-10-03T04:52:10Z import
+IMPORT (scratch copy) rc=0 noisy=["ERROR: Cannot open file 'res://assets/art/vehicles/wasteland_motorbike/wasteland_motorbike.tscn'.", 'ERROR: Failed loading resource: res://assets/art/vehicles/wasteland_motorbike/wasteland_motorbike.tscn.', "ERROR: Cannot open file 'res://assets/art/vehicles/wasteland_buggy/wasteland_buggy.tscn'.", 'ERROR: Failed loading resource: res://assets/art/vehicles/wasteland_buggy/wasteland_buggy.tscn.', "ERROR: Cannot open file 'res://assets/art/vehicles/wasteland_truck/wasteland_truck.tscn'.", 'ERROR: Failed loading resource: res://assets/art/vehicles/wasteland_truck/wasteland_truck.tscn.', "ERROR: Cannot open file 'res://assets/art/vehicles/wasteland_gyrocopter/wasteland_gyrocopter.tscn'.", 'ERROR: Failed loading resource: res://assets/art/vehicles/wasteland_gyrocopter/wasteland_gyrocopter.tscn.']
+class cache: 235 classes; new since the repo's cache: []; gone: []
+uid sidecars copied into the repo: []
+=== parse
+PARSE rc=0 files=24
+ok: res://src/gameplay/canister/water_canister.gd
+ok: res://src/gameplay/fuel/fuel_can.gd
+ok: res://src/gameplay/maps/base.gd
+ok: res://src/gameplay/maps/ford.gd
+ok: res://src/gameplay/maps/ford_settings.gd
+ok: res://src/gameplay/maps/greybox_field.gd
+ok: res://src/gameplay/maps/map_field.gd
+ok: res://src/gameplay/maps/token_stock.gd
+ok: res://src/gameplay/split_screen/split_screen.gd
+ok: res://src/gameplay/units/models/kit_merge.gd
+ok: res://src/gameplay/units/models/kit_unit_model.gd
+ok: res://src/gameplay/units/unit.gd
+ok: res://src/ui/hud/player_hud.gd
+ok: res://src/ui/hud/unit_choice.gd
+ok: res://tools/evidence/split_screen/map_bases.gd
+ok: res://tools/evidence/split_screen/map_cover.gd
+ok: res://tools/evidence/split_screen/map_edges.gd
+ok: res://tools/evidence/split_screen/map_ford.gd
+ok: res://tools/evidence/split_screen/map_fps.gd
+ok: res://tools/evidence/split_screen/map_kit.gd
+ok: res://tools/evidence/split_screen/map_layout.gd
+ok: res://tools/evidence/split_screen/map_legibility.gd
+ok: res://tools/evidence/split_screen/map_showcase.gd
+ok: res://tools/evidence/split_screen_harness.gd
+
+=== lint
+src/gameplay/canister/water_canister.gd                  total=204 doc=134 blank= 20 code= 50
+src/gameplay/fuel/fuel_can.gd                            total=236 doc=114 blank= 28 code= 94
+src/gameplay/maps/base.gd                                total=255 doc=176 blank= 17 code= 62
+src/gameplay/maps/ford.gd                                total= 70 doc= 52 blank=  5 code= 13
+src/gameplay/maps/ford_settings.gd                       total= 25 doc= 21 blank=  1 code=  3
+src/gameplay/maps/greybox_field.gd                       total= 62 doc= 48 blank=  2 code= 12
+src/gameplay/maps/map_field.gd                           total= 51 doc= 43 blank=  3 code=  5
+src/gameplay/maps/token_stock.gd                         total= 39 doc= 31 blank=  3 code=  5
+src/gameplay/split_screen/split_screen.gd                total=199 doc=123 blank= 18 code= 58
+src/gameplay/units/models/kit_merge.gd                   total=365 doc=113 blank= 34 code=217
+src/gameplay/units/models/kit_unit_model.gd              total=216 doc= 92 blank= 16 code=108
+src/gameplay/units/unit.gd                               total=735 doc=377 blank= 62 code=296
+src/ui/hud/player_hud.gd                                 total=313 doc=157 blank= 40 code=116
+src/ui/hud/unit_choice.gd                                total=377 doc=164 blank= 51 code=162
+tools/evidence/split_screen/map_bases.gd                 total=295 doc= 63 blank= 27 code=205
+tools/evidence/split_screen/map_cover.gd                 total=303 doc= 72 blank= 29 code=202
+tools/evidence/split_screen/map_edges.gd                 total=454 doc=114 blank= 43 code=297
+tools/evidence/split_screen/map_ford.gd                  total=280 doc= 63 blank= 35 code=182
+tools/evidence/split_screen/map_fps.gd                   total=166 doc= 45 blank= 15 code=106
+tools/evidence/split_screen/map_kit.gd                   total=347 doc= 62 blank= 50 code=235
+tools/evidence/split_screen/map_layout.gd                total=373 doc= 79 blank= 45 code=249
+tools/evidence/split_screen/map_legibility.gd            total=203 doc= 68 blank= 21 code=114
+tools/evidence/split_screen/map_showcase.gd              total=298 doc= 82 blank= 32 code=184
+tools/evidence/split_screen_harness.gd                   total=698 doc=275 blank= 78 code=344
+src/gameplay/maps/base.gd                                _ready                             lines= 17 cc~11
+src/gameplay/maps/base.gd                                first_spawn_problem                lines= 17 cc~11
+src/gameplay/units/models/kit_merge.gd                   _commit                            lines= 45 cc~10  LONG
+src/gameplay/units/models/kit_unit_model.gd              _first_unset_rise_export           lines= 10 cc~11
+functions over 40 lines or cc~10: 4
+declarations without a ## directly above: 0
+## lines over 100 columns added by the story: 0
+=== regress
+STRICT drive  coast             rc=0 identical=True
+STRICT drive  walls             rc=0 identical=True
+STRICT drive  showcase          rc=0 identical=True
+STRICT drive  soak              rc=0 identical=True
+STRICT split  layout            rc=0 identical=True
+STRICT split  isolation         rc=0 identical=True
+STRICT split  simultaneous      rc=0 identical=True
+STRICT split  showcase          rc=0 identical=True
+STRICT split  bases             rc=0 identical=True
+STRICT split  destruction       rc=0 identical=True
+STRICT split  countdown         rc=0 identical=True
+STRICT split  respawn_showcase  rc=0 identical=True
+STRICT split  units             rc=0 identical=True
+STRICT split  weapons           rc=0 identical=True
+STRICT split  gyro              rc=0 identical=True
+STRICT split  choice            rc=0 identical=True
+STRICT split  units_showcase    rc=0 identical=True
+STRICT split  fuel              rc=0 identical=True
+STRICT split  fuel_cans         rc=0 identical=True
+STRICT split  fuel_showcase     rc=0 identical=True
+SOFT   split  canister_run      rc=0 result_ok=True identical=True
+SOFT   split  hud               rc=0 result_ok=True identical=True
+SOFT   split  round_over        rc=0 result_ok=True identical=True
+SOFT   split  canister_showcase rc=0 result_ok=True identical=True
+ALL_OK=True (strict twenty identical and exit 0, soft four RESULT ok)
+=== new
+--- map_layout rc=0 lines=134
+    CHECK map_layout map_positions PASS Map is World's child 0=true, greybox nodes=0, Fuel Cans 9 of 9 in the Map | places max 0.000 m, headings max 0.000 deg | extents max 1.000 m | edges max island 0.900, rock 0.168, ridge 0.032 m | road max 0.000 m, ring 0.000 m, sea short of the panel by 0.000 m
+    CHECK map_layout map_mirror_data PASS mirror items=116 self=6 worst=0.0000 m | tokens motorbike=5 buggy=3 truck=2 gyrocopter=2 (none)=0 | fords=2 sharing one settings=true (ford_settings.tres) fraction=0.50 | SpawnPoint markers Base1 3 own, Base2 3 own, first_spawn_problem none; loose start markers=0 | floor 1 box (x-150.00..150.00,z-50.00..50.00) on layer 1, top y 0.000; rock, water and island span (x-147.00..147.00
+    RESULT map_layout ok checks=2 failed=0 t=0.167 entries=129
+--- map_edges rc=0 lines=24
+    CHECK map_edges edge_shore PASS shore boxes=32 thinnest=2.00 m | west motorbike in=1.30 end=1.30 y=0.000 v=0.00 ray=0.000; east motorbike in=1.30 end=1.30 y=0.000 v=0.00 ray=0.000; west buggy in=1.50 end=1.50 y=0.000 v=0.00 ray=0.000; east buggy in=1.50 end=1.50 y=0.000 v=0.00 ray=0.000; west truck in=2.20 end=2.20 y=0.000 v=0.00 ray=0.000; east truck in=2.20 end=2.20 y=0.000 v=0.00 ray=0.000; west gyrocopter in=1.20
+    CHECK map_edges edge_cliffs PASS tanks full before each run (refuel()) | canyon_south W motorbike in=27.40 end=27.40 y=0.000 v=0.00 pen=-0.002; canyon_south E buggy in=27.60 end=27.60 y=0.000 v=0.00 pen=0.001; canyon_south W truck in=28.30 end=28.30 y=0.000 v=0.00 pen=0.002; canyon_south E gyrocopter in=1.20 end=1.20 y=0.000 v=0.00 depth=1.87; canyon_north W motorbike in=3.30 end=11.39 y=0.000 v=0.00 pen=-0.002; cany
+    RESULT map_edges ok checks=2 failed=0 t=136.517 shore_lanes=20 cliff_lanes=18 tanks=full
+--- map_ford rc=0 lines=12
+    CHECK map_ford ford_speed PASS data: fraction FordWest 0.50, FordEast 0.50, one resource true; lane z -16.0, run-up 24.0 m, a full tank at each staging | p1 FordWest motorbike: approach 24.000, window 61 ticks drive 12.000..12.000 measured 12.000..12.000 (12.00 +- 0.1), bite -2, lift +10, top again +45, at +64 24.000/24.000, drift 0.000, contacts 0 | p2 FordEast motorbike: approach 24.000, window 60 ticks drive 12.00
+    RESULT map_ford ok checks=1 failed=0 t=18.483 runs=8 problems=0
+--- map_bases rc=0 lines=20
+    CHECK map_bases base_exits PASS 24 runs, two at a time, straight from standstill to Base-local z -30, no steer key; seconds from SpawnPoint, SpareSpawnLeft, SpareSpawnRight as Base1/Base2: motorbike 2.05/2.05 2.05/2.05 2.05/2.05 s, least gap 0.800 m; buggy 2.37/2.37 2.37/2.37 2.37/2.37 s, least gap 0.600 m; truck 3.82/3.82 3.82/3.82 3.82/3.82 s, least gap 0.300 m; gyrocopter 2.68/2.68 2.68/2.68 2.68/2.68 s, least gap
+    CHECK map_bases base_flag_run PASS Motorbike from Base2-local z -50 on its gate axis: the Round's pick-up of Player 2's Flag at local z -8.20 (seat z -7.00, in the zone under the tank true); braked to z -0.40, then a reverse was needed (no forward-only route at the 8.57 m turn radius): 27.60 m in reverse, no steer key, out to z -28.00 (28.65 m in all, with the U-turn's stop), the gate axis 2.20 m (centre) from the ne
+    RESULT map_bases ok checks=2 failed=0 t=52.267 exit_runs=24 exit_contacts=0 raid_s=18.22 reverse_m=27.60
+--- map_cover rc=0 lines=33
+    CHECK map_cover cover_stops PASS WreckWestOuterSouth and WreckEastOuterSouth: 4 runs met the face at >= 1.000 of top speed, stop ticks <= 1, gap off the half-length <= 0.000 m, end speed <= 0.00 m/s; 4 shots ended <= 0.000 m off the face | ContainerWest and ContainerEast: 4 runs met the face at >= 1.000 of top speed, stop ticks <= 1, gap off the half-length <= 0.003 m, end speed <= 0.00 m/s; 4 shots ended <= 0.000 m 
+    RESULT map_cover ok checks=1 failed=0 t=24.267 runs=12 shots=12 depot_takes=5
+--- map_showcase rc=0 lines=34
+    RESULT map_showcase ok checks=0 failed=0 t=32.283 moments=15 spawns=p1_motorbike,p2_buggy road_done=true,true rock_ticks=61,90 flag_ticks=167 destroyed=0
+--- map_legibility rc=0 lines=9
+    RESULT map_legibility ok checks=0 failed=0 t=6.600 moments=6 worst_miss_m=0.80 destroyed=0
+=== launch
+RUN --quit-after 120 rc=0 noisy=[]
+RUN --quit-after 60 res://src/gameplay/driving_toy.tscn rc=0 noisy=[]
+=== frozen
+src/gameplay/camera/chase_camera.gd: OK | src/gameplay/camera/chase_camera_settings.gd: OK | src/gameplay/camera/data/chase_camera_settings.tres: OK | src/gameplay/units/player_drive_input.gd: OK | src/gameplay/units/motorbike.tscn: OK | src/gameplay/driving_toy.gd: OK | src/gameplay/driving_toy.tscn: OK | tools/evidence/drive_harness.gd: OK | tools/evidence/drive_harness.tscn: OK 
+=== assets
+ASSETS UNCHANGED
+=== git status
+ M .godot/global_script_class_cache.cfg
+ M CONTEXT.md
+ M design/rules.md
+ M docs/tech-debt-register.md
+ M production/epics/wasteland-fire/story-007-the-map.md
+ M src/gameplay/canister/water_canister.gd
+ M src/gameplay/canister/water_canister.tscn
+ M src/gameplay/fuel/fuel_can.gd
+ M src/gameplay/fuel/fuel_can.tscn
+ M src/gameplay/maps/base.gd
+ M src/gameplay/maps/greybox_field.gd
+ M src/gameplay/split_screen/split_screen.gd
+ M src/gameplay/split_screen/split_screen.tscn
+ M src/gameplay/units/data/buggy_stats.tres
+ M src/gameplay/units/data/gyrocopter_stats.tres
+ M src/gameplay/units/data/motorbike_stats.tres
+ M src/gameplay/units/data/truck_stats.tres
+ M src/gameplay/units/unit.gd
+ M src/ui/hud/player_hud.gd
+ M src/ui/hud/unit_choice.gd
+ M src/ui/hud/unit_choice.tscn
+ M tools/evidence/split_screen_harness.gd
+?? production/qa/evidence/story-007-the-map-evidence.md
+?? production/qa/evidence/story-007-the-map/
+?? src/gameplay/maps/data/
+?? src/gameplay/maps/ford.gd
+?? src/gameplay/maps/ford.gd.uid
+?? src/gameplay/maps/ford.tscn
+?? src/gameplay/maps/ford_settings.gd
+?? src/gameplay/maps/ford_settings.gd.uid
+?? src/gameplay/maps/map_01/
+?? src/gameplay/maps/map_field.gd
+?? src/gameplay/maps/map_field.gd.uid
+?? src/gameplay/maps/token_stock.gd
+?? src/gameplay/maps/token_stock.gd.uid
+?? src/gameplay/split_screen/data/team_orange_material.tres
+?? src/gameplay/split_screen/data/team_teal_material.tres
+?? src/gameplay/units/models/buggy_kit_model.tscn
+?? src/gameplay/units/models/gyrocopter_kit_model.tscn
+?? src/gameplay/units/models/kit_merge.gd
+?? src/gameplay/units/models/kit_merge.gd.uid
+?? src/gameplay/units/models/kit_unit_model.gd
+?? src/gameplay/units/models/kit_unit_model.gd.uid
+?? src/gameplay/units/models/motorbike_kit_model.tscn
+?? src/gameplay/units/models/truck_kit_model.tscn
+?? src/ui/hud/data/
+?? tools/evidence/split_screen/map_bases.gd
+?? tools/evidence/split_screen/map_bases.gd.uid
+?? tools/evidence/split_screen/map_cover.gd
+?? tools/evidence/split_screen/map_cover.gd.uid
+?? tools/evidence/split_screen/map_edges.gd
+?? tools/evidence/split_screen/map_edges.gd.uid
+?? tools/evidence/split_screen/map_ford.gd
+?? tools/evidence/split_screen/map_ford.gd.uid
+?? tools/evidence/split_screen/map_fps.gd
+?? tools/evidence/split_screen/map_fps.gd.uid
+?? tools/evidence/split_screen/map_kit.gd
+?? tools/evidence/split_screen/map_kit.gd.uid
+?? tools/evidence/split_screen/map_layout.gd
+?? tools/evidence/split_screen/map_layout.gd.uid
+?? tools/evidence/split_screen/map_legibility.gd
+?? tools/evidence/split_screen/map_legibility.gd.uid
+?? tools/evidence/split_screen/map_showcase.gd
+?? tools/evidence/split_screen/map_showcase.gd.uid
+=== 2026-10-03T04:53:04Z CHAIN_DONE

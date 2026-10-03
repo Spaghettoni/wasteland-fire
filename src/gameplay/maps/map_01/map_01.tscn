@@ -1,0 +1,84 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/maps/map_field.gd" id="1_map_field"]
+[ext_resource type="Resource" path="res://src/gameplay/maps/data/token_stock.tres" id="2_token_stock"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/map_01/map_01_terrain.tscn" id="3_terrain"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/map_01/map_01_water.tscn" id="4_water"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/map_01/map_01_cliffs.tscn" id="5_cliffs"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/ford.tscn" id="6_ford"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/map_01/compound_base.tscn" id="7_compound_base"]
+[ext_resource type="Material" path="res://src/gameplay/split_screen/data/team_orange_material.tres" id="8_team_orange_material"]
+[ext_resource type="Material" path="res://src/gameplay/split_screen/data/team_teal_material.tres" id="9_team_teal_material"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/map_01/map_01_cover.tscn" id="10_cover"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/map_01/map_01_depot.tscn" id="11_depot"]
+[ext_resource type="PackedScene" path="res://src/gameplay/fuel/fuel_can.tscn" id="12_fuel_can"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/map_01/map_01_dressing.tscn" id="13_dressing"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(300, 1, 100)
+
+[sub_resource type="Environment" id="Environment_sky"]
+background_mode = 1
+background_color = Color(0.62, 0.74, 0.86, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.78, 0.82, 0.9, 1)
+ambient_light_energy = 0.7
+
+[node name="Map" type="Node3D" node_paths=PackedStringArray("player_1_base", "player_2_base")]
+unique_name_in_owner = true
+script = ExtResource("1_map_field")
+player_1_base = NodePath("Base1")
+player_2_base = NodePath("Base2")
+token_stock = ExtResource("2_token_stock")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.81915206, 0.46984634, -0.32898995, 0, 0.57357645, 0.81915206, 0.57357645, -0.6710101, 0.46984634, 0, 0, 0)
+shadow_enabled = true
+directional_shadow_max_distance = 100.0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_sky")
+
+[node name="Floor" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("BoxShape3D_floor")
+
+[node name="Terrain" parent="." instance=ExtResource("3_terrain")]
+
+[node name="Water" parent="." instance=ExtResource("4_water")]
+
+[node name="Cliffs" parent="." instance=ExtResource("5_cliffs")]
+
+[node name="FordWest" parent="." instance=ExtResource("6_ford")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 0, 0)
+
+[node name="FordEast" parent="." instance=ExtResource("6_ford")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, 0)
+
+[node name="Base1" parent="." instance=ExtResource("7_compound_base")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -120, 0, 0)
+color_material = ExtResource("8_team_orange_material")
+
+[node name="Base2" parent="." instance=ExtResource("7_compound_base")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 120, 0, 0)
+color_material = ExtResource("9_team_teal_material")
+
+[node name="Cover" parent="." instance=ExtResource("10_cover")]
+
+[node name="Depot" parent="." instance=ExtResource("11_depot")]
+
+[node name="FuelCanCanyonWest" parent="." instance=ExtResource("12_fuel_can")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -88, 0, -26)
+
+[node name="FuelCanCanyonEast" parent="." instance=ExtResource("12_fuel_can")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88, 0, -26)
+
+[node name="FuelCanFlatWest" parent="." instance=ExtResource("12_fuel_can")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -62, 0, 14)
+
+[node name="FuelCanFlatEast" parent="." instance=ExtResource("12_fuel_can")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 62, 0, 14)
+
+[node name="Dressing" parent="." instance=ExtResource("13_dressing")]
