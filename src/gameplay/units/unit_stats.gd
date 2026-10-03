@@ -38,6 +38,13 @@ extends Resource
 ## before Story 006. empty_turn_rate is unused by a flying type (can_fly), which crashes when its
 ## tank runs dry instead of standing still. The four .tres hold starting values, to tune by playing.
 ##
+## Story 009 (production/epics/wasteland-fire/story-009-playtest-quick-fixes.md AC-3, AC-4 and
+## AC-6; design/rules.md "Units" and "Resources"; the first playtest, 2026-10-03) adds two values:
+## how fast a Unit of this type turns on the spot (spot_turn_rate, beside turn_rate: also the least
+## it turns at while it rolls) and what it burns per second while it stands (fuel_use_idle, beside
+## fuel_use, which is now the moving rate). The four .tres hold starting values, to tune by
+## playing: half of each turn_rate, and a quarter of each fuel_use.
+##
 ## Data only. A Unit reads these numbers and never writes them. One .tres is shared by every
 ## Unit that references it, so treat it as read-only at runtime (duplicate() it for a private
 ## copy).
@@ -73,8 +80,19 @@ extends Resource
 @export_range(0.0, 100.0, 0.1, "or_greater", "suffix:m/s") var reverse_max_speed: float = 0.0
 
 ## Yaw rate at max_speed with steering fully held, in radians per second. The Unit turns slower
-## at lower speed (in proportion to speed / max_speed), so it cannot pivot on the spot.
+## at lower speed (in proportion to speed / max_speed), down to spot_turn_rate, below which it never
+## turns (Story 009).
 @export_range(0.0, 10.0, 0.01, "or_greater", "suffix:rad/s") var turn_rate: float = 0.0
+
+## Yaw rate with steering fully held at which a Unit of this type turns on the spot, in radians per
+## second (Story 009 AC-3: a standing Unit turns without moving, so it can aim, since every weapon
+## fires straight ahead). It is also the least a rolling Unit turns at: the yaw rate is turn_rate
+## scaled by the speed fraction while that is at least this, and this below it (flipped while
+## rolling backward), so the turn does not die away as a pivoting Unit drives off (Unit, movement
+## model step 2). Keep it below turn_rate, or the Unit turns at this rate at every speed. A ground
+## Unit with an empty tank turns at empty_turn_rate instead. Zero by default (class doc): a type
+## whose .tres has no line cannot turn at a standstill, as before Story 009.
+@export_range(0.0, 10.0, 0.01, "or_greater", "suffix:rad/s") var spot_turn_rate: float = 0.0
 
 ## Hit points a Unit of this type spawns with, and the most it can have (Story 003 AC-2). Damage
 ## takes them off (Unit.apply_damage()) and a Unit whose hit points reach zero is destroyed and
@@ -207,10 +225,12 @@ extends Resource
 @export_flags_3d_physics var collision_layer: int = 0
 
 ## The physics layers the Unit collides with while it drives as this type (Story 005 AC-5): a
-## ground type takes the map, the units and the cliffs_water layers (1 + 2 + 32 = 35), so cliffs
-## and water stop it; the Gyrocopter takes the map alone (1), so it crosses cliffs and water,
-## passes through ground Units and they through it (decided 2026-10-01), and still stops at the
-## field's walls. Zero by default (class doc), and zero means keep the mask the Unit's scene has.
+## ground type takes the map, the units, the cliffs_water and the cover layers (1 + 2 + 32 + 64 =
+## 99), so cliffs, water and the Map's cover stop it; the Gyrocopter takes the map alone (1), so it
+## crosses cliffs and water, flies over the cover (Story 009 AC-2), passes through ground Units and
+## they through it (decided 2026-10-01), and still stops at the walls and the depot's tanks, which
+## are on the map layer. Zero by default (class doc), and zero means keep the mask the Unit's scene
+## has.
 @export_flags_3d_physics var collision_mask: int = 0
 
 ## The physics layers a spawn spot must be free of before the Unit is put down there as this type
@@ -230,13 +250,20 @@ extends Resource
 @export_range(0.0, 1000.0, 1.0, "or_greater", "suffix:fuel") var fuel_capacity: float = 0.0
 
 ## Fuel units this type burns per second while the Unit moves (the source's field name; Story 006
-## AC-1 and AC-2; design/rules.md "Resources": every Unit burns Fuel while moving, the Gyrocopter
-## the most). Moving reads the drive speed: a Unit burns while its drive speed is not approximately
-## zero, so one coasting to a stop burns until it stands and one held against a wall with the
-## throttle on keeps burning, and a Unit standing still burns nothing. The Gyrocopter's is the
-## highest of the four. Zero by default (class doc): a type whose .tres has no line never burns its
-## tank.
+## AC-1 and AC-2; design/rules.md "Resources": every Unit burns Fuel, the Gyrocopter the most).
+## Moving reads the drive speed: a Unit burns this while its drive speed is not approximately zero,
+## so one coasting to a stop burns it until it stands and one held against a wall with the throttle
+## on keeps burning it; a Unit standing still burns fuel_use_idle instead (Story 009). The
+## Gyrocopter's is the highest of the four. Zero by default (class doc): a type whose .tres has no
+## line burns nothing while it moves.
 @export_range(0.0, 100.0, 0.01, "or_greater", "suffix:fuel/s") var fuel_use: float = 0.0
+
+## Fuel units this type burns per second while the Unit stands, its drive speed approximately zero
+## (Story 009 AC-4; design/rules.md "Resources": a standing Unit burns slower than a moving one, so
+## keep it below fuel_use). A Gyrocopter hovering still burns it too, and crashes when its tank runs
+## dry. Zero by default (class doc): a type whose .tres has no line burns nothing while it stands,
+## as before Story 009.
+@export_range(0.0, 100.0, 0.01, "or_greater", "suffix:fuel/s") var fuel_use_idle: float = 0.0
 
 ## The share of fuel_capacity a Unit of this type starts with every time it spawns, from 0 to 1
 ## (Story 006 AC-5; design/rules.md "Destruction and respawn": a fresh Unit spawns with a fixed

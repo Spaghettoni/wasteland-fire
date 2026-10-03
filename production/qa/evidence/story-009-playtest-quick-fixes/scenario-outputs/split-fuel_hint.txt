@@ -1,0 +1,17 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+SPLIT fuel_hint t=0.167 moment=start p1_hint=false p2_hint=false p1_stranded=false p2_stranded=false over=false
+SPLIT fuel_hint t=1.167 moment=p1_dry p1_hint=true p2_hint=false p1_stranded=true p2_stranded=false over=false
+SPLIT fuel_hint t=1.167 moment=p1_refuelled p1_hint=false p2_hint=false p1_stranded=false p2_stranded=false over=false
+SPLIT fuel_hint t=1.667 moment=p1_dry_again p1_hint=true p2_hint=false p1_stranded=true p2_stranded=false over=false
+SPLIT fuel_hint t=2.467 moment=p2_dry p1_hint=true p2_hint=true p1_stranded=true p2_stranded=true over=false
+SPLIT fuel_hint t=2.500 moment=p1_Self-destruct p1_hint=false p2_hint=true p1_stranded=false p2_stranded=true over=false
+SPLIT fuel_hint t=6.300 moment=p1_Gyrocopter_crashed p1_hint=false p2_hint=true p1_stranded=false p2_stranded=true over=false
+SPLIT fuel_hint t=9.333 moment=p1_lost_the_Round p1_hint=false p2_hint=false p1_stranded=false p2_stranded=true over=true
+SPLIT fuel_hint t=9.367 moment=restart p1_hint=false p2_hint=false p1_stranded=false p2_stranded=false over=false
+SPLIT fuel_hint t=9.533 moment=both_in_play_again p1_hint=false p2_hint=false p1_stranded=false p2_stranded=false over=false
+CHECK fuel_hint hint_states PASS 572 ticks read: p1 shown 51 hidden 521, p2 shown 412 hidden 160, every tick shown exactly while stranded and the Round runs
+CHECK fuel_hint hint_moments PASS start: [false, false] | p1 dry: [true, false] | p1 refuelled: [false, false] | p1 dry again: [true, false] | p2 dry: [true, true] | p1 Self-destruct: [false, true] | p1 Gyrocopter crashed: [false, true] | p1 lost the Round: [false, false] | restart: [false, false] | both in play again: [false, false] | Gyrocopter hint shown: false | p1 hint (40,594 560x50) in a 640x720 view, 510 px below the band's edge at 84, text 442 of 528 px on 1 line | p2 hint (40,594 560x50) in a 640x720 view, 510 px below the band's edge at 84, text 462 of 528 px on 1 line
+CHECK fuel_hint hint_text PASS p1 'Out of Fuel! Press Tab to Self-destruct' | p2 'Out of Fuel! Press Enter to Self-destruct' (keys Tab, Enter from the Input Map's physical keys)
+CHECK fuel_hint no_engine_noise PASS errors=0 warnings=0
+RESULT fuel_hint ok checks=4 failed=0 t=9.533 ticks_read=572 over=false errors=0 warnings=0

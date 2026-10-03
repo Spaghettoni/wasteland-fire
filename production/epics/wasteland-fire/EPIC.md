@@ -3,7 +3,7 @@
 > **Status**: Active
 > **Tier**: `workflow: minimal` — implicit epic synthesised from `design/game-brief.md` by `/create-stories` on 2026-09-30. No GDD, ADRs, TR registry or control manifest exist at this tier; every story traces to the brief.
 > **Governing ADRs**: N/A (minimal — no ADRs)
-> **Last Updated**: 2026-10-03: story 008 Complete, so all eight stories of the First Playable are built (2026-10-01: brought to version 0.1 of the author's artifact; the source is archived under `design/source/`; the rules of record are `design/rules.md`).
+> **Last Updated**: 2026-10-03: story 009 (playtest quick fixes) Complete after the first playtest with friends, with the camera from above and the Unit swap next; story 008 Complete, so all eight stories of the First Playable are built (2026-10-01: brought to version 0.1 of the author's artifact; the source is archived under `design/source/`; the rules of record are `design/rules.md`).
 
 ## Goal
 
@@ -36,3 +36,11 @@ Two friends on one couch drive wasteland Motorbikes, Buggies, Trucks and Gyrocop
 | 006 | Fuel and Fuel Cans | Logic | Complete | N/A (minimal) |
 | 007 | Map 01 | Visual/Feel | Complete | N/A (minimal) |
 | 008 | Tokens, the Garage and the loss | Integration | Complete | N/A (minimal) |
+
+## After the first playtest (2026-10-03)
+
+The author's list from the first playtest with friends (`story-009-playtest-quick-fixes.md` quotes it in Slovak with a translation). Quick fixes first (decided 2026-10-03): items 3 to 7 in story 009; the camera from almost straight above (item 1) and the Unit swap at the own Base (item 2) follow as their own stories once the author has played 009.
+
+| # | Story | Type | Status | ADR |
+|---|-------|------|--------|-----|
+| 009 | Playtest quick fixes: solid depot tanks, the Gyrocopter over the cover, turning on the spot, the idle Fuel burn, the out-of-Fuel Self-destruct hint | Integration | Complete | N/A (minimal) |

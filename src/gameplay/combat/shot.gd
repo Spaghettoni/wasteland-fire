@@ -20,9 +20,12 @@ extends Node3D
 ## recorded at launch, so a shooter destroyed or retyped mid-flight changes nothing), the origin
 ## (the muzzle), the direction (the shooter's facing), the damage (UnitStats.damage), the speed
 ## (shot_speed), the range (weapon_range), the matrix (MatchRules.damage_matrix) and the layers that
-## stop it (MatchRules.shot_collision_mask: the map, the units and the gyrocopters layers, never the
-## cliffs_water layer, so a shot passes over cliffs and water and stops at walls and at Units). A
-## benched or destroyed Unit sits on layer zero and is never hit.
+## stop it (MatchRules.shot_collision_mask: the map, the units, the gyrocopters and the cover
+## layers, never the cliffs_water layer, so a shot passes over cliffs and water and stops at walls,
+## at the Map's cover and at Units). A benched or destroyed Unit sits on layer zero and is never
+## hit. A Gyrocopter flies over the cover (Story 009) but fires and is hit at the one shooting
+## height: with its muzzle over a piece it fires from inside the piece, so its shot is a hit on the
+## cover on its first tick, and a shot at a Gyrocopter over cover meets the cover's face first.
 ##
 ## Flight and hit test, once per physics tick with that tick's delta: the shot advances
 ## speed * delta along its direction, never beyond its range, and tests the segment it covers with

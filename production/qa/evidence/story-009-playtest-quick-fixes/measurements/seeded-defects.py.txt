@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+"""Story 009 seeded defects: each mutant is one exact text replacement in one file of a scratch copy
+of the repo (rsync without .git, builds and production; assets and .godot copied as they are, so no
+import is needed), then the scenarios named for it run headless there; a mutant is KILLED when a run
+ends in RESULT fail (or exits non-zero). Never touches the repo. Usage: mutate.py [name ...]"""
+import os, subprocess, sys
+ROOT = "/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire"
+S9 = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE = S9 + "/mut-base"
+WORK = S9 + "/mut-work"
+U = "src/gameplay/units/unit.gd"
+K = "src/gameplay/units/models/kit_unit_model.gd"
+H = "src/ui/hud/self_destruct_hint.gd"
+MUTANTS = [
+  ("tanks_no_collider", "src/gameplay/maps/map_01/map_01_depot.tscn",
+   '[node name="Collider" type="StaticBody3D" parent="FuelTanks/FuelTankSouth"]\ncollision_mask = 0\n',
+   '[node name="Collider" type="StaticBody3D" parent="FuelTanks/FuelTankSouth"]\ncollision_layer = 0\ncollision_mask = 0\n', ["depot_tanks"]),
+  ("tank_radius_small", "src/gameplay/maps/map_01/map_01_depot.tscn", "height = 3.0\nradius = 2.56\n", "height = 3.0\nradius = 2.0\n", ["depot_tanks"]),
+  ("cover_on_map_layer", "src/gameplay/maps/map_01/map_01_cover.tscn",
+   "collision_layer = 64\ncollision_mask = 0\n\n[node name=\"Mesh\" type=\"MeshInstance3D\" parent=\"Containers/ContainerWest\"]",
+   "collision_layer = 1\ncollision_mask = 0\n\n[node name=\"Mesh\" type=\"MeshInstance3D\" parent=\"Containers/ContainerWest\"]", ["gyro_cover"]),
+  ("ground_mask_no_cover", "src/gameplay/units/data/buggy_stats.tres", "collision_mask = 99\n", "collision_mask = 35\n", ["gyro_cover"]),
+  ("shot_mask_no_cover", "src/gameplay/match/data/match_rules.tres", "shot_collision_mask = 83\n", "shot_collision_mask = 19\n", ["gyro_cover"]),
+  ("no_rise_body_mask", "src/gameplay/units/models/gyrocopter_kit_model.tscn", "rise_body_mask = 64\n", "", ["gyro_cover"]),
+  ("drawn_top_ignores_bodies", K, "	if body == null or (body.collision_layer & rise_body_mask) == 0:\n		return -INF\n",
+   "	if true:\n		return -INF\n", ["gyro_cover"]),
+  ("rise_query_no_body_mask", K, "		_rise_query.collision_mask = rise_mask | rise_body_mask\n", "		_rise_query.collision_mask = rise_mask\n", ["gyro_cover"]),
+  ("spot_only_at_standstill", U, "	if stats.turn_rate * speed_fraction >= stats.spot_turn_rate:\n",
+   "	if not is_zero_approx(_speed):\n", ["spot_turn"]),
+  ("spot_floor_not_flipped", U, "	var direction: float = -1.0 if _speed < 0.0 else 1.0\n", "	var direction: float = 1.0\n", ["spot_turn"]),
+  ("stranded_after_spot", U, "	if _is_stranded():\n		return _steer * stats.empty_turn_rate\n	var speed_fraction",
+   "	if _is_stranded() and not is_zero_approx(_speed):\n		return _steer * stats.empty_turn_rate\n	var speed_fraction", ["spot_turn"]),
+  ("no_spot_turn_data", "src/gameplay/units/data/truck_stats.tres", "spot_turn_rate = 0.45\n", "", ["spot_turn"]),
+  ("idle_burns_moving_rate", U, "	var rate: float = stats.fuel_use_idle if is_zero_approx(_speed) else stats.fuel_use\n",
+   "	var rate: float = stats.fuel_use\n", ["idle_burn"]),
+  ("no_idle_burn", U, "	var rate: float = stats.fuel_use_idle if is_zero_approx(_speed) else stats.fuel_use\n",
+   "	var rate: float = 0.0 if is_zero_approx(_speed) else stats.fuel_use\n", ["idle_burn"]),
+  ("gyro_no_idle_burn", U, "	var rate: float = stats.fuel_use_idle if is_zero_approx(_speed) else stats.fuel_use\n",
+   "	var rate: float = (0.0 if stats.can_fly else stats.fuel_use_idle) if is_zero_approx(_speed) else stats.fuel_use\n", ["idle_burn"]),
+  ("idle_data_equals_moving", "src/gameplay/units/data/motorbike_stats.tres", "fuel_use_idle = 0.5\n", "fuel_use_idle = 2.0\n", ["idle_burn"]),
+  ("hint_ignores_round_over", H, "func _on_round_over(_winner_index: int) -> void:\n	visible = false\n",
+   "func _on_round_over(_winner_index: int) -> void:\n	pass\n", ["fuel_hint"]),
+  ("hint_on_empty_tank", H, "	if unit.is_stranded and not match_controller.is_round_over():\n",
+   "	if unit.is_fuel_empty or unit.fuel <= 0.0:\n", ["fuel_hint"]),
+  ("hint_wrong_key", H, '	_action = StringName(String(action_prefix) + _SUFFIX_SELF_DESTRUCT)\n',
+   '	_action = StringName("p1_" + _SUFFIX_SELF_DESTRUCT)\n', ["fuel_hint"]),
+  ("hint_not_on_refuel", H, "func _on_fuel_changed(_fuel: float, _capacity: float) -> void:\n	_refresh()\n",
+   "func _on_fuel_changed(fuel: float, _capacity: float) -> void:\n	if fuel <= 0.0:\n		_refresh()\n", ["fuel_hint"]),
+  ("hint_in_the_band", "src/ui/hud/self_destruct_hint.tscn", "offset_top = -126.0\noffset_right = 600.0\noffset_bottom = -76.0\n",
+   "offset_top = -700.0\noffset_right = 600.0\noffset_bottom = -650.0\n", ["fuel_hint"]),
+  ("hint_text_wraps", "src/ui/hud/self_destruct_hint.tscn", 'format = "Out of Fuel! Press %s to Self-destruct"',
+   'format = "Out of Fuel! Your Unit cannot move any more. Press %s to Self-destruct it and choose another"', ["fuel_hint"]),
+]
+
+
+def sh(cmd, cwd=None, timeout=900):
+    return subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=timeout)
+
+
+def main():
+    wanted = set(sys.argv[1:])
+    sh(["rsync", "-a", "--delete", "--exclude", ".git/", "--exclude", "builds/", "--exclude", "production/", ROOT + "/", BASE + "/"])
+    killed = survived = 0
+    for name, path, old, new, scenarios in MUTANTS:
+        if wanted and name not in wanted:
+            continue
+        sh(["rsync", "-a", "--delete", BASE + "/", WORK + "/"])
+        text = open(os.path.join(WORK, path)).read()
+        if text.count(old) != 1:
+            print("MUTANT %-26s NOT APPLIED (%d matches)" % (name, text.count(old)), flush=True)
+            continue
+        open(os.path.join(WORK, path), "w").write(text.replace(old, new))
+        verdicts = []
+        dead = False
+        for scenario in scenarios:
+            r = sh(["godot", "--headless", "--fixed-fps", "60", "--path", WORK, "res://tools/evidence/split_screen_harness.tscn", "--", "--scenario=" + scenario])
+            lines = [l for l in r.stdout.splitlines() if l.startswith("RESULT ")]
+            fails = [l.split(" ")[2] for l in r.stdout.splitlines() if l.startswith("CHECK ") and " FAIL " in l]
+            ok = bool(lines) and " ok " in lines[0] and r.returncode == 0
+            dead = dead or not ok
+            verdicts.append("%s rc=%s %s fails=%s" % (scenario, r.returncode, "ok" if ok else "FAIL", ",".join(fails) or "-"))
+        killed += 1 if dead else 0
+        survived += 0 if dead else 1
+        print("MUTANT %-26s %s | %s" % (name, "KILLED" if dead else "SURVIVED", " ; ".join(verdicts)), flush=True)
+    print("KILLED=%d SURVIVED=%d" % (killed, survived))
+
+
+main()

@@ -1,0 +1,8 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+SPLIT quick_fixes_showcase t=1.883 frame=115 moment=gyro_over_container gyro_model_over_top=0.250 gyro_z=0.23 buggy_speed=19.60
+SPLIT quick_fixes_showcase t=7.817 frame=471 moment=truck_at_tank p1_truck_gap=0.055 p2_gyrocopter_gap=0.000
+SPLIT quick_fixes_showcase t=7.917 frame=477 moment=pivot_start p1_yaw=-1.571 p2_yaw=1.571
+SPLIT quick_fixes_showcase t=9.033 frame=544 moment=pivot_quarter_turn p1_motorbike_turned=1.563 drift=0.0000 p2_truck_turned=0.503 drift=0.0000
+SPLIT quick_fixes_showcase t=10.533 frame=634 moment=out_of_fuel p1_hint=true 'Out of Fuel! Press Tab to Self-destruct' p2_hint=true 'Out of Fuel! Press Enter to Self-destruct'
+RESULT quick_fixes_showcase ok checks=0 failed=0 t=10.533 moments=5 errors=0 warnings=0

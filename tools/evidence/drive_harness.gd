@@ -30,6 +30,12 @@ extends Node
 ##   RESULT   always the last line: scenario, ok or fail, then the numbers
 ## Then get_tree().quit(): exit code 0, or 2 for a missing or unknown scenario.
 ##
+## Every scenario here was written before Story 009, which made a standing Unit turn on the spot
+## (UnitStats.spot_turn_rate, in the shipped Motorbike data the driving toy uses): before the toy is
+## instanced the harness sets the shared Motorbike stats' spot turn rate to PRE_009_SPOT_TURN_RATE,
+## zero, the data the scenarios were measured with, so their numbers stay what they were. Nothing
+## else of Story 009 reaches the toy: its Unit never spawns, so it has no tank to burn standing.
+##
 ## Examples:
 ##   godot --path . --windowed --resolution 1280x720 \
 ##       res://tools/evidence/drive_harness.tscn -- --scenario=showcase
@@ -40,6 +46,14 @@ extends Node
 
 ## The launch scene under test.
 const TOY_SCENE: PackedScene = preload("res://src/gameplay/driving_toy.tscn")
+
+## The driving toy's Motorbike stats: the one resource its Unit uses (one cached object), so a
+## value written here before the toy is instanced reaches the Unit.
+const MOTORBIKE_STATS_PATH: String = "res://src/gameplay/units/data/motorbike_stats.tres"
+
+## The spot turn rate every scenario here was measured with: none, so a standing Unit did not turn
+## (UnitStats.spot_turn_rate, which Story 009 added; the class doc).
+const PRE_009_SPOT_TURN_RATE: float = 0.0
 
 ## Prefix of the user argument that names the scenario.
 const SCENARIO_ARGUMENT: String = "--scenario="
@@ -242,6 +256,7 @@ func _ready() -> void:
 			"none" if _scenario.is_empty() else String(_scenario), USAGE])
 		get_tree().quit(EXIT_USAGE)
 		return
+	_apply_pre_009_data()
 	var toy: DrivingToy = TOY_SCENE.instantiate() as DrivingToy
 	if _scenario == &"showcase" or _scenario == &"coast":
 		toy.field.player_start.transform = Transform3D(
@@ -254,6 +269,17 @@ func _ready() -> void:
 	_decide()
 	_apply_keys()
 	_print_drive()
+
+
+## Gives the driving toy's Motorbike the spot turn rate the scenarios were measured with
+## (PRE_009_SPOT_TURN_RATE; the class doc), on the shared stats before the toy is instanced. Stats
+## that fail to load are an error, and nothing is applied.
+func _apply_pre_009_data() -> void:
+	var stats: UnitStats = load(MOTORBIKE_STATS_PATH) as UnitStats
+	if stats == null:
+		push_error("drive_harness: %s did not load as UnitStats, so the pre-009 spot turn rate is not applied." % MOTORBIKE_STATS_PATH)
+		return
+	stats.spot_turn_rate = PRE_009_SPOT_TURN_RATE
 
 
 func _physics_process(_delta: float) -> void:

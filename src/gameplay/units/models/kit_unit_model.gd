@@ -7,8 +7,11 @@ extends Node3D
 ## Implements: production/epics/wasteland-fire/story-007-the-map.md AC-11 (a Unit wears its Team's
 ## colour and no other), AC-12 (each type reads by its silhouette; the Motorbike's cream heading
 ## cue), AC-13 (the Gyrocopter stays visible over the canyon walls and the ridge: the story's open
-## question 3, a visual offset only) and AC-14 (one build per type, cached); design/rules.md "Teams
-## and visual style". Vocabulary: CONTEXT.md (Unit, Team, Motorbike, Gyrocopter, Map).
+## question 3, a visual offset only) and AC-14 (one build per type, cached);
+## production/epics/wasteland-fire/story-009-playtest-quick-fixes.md AC-2 (the Gyrocopter flies over
+## the Map's cover and its model rises over each piece, rise_body_mask); design/rules.md "Teams and
+## visual style" and "Units". Vocabulary: CONTEXT.md (Unit, Team, Motorbike, Gyrocopter, Map,
+## Cover).
 ##
 ## _ready() takes the build of kit_scene from KitMerge (made the first time a model of that kit,
 ## seed and remaps enters the tree, then cached: SplitScreen builds the match's types once before
@@ -34,6 +37,14 @@ extends Node3D
 ## cannot see; so no part of the model enters rock. The one exception is a Unit put down against a
 ## cliff by spawn() or place() and driven before the model has had the rise's time at rise_rate; in
 ## a Round a Unit appears only in its Garage.
+##
+## Rise over the cover (Story 009 AC-2): the Gyrocopter's collider also passes under the Map's cover
+## (the wrecks, the containers and the scrap walls, on the cover layer), and each piece is a body
+## drawn by its Mesh child, not drawn geometry itself. So the same query also tests rise_body_mask,
+## and a body on it lifts the model until its lowest point stands rise_clearance above the highest
+## of its GeometryInstance3D children, with the same margin, lead and rates. A body on rise_mask
+## alone is still a bare body, flown over at the hover (the water), so the rise over the cliffs and
+## the water is what it was before Story 009.
 
 ## Name of the child that carries the Team accent, which the Unit paints.
 const ACCENT_NODE_NAME: StringName = &"Accent"
@@ -79,6 +90,10 @@ const COLLIDER_KEY: String = "collider"
 ## The physics layers the rise query tests: the cliffs_water layer (value 32). Required, with no
 ## default, when rise_over_cliffs is set.
 @export_flags_3d_physics var rise_mask: int = 0
+## The physics layers whose bodies the model also rises over, at the top of what each draws (its
+## GeometryInstance3D children): the cover layer (value 64) on the Gyrocopter's scene (Story 009).
+## Optional: 0, the default, rises over the drawn colliders of rise_mask alone.
+@export_flags_3d_physics var rise_body_mask: int = 0
 ## Height the model's lowest point keeps above a cliff's top, metres. Required, with no default,
 ## when rise_over_cliffs is set.
 @export var rise_clearance: float = 0.0
@@ -135,7 +150,7 @@ func _ready() -> void:
 		_rise_box = BoxShape3D.new()
 		_rise_query = PhysicsShapeQueryParameters3D.new()
 		_rise_query.shape = _rise_box
-		_rise_query.collision_mask = rise_mask
+		_rise_query.collision_mask = rise_mask | rise_body_mask
 		set_physics_process(true)
 
 
@@ -160,8 +175,9 @@ func _physics_process(delta: float) -> void:
 
 
 ## Metres above its hover the model needs for its lowest point to stand rise_clearance above the
-## top of every drawn collider of rise_mask under its hull footprint, widened by rise_margin and
-## stretched by lead (world metres, level), or 0.0 where there is none.
+## top of every drawn collider of rise_mask and every drawn body of rise_body_mask under its hull
+## footprint (_drawn_top()), widened by rise_margin and stretched by lead (world metres, level), or
+## 0.0 where there is none.
 func _rise_target(unit_frame: Node3D, lead: Vector3) -> float:
 	var frame: Transform3D = unit_frame.global_transform.orthonormalized()
 	var local_lead: Vector3 = frame.basis.inverse() * lead
@@ -176,13 +192,30 @@ func _rise_target(unit_frame: Node3D, lead: Vector3) -> float:
 	var top: float = -INF
 	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
 	for hit: Dictionary in space.intersect_shape(_rise_query, RISE_MAX_RESULTS):
-		var cliff: GeometryInstance3D = hit.get(COLLIDER_KEY) as GeometryInstance3D
-		if cliff != null:
-			top = maxf(top, (cliff.global_transform * cliff.get_aabb()).end.y)
+		top = maxf(top, _drawn_top(hit.get(COLLIDER_KEY)))
 	if top == -INF:
 		return 0.0
 	var lowest: float = frame.origin.y + _rest_position().y + _built.hull.position.y * model_scale
 	return maxf(0.0, top + rise_clearance - lowest)
+
+
+## The world height of the top of what is drawn for a collider the rise query met: its own box when
+## it is drawn geometry itself (a CSG cliff), the highest box of its GeometryInstance3D children
+## when it is a body on rise_body_mask (a piece of cover, drawn by its Mesh), or -INF for anything
+## else (a bare body such as a channel's water, flown over at the hover; a freed collider).
+func _drawn_top(collider: Object) -> float:
+	var drawn: GeometryInstance3D = collider as GeometryInstance3D
+	if drawn != null:
+		return (drawn.global_transform * drawn.get_aabb()).end.y
+	var body: CollisionObject3D = collider as CollisionObject3D
+	if body == null or (body.collision_layer & rise_body_mask) == 0:
+		return -INF
+	var top: float = -INF
+	for child: Node in body.get_children():
+		var part: GeometryInstance3D = child as GeometryInstance3D
+		if part != null:
+			top = maxf(top, (part.global_transform * part.get_aabb()).end.y)
+	return top
 
 
 ## The first rise export that rise_over_cliffs needs and the model scene left unset (a mask of 0,

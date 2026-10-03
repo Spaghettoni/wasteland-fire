@@ -15,4 +15,4 @@ debug_damage = 0.0
 unit_types = Array[ExtResource("2_us")]([ExtResource("3_moto"), ExtResource("4_buggy"), ExtResource("5_truck"), ExtResource("6_gyro")])
 damage_matrix = ExtResource("7_matrix")
 shooting_height = 0.5
-shot_collision_mask = 19
+shot_collision_mask = 83

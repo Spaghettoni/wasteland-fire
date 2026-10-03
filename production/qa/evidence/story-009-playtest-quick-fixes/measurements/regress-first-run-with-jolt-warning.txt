@@ -1,0 +1,88 @@
+STRICT drive  coast              rc=0 result_ok=True identical=True
+STRICT drive  walls              rc=0 result_ok=True identical=True
+STRICT drive  showcase           rc=0 result_ok=True identical=True
+STRICT drive  soak               rc=0 result_ok=True identical=True
+STRICT split  layout             rc=0 result_ok=True identical=True
+STRICT split  isolation          rc=0 result_ok=True identical=True
+STRICT split  simultaneous       rc=0 result_ok=True identical=True
+STRICT split  showcase           rc=0 result_ok=True identical=True
+STRICT split  bases              rc=0 result_ok=True identical=True
+STRICT split  destruction        rc=0 result_ok=True identical=True
+STRICT split  countdown          rc=0 result_ok=True identical=True
+STRICT split  respawn_showcase   rc=0 result_ok=True identical=True
+STRICT split  units              rc=1 result_ok=False identical=False
+    --- baseline(mapped)
+    +++ now
+    @@ -3 +3 @@
+    -CHECK units unit_data PASS 4 types in rules.unit_types, 18 numbers and the collider of the table checked per type | Motorbike (motorbike_stats.tres): hp=40 dmg=5 speed=24.0 turn=2.80 fire=0.2s range=25 shot=60 muzzle=1.6 box=(1.4
+    +CHECK units unit_data FAIL 4 types in rules.unit_types, 18 numbers and the collider of the table checked per type | Motorbike (motorbike_stats.tres): hp=40 dmg=5 speed=24.0 turn=2.80 fire=0.2s range=25 shot=60 muzzle=1.6 box=(1.4
+    @@ -6 +6 @@
+    -RESULT units ok checks=2 failed=0 t=9.317 types=4 spawned=3 destroyed=3
+    +RESULT units fail checks=2 failed=1 t=9.317 types=4 spawned=3 destroyed=3
+    UNEXPLAINED after the normalizers:
+    --- baseline(mapped,normalized)
+    +++ now(normalized)
+    @@ -3 +3 @@
+    -CHECK units unit_data PASS 4 types in rules.unit_types, 18 numbers and the collider of the table checked per type | Motorbike (motorbike_stats.tres): hp=40 dmg=5 speed=24.0 turn=2.80 fire=0.2s range=25 shot=60 muzzle=1.6 box=(1.4
+    +CHECK units unit_data FAIL 4 types in rules.unit_types, 18 numbers and the collider of the table checked per type | Motorbike (motorbike_stats.tres): hp=40 dmg=5 speed=24.0 turn=2.80 fire=0.2s range=25 shot=60 muzzle=1.6 box=(1.4
+    @@ -6 +6 @@
+    -RESULT units ok checks=2 failed=0 t=9.317 types=4 spawned=3 destroyed=3
+    +RESULT units fail checks=2 failed=1 t=9.317 types=4 spawned=3 destroyed=3
+STRICT split  weapons            rc=0 result_ok=True identical=True
+STRICT split  gyro               rc=0 result_ok=True identical=True
+STRICT split  choice             rc=0 result_ok=True identical=True
+STRICT split  units_showcase     rc=0 result_ok=True identical=True
+STRICT split  fuel               rc=0 result_ok=True identical=True
+STRICT split  fuel_cans          rc=0 result_ok=True identical=True
+STRICT split  fuel_showcase      rc=0 result_ok=True identical=True
+STRICT split  map_layout         rc=0 result_ok=True identical=True
+STRICT split  map_edges          rc=0 result_ok=True identical=True
+STRICT split  map_ford           rc=0 result_ok=True identical=True
+STRICT split  map_bases          rc=0 result_ok=True identical=True
+STRICT split  map_cover          rc=0 result_ok=True identical=True
+STRICT split  map_showcase       rc=0 result_ok=True identical=True
+STRICT split  map_legibility     rc=0 result_ok=True identical=True
+STRICT split  flag_run           rc=0 result_ok=True identical=True
+STRICT split  hud                rc=0 result_ok=True identical=True
+STRICT split  round_over         rc=0 result_ok=True identical=True
+STRICT split  flag_showcase      rc=0 result_ok=True identical=True
+STRICT split  tokens             rc=0 result_ok=True identical=True
+STRICT split  tokens_data        rc=0 result_ok=True identical=False
+    --- baseline(mapped)
+    +++ now
+    @@ -6 +6 @@
+    -CHECK tokens_data T33_data_not_constants PASS Truck slot x7 and Buggy slot dim from the first frame (fixture truck 7, buggy 0) | lint: 12 files, 1143 code lines, 5 integer literals other than 0 and 1 (garage_queue.gd=3, player_hu
+    +CHECK tokens_data T33_data_not_constants PASS Truck slot x7 and Buggy slot dim from the first frame (fixture truck 7, buggy 0) | lint: 13 files, 1194 code lines, 5 integer literals other than 0 and 1 (garage_queue.gd=3, player_hu
+    @@ -9 +9 @@
+    -RESULT tokens_data ok checks=6 failed=0 t=11.717 refusals=9 errors=18 warnings=1 destroyed=7 spawned=8 round_over=2 round_started=1 lint_files=12 lint_literals=5
+    +RESULT tokens_data ok checks=6 failed=0 t=11.717 refusals=9 errors=18 warnings=1 destroyed=7 spawned=8 round_over=2 round_started=1 lint_files=13 lint_literals=5
+    UNEXPLAINED after the normalizers:
+    --- baseline(mapped,normalized)
+    +++ now(normalized)
+    @@ -6 +6 @@
+    -CHECK tokens_data T33_data_not_constants PASS Truck slot x7 and Buggy slot dim from the first frame (fixture truck 7, buggy 0) | lint: 12 files, 1143 code lines, 5 integer literals other than 0 and 1 (garage_queue.gd=3, player_hu
+    +CHECK tokens_data T33_data_not_constants PASS Truck slot x7 and Buggy slot dim from the first frame (fixture truck 7, buggy 0) | lint: 13 files, 1194 code lines, 5 integer literals other than 0 and 1 (garage_queue.gd=3, player_hu
+    @@ -9 +9 @@
+    -RESULT tokens_data ok checks=6 failed=0 t=11.717 refusals=9 errors=18 warnings=1 destroyed=7 spawned=8 round_over=2 round_started=1 lint_files=12 lint_literals=5
+    +RESULT tokens_data ok checks=6 failed=0 t=11.717 refusals=9 errors=18 warnings=1 destroyed=7 spawned=8 round_over=2 round_started=1 lint_files=13 lint_literals=5
+STRICT split  token_choice       rc=0 result_ok=True identical=True
+STRICT split  loss               rc=1 result_ok=False identical=False
+    --- baseline(mapped)
+    +++ now
+    @@ -9,2 +9,2 @@
+    -CHECK loss T24_other_ends_unchanged PASS Player 2's Motorbike pinned, throttle held: 50.0 Fuel burned out in 1501 ticks, then 10 s empty: alive, no unit_destroyed, Tokens [[5, 0, 0, 0], [5, 3, 2, 2]] unchanged, Round running | de
+    -RESULT loss ok checks=7 failed=0 t=171.167 destroyed=67 spawned=73 shots=2 round_over=9 round_started=8 errors=0 warnings=0
+    +CHECK loss T24_other_ends_unchanged FAIL Player 2's Motorbike pinned, throttle held: 50.0 Fuel burned out in 1501 ticks, then 10 s empty: alive, no unit_destroyed, Tokens [[5, 0, 0, 0], [5, 3, 2, 2]] unchanged, Round running | de
+    +RESULT loss fail checks=7 failed=1 t=171.167 destroyed=67 spawned=73 shots=2 round_over=9 round_started=8 errors=0 warnings=1
+    UNEXPLAINED after the normalizers:
+    --- baseline(mapped,normalized)
+    +++ now(normalized)
+    @@ -9,2 +9,2 @@
+    -CHECK loss T24_other_ends_unchanged PASS Player 2's Motorbike pinned, throttle held: 50.0 Fuel burned out in 1501 ticks, then 10 s empty: alive, no unit_destroyed, Tokens [[5, 0, 0, 0], [5, 3, 2, 2]] unchanged, Round running | de
+    -RESULT loss ok checks=7 failed=0 t=171.167 destroyed=67 spawned=73 shots=2 round_over=9 round_started=8 errors=0 warnings=0
+    +CHECK loss T24_other_ends_unchanged FAIL Player 2's Motorbike pinned, throttle held: 50.0 Fuel burned out in 1501 ticks, then 10 s empty: alive, no unit_destroyed, Tokens [[5, 0, 0, 0], [5, 3, 2, 2]] unchanged, Round running | de
+    +RESULT loss fail checks=7 failed=1 t=171.167 destroyed=67 spawned=73 shots=2 round_over=9 round_started=8 errors=0 warnings=1
+STRICT split  token_ui           rc=0 result_ok=True identical=True
+STRICT split  token_layout       rc=0 result_ok=True identical=True
+STRICT split  tokens_showcase    rc=0 result_ok=True identical=True
+ALL_OK=False (every scenario identical to its baseline after the rename mapping and the normalizers of normalizers.json, exit 0, RESULT ok)

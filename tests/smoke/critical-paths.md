@@ -17,13 +17,14 @@
 5. [Story 002 — two viewports, both Players drive at once]
 6. [Story 004 — steal, drop, recover, deliver; Round-over screen]
 7. [Story 008 — a destruction costs a Token of its type; the choice shows the counts and dims a type with none; the last Motorbike Token loses the Round; both Players losing it on one tick shows "Nobody wins!"]
+8. [Story 009 — every Unit turns on the spot when standing; the depot's three Fuel tanks stop every Unit and every Shot; the Gyrocopter flies over the wrecks, containers and scrap walls while ground Units are stopped; a standing Unit's Fuel gauge falls slower than a moving one's; a ground Unit out of Fuel shows "Out of Fuel! Press Tab (Enter) to Self-destruct" in its own view]
 
 ## Data Integrity
 
-8. Restarting a Round resets Units, Flags, both Token stocks and HUD (once story 008 lands)
-9. Unit tuning values load from their `.tres` data, not code (once story 001 lands)
+9. Restarting a Round resets Units, Flags, both Token stocks and HUD (once story 008 lands)
+10. Unit tuning values load from their `.tres` data, not code (once story 001 lands)
 
 ## Performance
 
-10. No visible frame rate drops on the dev machine (60fps target, two viewports)
-11. No memory growth over 5 minutes of play (once the core loop is implemented)
+11. No visible frame rate drops on the dev machine (60fps target, two viewports)
+12. No memory growth over 5 minutes of play (once the core loop is implemented)

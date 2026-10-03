@@ -1,0 +1,27 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK spot_turn spot_data PASS motorbike spot 1.40 turn 2.80 empty 1.40 rad/s | buggy spot 1.15 turn 2.29 empty 1.15 rad/s | truck spot 0.45 turn 0.89 empty 0.45 rad/s | gyrocopter spot 0.77 turn 1.53 empty 0.00 rad/s
+SPLIT spot_turn t=1.267 pivot=1 type=motorbike steer=1 worst=0.000002 drift=0.000000
+SPLIT spot_turn t=1.267 pivot=2 type=buggy steer=1 worst=0.000003 drift=0.000000
+SPLIT spot_turn t=2.300 pivot=1 type=motorbike steer=-1 worst=0.000003 drift=0.000000
+SPLIT spot_turn t=2.300 pivot=2 type=buggy steer=-1 worst=0.000003 drift=0.000000
+SPLIT spot_turn t=3.267 drive_off=1 type=motorbike speed_end=16.667 worst=0.000002 least=1.40000 crossover_tick=35
+SPLIT spot_turn t=3.267 drive_off=2 type=buggy speed_end=14.167 worst=0.000003 least=1.15000 crossover_tick=34
+SPLIT spot_turn t=4.233 reverse=1 type=motorbike speed_end=-9.000 worst=0.000003 least=1.40000 crossover_tick=-1
+SPLIT spot_turn t=4.233 reverse=2 type=buggy speed_end=-8.000 worst=0.000003 least=1.15000 crossover_tick=-1
+SPLIT spot_turn t=6.267 stranded=1 type=motorbike fuel=0.000 worst=0.000002
+SPLIT spot_turn t=6.267 stranded=2 type=buggy fuel=0.000 worst=0.000003
+SPLIT spot_turn t=7.400 pivot=1 type=truck steer=1 worst=0.000002 drift=0.000000
+SPLIT spot_turn t=7.400 pivot=2 type=gyrocopter steer=1 worst=0.000003 drift=0.000000
+SPLIT spot_turn t=8.433 pivot=1 type=truck steer=-1 worst=0.000002 drift=0.000000
+SPLIT spot_turn t=8.433 pivot=2 type=gyrocopter steer=-1 worst=0.000003 drift=0.000000
+SPLIT spot_turn t=9.400 drive_off=1 type=truck speed_end=7.500 worst=0.000002 least=0.45000 crossover_tick=36
+SPLIT spot_turn t=9.400 drive_off=2 type=gyrocopter speed_end=12.500 worst=0.000002 least=0.77000 crossover_tick=33
+SPLIT spot_turn t=10.367 reverse=1 type=truck speed_end=-5.000 worst=0.000001 least=0.45000 crossover_tick=-1
+SPLIT spot_turn t=10.367 reverse=2 type=gyrocopter speed_end=-6.000 worst=0.000002 least=0.77000 crossover_tick=-1
+SPLIT spot_turn t=12.067 stranded=1 type=truck fuel=0.000 worst=0.000002
+CHECK spot_turn spot_pivot PASS p1 motorbike steer +1 at +1.4000 rad/s (off by <= 0.00000), drift 0.00000 m | p2 buggy steer +1 at +1.1500 rad/s (off by <= 0.00000), drift 0.00000 m | p1 motorbike steer -1 at -1.4000 rad/s (off by <= 0.00000), drift 0.00000 m | p2 buggy steer -1 at -1.1500 rad/s (off by <= 0.00000), drift 0.00000 m | p1 truck steer +1 at +0.4500 rad/s (off by <= 0.00000), drift 0.00000 m | p2 gyrocopter steer +1 at +0.7700 rad/s (off by <= 0.00000), drift 0.00000 m | p1 truck steer -1 at -0.4500 rad/s (off by <= 0.00000), drift 0.00000 m | p2 gyrocopter steer -1 at -0.7700 rad/s (off by <= 0.00000), drift 0.00000 m
+CHECK spot_turn drive_off PASS p1 motorbike to 16.67 m/s, off by <= 0.00000 rad/s, never under 1.4000 (spot 1.40), turn rate above it from tick 35 | p2 buggy to 14.17 m/s, off by <= 0.00000 rad/s, never under 1.1500 (spot 1.15), turn rate above it from tick 34 | p1 truck to 7.50 m/s, off by <= 0.00000 rad/s, never under 0.4500 (spot 0.45), turn rate above it from tick 36 | p2 gyrocopter to 12.50 m/s, off by <= 0.00000 rad/s, never under 0.7700 (spot 0.77), turn rate above it from tick 33
+CHECK spot_turn reverse PASS p1 motorbike to -9.00 m/s, off by <= 0.00000 rad/s, never under 1.4000 (spot 1.40), turn rate above it from tick -1 | p2 buggy to -8.00 m/s, off by <= 0.00000 rad/s, never under 1.1500 (spot 1.15), turn rate above it from tick -1 | p1 truck to -5.00 m/s, off by <= 0.00000 rad/s, never under 0.4500 (spot 0.45), turn rate above it from tick -1 | p2 gyrocopter to -6.00 m/s, off by <= 0.00000 rad/s, never under 0.7700 (spot 0.77), turn rate above it from tick -1
+CHECK spot_turn stranded PASS p1 motorbike out of Fuel at its empty rate 1.40 (off by <= 0.00000; its spot rate 2.100) | p2 buggy out of Fuel at its empty rate 1.15 (off by <= 0.00000; its spot rate 1.725) | p1 truck out of Fuel at its empty rate 0.45 (off by <= 0.00000; its spot rate 0.675)
+RESULT spot_turn ok checks=5 failed=0 t=12.100 types=4 errors=0 warnings=0

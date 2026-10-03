@@ -1,0 +1,12 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK idle_burn burn_data PASS motorbike 0.500 standing, 2.000 moving Fuel/s | buggy 0.625 standing, 2.500 moving Fuel/s | truck 0.750 standing, 3.000 moving Fuel/s | gyrocopter 1.250 standing, 5.000 moving Fuel/s
+SPLIT idle_burn t=5.767 burn=1 type=motorbike standing_ticks=171 standing_rate=0.5000 moving_ticks=159 moving_rate=2.0000 worst=0.00000000 emits=330 fuel_end=43.2250
+SPLIT idle_burn t=5.767 burn=2 type=buggy standing_ticks=169 standing_rate=0.6250 moving_ticks=161 moving_rate=2.5000 worst=0.00000000 emits=330 fuel_end=41.5000
+SPLIT idle_burn t=11.367 burn=1 type=truck standing_ticks=181 standing_rate=0.7500 moving_ticks=149 moving_rate=3.0000 worst=0.00000000 emits=330 fuel_end=40.2125
+SPLIT idle_burn t=11.367 burn=2 type=gyrocopter standing_ticks=158 standing_rate=1.2500 moving_ticks=172 moving_rate=5.0000 worst=0.00000000 emits=330 fuel_end=32.3125
+CHECK idle_burn two_rates PASS p1 motorbike: 171 standing ticks at 0.5000 Fuel/s (data 0.500), 159 moving at 2.0000 (data 2.000), every tick within 0.0000000, 330 fuel_changed ; p2 buggy: 169 standing ticks at 0.6250 Fuel/s (data 0.625), 161 moving at 2.5000 (data 2.500), every tick within 0.0000000, 330 fuel_changed | p1 truck: 181 standing ticks at 0.7500 Fuel/s (data 0.750), 149 moving at 3.0000 (data 3.000), every tick within 0.0000000, 330 fuel_changed ; p2 gyrocopter: 158 standing ticks at 1.2500 Fuel/s (data 1.250), 172 moving at 5.0000 (data 5.000), every tick within 0.0000000, 330 fuel_changed
+SPLIT idle_burn t=12.167 hover_crash tank=1.00 idle=1.250 seconds=0.800 expected=0.800 empty_tick=729 crash_tick=729 tokens=99->98
+CHECK idle_burn hover_crash PASS a Gyrocopter with 1.00 Fuel hovering still burned 1.250 Fuel/s and crashed after 0.800 s (expected 0.800) on the tick its tank emptied; Gyrocopter Tokens 99 -> 98
+CHECK idle_burn no_engine_noise PASS errors=0 warnings=0
+RESULT idle_burn ok checks=4 failed=0 t=12.167 types=4 errors=0 warnings=0

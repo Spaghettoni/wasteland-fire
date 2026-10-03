@@ -1,0 +1,23 @@
+MUTANT tanks_no_collider          KILLED | depot_tanks rc=1 FAIL fails=tank_data,tanks_stop
+MUTANT tank_radius_small          KILLED | depot_tanks rc=1 FAIL fails=tank_data
+MUTANT cover_on_map_layer         KILLED | gyro_cover rc=1 FAIL fails=cover_data,gyro_crosses
+MUTANT ground_mask_no_cover       KILLED | gyro_cover rc=1 FAIL fails=cover_data,ground_stopped
+MUTANT shot_mask_no_cover         KILLED | gyro_cover rc=1 FAIL fails=cover_data,ground_stopped,fire_over_cover
+MUTANT no_rise_body_mask          KILLED | gyro_cover rc=1 FAIL fails=cover_data,gyro_crosses
+MUTANT drawn_top_ignores_bodies   KILLED | gyro_cover rc=1 FAIL fails=gyro_crosses
+MUTANT rise_query_no_body_mask    KILLED | gyro_cover rc=1 FAIL fails=gyro_crosses
+MUTANT spot_only_at_standstill    KILLED | spot_turn rc=1 FAIL fails=drive_off,reverse
+MUTANT spot_floor_not_flipped     KILLED | spot_turn rc=1 FAIL fails=reverse
+MUTANT stranded_after_spot        KILLED | spot_turn rc=1 FAIL fails=stranded
+MUTANT no_spot_turn_data          KILLED | spot_turn rc=1 FAIL fails=spot_data
+MUTANT idle_burns_moving_rate     KILLED | idle_burn rc=1 FAIL fails=two_rates,hover_crash
+MUTANT no_idle_burn               KILLED | idle_burn rc=1 FAIL fails=two_rates,hover_crash
+MUTANT gyro_no_idle_burn          KILLED | idle_burn rc=1 FAIL fails=two_rates,hover_crash
+MUTANT idle_data_equals_moving    KILLED | idle_burn rc=1 FAIL fails=burn_data
+MUTANT hint_ignores_round_over    KILLED | fuel_hint rc=1 FAIL fails=hint_states,hint_moments
+MUTANT hint_on_empty_tank         KILLED | fuel_hint rc=1 FAIL fails=hint_states,hint_moments
+MUTANT hint_wrong_key             KILLED | fuel_hint rc=1 FAIL fails=hint_text
+MUTANT hint_not_on_refuel         KILLED | fuel_hint rc=1 FAIL fails=hint_states,hint_moments
+MUTANT hint_in_the_band           KILLED | fuel_hint rc=1 FAIL fails=hint_moments
+MUTANT hint_text_wraps            KILLED | fuel_hint rc=1 FAIL fails=hint_moments
+KILLED=22 SURVIVED=0

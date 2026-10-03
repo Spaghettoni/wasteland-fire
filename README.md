@@ -37,6 +37,7 @@ The rules of record are in `design/rules.md`, the one-page brief in
 | 006 | Fuel and Fuel Cans | Done |
 | 007 | Map 01 with the Team colours | Done |
 | 008 | Tokens, the Garage and the loss | Done |
+| 009 | Playtest quick fixes: solid depot tanks, the Gyrocopter over the cover, turning on the spot, slower Fuel burn standing, the out-of-Fuel hint | Done |
 
 Map 01 and the four Units have their low-poly look: the Map is built from
 Godot's built-in meshes with textures generated in code, and the Units are the

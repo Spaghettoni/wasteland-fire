@@ -12,7 +12,8 @@ extends Node
 ## and, since Story 005, units, weapons, gyro, choice and units_showcase; since Story 006, fuel,
 ## fuel_cans and fuel_showcase; since Story 007, on Map 01, map_layout, map_edges, map_ford,
 ## map_bases, map_cover, map_showcase, map_legibility and map_fps; since Story 008, tokens,
-## tokens_data, token_choice, loss, token_ui, token_layout and tokens_showcase.
+## tokens_data, token_choice, loss, token_ui, token_layout and tokens_showcase; since Story 009, the
+## scenarios its evidence doc lists.
 ## Each is a script under tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
@@ -86,6 +87,18 @@ extends Node
 ## a script error and Resource.duplicate() of the shipped stock would share its counts dictionary
 ## (TokenStock's class doc).
 ##
+## The playtest fixes (Story 009). The shipped data now turns a standing Unit on the spot
+## (UnitStats.spot_turn_rate), burns Fuel while it stands (fuel_use_idle), stops Shots at a new
+## cover layer (MatchRules.shot_collision_mask) and, on Map 01, puts the cover on that layer, so the
+## Gyrocopter flies over it, and gives the depot's three tanks colliders. Every scenario written
+## before Story 009 (GREYBOX_SCENARIOS and PRE_009_MAP_SCENARIOS) runs on the data it was measured
+## with, as the legacy scenarios do: the runner sets the spot turn rate and the idle Fuel rate of
+## every type to zero and the Shot mask back to its old value on the shared resources before the
+## scene is instanced (_apply_pre_009_data()), and for the Map 01 ones it puts the cover back on the
+## map layer and frees the tanks' colliders in the freshly instanced launch scene
+## (_apply_pre_009_map()). A scenario of Story 009 or later is not listed and runs on the shipped
+## data and Map.
+##
 ## Output: SPLIT <scenario> t=<seconds> key=value ... (progress), CHECK <scenario> <check name> PASS|FAIL
 ## <detail> and exactly one last RESULT <scenario> ok|fail checks=<n> failed=<n> key=value ...; then quit with
 ## exit code 0 when every check passed, 1 when one failed, 2 for a missing or unknown scenario. TD-003
@@ -136,6 +149,12 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"token_ui": preload("res://tools/evidence/split_screen/token_ui.gd"),
 	&"token_layout": preload("res://tools/evidence/split_screen/token_layout.gd"),
 	&"tokens_showcase": preload("res://tools/evidence/split_screen/tokens_showcase.gd"),
+	&"depot_tanks": preload("res://tools/evidence/split_screen/depot_tanks.gd"),
+	&"gyro_cover": preload("res://tools/evidence/split_screen/gyro_cover.gd"),
+	&"spot_turn": preload("res://tools/evidence/split_screen/spot_turn.gd"),
+	&"idle_burn": preload("res://tools/evidence/split_screen/idle_burn.gd"),
+	&"fuel_hint": preload("res://tools/evidence/split_screen/fuel_hint.gd"),
+	&"quick_fixes_showcase": preload("res://tools/evidence/split_screen/quick_fixes_showcase.gd"),
 }
 
 ## The shared step class (drive_step.gd): keys held for a time.
@@ -259,6 +278,35 @@ const GREYBOX_MODELS: Dictionary[StringName, PackedScene] = {
 	&"truck": preload("res://src/gameplay/units/models/truck_model.tscn"),
 	&"gyrocopter": preload("res://src/gameplay/units/models/gyrocopter_model.tscn"),
 }
+## The scenarios written on Map 01 before Story 009, those of Stories 007 and 008. With
+## GREYBOX_SCENARIOS they are every scenario written before Story 009: the runner gives them the
+## data they were measured with (_apply_pre_009_data()) and these the Map they were measured on
+## (_apply_pre_009_map()). A scenario that is not listed runs on the shipped data.
+const PRE_009_MAP_SCENARIOS: Array[StringName] = [&"map_layout", &"map_edges", &"map_ford",
+	&"map_bases", &"map_cover", &"map_showcase", &"map_legibility", &"map_fps", &"tokens",
+	&"tokens_data", &"token_choice", &"loss", &"token_ui", &"token_layout", &"tokens_showcase"]
+## The spot turn rate every scenario written before Story 009 was measured with: none, so a standing
+## Unit did not turn (UnitStats.spot_turn_rate, which Story 009 added).
+const PRE_009_SPOT_TURN_RATE: float = 0.0
+## The idle Fuel rate every scenario written before Story 009 was measured with: none, so a standing
+## Unit burned nothing (UnitStats.fuel_use_idle, which Story 009 added).
+const PRE_009_FUEL_USE_IDLE: float = 0.0
+## The Shot mask every scenario written before Story 009 was measured with: the map, the units and
+## the gyrocopters layers, before Story 009 added the cover layer (the units scenario prints it).
+const PRE_009_SHOT_COLLISION_MASK: int = 19
+## The physics layer Map 01's cover was on before Story 009 moved it to the cover layer: the map
+## layer, which stops the Gyrocopter as well.
+const PRE_009_COVER_LAYER: int = 1
+## The cover layer Story 009 added (project.godot layer 7, value 64) to the ground types' collision
+## masks, 35 to 99: taken out of every type's mask again for the scenarios written before it (the
+## units scenario checks each mask).
+const COVER_LAYER: int = 64
+## Map 01's cover, by path from the Map: every CollisionObject3D under it is a piece of cover.
+const MAP_COVER_PATH: NodePath = ^"Cover"
+## Map 01's depot tanks, by path from the Map: each tank's TANK_COLLIDER_NAME child is Story 009's.
+const MAP_TANKS_PATH: NodePath = ^"Depot/FuelTanks"
+## The name of a depot tank's collider, a StaticBody3D child of the tank (Story 009 AC-1).
+const TANK_COLLIDER_NAME: StringName = &"Collider"
 
 ## Position of the throttle key in a layout (PLAYER_1_KEYS, PLAYER_2_KEYS).
 const SLOT_THROTTLE: int = 0
@@ -337,9 +385,13 @@ func _ready() -> void:
 		_apply_no_fuel_data()
 	if GREYBOX_SCENARIOS.has(scenario):
 		_apply_greybox_models()
+	if GREYBOX_SCENARIOS.has(scenario) or PRE_009_MAP_SCENARIOS.has(scenario):
+		_apply_pre_009_data()
 	split = SPLIT_SCENE.instantiate() as SplitScreen
 	if GREYBOX_SCENARIOS.has(scenario):
 		_apply_greybox_composition(split)
+	if PRE_009_MAP_SCENARIOS.has(scenario):
+		_apply_pre_009_map(split)
 	_apply_token_stock(split, SCENARIOS[scenario])
 	if split.match_controller != null:
 		split.match_controller.unit_spawned.connect(_on_round_start_spawn)
@@ -454,6 +506,49 @@ func _apply_greybox_models() -> void:
 	for stats: UnitStats in rules.unit_types:
 		if stats != null and GREYBOX_MODELS.has(stats.type_id):
 			stats.model = GREYBOX_MODELS[stats.type_id]
+
+
+## Gives every scenario written before Story 009 (GREYBOX_SCENARIOS and PRE_009_MAP_SCENARIOS) the
+## data it was measured with, on the shared resources before the launch scene is instanced:
+## PRE_009_SPOT_TURN_RATE and PRE_009_FUEL_USE_IDLE on every UnitStats of match_rules.tres's
+## unit_types (one cached object per type, the one the Units spawn with), so a standing Unit neither
+## turns nor burns, COVER_LAYER taken out of each type's collision mask (the ground types' 99 back
+## to 35; nothing is on that layer in those scenarios, as the greybox composition has no cover and
+## _apply_pre_009_map() puts Map 01's back on the map layer) and PRE_009_SHOT_COLLISION_MASK on
+## match_rules.tres. Rules that fail to load are an error, and nothing is applied.
+func _apply_pre_009_data() -> void:
+	var rules: MatchRules = load(MATCH_RULES_PATH) as MatchRules
+	if rules == null:
+		push_error("split_screen_harness: %s did not load as MatchRules, so the pre-009 data is not applied." % MATCH_RULES_PATH)
+		return
+	rules.shot_collision_mask = PRE_009_SHOT_COLLISION_MASK
+	for stats: UnitStats in rules.unit_types:
+		if stats != null:
+			stats.spot_turn_rate = PRE_009_SPOT_TURN_RATE
+			stats.fuel_use_idle = PRE_009_FUEL_USE_IDLE
+			stats.collision_mask = stats.collision_mask & ~COVER_LAYER
+
+
+## Gives the Map 01 scenarios written before Story 009 (PRE_009_MAP_SCENARIOS) the Map they were
+## measured on, in the freshly instanced launch scene before it enters the tree: every
+## CollisionObject3D under the Map's cover back on PRE_009_COVER_LAYER, and each depot tank's
+## collider, which Story 009 added, removed and freed at once (remove_child() and free(), as
+## _apply_greybox_composition() frees the Map). A Map with no cover or no tanks is an error, and
+## nothing is changed.
+func _apply_pre_009_map(root: SplitScreen) -> void:
+	var map: Node = root.field
+	var cover: Node = map.get_node_or_null(MAP_COVER_PATH) if map != null else null
+	var tanks: Node = map.get_node_or_null(MAP_TANKS_PATH) if map != null else null
+	if cover == null or tanks == null:
+		push_error("split_screen_harness: the launch scene's Map has no %s or no %s, so the pre-009 Map is not applied." % [MAP_COVER_PATH, MAP_TANKS_PATH])
+		return
+	for body: Node in cover.find_children("*", "CollisionObject3D", true, false):
+		(body as CollisionObject3D).collision_layer = PRE_009_COVER_LAYER
+	for tank: Node in tanks.get_children():
+		var collider: Node = tank.get_node_or_null(NodePath(String(TANK_COLLIDER_NAME)))
+		if collider != null:
+			tank.remove_child(collider)
+			collider.free()
 
 
 ## Gives the launch scene the Token stock the scenario asks for, on the field's token_stock and

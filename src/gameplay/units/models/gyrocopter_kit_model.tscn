@@ -16,6 +16,7 @@ material_remap = Dictionary[String, String]({
 })
 rise_over_cliffs = true
 rise_mask = 32
+rise_body_mask = 64
 rise_clearance = 0.25
 rise_rate = 6.0
 settle_rate = 2.0

@@ -24,6 +24,7 @@
 [ext_resource type="Material" path="res://src/gameplay/split_screen/data/team_teal_material.tres" id="23_team_teal"]
 [ext_resource type="StyleBoxFlat" path="res://src/ui/hud/data/team_orange_edge.tres" id="24_edge_orange"]
 [ext_resource type="StyleBoxFlat" path="res://src/ui/hud/data/team_teal_edge.tres" id="25_edge_teal"]
+[ext_resource type="PackedScene" path="res://src/ui/hud/self_destruct_hint.tscn" id="26_hint"]
 
 [node name="SplitScreen" type="Control" unique_id=9000001 node_paths=PackedStringArray("field", "player_1_unit", "player_2_unit", "player_1_camera", "player_2_camera", "match_controller")]
 layout_mode = 3
@@ -164,6 +165,11 @@ edge_style = ExtResource("24_edge_orange")
 [node name="Player1RoundOver" parent="Views/Player1View/SubViewport" unique_id=9000061 node_paths=PackedStringArray("match_controller") instance=ExtResource("14_ros")]
 match_controller = NodePath("%MatchController")
 
+[node name="Player1SelfDestructHint" parent="Views/Player1View/SubViewport" node_paths=PackedStringArray("match_controller", "unit") instance=ExtResource("26_hint")]
+match_controller = NodePath("%MatchController")
+unit = NodePath("%Player1Unit")
+action_prefix = &"p1_"
+
 [node name="Player2View" type="SubViewportContainer" parent="Views" unique_id=9000022]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -198,6 +204,11 @@ edge_style = ExtResource("25_edge_teal")
 
 [node name="Player2RoundOver" parent="Views/Player2View/SubViewport" unique_id=9000062 node_paths=PackedStringArray("match_controller") instance=ExtResource("14_ros")]
 match_controller = NodePath("%MatchController")
+
+[node name="Player2SelfDestructHint" parent="Views/Player2View/SubViewport" node_paths=PackedStringArray("match_controller", "unit") instance=ExtResource("26_hint")]
+match_controller = NodePath("%MatchController")
+unit = NodePath("%Player2Unit")
+action_prefix = &"p2_"
 
 [node name="Divider" type="ColorRect" parent="." unique_id=9000004]
 layout_mode = 1

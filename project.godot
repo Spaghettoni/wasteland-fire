@@ -104,6 +104,7 @@ p2_fire={
 3d_physics/layer_4="flags"
 3d_physics/layer_5="gyrocopters"
 3d_physics/layer_6="cliffs_water"
+3d_physics/layer_7="cover"
 
 [physics]
 

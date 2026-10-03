@@ -61,9 +61,10 @@ extends Resource
 ## tuned height lives in match_rules.tres.
 @export_range(0.0, 10.0, 0.05, "or_greater", "suffix:m") var shooting_height: float = 0.0
 
-## The physics layers that stop a shot (Story 005 AC-3 and AC-5): the map, the units and the
-## gyrocopters layers of project.godot [layer_names], and NOT the cliffs_water layer, so a shot
-## passes over cliffs and water and stops at walls and at Units. A bit mask, written as a plain
-## int in the .tres. Zero by default (class doc): a zero mask would stop a shot nowhere, so the
-## tuned mask lives in match_rules.tres.
+## The physics layers that stop a shot (Story 005 AC-3 and AC-5): the map, the units, the
+## gyrocopters and the cover layers of project.godot [layer_names] (1 + 2 + 16 + 64 = 83; the cover
+## layer since Story 009, when the Map's cover left the map layer so the Gyrocopter could fly over
+## it), and NOT the cliffs_water layer, so a shot passes over cliffs and water and stops at walls,
+## at the cover and at Units. A bit mask, written as a plain int in the .tres. Zero by default
+## (class doc): a zero mask would stop a shot nowhere, so the tuned mask lives in match_rules.tres.
 @export_flags_3d_physics var shot_collision_mask: int = 0

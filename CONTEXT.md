@@ -59,7 +59,7 @@ The heavy, slow combat Unit with the most hit points and the hardest hits. Beats
 _Avoid_: lorry, tank, van, heavy
 
 **Gyrocopter (gyrokoptéra)**:
-The flying combat Unit. Flying means only that it crosses cliffs and water, which ground Units cannot; it shoots and is shot at the same height as everyone. Burns Fuel fastest and crashes when its tank is empty. Beats the Buggy from across cliffs and water; loses to the Truck.
+The flying combat Unit. Flying means only that it crosses cliffs, water and the cover, which ground Units cannot (the cover since the first playtest, 2026-10-03); it shoots and is shot at the same height as everyone. Burns Fuel fastest and crashes when its tank is empty. Beats the Buggy from across cliffs and water; loses to the Truck.
 _Avoid_: helicopter, chopper, gyro, plane
 
 **Token (token)**:
@@ -71,13 +71,13 @@ The place at a Player's Base where the chosen Unit appears, at the start of a Ro
 _Avoid_: spawn point, hangar, depot, pad
 
 **Self-destruct**:
-A Player's action that destroys their own Unit on purpose, so a stranded Unit can be replaced. It counts as a destruction and costs a Token.
+A Player's action that destroys their own Unit on purpose, so a stranded Unit can be replaced. It counts as a destruction and costs a Token. A Player whose ground Unit has run out of Fuel is shown the key. Decided after the first playtest (2026-10-03), not built yet: inside the own Base the same key will put the Unit away instead, a free swap to another type with Tokens left.
 _Avoid_: suicide, reset, respawn button
 
 ### Resources
 
 **Fuel (benzín)**:
-The resource every Unit burns while moving, the Gyrocopter fastest. A Unit with no Fuel can neither drive nor fly.
+The resource every Unit burns, faster while moving than while standing, the Gyrocopter fastest. A Unit with no Fuel can neither drive nor fly.
 _Avoid_: gas, petrol, energy, stamina
 
 **Fuel Can (kanister)**:
@@ -99,5 +99,5 @@ A shallow creek crossing on the Map. A ground Unit inside a Ford drives at no mo
 _Avoid_: creek, river, mud, shallows
 
 **Cover**:
-A static obstacle on the Map that stops every Unit, the Gyrocopter included, and every shot, and is never destroyed. On Map 01 the eight wrecks, the two long containers and the two scrap walls; the drawings' wrecks are cover, not destroyed Units.
+A static obstacle on the Map that stops every ground Unit and every shot and is never destroyed; the Gyrocopter flies over it (decided 2026-10-03, after the first playtest). On Map 01 the eight wrecks, the two long containers and the two scrap walls; the drawings' wrecks are cover, not destroyed Units. The depot's three Fuel tanks are not cover: they stop every Unit, the Gyrocopter included, like walls.
 _Avoid_: obstacle, barricade, prop, destructible

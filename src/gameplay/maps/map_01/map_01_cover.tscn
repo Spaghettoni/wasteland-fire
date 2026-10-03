@@ -31,6 +31,7 @@ size = Vector3(2.5, 2, 12)
 
 [node name="WreckWestOuterSouth" type="StaticBody3D" parent="Wrecks"]
 transform = Transform3D(0.8660254, 0, 0.5, 0, 1, 0, -0.5, 0, 0.8660254, -80, 0.65, 5)
+collision_layer = 64
 collision_mask = 0
 
 [node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckWestOuterSouth"]
@@ -41,6 +42,7 @@ shape = SubResource("BoxShape3D_wreck")
 
 [node name="WreckWestMiddleNorth" type="StaticBody3D" parent="Wrecks"]
 transform = Transform3D(0.8660254, 0, -0.5, 0, 1, 0, 0.5, 0, 0.8660254, -53, 0.65, -8)
+collision_layer = 64
 collision_mask = 0
 
 [node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckWestMiddleNorth"]
@@ -51,6 +53,7 @@ shape = SubResource("BoxShape3D_wreck")
 
 [node name="WreckWestInnerSouth" type="StaticBody3D" parent="Wrecks"]
 transform = Transform3D(0.7071068, 0, -0.7071068, 0, 1, 0, 0.7071068, 0, 0.7071068, -26, 0.65, 7.6)
+collision_layer = 64
 collision_mask = 0
 
 [node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckWestInnerSouth"]
@@ -61,6 +64,7 @@ shape = SubResource("BoxShape3D_wreck")
 
 [node name="WreckWestInnerNorth" type="StaticBody3D" parent="Wrecks"]
 transform = Transform3D(0.9396926, 0, 0.3420201, 0, 1, 0, -0.3420201, 0, 0.9396926, -22, 0.65, -10)
+collision_layer = 64
 collision_mask = 0
 
 [node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckWestInnerNorth"]
@@ -71,6 +75,7 @@ shape = SubResource("BoxShape3D_wreck")
 
 [node name="WreckEastOuterSouth" type="StaticBody3D" parent="Wrecks"]
 transform = Transform3D(0.8660254, 0, -0.5, 0, 1, 0, 0.5, 0, 0.8660254, 80, 0.65, 5)
+collision_layer = 64
 collision_mask = 0
 
 [node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckEastOuterSouth"]
@@ -81,6 +86,7 @@ shape = SubResource("BoxShape3D_wreck")
 
 [node name="WreckEastMiddleNorth" type="StaticBody3D" parent="Wrecks"]
 transform = Transform3D(0.8660254, 0, 0.5, 0, 1, 0, -0.5, 0, 0.8660254, 53, 0.65, -8)
+collision_layer = 64
 collision_mask = 0
 
 [node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckEastMiddleNorth"]
@@ -91,6 +97,7 @@ shape = SubResource("BoxShape3D_wreck")
 
 [node name="WreckEastInnerSouth" type="StaticBody3D" parent="Wrecks"]
 transform = Transform3D(0.7071068, 0, 0.7071068, 0, 1, 0, -0.7071068, 0, 0.7071068, 26, 0.65, 7.6)
+collision_layer = 64
 collision_mask = 0
 
 [node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckEastInnerSouth"]
@@ -101,6 +108,7 @@ shape = SubResource("BoxShape3D_wreck")
 
 [node name="WreckEastInnerNorth" type="StaticBody3D" parent="Wrecks"]
 transform = Transform3D(0.9396926, 0, -0.3420201, 0, 1, 0, 0.3420201, 0, 0.9396926, 22, 0.65, -10)
+collision_layer = 64
 collision_mask = 0
 
 [node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckEastInnerNorth"]
@@ -113,6 +121,7 @@ shape = SubResource("BoxShape3D_wreck")
 
 [node name="ContainerWest" type="StaticBody3D" parent="Containers"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -58, 1, 0)
+collision_layer = 64
 collision_mask = 0
 
 [node name="Mesh" type="MeshInstance3D" parent="Containers/ContainerWest"]
@@ -123,6 +132,7 @@ shape = SubResource("BoxShape3D_container")
 
 [node name="ContainerEast" type="StaticBody3D" parent="Containers"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, 1, 0)
+collision_layer = 64
 collision_mask = 0
 
 [node name="Mesh" type="MeshInstance3D" parent="Containers/ContainerEast"]
@@ -135,6 +145,7 @@ shape = SubResource("BoxShape3D_container")
 
 [node name="ScrapWallWest" type="StaticBody3D" parent="ScrapWalls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 1, 12)
+collision_layer = 64
 collision_mask = 0
 
 [node name="Mesh" type="MeshInstance3D" parent="ScrapWalls/ScrapWallWest"]
@@ -145,6 +156,7 @@ shape = SubResource("BoxShape3D_scrap_wall")
 
 [node name="ScrapWallEast" type="StaticBody3D" parent="ScrapWalls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1, 12)
+collision_layer = 64
 collision_mask = 0
 
 [node name="Mesh" type="MeshInstance3D" parent="ScrapWalls/ScrapWallEast"]

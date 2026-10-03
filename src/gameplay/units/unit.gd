@@ -8,11 +8,11 @@ extends CharacterBody3D
 ## Unit is the one body for every type, the Gyrocopter included (decided 2026-10-01): it drives on
 ## the floor in GROUNDED mode like the ground types, with the movement model below, and its model
 ## draws it hovering. What sets it apart is data alone, the collision layer and mask in its
-## UnitStats: it crosses the cliffs_water layer that stops the ground types and passes through them
-## (and they through it), so nothing here names a type. The one branch on can_fly is Fuel (Story
-## 006, movement model step 5): a flying Unit whose tank runs dry crashes, while a ground Unit
-## stops and can still turn on the spot. The separate movement model and the subclass this doc once
-## left open to Story 005 were not needed.
+## UnitStats: it crosses the cliffs_water and the cover layers (the cover since Story 009) that stop
+## the ground types and passes through them (and they through it), so nothing here names a type.
+## The one branch on can_fly is Fuel (Story 006, movement model step 5): a flying Unit whose tank
+## runs dry crashes, while a ground Unit stops and can still turn on the spot. The separate
+## movement model and the subclass this doc once left open to Story 005 were not needed.
 ##
 ## Implements: design/game-brief.md build-order item 1 (Driving toy), MVP feature 3 (Bases,
 ## destruction and respawn) and MVP item 5 (the four Units);
@@ -35,8 +35,11 @@ extends CharacterBody3D
 ## fires, an empty Gyrocopter crashes through destroy(), a spawn gives a fixed partial tank, and
 ## destroy() works at zero Fuel), AC-6 (refuel()) and AC-7 (fuel_changed, what the HUD shows);
 ## production/epics/wasteland-fire/story-007-the-map.md AC-5 (a ford holds a ground Unit to a
-## fraction of its top speed through limit_speed(), movement model step 6); design/rules.md
-## "Units", "Destruction and respawn" and "Resources". Vocabulary: CONTEXT.md.
+## fraction of its top speed through limit_speed(), movement model step 6);
+## production/epics/wasteland-fire/story-009-playtest-quick-fixes.md AC-3 (every type turns on the
+## spot at its spot_turn_rate, step 2), AC-4 (a standing Unit burns fuel_use_idle, step 5) and AC-5
+## (is_stranded, what the Self-destruct hint reads); design/rules.md "Units", "Destruction and
+## respawn" and "Resources". Vocabulary: CONTEXT.md.
 ##
 ## Driven by command, not by input: the Unit never reads a key or an Input action and keeps no
 ## singleton state. Whoever drives it (PlayerDriveInput for a Player, later a bot or a test)
@@ -48,9 +51,12 @@ extends CharacterBody3D
 ##      throttle opposes the direction of travel, and toward zero at coast_deceleration when no
 ##      throttle is held.
 ##   2. Steering turns the Unit about the up axis at steer * turn_rate * speed fraction, where
-##      the speed fraction is |speed| / max_speed (0 to 1). The turn reverses while rolling
-##      backward and vanishes at a standstill, so the Unit cannot pivot on the spot (a ground
-##      Unit with an empty tank is the exception, step 5).
+##      the speed fraction is |speed| / max_speed (0 to 1), and the turn reverses while rolling
+##      backward. Below stats.spot_turn_rate that rate gives way to steer * spot_turn_rate,
+##      reversed the same way (Story 009 AC-3): a standing Unit turns on the spot at it, and one
+##      driving off never turns slower, so the turn does not die away as it starts to roll. At
+##      speed the Unit steers as before; with a spot_turn_rate of zero it cannot pivot, the rule
+##      before Story 009. A ground Unit with an empty tank turns at empty_turn_rate (step 5).
 ##   3. Horizontal velocity is the facing direction times speed. Gravity is added only while
 ##      airborne, then move_and_slide() moves and slides the body.
 ##   4. The speed is a command, not a measurement: a Unit held against a wall keeps it, which is
@@ -67,12 +73,13 @@ extends CharacterBody3D
 ##   5. Fuel (Story 006), first in the tick. A Unit has a tank once spawn() has run, while its
 ##      type's fuel_capacity is above zero (the driving toy's Unit never spawns and burns
 ##      nothing). The tank burns stats.fuel_use * delta on each tick that starts with a drive
-##      speed that is not approximately zero: a Unit coasting to a stop burns until then, one held
-##      against a wall with the throttle on keeps burning, one standing or hovering still burns
-##      nothing. An empty ground Unit gets zero throttle in step 1 (it coasts to a standstill;
-##      forward and reverse are ignored) and turns at steer * empty_turn_rate in step 2 at any
-##      speed; it still fires and can self-destruct. An empty flying Unit calls destroy() (the
-##      Fuel crash) and the rest of its tick does not run.
+##      speed that is not approximately zero (a Unit coasting to a stop burns it until then, one
+##      held against a wall with the throttle on keeps burning it) and stats.fuel_use_idle * delta
+##      on each tick that starts with the Unit standing or hovering still (Story 009 AC-4; before
+##      it, a standing Unit burned nothing). An empty ground Unit gets zero throttle in step 1 (it
+##      coasts to a standstill; forward and reverse are ignored) and turns at steer *
+##      empty_turn_rate in step 2 at any speed; it still fires and can self-destruct. An empty
+##      flying Unit calls destroy() (the Fuel crash) and the rest of its tick does not run.
 ##   6. The speed cap (Story 007 AC-5), after steps 4 and 1: limit_speed(fraction) holds the
 ##      speed they give to stats.max_speed * fraction forward and stats.reverse_max_speed *
 ##      fraction in reverse, on the tick of the call and the next one. A cap not called again
@@ -311,6 +318,16 @@ var is_fuel_empty: bool:
 		return _is_alive and _has_tank() and _fuel <= 0.0
 	set(_value):
 		push_error("Unit '%s': is_fuel_empty is read-only. Add Fuel with refuel()." % name)
+
+## True while this Unit is stranded (Story 006 AC-3): alive, its tank empty and its type a ground
+## type, so it cannot drive but still turns, fires and can Self-destruct; never true for a flying
+## type, whose empty tank crashes it instead. The Self-destruct hint shows while it holds (Story 009
+## AC-5). Read-only: assigning to it pushes an error and changes nothing.
+var is_stranded: bool:
+	get:
+		return _is_stranded()
+	set(_value):
+		push_error("Unit '%s': is_stranded is read-only. Add Fuel with refuel()." % name)
 
 var _speed: float = 0.0
 var _throttle: float = 0.0
@@ -623,26 +640,35 @@ func _is_speed_capped() -> bool:
 	return _speed_cap_frame >= 0 and Engine.get_physics_frames() - _speed_cap_frame <= 1
 
 
-## Yaw rate in radians per second, positive turning left: steer scaled by the speed fraction and
-## flipped while rolling backward, zero at a standstill; while the tank of a ground Unit is empty
-## (step 5), steer * stats.empty_turn_rate at any speed, so it turns on the spot.
+## Yaw rate in radians per second, positive turning left (movement model step 2): steer scaled by
+## the speed fraction and flipped while rolling backward, or, where that falls below
+## stats.spot_turn_rate, steer * spot_turn_rate flipped the same way, so a standing Unit turns on
+## the spot (Story 009 AC-3); while the tank of a ground Unit is empty (step 5), steer *
+## stats.empty_turn_rate at any speed. With spot_turn_rate zero the first expression is returned at
+## every speed, computed exactly as before Story 009.
 func _yaw_rate() -> float:
 	if _is_stranded():
 		return _steer * stats.empty_turn_rate
 	var speed_fraction: float = minf(absf(_speed) / stats.max_speed, 1.0)
-	return _steer * stats.turn_rate * speed_fraction * signf(_speed)
+	if stats.turn_rate * speed_fraction >= stats.spot_turn_rate:
+		return _steer * stats.turn_rate * speed_fraction * signf(_speed)
+	var direction: float = -1.0 if _speed < 0.0 else 1.0
+	return _steer * stats.spot_turn_rate * direction
 
 
-## Step 5 of the movement model (Story 006 AC-2, AC-4), first in the tick: a Unit with a tank, Fuel
-## and a fuel_use above zero whose drive speed is not approximately zero (moving) burns
-## stats.fuel_use * delta, clamped at zero (an approximately zero remainder is exactly zero, so the
-## tank is empty on its nominal tick), and emits fuel_changed once. An empty flying Unit then calls
-## destroy(), on every tick, so one spawned with an empty tank crashes at once.
+## Step 5 of the movement model (Story 006 AC-2, AC-4; Story 009 AC-4), first in the tick: a Unit
+## with a tank and Fuel burns at the rate its drive speed picks, stats.fuel_use while the speed is
+## not approximately zero (moving) and stats.fuel_use_idle while it is (standing or hovering still),
+## times delta, clamped at zero (an approximately zero remainder is exactly zero, so the tank is
+## empty on its nominal tick), and emits fuel_changed once; a rate of zero burns nothing and emits
+## nothing. An empty flying Unit then calls destroy(), on every tick, so one spawned with an empty
+## tank crashes at once.
 func _burn_fuel(delta: float) -> void:
 	if not _has_tank():
 		return
-	if _fuel > 0.0 and stats.fuel_use > 0.0 and not is_zero_approx(_speed):
-		_fuel = maxf(_fuel - stats.fuel_use * delta, 0.0)
+	var rate: float = stats.fuel_use_idle if is_zero_approx(_speed) else stats.fuel_use
+	if _fuel > 0.0 and rate > 0.0:
+		_fuel = maxf(_fuel - rate * delta, 0.0)
 		if is_zero_approx(_fuel):
 			_fuel = 0.0
 		fuel_changed.emit(_fuel, stats.fuel_capacity)

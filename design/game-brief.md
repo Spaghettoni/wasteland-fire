@@ -40,7 +40,7 @@ Written 2026-09-30 by /brainstorm (Lean Brief flow, autonomous run); rewritten
 - No online play, no AI bots or drones, no turrets or mines: the other Player is the only threat.
 - No second Map, no map editor, no destructible buildings.
 - No downloaded asset kits or meshes: Godot's built-in meshes and code-generated textures instead.
-- No Unit swap at the own Base: a Unit type changes only through a destruction.
+- No Unit swap at the own Base in the First Playable: a Unit type changes only through a destruction. After the first playtest the swap is back (decided 2026-10-03): a story after the playtest fixes (`design/rules.md`, Destruction and respawn).
 - No camera or control-mode test in v0.1: the turning chase camera and the vehicle-relative keys of items 1 and 2 stay; the test, and the arrow or north-up minimap it may call for, come after v0.1.
 - No water boost and no key repair: the source's backlog, not v0.1.
 - Keyboard only: no gamepad support, no key-rebinding UI.
@@ -56,6 +56,8 @@ Written 2026-09-30 by /brainstorm (Lean Brief flow, autonomous run); rewritten
 6. Fuel and Fuel Cans.
 7. Map 01: the greybox stays until the loop is proven; the built-mesh dressing and the Team colours come here.
 8. Tokens, the Garage and the loss: last, because it changes how a Round ends and renames the Water Canister code to the Flag.
+
+After the first playtest with friends (2026-10-03) the author listed seven changes; `production/epics/wasteland-fire/story-009-playtest-quick-fixes.md` quotes them. Quick fixes first (decided 2026-10-03): solid depot tanks, the Gyrocopter over the cover, turning on the spot, slower Fuel burn while standing and the out-of-Fuel Self-destruct hint (story 009); then the camera from almost straight above and the Unit swap at the own Base, each its own story, once the author has played 009.
 
 ---
 **Who it's for / what they feel:** Two friends on one couch who want a ten-minute rivalry: the panic of being chased with the Flag and the grin of stealing it back.

@@ -1,0 +1,6 @@
+{
+ "tokens_data": [
+  ["lint: 12 files, 1143 code lines, ", "lint: 13 files, 1194 code lines, "],
+  ["lint_files=12 lint_literals=5", "lint_files=13 lint_literals=5"]
+ ]
+}

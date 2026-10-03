@@ -1,0 +1,23 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK depot_tanks tank_data PASS FuelTankNorthWest: layer 1 r=2.56 h=3.00 at (-6.81, 1.50, -6.62) | FuelTankNorthEast: layer 1 r=2.56 h=3.00 at (6.81, 1.50, -6.62) | FuelTankSouth: layer 1 r=2.56 h=3.00 at (0.00, 1.50, 8.00) | motorbike mask 99 | buggy mask 99 | truck mask 99 | gyrocopter mask 1 | shot mask 83
+SPLIT depot_tanks t=2.767 run=p1_motorbike_at_FuelTankNorthWest hit=21.67 stop_ticks=1 from_axis=3.860 expected=3.860 end=0.00 shot_off=-0.0000
+SPLIT depot_tanks t=2.767 run=p2_motorbike_at_FuelTankNorthEast hit=21.67 stop_ticks=1 from_axis=3.860 expected=3.860 end=0.00 shot_off=-0.0000
+SPLIT depot_tanks t=5.367 run=p1_motorbike_at_FuelTankSouth hit=19.67 stop_ticks=1 from_axis=3.861 expected=3.860 end=0.00 shot_off=0.0000
+SPLIT depot_tanks t=7.967 run=p1_buggy_at_FuelTankNorthWest hit=19.60 stop_ticks=1 from_axis=4.061 expected=4.060 end=0.00 shot_off=-0.0000
+SPLIT depot_tanks t=7.967 run=p2_buggy_at_FuelTankNorthEast hit=19.60 stop_ticks=1 from_axis=4.061 expected=4.060 end=0.00 shot_off=-0.0000
+SPLIT depot_tanks t=10.567 run=p1_buggy_at_FuelTankSouth hit=18.13 stop_ticks=1 from_axis=4.060 expected=4.060 end=0.00 shot_off=0.0000
+SPLIT depot_tanks t=13.167 run=p1_truck_at_FuelTankNorthWest hit=10.90 stop_ticks=1 from_axis=4.787 expected=4.760 end=0.00 shot_off=0.0000
+SPLIT depot_tanks t=13.167 run=p2_truck_at_FuelTankNorthEast hit=10.90 stop_ticks=1 from_axis=4.787 expected=4.760 end=0.00 shot_off=0.0000
+SPLIT depot_tanks t=15.767 run=p1_truck_at_FuelTankSouth hit=10.90 stop_ticks=1 from_axis=4.760 expected=4.760 end=0.00 shot_off=0.0000
+SPLIT depot_tanks t=18.367 run=p1_gyrocopter_at_FuelTankNorthWest hit=16.40 stop_ticks=1 from_axis=3.760 expected=3.760 end=0.00 shot_off=-0.0000
+SPLIT depot_tanks t=18.367 run=p2_gyrocopter_at_FuelTankNorthEast hit=16.40 stop_ticks=1 from_axis=3.760 expected=3.760 end=0.00 shot_off=-0.0000
+SPLIT depot_tanks t=20.967 run=p1_gyrocopter_at_FuelTankSouth hit=16.40 stop_ticks=1 from_axis=3.761 expected=3.760 end=0.00 shot_off=0.0000
+CHECK depot_tanks tanks_stop PASS p1 motorbike at FuelTankNorthWest hit 21.67 m/s, stopped in 1, 3.860 m from the axis (3.860), Shot -0.0000 m off the side ; p2 motorbike at FuelTankNorthEast hit 21.67 m/s, stopped in 1, 3.860 m from the axis (3.860), Shot -0.0000 m off the side | p1 motorbike at FuelTankSouth hit 19.67 m/s, stopped in 1, 3.861 m from the axis (3.860), Shot 0.0000 m off the side | p1 buggy at FuelTankNorthWest hit 19.60 m/s, stopped in 1, 4.061 m from the axis (4.060), Shot -0.0000 m off the side ; p2 buggy at FuelTankNorthEast hit 19.60 m/s, stopped in 1, 4.061 m from the axis (4.060), Shot -0.0000 m off the side | p1 buggy at FuelTankSouth hit 18.13 m/s, stopped in 1, 4.060 m from the axis (4.060), Shot 0.0000 m off the side | p1 truck at FuelTankNorthWest hit 10.90 m/s, stopped in 1, 4.787 m from the axis (4.760), Shot 0.0000 m off the side ; p2 truck at FuelTankNorthEast hit 10.90 m/s, stopped in 1, 4.787 m from the axis (4.760), Shot 0.0000 m off the side | p1 truck at FuelTankSouth hit 10.90 m/s, stopped in 1, 4.760 m from the axis (4.760), Shot 0.0000 m off the side | p1 gyrocopter at FuelTankNorthWest hit 16.40 m/s, stopped in 1, 3.760 m from the axis (3.760), Shot -0.0000 m off the side ; p2 gyrocopter at FuelTankNorthEast hit 16.40 m/s, stopped in 1, 3.760 m from the axis (3.760), Shot -0.0000 m off the side | p1 gyrocopter at FuelTankSouth hit 16.40 m/s, stopped in 1, 3.761 m from the axis (3.760), Shot 0.0000 m off the side
+SPLIT depot_tanks t=22.233 depot=FuelCanDepot1 from=(0.0,-12.0) taken_after=1.15 clearance=1.00
+SPLIT depot_tanks t=23.500 depot=FuelCanDepot2 from=(0.0,-12.0) taken_after=1.15 clearance=1.00
+SPLIT depot_tanks t=25.000 depot=FuelCanDepot3 from=(0.0,-12.0) taken_after=1.38 clearance=3.05
+SPLIT depot_tanks t=26.500 depot=FuelCanDepot4 from=(-15.0,3.0) taken_after=1.38 clearance=2.07
+SPLIT depot_tanks t=28.000 depot=FuelCanDepot5 from=(15.0,3.0) taken_after=1.38 clearance=2.07
+CHECK depot_tanks depot_cans PASS FuelCanDepot1 from (0, -12) 1.15 s, 1.00 m clear of the tanks | FuelCanDepot2 from (0, -12) 1.15 s, 1.00 m clear of the tanks | FuelCanDepot3 from (0, -12) 1.38 s, 3.05 m clear of the tanks | FuelCanDepot4 from (-15, 3) 1.38 s, 2.07 m clear of the tanks | FuelCanDepot5 from (15, 3) 1.38 s, 2.07 m clear of the tanks
+RESULT depot_tanks ok checks=3 failed=0 t=28.000 runs=12 shots=12 depot_takes=5 errors=0 warnings=0
