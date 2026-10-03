@@ -59,7 +59,7 @@ const COLLISION_CENTERS: Array[Vector3] = [Vector3(0.0, 0.5, 0.0), Vector3(0.0, 
 const CAN_FLY: Array[bool] = [false, false, false, true]
 ## Which types carry, in the data's order: the Motorbike only.
 const CAN_CARRY: Array[bool] = [true, false, false, false]
-## The Motorbike's tail mount for a carried canister (UnitStats.carry_offset).
+## The Motorbike's tail mount for a carried Flag (UnitStats.carry_offset).
 const CARRY_OFFSET: Vector3 = Vector3(0.0, 0.5, 1.7)
 ## The rules' shooting height, metres (MatchRules.shooting_height).
 const SHOOTING_HEIGHT: float = 0.5

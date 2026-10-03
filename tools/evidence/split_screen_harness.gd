@@ -8,10 +8,11 @@ extends Node
 ## split_screen.tscn and reading the exported members of SplitScreen.
 ##
 ## Scenarios, chosen with --scenario=NAME (after the "--"): layout, isolation, simultaneous, showcase, fps,
-## bases, destruction, countdown, respawn_showcase, canister_run, hud, round_over, canister_showcase
+## bases, destruction, countdown, respawn_showcase, flag_run, hud, round_over, flag_showcase
 ## and, since Story 005, units, weapons, gyro, choice and units_showcase; since Story 006, fuel,
 ## fuel_cans and fuel_showcase; since Story 007, on Map 01, map_layout, map_edges, map_ford,
-## map_bases, map_cover, map_showcase, map_legibility and map_fps.
+## map_bases, map_cover, map_showcase, map_legibility and map_fps; since Story 008, tokens,
+## tokens_data, token_choice, loss, token_ui, token_layout and tokens_showcase.
 ## Each is a script under tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
@@ -48,7 +49,7 @@ extends Node
 ## confirm_choices() is released on the tick the controller accepts the choice, so it is up again
 ## before the Unit appears a tick or more later (the bench settle), and no stray shot is fired at a
 ## spawn. A scenario of Story 005 or later chooses with its own keys after a destruction; round_over
-## and canister_showcase, which restart the Round, call confirm_choices() after the restart key. The
+## and flag_showcase, which restart the Round, call confirm_choices() after the restart key. The
 ## legacy scenarios also run on the data they were measured with (_apply_legacy_data(), on the
 ## shared resources before the scene is instanced): the Motorbike's placeholder 100 hit points, the
 ## debug damage of 25 and the Motorbike's old collision mask, which the shipped data changed in
@@ -70,6 +71,20 @@ extends Node
 ## scenario of Story 007 or later is not listed and runs on Map 01. A scenario script may declare
 ## const WATCHDOG_SECONDS: float, in simulated seconds, for a watchdog of its own when a run across
 ## Map 01 needs longer.
+##
+## The Token stock (Story 008). A Round now ends by a loss when a Player's last Motorbike Token is
+## spent, and Map 01's stock holds five. The scenarios written before it destroy Units over and over
+## and choose the Motorbike again every time (destruction.gd destroys Player 1's Unit 18 times in
+## one run: its RESULT line prints unit_destroyed=18/4), so the Map's stock would end those Rounds
+## by a loss and change their outputs. As with the legacy Motorbike data, the runner therefore gives
+## the launch scene a Token stock of its own before the scene enters the tree (_apply_token_stock(),
+## on the field's token_stock only, never on the shared .tres): a scenario script that declares
+## const STOCK_COUNTS: Dictionary (type_id to count) gets a TokenStock built from it; one that
+## declares const USE_MAP_STOCK: bool = true keeps the Map's own stock; every other scenario gets
+## LEGACY_TOKEN_COUNT of every type of match_rules.tres. A stock is built in code with
+## TokenStock.new() and one assignment per key, because an untyped Dictionary assigned to counts is
+## a script error and Resource.duplicate() of the shipped stock would share its counts dictionary
+## (TokenStock's class doc).
 ##
 ## Output: SPLIT <scenario> t=<seconds> key=value ... (progress), CHECK <scenario> <check name> PASS|FAIL
 ## <detail> and exactly one last RESULT <scenario> ok|fail checks=<n> failed=<n> key=value ...; then quit with
@@ -94,10 +109,10 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"destruction": preload("res://tools/evidence/split_screen/destruction.gd"),
 	&"countdown": preload("res://tools/evidence/split_screen/countdown.gd"),
 	&"respawn_showcase": preload("res://tools/evidence/split_screen/respawn_showcase.gd"),
-	&"canister_run": preload("res://tools/evidence/split_screen/canister_run.gd"),
+	&"flag_run": preload("res://tools/evidence/split_screen/flag_run.gd"),
 	&"hud": preload("res://tools/evidence/split_screen/hud.gd"),
 	&"round_over": preload("res://tools/evidence/split_screen/round_over.gd"),
-	&"canister_showcase": preload("res://tools/evidence/split_screen/canister_showcase.gd"),
+	&"flag_showcase": preload("res://tools/evidence/split_screen/flag_showcase.gd"),
 	&"units": preload("res://tools/evidence/split_screen/units.gd"),
 	&"weapons": preload("res://tools/evidence/split_screen/weapons.gd"),
 	&"gyro": preload("res://tools/evidence/split_screen/gyro.gd"),
@@ -114,6 +129,13 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"map_showcase": preload("res://tools/evidence/split_screen/map_showcase.gd"),
 	&"map_legibility": preload("res://tools/evidence/split_screen/map_legibility.gd"),
 	&"map_fps": preload("res://tools/evidence/split_screen/map_fps.gd"),
+	&"tokens": preload("res://tools/evidence/split_screen/tokens.gd"),
+	&"tokens_data": preload("res://tools/evidence/split_screen/tokens_data.gd"),
+	&"token_choice": preload("res://tools/evidence/split_screen/token_choice.gd"),
+	&"loss": preload("res://tools/evidence/split_screen/loss.gd"),
+	&"token_ui": preload("res://tools/evidence/split_screen/token_ui.gd"),
+	&"token_layout": preload("res://tools/evidence/split_screen/token_layout.gd"),
+	&"tokens_showcase": preload("res://tools/evidence/split_screen/tokens_showcase.gd"),
 }
 
 ## The shared step class (drive_step.gd): keys held for a time.
@@ -153,8 +175,8 @@ const PLAYER_2_FIRE_KEY: Key = KEY_PERIOD
 ## a destroyed Player's choice again at once (_on_legacy_destroyed()). A scenario of Story 005 or
 ## later is not listed and chooses with its own keys after a destruction.
 const LEGACY_SCENARIOS: Array[StringName] = [&"layout", &"isolation", &"simultaneous", &"showcase",
-	&"fps", &"bases", &"destruction", &"countdown", &"respawn_showcase", &"canister_run", &"hud",
-	&"round_over", &"canister_showcase"]
+	&"fps", &"bases", &"destruction", &"countdown", &"respawn_showcase", &"flag_run", &"hud",
+	&"round_over", &"flag_showcase"]
 ## The type the runner chooses for a legacy scenario's destroyed Player: the first of the data, the
 ## Motorbike, what every Unit was before Story 005.
 const LEGACY_TYPE_INDEX: int = 0
@@ -202,7 +224,7 @@ const CHOICE_LIMIT_TICKS: int = 120
 ## and keeps it. A scenario that is not listed runs on the main composition, Map 01.
 const GREYBOX_SCENARIOS: Array[StringName] = [&"layout", &"isolation", &"simultaneous",
 	&"showcase", &"fps", &"bases", &"destruction", &"countdown", &"respawn_showcase",
-	&"canister_run", &"hud", &"round_over", &"canister_showcase", &"units", &"weapons", &"gyro",
+	&"flag_run", &"hud", &"round_over", &"flag_showcase", &"units", &"weapons", &"gyro",
 	&"choice", &"units_showcase", &"fuel", &"fuel_cans", &"fuel_showcase"]
 ## The greybox field the older scenarios were measured on: Story 001's flat 80 m field with the two
 ## Bases of Story 003. It extends MapField, so the launch scene takes it as its field.
@@ -211,9 +233,16 @@ const GREYBOX_FIELD_SCENE: PackedScene = preload("res://src/gameplay/maps/greybo
 const TERRAIN_STAND_INS_SCENE: PackedScene = preload("res://src/gameplay/maps/terrain_stand_ins.tscn")
 ## The five greybox Fuel Cans of Story 006.
 const GREYBOX_FUEL_CANS_SCENE: PackedScene = preload("res://src/gameplay/maps/greybox_fuel_cans.tscn")
-## The Token stock every Map holds (Story 007 AC-9): the greybox field gets it too, so the stock
-## reads the same (the source's example) whichever composition runs.
-const TOKEN_STOCK_PATH: String = "res://src/gameplay/maps/data/token_stock.tres"
+## Tokens of every Unit type in the stock the runner gives a scenario that asks for none of its own
+## (_apply_token_stock(); the class doc says why): enough that no older scenario runs out. A
+## fixture of the tools, so it lives here and not in src/.
+const LEGACY_TOKEN_COUNT: int = 99
+## The constant a scenario script declares (const STOCK_COUNTS: Dictionary = {&"motorbike": 2, ...},
+## type_id to count) for a Token stock of its own.
+const STOCK_COUNTS_CONSTANT: StringName = &"STOCK_COUNTS"
+## The constant a scenario script declares (const USE_MAP_STOCK: bool = true) to keep the Map's own
+## Token stock.
+const USE_MAP_STOCK_CONSTANT: StringName = &"USE_MAP_STOCK"
 ## Player 1's colour as the older scenarios were measured with it (Story 002's body material): the
 ## launch scene gives Player 1's Unit the Team Orange of Story 007, and the runner puts this back as
 ## its team_material for the greybox composition.
@@ -311,6 +340,7 @@ func _ready() -> void:
 	split = SPLIT_SCENE.instantiate() as SplitScreen
 	if GREYBOX_SCENARIOS.has(scenario):
 		_apply_greybox_composition(split)
+	_apply_token_stock(split, SCENARIOS[scenario])
 	if split.match_controller != null:
 		split.match_controller.unit_spawned.connect(_on_round_start_spawn)
 		split.match_controller.unit_chosen.connect(_on_choice_confirmed)
@@ -378,16 +408,17 @@ func _apply_no_fuel_data() -> void:
 
 
 ## Rebuilds the greybox composition inside a freshly instanced launch scene, for GREYBOX_SCENARIOS,
-## before it enters the tree (SplitScreen._ready() begins the Round when it does): frees World's
-## Map at once (remove_child() and free(), so none of its nodes stays in a node group for a frame),
+## before it enters the tree (SplitScreen._ready() begins the Round when it does): frees World's Map
+## at once (remove_child() and free(), so none of its nodes stays in a node group for a frame),
 ## instances the greybox field, the terrain stand-ins and the greybox Fuel Cans under their old
-## names at World child indices 0, 1 and 2 (the tree order the outputs were measured with), gives
-## the field the Token stock, makes the new nodes owned by the launch scene and points split.field
-## at the greybox field: the export was resolved to the Map when the scene was instanced, so it
-## would dangle once the Map is freed. It also gives both Units back the Player body materials the
-## older outputs were measured with as their team_material (PLAYER_1_BODY_MATERIAL,
-## PLAYER_2_BODY_MATERIAL), in place of the Team materials of Story 007 the launch scene sets
-## (Story 007 AC-11: those two files stay as they are for the greybox composition).
+## names at World child indices 0, 1 and 2 (the tree order the outputs were measured with), makes
+## the new nodes owned by the launch scene and points split.field at the greybox field: the export
+## was resolved to the Map when the scene was instanced, so it would dangle once the Map is freed.
+## The field has no Token stock of its own; _apply_token_stock() gives it one, as for every
+## scenario. It also gives both Units back the Player body materials the older outputs were measured
+## with as their team_material (PLAYER_1_BODY_MATERIAL, PLAYER_2_BODY_MATERIAL), in place of the
+## Team materials of Story 007 the launch scene sets (Story 007 AC-11: those two files stay as they
+## are for the greybox composition).
 func _apply_greybox_composition(root: SplitScreen) -> void:
 	var world: Node3D = root.get_node("World") as Node3D
 	var map: Node = world.get_node("Map")
@@ -396,7 +427,6 @@ func _apply_greybox_composition(root: SplitScreen) -> void:
 	var field: GreyboxField = GREYBOX_FIELD_SCENE.instantiate() as GreyboxField
 	field.name = &"GreyboxField"
 	field.unique_name_in_owner = true
-	field.token_stock = load(TOKEN_STOCK_PATH) as TokenStock
 	var terrain: Node = TERRAIN_STAND_INS_SCENE.instantiate()
 	terrain.name = &"TerrainStandIns"
 	var fuel_cans: Node = GREYBOX_FUEL_CANS_SCENE.instantiate()
@@ -426,6 +456,58 @@ func _apply_greybox_models() -> void:
 			stats.model = GREYBOX_MODELS[stats.type_id]
 
 
+## Gives the launch scene the Token stock the scenario asks for, on the field's token_stock and
+## before the scene enters the tree (SplitScreen._ready() hands that stock to
+## MatchController.begin() when it does): a TokenStock built from the script's STOCK_COUNTS, or the
+## Map's own stock when it declares USE_MAP_STOCK = true, or else LEGACY_TOKEN_COUNT of every type
+## (the class doc says why). A script that declares both is an error and keeps the Map's stock, and
+## so is a STOCK_COUNTS that is not a Dictionary. Only the field's property is assigned: the shared
+## .tres is never touched.
+func _apply_token_stock(root: SplitScreen, script: GDScript) -> void:
+	var constants: Dictionary = script.get_script_constant_map()
+	var has_counts: bool = constants.has(STOCK_COUNTS_CONSTANT)
+	var keeps_map_stock: bool = bool(constants.get(USE_MAP_STOCK_CONSTANT, false))
+	if has_counts and keeps_map_stock:
+		push_error("split_screen_harness: %s declares both STOCK_COUNTS and USE_MAP_STOCK, so the Map's own Token stock is kept." % scenario)
+	if keeps_map_stock or root.field == null:
+		return
+	if not has_counts:
+		root.field.token_stock = _legacy_stock()
+	elif typeof(constants[STOCK_COUNTS_CONSTANT]) == TYPE_DICTIONARY:
+		root.field.token_stock = _stock_from_counts(constants[STOCK_COUNTS_CONSTANT])
+	else:
+		push_error("split_screen_harness: %s declares STOCK_COUNTS as something other than a Dictionary, so the Map's own Token stock is kept." % scenario)
+
+
+## A new TokenStock holding the given counts (type_id to count), one assignment per key: counts is
+## typed, so an untyped Dictionary cannot be assigned to it as a whole. A pair whose key is not a
+## text or whose count is not a number is an error and is left out.
+func _stock_from_counts(declared: Dictionary) -> TokenStock:
+	var stock: TokenStock = TokenStock.new()
+	for type_id: Variant in declared:
+		var key_is_text: bool = typeof(type_id) == TYPE_STRING or typeof(type_id) == TYPE_STRING_NAME
+		var count_is_number: bool = typeof(declared[type_id]) == TYPE_INT or typeof(declared[type_id]) == TYPE_FLOAT
+		if not key_is_text or not count_is_number:
+			push_error("split_screen_harness: %s's STOCK_COUNTS pair %s: %s is not a type_id and a number, so it is left out." % [scenario, type_id, declared[type_id]])
+			continue
+		stock.counts[StringName(str(type_id))] = int(declared[type_id])
+	return stock
+
+
+## A new TokenStock holding LEGACY_TOKEN_COUNT of every type of match_rules.tres. Rules that fail to
+## load are an error and leave the stock empty, which MatchController.begin() then refuses.
+func _legacy_stock() -> TokenStock:
+	var stock: TokenStock = TokenStock.new()
+	var rules: MatchRules = load(MATCH_RULES_PATH) as MatchRules
+	if rules == null:
+		push_error("split_screen_harness: %s did not load as MatchRules, so the legacy Token stock holds no type." % MATCH_RULES_PATH)
+		return stock
+	for stats: UnitStats in rules.unit_types:
+		if stats != null:
+			stock.counts[stats.type_id] = LEGACY_TOKEN_COUNT
+	return stock
+
+
 ## Logs a unit_spawned that arrives before the scenario starts: the start of the Round
 ## (round_start_spawns).
 func _on_round_start_spawn(player_index: int) -> void:
@@ -445,7 +527,7 @@ func fire_key(player: int) -> Key:
 ## still held at the end is released then. A Player who is not choosing (in play, or with a standing
 ## choice) gets no key, so a weapon is never fired by this. The runner's one place for the first
 ## choice: before run(), unless the scenario declares OWN_CHOICE, and after a restart, where
-## round_over and canister_showcase call it. A CHECK fails when the Units did not appear. A
+## round_over and flag_showcase call it. A CHECK fails when the Units did not appear. A
 ## coroutine: await it.
 func confirm_choices() -> void:
 	var controller: MatchController = split.match_controller

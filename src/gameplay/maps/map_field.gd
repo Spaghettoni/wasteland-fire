@@ -12,13 +12,14 @@ extends Node3D
 ## Bases, and SplitScreen.field, typed GreyboxField until Story 007, is retyped to a class every
 ## Map shares). Vocabulary: CONTEXT.md (Map, Base, Garage, Token, Player, Flag).
 ##
-## The contract. A Map exposes its two Bases as player_1_base and player_2_base and its Token
-## stock as token_stock, and each Base brings the rest itself (Base: the Flag and its seat, the
-## zone, the pad and the beacon, and the SpawnPoint markers of its Garage). SplitScreen types its
-## field as a MapField and reads only the two Bases, which it hands to the MatchController, so any
-## Map scene whose root carries this script, or a script that extends it, plays with no change in
-## code. GreyboxField, the flat field of Stories 001 to 006, extends it: the driving toy and the
-## evidence scenarios written before Story 007 keep that field, and Map 01 is a scene of its own.
+## The contract. A Map exposes its two Bases as player_1_base and player_2_base and its Token stock
+## as token_stock, and each Base brings the rest itself (Base: the Flag and its seat, the zone, the
+## pad and the beacon, and the SpawnPoint markers of its Garage). SplitScreen types its field as a
+## MapField and reads only the two Bases and the Token stock, which it hands to the MatchController,
+## so any Map scene whose root carries this script, or a script that extends it, plays with no
+## change in code. GreyboxField, the flat field of Stories 001 to 006, extends it: the driving toy
+## and the evidence scenarios written before Story 007 keep that field, and Map 01 is a scene of its
+## own.
 ##
 ## The look (Story 007) asks two more things of a Map. Its player_1_base wears
 ## src/gameplay/split_screen/data/team_orange_material.tres as color_material and its
@@ -31,7 +32,8 @@ extends Node3D
 ##
 ## Data, no behaviour: the Map's scene sets the three exports and nothing here checks them.
 ## SplitScreen refuses to begin a Round while either Base is missing, and the MatchController
-## refuses it while a Base's SpawnPoint markers lie off its pad (Base.first_spawn_problem()).
+## refuses it while a Base's SpawnPoint markers lie off its pad (Base.first_spawn_problem()) and
+## while the Token stock is missing or cannot be used (TokenLedger.first_problem(); Story 008).
 
 ## The Base of Player 1 (Base A in design/rules.md): where that Player's Units appear, in its
 ## Garage, at the start of the Round and after every destruction, and where that Player's Flag
@@ -46,6 +48,8 @@ extends Node3D
 
 ## The Token stock this Map sets: how many Tokens of each Unit type each Player starts the Round
 ## with (design/rules.md "Tokens and the Garage": the counts are set by the Map, and each Map may
-## differ). Story 008 reads it; Story 007 only holds it, so nothing in the game reads it yet and a
-## Map without one still plays. data/token_stock.tres holds the source's example.
+## differ). SplitScreen hands it to the MatchController (Story 008), whose begin() copies it for
+## each Player and refuses to begin the Round on a Map without a usable one: none, a negative
+## count, a key no Unit type has, or no Token for the type that can carry the Flag.
+## data/token_stock.tres holds the source's example.
 @export var token_stock: TokenStock

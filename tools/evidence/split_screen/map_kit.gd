@@ -239,7 +239,7 @@ func drive_to_flags(cruise: float, stop: float, limit: int) -> int:
 	for count: int in range(1, limit + 1):
 		var done: bool = true
 		for player: int in Kit.PLAYERS:
-			var carrying: bool = controller.canister_status(player) == MatchController.CanisterStatus.CARRYING_ENEMY
+			var carrying: bool = controller.flag_status(player) == MatchController.FlagStatus.CARRYING_ENEMY
 			var speed: float = units[player].current_speed
 			harness.drive(player, (-1 if speed > stop else 0) if carrying else (1 if speed < cruise else 0), 0)
 			done = done and carrying and speed <= stop
@@ -284,7 +284,7 @@ func _mirror_items() -> Dictionary[String, PackedVector3Array]:
 		elif node is FuelCan:
 			items["FuelCan|%s" % map.get_path_to(node)] = PackedVector3Array([(node as Node3D).global_position])
 	for base: Base in [map.player_1_base, map.player_2_base]:
-		var markers: Array[Marker3D] = [base.spawn_point, base.canister_seat]
+		var markers: Array[Marker3D] = [base.spawn_point, base.flag_seat]
 		markers.append_array(base.spare_spawn_points)
 		for marker: Marker3D in markers:
 			var ahead: Vector3 = marker.global_position - marker.global_transform.basis.z

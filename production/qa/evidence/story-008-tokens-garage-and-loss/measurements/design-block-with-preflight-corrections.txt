@@ -1,0 +1,275 @@
+DESIGN for Story 008 (Tokens, the Garage and the loss), written by the orchestrator on 2026-10-03 on top of HEAD 8e09d55
+(story 007 closed). The contract is production/epics/wasteland-fire/story-008-tokens-garage-and-loss.md (AC-1..AC-9) and
+design/rules.md ("Objective", "Tokens and the Garage", "Resources", "Destruction and respawn"); vocabulary is CONTEXT.md.
+Anything this block does not name is out of scope. Project rules that bind everyone: no commits; assets/ is the user's (never edit);
+the frozen files (src/gameplay/camera/*, player_drive_input.gd, motorbike.tscn, driving_toy.gd/.tscn, tools/evidence/drive_harness.gd/.tscn,
+greybox_field.tscn, terrain_stand_ins.tscn, greybox_fuel_cans.tscn, base.tscn's behaviour) must stay byte-identical (base.tscn is only
+renamed textually by S0); never run `godot --import` inside the repo (use tools/dev08.py import); gameplay values are data, not constants;
+every top-level declaration under src/ and tools/ has a ## doc; no ## line over 100 columns; no function over 40 lines; scenario files about
+280 lines at most (TD-006); `rm -rf` is denied in Bash.
+
+0. WHAT EXISTS AT HEAD (verified by reading)
+- MatchController (src/gameplay/match/match_controller.gd, 480 lines) owns the Round: begin(units, bases, cameras), restart(), choose(player, type),
+  is_choosing(), chosen_type_index(), unit_types(), is_alive(), is_round_over(), winner_index(), canister_status(), seconds_until_respawn();
+  signals unit_destroyed(player), unit_chosen(player, type), unit_spawned(player), round_started, round_over(winner), canister_picked_up/dropped/seated.
+  RoundState RUNNING/OVER; NO_WINNER = -1. _physics_process: garage tick, then (while RUNNING) pick-ups, deliveries; a delivery sets OVER + _winner and the
+  tick pauses the tree and emits round_over. _on_unit_destroyed(player): garage.note_destroyed (refuses a Player who is not ALIVE) -> drop the carried
+  canister -> emit unit_destroyed.
+- GarageQueue (garage_queue.gd, 435 lines): per-Player WAITING/ALIVE/OUT_OF_ROUND, choice, due frame, bench, the one spawn path (_try_respawn/_spawn).
+- CanisterRules (canister_rules.gd): who carries which canister. WaterCanister (src/gameplay/canister/water_canister.gd/.tscn): the Flag thing itself.
+- TokenStock (src/gameplay/maps/token_stock.gd, Resource): counts: Dictionary[StringName, int] keyed by UnitStats.type_id; count_of(type_id) -> 0 for an unknown id.
+  MapField.token_stock (@export TokenStock) is assigned in map_01.tscn (data/token_stock.tres: motorbike 5, buggy 3, truck 2, gyrocopter 2). SplitScreen does
+  NOT read it yet. greybox_field.tscn assigns none; the test runner assigns the stock to the greybox field in _apply_greybox_composition().
+- UnitStats: type_id (StringName), display_name, can_carry (bool; only the Motorbike). MatchRules.unit_types: Array[UnitStats] in choice order
+  (Motorbike, Buggy, Truck, Gyrocopter); respawn_delay_seconds 3.0 is data.
+- PlayerChoiceInput (cursor over unit_types, steer keys move it, fire confirms; calls match_controller.choose); UnitChoice (the panel; slots built from
+  a SlotTemplate holding a NameLabel; hint/title/ready texts are scene data); PlayerHud (HP bar+label, Fuel bar+label, one status line "CanisterStatusLabel"
+  y 46..76, Team edge drawn round the band); RoundOverScreen (winner_format "Player %d wins!", restart_format; shown on round_over, hidden on round_started);
+  RespawnCountdown (hides on round_over).
+- Node order (split_screen.tscn): World{Map, Player1Unit, Player2Unit, drive inputs, match inputs (priority = unit - 1), weapons, fire inputs, choice inputs
+  (priority = controller - 1)}, Views, Divider, MatchController (late in tree order), RoundRestartInput. So Unit and Shot ticks run BEFORE the controller's
+  tick in a frame (to be confirmed by the preflight).
+- Only SplitScreen._ready() calls MatchController.begin(). Unit.leave_play() (the bench) emits no `destroyed`.
+
+1. THE RENAME (S0, done by the orchestrator with a script BEFORE the slices; every agent works on the renamed tree)
+  WaterCanister -> Flag (src/gameplay/flag/flag.gd, flag.tscn; the folder src/gameplay/canister/ is gone); CanisterRules -> FlagRules (match/flag_rules.gd);
+  controller: canister_picked_up/dropped/seated -> flag_picked_up/dropped/seated, canister_status() -> flag_status(), enum CanisterStatus -> FlagStatus;
+  Base exports canister, canister_seat -> flag, flag_seat (nodes Canister, CanisterSeat -> Flag, FlagSeat); HUD node CanisterStatusLabel -> FlagStatusLabel
+  and its texts "You carry the enemy Flag" / "Your Flag is at home" / "Your Flag is away"; physics layer 4 "canisters" -> "flags"; tools: canister_kit/
+  canister_run/canister_showcase -> flag_kit/flag_run/flag_showcase; every `canister` identifier -> `flag`, prose -> "Flag". The Fuel Can stays FuelCan.
+  The 31 baseline outputs (tools/dev08.py regress) must stay byte-identical after the rename once the old text is mapped by rename_map.map_text().
+
+2. DATA (AC-1, AC-9)
+- begin(units, bases, cameras, token_stock: TokenStock). SplitScreen passes field.token_stock. The controller copies the counts into its own per-Player
+  ledger at begin() and again at restart() and NEVER writes to the shared TokenStock or UnitStats.
+- begin() refuses (ONE push_error naming the problem, no bench, no connection, no signal, like every other refusal there): token_stock null ("the Map has no
+  Token stock"); a count below zero (names the type); and no Token for any type that can carry the Flag ("the Token stock gives no Token to <display_name>, the
+  type that can carry the Flag, so a Player could neither carry a Flag nor lose"). If no type in unit_types has can_carry, that is also an error.
+- Counts are the Map's data (token_stock.tres); the respawn delay stays MatchRules.respawn_delay_seconds. No count or delay is a constant in code.
+
+3. TokenLedger (NEW, src/gameplay/match/token_ledger.gd, class TokenLedger extends RefCounted; TD-008: the stock and the loss live here, not in the controller)
+  start(stock, types, player_count) copies stock.count_of(types[i].type_id) into counts[player][i]; count(player, type_index) -> int (0 outside the range);
+  take(player, type_index) subtracts one, never below 0 (a take at 0 pushes one warning and changes nothing); carry_total(player) -> int is the sum of the counts
+  of the types whose can_carry is true; has_lost(player) -> bool is carry_total(player) == 0; carrier_type_index() -> int is the index of the first type with
+  can_carry or -1; first_problem(stock, types) -> String is the validation of section 2 ("" when fine). Class doc keeps the state table (copy at begin/restart,
+  take at destruction, loss when the carry total is 0). Not a node, emits nothing, reads no input.
+
+4. MatchController (AC-2, AC-4, AC-5)
+- Holds one TokenLedger. begin(): validate (section 2) before anything else changes, then ledger.start(); restart(): ledger.start() again (both stocks full).
+- choose(player, type_index): ALSO refused (false, nothing changes) when the Player has 0 Tokens of that type.
+- _on_unit_destroyed(player): after garage.note_destroyed accepted and the Flag dropped, BEFORE unit_destroyed.emit: ledger.take(player, <index in unit_types of the
+  destroyed Unit's stats; found by type_id>). So every listener of unit_destroyed already reads the new count. A destruction of a type not in unit_types: one warning, no take.
+  The Token is taken at the DESTRUCTION, never at the spawn (the Unit in play is not yet subtracted).
+- The loss: in _physics_process, after _apply_deliveries and while still RUNNING, _apply_losses(): the Players with ledger.has_lost(p). One loser -> RoundState OVER,
+  _winner = the other Player. Both -> OVER with _winner = NO_WINNER (-1) (is_round_over() is then the only thing that tells "over, nobody won"). None -> nothing.
+  The existing end of the tick (pause the tree, emit round_over(_winner)) announces it. A delivery that already set OVER this tick wins (the loss check does not run).
+  "The same tick" = the same controller tick; every destruction source in this project runs before the controller in a frame (preflight to confirm).
+- New read-only queries, no new signal: tokens_left(player, type_index) -> int (0 for a player/type outside the Round); carrier_type_index() -> int (-1 if none);
+  can_choose(player, type_index) -> bool (tokens_left > 0). Class doc: the RoundState table gains both loss rows; winner_index() doc covers the double loss; the Player's
+  state docs keep pointing at GarageQueue.
+- AC-5: nothing else ends a Round: a type reaching 0, a Self-destruct or a Fuel crash that is not the last Motorbike Token end nothing.
+
+5. GarageQueue: _try_respawn() refuses a chosen type whose Tokens are 0 (defensive: choose() already refuses): one push_error, the standing choice cleared (the Player is
+  choosing again), returns false. Nothing else changes there.
+
+6. PlayerChoiceInput (AC-3): the steer keys move the cursor to the next type that has Tokens (skipping 0-count types, wrapping); when the Player starts choosing and the
+  cursor rests on a type with 0 Tokens it moves on at once to the next type that has some (emits cursor_moved). The fire key still calls choose(), which refuses a 0-count
+  type: no key can spawn one. The cursor is otherwise kept across a destruction, a spawn and a restart as before.
+
+7. UnitChoice (AC-3): each slot shows the type's name and its count on a second line (a CountLabel in the SlotTemplate; text format "x%d" as scene data, never a literal in the
+  script, through tr()); a slot of a type with 0 Tokens is dimmed (a StyleBox and a font colour stored in the scene) and never wears the cursor mark. Counts are re-read on
+  every _refresh() (round_started, unit_destroyed of this Player, unit_chosen, unit_spawned, cursor_moved), which is every moment a count can have changed; no polling, no
+  new signal. The panel must fit its 560 px width and the 640 x 720 view with the longest names and counts up to 99 and must not reach the HUD band or the centre.
+
+8. PlayerHud (AC-6): one more element inside the band, a right-aligned Label at the right end of the status row (the status label is narrowed so the two never overlap):
+  "<carrier display_name> Tokens: <n>" from the scene's tokens_format ("%s Tokens: %d"), n = tokens_left(player, carrier_type_index()), re-read in _ready(), on round_started
+  and on unit_destroyed of THIS Player (the controller has already taken the Token when unit_destroyed fires: updated on the tick of every destruction), and nothing else. The
+  band edge (Team edge) still encloses every element; nothing lower than about 90 px; nothing clipped in 640 x 720.
+
+9. RoundOverScreen (AC-7): round_over(-1) shows nobody_text (scene data, "Nobody wins!") instead of winner_format; the restart line is unchanged; the class doc says "when the Round
+  ends" (a delivery, a loss, a double loss). R restarts with both stocks full, both Flags at home, both Players choosing; each Unit appears in its Garage as soon as it is chosen.
+
+10. TOOLS (AC-1..AC-9 evidence; every scenario under ~280 lines; shared helper token_kit.gd)
+- Runner (tools/evidence/split_screen_harness.gd): the greybox composition gets a LEGACY stock (a TokenStock built in code, LEGACY_TOKEN_COUNT = 99 for each type id of
+  match_rules.tres) instead of data/token_stock.tres, so no older scenario runs out of Tokens or ends by a loss (destruction destroys 18 Units); new scenarios run on Map 01
+  with the real stock unless they build their own fixture. Registrations for the new scenarios; docs updated.
+- New scenarios (names fixed): tokens (AC-1, AC-2, AC-3, AC-5, AC-9), loss (AC-4, AC-5, AC-7), tokens_showcase (the retained frames: the choice with counts, a 0-count type
+  dimmed, the Round-over screens after a loss and after a double loss, both views after the restart). Fixtures: TokenStock resources made in code (for example one Motorbike
+  Token each). Real key events for choices/Self-destruct/restart. Destructions to cover: enemy fire (a real Shot), Self-destruct (Tab / Enter), a Gyrocopter's Fuel crash.
+- Older scenarios whose output legitimately changes because the UI now shows counts (hud, choice, units_showcase are the candidates) are listed in allowed-diffs.json with the
+  reason, still RESULT ok; every other strict baseline stays byte-identical after the rename mapping.
+
+11. DOCS (orchestrator): design/rules.md (the Resources line about the old names), CONTEXT.md (Flag entry), README (status row 008, a paragraph on Tokens and the loss), the story file,
+  TD register (TD-006 amended, TD-007 amended for the new texts and the count's colour/dim only), the evidence doc.
+
+12. KNOWN OPEN POINTS FOR THE REVIEWS
+  a. Is "the same tick" for the double loss really the same physics frame for every source (preflight Q2/Q4)?
+  b. A Player with Motorbike Tokens left but every other type at 0 must still be able to choose (cursor skip) - check the UI with a 1-Token fixture.
+  c. What the HUD shows when carrier_type_index() is -1 (cannot happen after begin()'s validation).
+  d. The panel's height grows with the count line; check it against the centre (respawn countdown) and the HUD band at 640 x 720.
+  e. restart() resets the ledger BEFORE round_started so listeners read full counts.
+
+13. PREFLIGHT CORRECTIONS (BINDING; they override sections 0-12 wherever they differ). Source: the design critic (14 issues, 20 missing cases) and the engine
+    preflight (frame order and pause behaviour, MEASURED on 4.7.2 with Jolt: wf_70331e8b-eff; the logs are under pf-engine/out/).
+13.1 Settled facts (engine, measured; open point 12a is closed)
+  - Every REAL destruction source runs before the MatchController inside the same physics frame, so it is seen by that frame's controller tick: a Self-destruct (PlayerMatchInput,
+    priority -1, calls Unit.destroy() synchronously), a Shot kill (the Shot is a child of World, tree order before the controller, it ticks the frame after it is fired and kills in
+    its own tick), a Gyrocopter's Fuel crash (Unit._physics_process). Tab+Enter on one step destroy both Units in the same frame (both destroyed signals arrive before the controller's
+    tick). A mixed double loss (a Self-destruct plus a Shot kill in one frame) is decided in that frame too: round_over(-1). The Unit's destroyed signal reaches the controller's
+    _on_unit_destroyed synchronously, inside the Unit's tick, and a listener of unit_destroyed runs in the same call stack.
+  - Once the controller sets paused = true at the end of the loss tick, no pausable node later in the frame ticks (a late +5 node did not): a destruction that would come after the
+    controller in the same frame never happens in that Round. Only a process_mode ALWAYS node (RoundRestartInput and the Round-over screens, which destroy nothing) runs on.
+    Therefore: "the same tick" = "before the controller's tick in the same physics frame"; a destruction one frame later than the first loss is not a double loss (the tree is paused).
+  - The Unit's destruction by Self-destruct happens inside PlayerMatchInput's tick (priority -1), which is BEFORE PlayerChoiceInput's tick (priority -1, later in order) of the same
+    frame: the choice input can act in the same frame as the destruction; a Shot kill comes after it, so the choice input acts a frame later. The cursor rule below handles both.
+  - Pressing R in the same frame as the loss restarts at once (RoundRestartInput runs after the controller in the frame): the Round-over screen is then never drawn; harmless.
+  - The loser's RespawnCountdown and UnitChoice are hidden by round_over; both views show the Round-over screen (P1 and P2: the same panel). The restart clears a standing choice
+    (chosen_type_index -1, is_choosing true) and benches both Units (leave_play() emits no destroyed, no Token is spent by a bench or a restart).
+  - GDScript: a negative index reads from the END of an array ([-1] is the last element, measured), so NO code may index unit_types() or a count array with carrier_type_index() or any
+    index that can be -1 without checking it first. An untyped Dictionary variable assigned to a Dictionary[StringName, int] property is a RUNTIME SCRIPT ERROR; assign per key
+    (stock.counts[id] = n) or use a typed literal. A reference to stock.counts writes THROUGH to the shared resource: the ledger and the runner must copy per key.
+13.2 TokenLedger is KEYED BY type_id (replaces section 3's index keying)
+  - Per Player a Dictionary[StringName, int] of counts keyed by UnitStats.type_id, filled by start(stock, types, player_count) with stock.count_of(types[i].type_id) per key (a copy by
+    value; it never holds stock.counts). API: start(); count_of(player, type_id) -> int (0 for an unknown id or a Player outside the range); take(player, type_id) -> bool (subtracts
+    one and returns true; at 0 or for an unknown id or Player it changes nothing, pushes ONE warning and returns false); has_lost(player) -> bool (the carrier's count is 0; false
+    for a Player outside the range and before start()); carrier_type_id() -> StringName (&"" before start()); first_problem(stock, types) -> String.
+  - Why: destruction.gd swaps controller.rules for a duplicate at runtime; by id the charge and the choice stay correct whatever the order or length of the live unit_types.
+  - first_problem() returns ONE sentence naming the problem, or "". In this order: stock null ("the Map has no Token stock"); a negative count (names the type id); a stock key that
+    matches no type_id of the types (names the key; a typo would silently make a type unavailable); an empty type_id or two types with the same type_id (names the indexes); the
+    number of types with can_carry is not exactly ONE (none: "no Unit type can carry the Flag, so no Player could lose"; several: names their display names); the carrier's count is
+    below 1 ("the Token stock gives no Token to <display_name>, the type that can carry the Flag, so a Player could neither carry a Flag nor lose"). begin() pushes that sentence as
+    ONE push_error ("MatchController '%s': %s, so the Round does not begin.") after the existing checks and before anything changes (no bench, no connection, no signal, no state).
+13.3 Controller API (replaces the signatures of section 4)
+  - tokens_left(player_index: int, type_index: int) -> int: the ledger's count for unit_types()[type_index].type_id; 0 for a Player outside [0, players), a type_index outside
+    [0, unit_types().size()), before begin() and after a refused begin(). can_choose(player_index, type_index) -> bool: tokens_left(...) > 0 and nothing else (it does not check the
+    Round or the Player's state; choose() does). carrier_type_index() -> int: the index in unit_types() of the one carrier type, or -1 before a successful begin() and after a refused
+    one. Document all three: read-only, no signal, safe to call from a handler of unit_destroyed (the Token is already taken).
+  - choose(): refuses (false, nothing changes, no signal) a type with 0 Tokens; this is the SINGLE guard of AC-3. Section 5 (a refusal in GarageQueue._try_respawn) is DROPPED: it
+    is unreachable (a Player with no Unit in play cannot lose a Token and choose() refuses an empty type), it could only clear the choice without a signal (the panel would keep
+    showing "X ready") and no scenario could exercise it. garage_queue.gd is NOT edited. The deviation from the story's implementation note ("_spawn refuses") is logged.
+  - _on_unit_destroyed(player_index): after garage.note_destroyed accepted and the Flag dropped, BEFORE unit_destroyed.emit: ledger.take(player_index, <the destroyed Unit's
+    stats.type_id>). A Unit whose stats are null or whose type_id is not in the Round's types: ONE warning from the ledger, no Token taken, never a loss. A destruction while the
+    Round is OVER (impossible today: nothing but ALWAYS nodes runs) still counts the Token; harmless because restart() refills.
+  - winner_index() doc: NO_WINNER (-1) means BOTH "the Round runs" and "the Round ended and nobody won" (the double loss); only is_round_over() tells them apart, so a listener tests
+    is_round_over() first. Do not add a second sentinel.
+  - _apply_losses(): runs after _apply_deliveries while the Round is still RUNNING; a delivery that already set OVER wins (a dead branch in practice: a Carrier alive for the delivery
+    cannot have spent its last Token; keep the guard, spend no scenario on it).
+13.4 The cursor rule (replaces section 6)
+  - PlayerChoiceInput._physics_process, in this order: (1) the existing guard (valid controller, is_choosing); (2) SNAP: if the cursor rests on a type with 0 Tokens, move it to the
+    next type (increasing index, wrapping) that has Tokens, searching at most unit_types().size() steps; if no type has Tokens (one tick is enough for that to happen: the last
+    Motorbike spent while every other type is at 0 - the loss is decided later in the same controller tick) the cursor stays and nothing happens (no hang, no error); emit
+    cursor_moved ONCE and only when the index changed; (3) only then read the keys. A press on the first choosing tick therefore confirms the type the panel shows (it is never
+    swallowed). (4) A steer key moves to the previous/next type that has Tokens (bounded search, wrapping) and emits cursor_moved once per move; with no other type available it
+    moves nothing and emits nothing. With every type available the behaviour, including the two emits of a left and a right press on one tick, is IDENTICAL to today (the retained
+    choice scenario counts emits: cursor_moves=10; the legacy 99 stock keeps it byte-identical). (5) Fire calls match_controller.choose(player_index, cursor) exactly as before.
+  - UnitChoice._mark_slot() NEVER marks a slot whose count is 0, whatever the cursor says (between the destruction and PlayerChoiceInput's next tick, and in the all-zero tick, the
+    cursor may rest on an empty type): such a slot wears slot_style/dim, never cursor_style.
+13.5 UnitChoice (replaces section 7's structure)
+  - Each slot (the duplicate of SlotTemplate, a PanelContainer) gets ONE child VBoxContainer named Lines holding NameLabel and CountLabel (a PanelContainer lays every child into the
+    same rectangle, so a second label needs a container). Both labels are fetched BY RELATIVE PATH in _rebuild_slots() (^"Lines/NameLabel", ^"Lines/CountLabel"); never by % names (a
+    duplicate() of the template gives the copies no registrable owner). unit_choice.gd:314 and the retained tools/evidence/split_screen/choice.gd:320 (slot.get_node(^"NameLabel"))
+    both change to the new path: that one line of choice.gd is the ONLY edit allowed in that scenario; NameLabel.text stays exactly tr(display_name) (choice.gd compares it).
+  - CountLabel.text = tr(count_format) % tokens_left (count_format "x%d" is an @export String in @export_group("Text"), stored in the scene, validated in _first_text_problem like the
+    other formats). A 0-count slot: a dim StyleBox (dim_style, a sub-resource of the scene) and a dim font colour; every refresh sets the colours EXPLICITLY with
+    add_theme_color_override(&"font_color", normal_font_color or dim_font_color) on both labels and NEVER removes an override (remove_theme_color_override falls back to the theme's
+    default grey, not the scene's white). normal_font_color and dim_font_color are @export values stored in the scene and neither equals its script default (the engine leaves an
+    export equal to its default out of a saved scene: see the note at unit_choice.gd:120-125).
+  - Counts are re-read in _refresh() (called by round_started, this Player's unit_destroyed, unit_chosen, unit_spawned and cursor_moved: every moment this Player's count can change);
+    round_over hides the panel. The panel's height grows by one line: MEASURE it (the baseline panel top is y 562, the countdown text bottom 404, the HUD band bottom 84): it must
+    stay inside the 640 x 720 view with the 8 px margin, clear of the HUD band and the countdown, for counts up to 99 AND 100 (three digits) and the longest display_name.
+13.6 PlayerHud (replaces section 8's refresh points)
+  - The label is HIDDEN with empty text while carrier_type_index() < 0 (before begin() and after a refused begin()); PlayerHud._ready() runs BEFORE SplitScreen._ready() calls begin(), so
+    its first read there sees no Round: that read must not index with -1. It shows from round_started on (and in _ready() when the Round has already begun). Refreshed in _ready(),
+    on round_started and on this Player's unit_destroyed (the Token is already taken when it fires), nothing else. Text = tr(tokens_format) % [tr(carrier display_name), count];
+    the count INCLUDES the Unit in play (5 while the first Motorbike drives, 4 after its destruction, 1 on the last Motorbike): record this in the class doc.
+  - Layout: as section 8, the status label narrowed so the two rectangles are disjoint; the union of the HUD children stays (16,16)-(624,76) so the Team edge (8,8)-(632,84) is unchanged.
+13.7 Regression and what may change in the 31 retained outputs (replaces section 10's last paragraph)
+  - ALL 31 are compared byte for byte after the rename mapping (rename_map.map_text on the baseline), through the regex NORMALIZERS in normalizers.json (the orchestrator owns it; agents
+    NEVER edit it). Expected differences from the UI change only: hud (the status label's rect and text widths, the new Tokens label's entry in fits_view), choice (the panel=(x,y wxh)
+    readings only), fuel_cans (the status=x,y-x,y rectangle in its fuel_hud check only). units_showcase prints no panel or HUD geometry: it MUST be byte-identical (a difference there
+    is a defect). flag_run, round_over and flag_showcase were identical after the rename; they must stay so (round_over's own output must not change: the nobody line is not exercised).
+    Report every changed token of every difference in baseline_diffs; the orchestrator writes the normalizers from your report. Do not "fix" a difference by touching a baseline.
+  - AC-8 also names every retained tool: fps and map_fps (windowed frame-rate tools) and input_ghosting_check run at the end, by the orchestrator.
+13.8 Docs the slices fix (S1: token_stock.gd, map_field.gd, match_rules.gd, split_screen.gd class and field docs: "nothing reads the counts yet", "a Map without one still plays", "Story 008's to
+    read/enforce" become what is now true - begin() copies, validates, and refuses a Map with no usable stock; S2: player_choice_input.gd (the cursor is no longer "kept across a
+    destruction" only: it snaps and skips), unit_choice.gd, player_hud.gd, round_over_screen.gd). The orchestrator fixes rules.md, CONTEXT.md, README, tests/smoke, the S0 tautologies.
+13.9 AC-9 scope: "no count is a constant in code" means src/ (the game). tools/ may hold fixtures (LEGACY_TOKEN_COUNT = 99, scenario stocks). A lint of src/gameplay/match and src/ui/hud finds no
+    integer Token literal other than 0/1 comparisons.
+
+14. TEST MATRIX (binding minimum for the scenario slices; the design critic's T01-T37, regrouped by FIXTURE: the runner gives one Token stock per process, so one scenario file per stock).
+  Each CHECK states in the file's top what wrong implementation it kills; every number is MEASURED; each scenario runs twice with byte-identical output. A new scenario declares either
+  const USE_MAP_STOCK: bool = true (the real Map 01 stock) or const STOCK_COUNTS: Dictionary (its fixture) - without one of them the runner gives it the legacy 99 stock - and
+  const OWN_CHOICE: bool = true (it chooses with its own keys); WATCHDOG_SECONDS where a run is long. Real key events for choices, Self-destructs (Tab = Player 1, Enter = Player 2)
+  and the restart (R); an injected key acts one step later, so wait two ticks after a press.
+  tokens (S3a; USE_MAP_STOCK): T01a start_from_data (both Players, every type: tokens_left equals the real stock read from the resource, 5/3/2/2 not typed; the HUD reads the Motorbike
+                     line; the panels show x5 x3 x2 x2) | T02 shared_stock_untouched (a snapshot of stock.counts equals the live resource after 3+1 destructions and a restart; the
+                     restart refills to the snapshot) | T05 not_at_spawn (a Motorbike in play for 60+ ticks: tokens_left 5 and HUD 5; a Buggy chosen and spawned: buggy still 3 while it
+                     lives; a choice made during the countdown changes no count) | T06 at_destruction_tick (read inside a unit_destroyed handler connected after all UI nodes:
+                     controller, HUD text and panel count already show the new count, and the same at the next physics_frame) | T07 charged_type_and_player (Buggy Self-destruct:
+                     only buggy 3->2; P2's Truck shooting P1's Motorbike dead: P1 motorbike -1 and P2's counts unchanged) | T08 fuel_crash (a Gyrocopter on the shipped Fuel data driven
+                     until it crashes: gyrocopter 2->1, nothing else, the Round runs) | T09 no_cost_when_not_alive (Tab while benched/choosing/waiting; Tab and a lethal Shot on one
+                     tick: exactly one Token; a bench and a restart cost nothing) | T10 players_independent (three P1 destructions leave P2's tokens, HUD and panel unchanged; then one of P2's).
+  tokens_data (S3f; STOCK_COUNTS = {motorbike 2, buggy 0, truck 7, gyrocopter 1}): T01b start_from_data (the mixed fixture equals tokens_left for every type and Player; buggy dim from
+                     the first frame; the cursor starts on the Motorbike) | T03 refuses_no_carrier_token (a throwaway MatchController.new() with the live rules/Units/Bases/cameras and
+                     a stock with motorbike 0 under an OS.add_logger Logger: exactly ONE error naming the carrier's display_name; no round_started, is_choosing false, the live Units
+                     unmoved and alive, no extra connection on unit.destroyed; do NOT call a successful begin() on live Units in the scenario: it would bench them - that
+                     half is proved by a throwaway probe in S1b) | T04 refusal_variants (stock null, a negative count, the carrier key missing, no can_carry type, an unknown key &"motorbyke", a duplicate
+                     type_id, two carrier types: ONE error each, each naming the problem) | T33 data_not_constants (the fixture drives every number: the Round ends after exactly 2
+                     Motorbike destructions, truck x7, buggy dim; the respawn delay stays MatchRules' - the destruction scenario's half-delay duplicate-rules check stays green; a lint
+                     finds no integer Token literal in src/gameplay/match and src/ui/hud other than 0/1 comparisons) | T34 unknown_type_destroyed (a tool-spawned Unit of a type
+                     outside the data is destroyed: one warning, no take, no loss) | T35 rules_swap (controller.rules replaced by a duplicate with reordered unit_types: the charge
+                     follows the ids).
+  token_choice (S3b; STOCK_COUNTS = {motorbike 3, buggy 1, truck 1, gyrocopter 1}; one run walks all of it): T11 panel_counts (at the start and after each destruction each Player's panel
+                     CountLabel texts equal tr(count_format) % tokens_left for all four slots; P1 and P2 made different) | T12 zero_type_dimmed_unmarked (Gyrocopter destroyed: on that tick
+                     its slot has the dim style and dim font colour on both labels and no slot wears cursor_style at index 3; after R back to slot_style and the scene's normal white) |
+                     T13 zero_type_unchoosable (choose() false, is_choosing still true, chosen -1, no unit_chosen; 8 A and 8 D presses never put the cursor on it; fire at every stop
+                     never yields it) | T14 first_tick_snap (cursor on the Gyrocopter, Gyrocopter destroyed, fire on the first choosing tick: exactly one unit_chosen with the next
+                     available index and one cursor_moved - for a Self-destruct (same frame) and for a Shot kill (next frame)) | T16 exhausted_by_this_destruction (Truck destroyed: choose of
+                     it false on the same tick, its slot dim during the countdown; choosing the Buggy 30 ticks later spawns at round(delay*60) ticks after the destruction, +-1) | T17
+                     both_choose_same_tick (different stocks, independent accept/refuse, each Unit after its own bench settle) | T15 only_motorbike (Buggy, Truck and Gyrocopter all spent: three
+                     dim slots, the cursor on 0, A and D leave it and emit nothing, fire chooses the Motorbike, the Unit appears; the watchdog does not trip) | T-ALLZERO (the LAST Motorbike
+                     spent while every other type is 0: the bounded search does not hang, no error, the panel hidden by round_over on that tick).
+  loss (S3c; USE_MAP_STOCK): T18 real_stock_to_zero (P1 Self-destructs five Motorbikes; after #1..#4 the Round runs with counts 4,3,2,1; on #5, the same tick: is_round_over, winner_index 1,
+                     ONE round_over(1), tree paused, P1 motorbike 0, P2's 5) | T19 p2_loses_and_by_fire (P2 loses by Self-destruct, then in a second Round by a P1 Shot kill on the last
+                     one: winner 0 both times) | T20 double_loss (both run T18 in lockstep with Tab+Enter on one tick, then with the key order swapped: ONE round_over(-1), winner_index -1,
+                     is_round_over true, both motorbike 0) + the MIXED double loss (a Self-destruct plus a lethal Shot on one frame: round_over(-1); this also asserts the tree-order
+                     contract of 13.10) | T21 adjacent_ticks (Tab at tick N, Enter at N+1 on the last cycle: round_over(1), P2's motorbike still 1, P2 unmoved, no second unit_destroyed) |
+                     T22 loss_carrying_flag (the Carrier's last Motorbike dies carrying the enemy Flag: flag_dropped before unit_destroyed, the other Player wins; after R both Flags AT_HOME,
+                     both statuses 'at home') | T23 type_exhaustion_ends_nothing (both Gyrocopters, three Buggies and two Trucks spent with Motorbike > 0: the Round never ends, the Motorbike stays
+                     choosable) | T24 other_ends_unchanged (a delivery still ends a Round with the stock in play and the loser's counts untouched; an empty ground tank for 10 s is no destruction).
+  token_ui (S3d; USE_MAP_STOCK): T25 hud_on_destruction_tick (five destructions: P1's label 5,4,3,2,1,0 read inside a unit_destroyed handler connected last; P2's stays 5; the label follows the
+                     carrier type, not the cursor) | T26 hud_restart (after R both labels read the full count on the round_started tick) | T28 hud_before_begin (a PlayerHud and a UnitChoice on a
+                     MatchController that has not begun and on one whose begin() was refused: label hidden or empty, panels hidden, never 'Gyrocopter') | T29 round_over_texts (a delivery:
+                     'Player 2 wins!' in both views; a single loss: the same; the double loss: nobody_text exactly and no 'Player' text; the restart line names the bound key) | T30
+                     restart_after_each_end (R after a delivery, a loss and a double loss: round_started +1, unpaused, not over, winner_index -1, both stocks equal the initial data, both
+                     Flags AT_HOME, both Players choosing, panels visible with no dim, HUD full, each Unit alive within SPAWN_SETTLE_TICKS + 2 ticks of its press, no round_over on the first
+                     tick after R).
+  token_layout (S3d; STOCK_COUNTS = {motorbike 100, buggy 99, truck 100, gyrocopter 99}): T27 layout_worst_case (every HUD child inside the view by 8 px, the Tokens label on one line, its rect
+                     disjoint from the status label and the bars, the union of the HUD children still (16,16)-(624,76), lowest edge <= 90; the choice panel with counts of 99 and 100 and
+                     the longest display name inside 560 px and inside the view, clear of the HUD band and the countdown, in both states; the Round-over panel with nobody_text).
+  tokens_showcase (S3e): T36 the retained frames with premise CHECKs that fail if a step did not happen (choice with counts, a dimmed type, the Round-over screen after a loss, after a double
+                     loss, both views after R).
+  Orchestrator and lenses: T31 rename surface (grep), T32 the regress of the 31 plus fps, map_fps, input_ghosting_check, T37 seeded defects (the acceptance lens).
+
+13.10 Engine preflight, final additions (measured on 4.7.2, headless fixed-fps, windowed real-time and Map 01; logs in pf-engine/out/; the probe scripts pf_q2.gd, pf_q4.gd, pf_q7.gd, pf_kit.gd under
+    pf-engine/probe/tools/evidence/split_screen/ are THROWAWAY REFERENCES for how to time a Self-destruct plus a lethal Shot on one frame; do not copy them into the repo)
+  - The measured per-frame order (it replaces the order stated in section 0; Weapons come LAST, not before the Shots): PlayerDriveInput x2, PlayerMatchInput x2, PlayerChoiceInput x2
+    (priority -1, tree order) > Map nodes, FuelCans, Units, PlayerFireInput x2, Shots, MatchController, RoundRestartInput (priority 0, tree order; RoundRestartInput is process_mode
+    ALWAYS) > Weapon x2 (priority +1). A Shot fired in frame N first ticks in frame N+1. The loss check's guarantee rests on DEFAULT priority 0 plus tree position (World before the
+    MatchController), not on a declared priority: the MatchController class doc states this as the contract it relies on, and the loss scenario asserts it (Tab+Enter and the
+    mixed Self-destruct plus Shot double loss), so a changed tree order fails loudly.
+  - A key event the harness injects at the start of a physics step, or in the idle phase after it, is first seen by the input nodes in the NEXT step (edge reads). A scenario waits at
+    least TWO ticks after a press (the helper's press_settled plus one tick) before it reads a loss, a destruction or a restart, and never compares the press frame with the
+    destruction frame for equality.
+  - TokenStock fixtures: TokenStock.new() and counts[&"id"] = n per key (or a typed dictionary literal); NEVER an untyped Dictionary variable assigned to counts (runtime script error)
+    and NEVER Resource.duplicate() of the shipped stock (it SHARES the counts dictionary with the cached .tres: measured, writing the copy changed the shipped stock); duplicate_deep()
+    gives an independent copy. S1 corrects the line in token_stock.gd's class doc that recommends duplicate().
+  - _on_unit_destroyed while the Round is OVER (possible only from a process_mode ALWAYS node or a harness coroutine; the game has none): the Token IS taken and unit_destroyed IS emitted
+    but winner_index() cannot change (measured: tokens [0,0] with winner 1); benign because restart() refills; the controller's class doc says so, and a scenario that destroys during
+    the pause expects exactly that.
+  - Pressing R in the loss tick itself restarts the Round inside that tick (RoundRestartInput runs right after the controller): the Round-over screen is never drawn. Accepted and
+    documented (a delay on R is outside the story); the same already holds for a delivery.
+  - The winner may be a Player whose own Unit is destroyed at that moment (it lost a non-last Token earlier in the Round, or on the loss tick): the screen says "Player 2 wins!" while that
+    Player's HUD band reads HP 0 / 40. A consequence of deciding by Tokens, not a bug; the evidence doc says so.
+  - The frozen Shots are freed by SplitScreen._free_shots, a round_started listener; keep it a round_started listener (nothing in this story moves it). restart() keeps the order: seat
+    flags, bench x2, state RUNNING, ledger.start(), tree unpaused, round_started.emit(), so every round_started listener reads full counts.

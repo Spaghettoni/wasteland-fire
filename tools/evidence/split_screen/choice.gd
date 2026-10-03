@@ -14,7 +14,7 @@ extends RefCounted
 ## the Round is over, names its keys as the Input Map binds them, and its rect sits inside its 640 x
 ## 720 view by the margin, at most 560 px wide, clear of the respawn countdown's text). The shipped
 ## data; the runner makes no choice for this scenario (OWN_CHOICE). Tooling only; the shared helpers
-## are check_kit.gd, unit_kit.gd and canister_kit.gd (the delivery that ends the Round).
+## are check_kit.gd, unit_kit.gd and flag_kit.gd (the delivery that ends the Round).
 ## Implements: production/epics/wasteland-fire/story-005-three-units-and-triangle.md AC-6 and AC-8.
 ## Run: godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn \
 ##     -- --scenario=choice
@@ -25,8 +25,8 @@ const Harness: GDScript = preload("res://tools/evidence/split_screen_harness.gd"
 const Kit: GDScript = preload("res://tools/evidence/split_screen/check_kit.gd")
 ## The Story 005 helpers (unit_kit.gd): the signal record, the screens, the waits.
 const Units: GDScript = preload("res://tools/evidence/split_screen/unit_kit.gd")
-## The Story 004 helpers (canister_kit.gd): the drive at a canister, the run home, the Round record.
-const Canisters: GDScript = preload("res://tools/evidence/split_screen/canister_kit.gd")
+## The Story 004 helpers (flag_kit.gd): the drive at a Flag, the run home, the Round record.
+const Flags: GDScript = preload("res://tools/evidence/split_screen/flag_kit.gd")
 
 ## This scenario makes the first choice itself: the runner presses no fire key before run().
 const OWN_CHOICE: bool = true
@@ -58,16 +58,16 @@ const PANEL_MAX_WIDTH: float = 560.0
 ## Where Player 1 is parked and destroyed before the delivery (the steps of the round_over
 ## scenario).
 const PARK_SPOT: Vector3 = Vector3(-12.0, 0.0, 8.0)
-## Where Player 2 is put, carrying canister 1, to run home into Base 2's zone.
+## Where Player 2 is put, carrying Flag 1, to run home into Base 2's zone.
 const BASE_2_RUN_START: Vector3 = Vector3(0.0, 0.0, -6.0)
-## The direction Player 2 faces when it approaches canister 1 and when it runs home: toward Base 2
+## The direction Player 2 faces when it approaches Flag 1 and when it runs home: toward Base 2
 ## (-Z).
 const TO_BASE_2: Vector3 = Vector3(0.0, 0.0, -1.0)
 
 var _harness: Harness
 var _kit: Kit
 var _units: Units
-var _cans: Canisters
+var _flag_kit: Flags
 ## The problems and the readings of the two checks, and the cursor_moved emits of Player 1's input.
 var _flow: PackedStringArray = []
 var _flow_notes: PackedStringArray = []
@@ -81,7 +81,7 @@ func run(harness: Node) -> void:
 	_harness = harness as Harness
 	_kit = Kit.new(harness)
 	_units = Units.new(harness, _kit)
-	_cans = Canisters.new(harness, _kit)
+	_flag_kit = Flags.new(harness, _kit)
 	_units.panels[0].choice_input.cursor_moved.connect(func(_type_index: int) -> void: _moves += 1)
 	_units.controller.unit_chosen.connect(func(player: int, _type_index: int) -> void: _harness.set_key(_harness.fire_key(player), false))
 	await _check_start()
@@ -99,7 +99,7 @@ func run(harness: Node) -> void:
 	_harness.phase = &"end"
 	_harness.print_progress()
 	_harness.finish("chosen=%d spawned=%d destroyed=%d round_started=%d round_over=%d cursor_moves=%d" % [
-		_units.chosen.size(), _units.spawns.size(), _units.destroyed.size(), _cans.round_started, _cans.round_overs.size(), _moves])
+		_units.chosen.size(), _units.spawns.size(), _units.destroyed.size(), _flag_kit.round_started, _flag_kit.round_overs.size(), _moves])
 
 
 ## The start: both out of play and choosing, no delay; Player 2 confirms on the first tick (its fire
@@ -252,12 +252,12 @@ func _check_delivery() -> String:
 	await _kit.press_settled(Kit.KEYS_DESTRUCT_1)
 	await _kit.advance(LAYOUT_TICKS)
 	_panel_notes.append(_read_panel(0, &"choosing", Units.TYPE_IDS.size() - 1))
-	var canister: WaterCanister = _cans.canisters[0]
-	_cans.approach(Harness.PLAYER_2, canister.global_position, TO_BASE_2)
-	var steal: int = await _cans.drive_until(Harness.PLAYER_2, 1, Canisters.APPROACH_SPEED, func() -> bool: return canister.carrier == p2)
-	await _cans.rest(Harness.PLAYER_2)
-	_cans.teleport(Harness.PLAYER_2, BASE_2_RUN_START, TO_BASE_2)
-	var run_ticks: int = await _cans.drive_until(Harness.PLAYER_2, 1, Canisters.APPROACH_SPEED, func() -> bool: return not _cans.round_overs.is_empty())
+	var flag: Flag = _flag_kit.flags[0]
+	_flag_kit.approach(Harness.PLAYER_2, flag.global_position, TO_BASE_2)
+	var steal: int = await _flag_kit.drive_until(Harness.PLAYER_2, 1, Flags.APPROACH_SPEED, func() -> bool: return flag.carrier == p2)
+	await _flag_kit.rest(Harness.PLAYER_2)
+	_flag_kit.teleport(Harness.PLAYER_2, BASE_2_RUN_START, TO_BASE_2)
+	var run_ticks: int = await _flag_kit.drive_until(Harness.PLAYER_2, 1, Flags.APPROACH_SPEED, func() -> bool: return not _flag_kit.round_overs.is_empty())
 	await _kit.advance(LAYOUT_TICKS)
 	var over: bool = steal > 0 and run_ticks > 0 and controller.is_round_over() and _harness.get_tree().paused
 	_kit.need(_flow, over, "Player 2's delivery did not end the Round (steal %d, run %d)" % [steal, run_ticks])
@@ -275,11 +275,11 @@ func _check_restart() -> void:
 	var p1: Unit = _units.units[0]
 	var p2: Unit = _units.units[1]
 	_harness.phase = &"restart"
-	var starts: int = _cans.round_started
+	var starts: int = _flag_kit.round_started
 	await _kit.press_settled(KEYS_RESTART)
 	var home_1: float = p1.global_position.distance_to(_units.bases[0].spawn_point.global_position)
 	var home_2: float = p2.global_position.distance_to(_units.bases[1].spawn_point.global_position)
-	var benched: bool = (_cans.round_started == starts + 1 and controller.is_choosing(0) and controller.is_choosing(1) and not p1.is_alive and not p2.is_alive
+	var benched: bool = (_flag_kit.round_started == starts + 1 and controller.is_choosing(0) and controller.is_choosing(1) and not p1.is_alive and not p2.is_alive
 		and not controller.is_round_over() and not _harness.get_tree().paused and home_1 <= Kit.SPAWN_TOLERANCE and home_2 <= Kit.SPAWN_TOLERANCE)
 	_kit.need(_flow, benched, "the restart did not return both Players to choosing on their Bases")
 	await _kit.advance(LAYOUT_TICKS)
@@ -293,7 +293,7 @@ func _check_restart() -> void:
 		and _units.spawns.size() == spawned + 2)
 	_kit.need(_flow, both, "after the restart both Players did not come back as the Motorbike (cursor %d)" % cursor)
 	_flow_notes.append(delivery_note + "; R: round_started=%d (before %d), both choosing on their Bases (%.4f m / %.4f m from the spawn points), paused=%s; p1 D wrapped the cursor to %d; Space and Period: both alive as %s/%s, spawns %d (before %d)" % [
-		_cans.round_started, starts, home_1, home_2, _harness.get_tree().paused, cursor, p1.type_id, p2.type_id, _units.spawns.size(), spawned])
+		_flag_kit.round_started, starts, home_1, home_2, _harness.get_tree().paused, cursor, p1.type_id, p2.type_id, _units.spawns.size(), spawned])
 	await _kit.advance(LAYOUT_TICKS)
 	_panel_notes.append(_read_panel(0, &"hidden", -1))
 	_panel_notes.append(_read_panel(1, &"hidden", -1))
@@ -317,7 +317,7 @@ func _read_panel(player: int, state: StringName, cursor: int) -> String:
 			marked = names.size()
 		elif slot.get_theme_stylebox(&"panel") != choice.slot_style:
 			marked = -2
-		names.append((slot.get_node(^"NameLabel") as Label).text)
+		names.append((slot.get_node(^"Lines/NameLabel") as Label).text)
 	var expected_names: PackedStringArray = []
 	for stats: UnitStats in types:
 		expected_names.append(choice.tr(stats.display_name))

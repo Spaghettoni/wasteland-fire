@@ -35,8 +35,8 @@ extends Node3D
 ##
 ## Why the damage is applied from this node's own physics tick, and never from an Area3D's
 ## body_entered: Story 004's hand-off. Unit.apply_damage() may destroy the Unit, and the Round's
-## handler of `destroyed` reparents the canister a Carrier held; the physics server refuses that
-## reparent while it flushes the area and body signals, and the canister would stay a hidden child
+## handler of `destroyed` reparents the Flag a Carrier held; the physics server refuses that
+## reparent while it flushes the area and body signals, and the Flag would stay a hidden child
 ## of the wreck. There is no Area3D here and no signal handler: the ray query, the damage and the
 ## free all happen inside _physics_process. The process_mode stays INHERIT, so a paused tree (the
 ## Round over) freezes every shot in flight.

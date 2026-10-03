@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://src/gameplay/canister/water_canister.gd" id="1_wc"]
+[ext_resource type="Script" path="res://src/gameplay/flag/flag.gd" id="1_flag"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
 albedo_color = Color(0.8, 0.8, 0.8, 1)
@@ -45,8 +45,8 @@ is_hemisphere = true
 [sub_resource type="SphereShape3D" id="SphereShape3D_pickup"]
 radius = 1.0
 
-[node name="WaterCanister" type="Node3D" unique_id=1403221587 node_paths=PackedStringArray("pickup_zone", "body_mesh")]
-script = ExtResource("1_wc")
+[node name="Flag" type="Node3D" unique_id=1403221587 node_paths=PackedStringArray("pickup_zone", "body_mesh")]
+script = ExtResource("1_flag")
 pickup_zone = NodePath("PickupZone")
 body_mesh = NodePath("Body")
 

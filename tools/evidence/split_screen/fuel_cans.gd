@@ -25,8 +25,8 @@ const Harness: GDScript = preload("res://tools/evidence/split_screen_harness.gd"
 const Kit: GDScript = preload("res://tools/evidence/split_screen/check_kit.gd")
 ## The Story 005 helpers (unit_kit.gd): the Units, cameras and HUDs, the typed spawn, the poses.
 const Units: GDScript = preload("res://tools/evidence/split_screen/unit_kit.gd")
-## The Story 004 helpers (canister_kit.gd): the Flags, the delivery's moves, the Round's signals.
-const Flags: GDScript = preload("res://tools/evidence/split_screen/canister_kit.gd")
+## The Story 004 helpers (flag_kit.gd): the Flags, the delivery's moves, the Round's signals.
+const Flags: GDScript = preload("res://tools/evidence/split_screen/flag_kit.gd")
 ## The Story 006 helpers (fuel_kit.gd): the Cans, the fuel_changed record, the drive onto a point.
 const Fuel: GDScript = preload("res://tools/evidence/split_screen/fuel_kit.gd")
 
@@ -289,13 +289,13 @@ func _gyro_take() -> void:
 		unit.type_id, added, can.name, flew, _take_note(take), hidden])
 
 
-## AC-6, AC-7: Player 1 steals Player 2's Flag and runs it home (canister_kit.gd's moves, the choice
+## AC-6, AC-7: Player 1 steals Player 2's Flag and runs it home (flag_kit.gd's moves, the choice
 ## scenario's delivery) and R restarts the Round: the Cans are checked, both gauges read zero while
 ## the Players choose, then each Unit's starting tank once both chose again.
 func _restart() -> void:
 	_harness.phase = &"delivery"
 	var unit: Unit = _units.units[Harness.PLAYER_1]
-	var flag: WaterCanister = _flags.canisters[Harness.PLAYER_2]
+	var flag: Flag = _flags.flags[Harness.PLAYER_2]
 	_flags.approach(Harness.PLAYER_1, flag.global_position, Vector3.BACK)
 	var steal: int = await _flags.drive_until(Harness.PLAYER_1, 1, Flags.APPROACH_SPEED, func() -> bool: return flag.carrier == unit)
 	await _flags.rest(Harness.PLAYER_1)
@@ -355,7 +355,7 @@ func _layout() -> String:
 		var gauge: Rect2 = _bars[player].get_global_rect().merge(_labels[player].get_global_rect())
 		var rect_of: Callable = func(node_name: String) -> Rect2: return (hud.find_child(node_name, true, false) as Control).get_global_rect()
 		var hit_points: Rect2 = (rect_of.call("HitPointsBar") as Rect2).merge(rect_of.call("HitPointsLabel"))
-		var status: Rect2 = rect_of.call("CanisterStatusLabel")
+		var status: Rect2 = rect_of.call("FlagStatusLabel")
 		var inside: bool = view.encloses(gauge) and gauge.position.x >= GAUGE_X.x and gauge.end.x <= GAUGE_X.y
 		_kit.need(_hud, inside and not gauge.intersects(hit_points) and not gauge.intersects(status), "p%d's gauge rectangle" % (player + 1))
 		parts.append("p%d view=%s gauge=%s hit_points=%s status=%s" % [player + 1, _corners(view), _corners(gauge),

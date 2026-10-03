@@ -3,7 +3,7 @@
 > **Status**: Active
 > **Tier**: `workflow: minimal` — implicit epic synthesised from `design/game-brief.md` by `/create-stories` on 2026-09-30. No GDD, ADRs, TR registry or control manifest exist at this tier; every story traces to the brief.
 > **Governing ADRs**: N/A (minimal — no ADRs)
-> **Last Updated**: 2026-10-01: brought to version 0.1 of the author's artifact (the source is archived under `design/source/`; the rules of record are `design/rules.md`).
+> **Last Updated**: 2026-10-03: story 008 Complete, so all eight stories of the First Playable are built (2026-10-01: brought to version 0.1 of the author's artifact; the source is archived under `design/source/`; the rules of record are `design/rules.md`).
 
 ## Goal
 
@@ -22,7 +22,7 @@ Two friends on one couch drive wasteland Motorbikes, Buggies, Trucks and Gyrocop
 
 ## Ordering (the brief's Build order — this is the plan; no sprint plan at `minimal`)
 
-001 → 002 → 003 → 004 → 005 → 006 → 007 → 008. Stories 001 to 004 are the vertical slice (two Motorbikes, two Bases, one Flag run) and are Complete as of 2026-10-01: the sofa test with a friend belongs here, after 004 and before the triangle exists. Greybox until 007. Story 008 comes last because it changes how a Round ends and renames the Water Canister code to the Flag; if Map 01 is late, 008 may run before 007 (its Dependencies say how). The v0.1 playtest follows 008: with it the First Playable is complete.
+001 → 002 → 003 → 004 → 005 → 006 → 007 → 008. Stories 001 to 004 are the vertical slice (two Motorbikes, two Bases, one Flag run) and are Complete as of 2026-10-01: the sofa test with a friend belongs here, after 004 and before the triangle exists. Greybox until 007. Story 008 comes last because it changes how a Round ends and renames the Water Canister code to the Flag; if Map 01 is late, 008 may run before 007 (its Dependencies say how). The v0.1 playtest follows 008: with it the First Playable is complete. Story 008 was closed on 2026-10-03, so the First Playable is built and the playtest is next.
 
 ## Stories
 
@@ -35,4 +35,4 @@ Two friends on one couch drive wasteland Motorbikes, Buggies, Trucks and Gyrocop
 | 005 | Four Units and the triangle | Logic | Complete | N/A (minimal) |
 | 006 | Fuel and Fuel Cans | Logic | Complete | N/A (minimal) |
 | 007 | Map 01 | Visual/Feel | Complete | N/A (minimal) |
-| 008 | Tokens, the Garage and the loss | Integration | Ready | N/A (minimal) |
+| 008 | Tokens, the Garage and the loss | Integration | Complete | N/A (minimal) |

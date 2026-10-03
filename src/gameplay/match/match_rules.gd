@@ -18,7 +18,10 @@ extends Resource
 ## MatchController reads the types; the Weapon and the Shot read the rest.
 ##
 ## Data only. Both read these numbers and never write them. The .tres is shared, so treat it as
-## read-only at runtime (duplicate() it for a private copy).
+## read-only at runtime. A copy for a test: duplicate() makes the numbers private but shares the
+## unit_types array with the original (writing the copy's array writes the original's: measured on
+## Godot 4.7.2 in Story 008), so replace unit_types with an array of its own instead of changing its
+## entries.
 ##
 ## Every default below is 0.0 on purpose, for the reason UnitStats gives: the engine leaves a
 ## property out of a saved .tres when it equals the script default, so a tuned number that
@@ -40,9 +43,11 @@ extends Resource
 ## The Unit types a Player may choose from at every spawn, in the order the choice panel lists
 ## them: Motorbike, Buggy, Truck, Gyrocopter (Story 005 AC-1 and AC-6; design/rules.md "Units").
 ## Each entry is one UnitStats .tres, the very resource its scene uses (one object in the
-## resource cache, so a change reaches every reader). Every type is always available: the Token
-## stock that limits the choice is Story 008's. MatchController refuses to begin a Round while
-## the list is empty or an entry's first_problem() is not empty. Empty by default (class doc).
+## resource cache, so a change reaches every reader). A type may be chosen while the Player has a
+## Token of it: the stock that limits the choice is the Map's (TokenStock, Story 008), which counts
+## by each entry's type_id. MatchController refuses to begin a Round while the list is empty, while
+## an entry's first_problem() is not empty, and while the Map's stock does not fit the list
+## (TokenLedger.first_problem()). Empty by default (class doc).
 @export var unit_types: Array[UnitStats] = []
 
 ## The damage-multiplier matrix of the triangle (Story 005 AC-4): a Shot scales its attacker's

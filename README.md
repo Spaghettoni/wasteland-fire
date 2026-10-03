@@ -32,11 +32,11 @@ The rules of record are in `design/rules.md`, the one-page brief in
 | 001 | Driving toy: one Motorbike, chase camera, arcade kinematic driving | Done |
 | 002 | Split screen for two, one fixed keyboard layout per Player | Done |
 | 003 | Bases, destruction and respawn, self-destruct | Done |
-| 004 | The Flag and the win, per-Player HUD, round-over screen | Done, code still calls it the Water Canister |
+| 004 | The Flag and the win, per-Player HUD, round-over screen | Done |
 | 005 | Four Units and the counter triangle | Done |
 | 006 | Fuel and Fuel Cans | Done |
 | 007 | Map 01 with the Team colours | Done |
-| 008 | Tokens, the Garage and the loss | Planned |
+| 008 | Tokens, the Garage and the loss | Done |
 
 Map 01 and the four Units have their low-poly look: the Map is built from
 Godot's built-in meshes with textures generated in code, and the Units are the
@@ -56,8 +56,21 @@ game loads. The older evidence scenarios still run on the greybox field.
 
 Each Player chooses a Unit type at the start of a Round and after every
 destruction, with the choice panel at the bottom of their own view. R restarts
-from the round-over screen. Keys 1 and 2 used to damage each Player's own Unit
-for testing; they are off now that weapons exist, and `debug_damage` in
+from the round-over screen.
+
+Each Player has a stock of Tokens for every Unit type; Map 01 gives both of
+them Motorbike 5, Buggy 3, Truck 2 and Gyrocopter 2. A destroyed Unit costs one
+Token of its type, taken when it is destroyed: enemy fire, a Self-destruct and
+a Gyrocopter's empty-tank crash all count. The choice panel shows how many
+Tokens each type has left and dims a type with none, which the cursor skips;
+the HUD shows your Motorbike Tokens, counting the Motorbike you are driving. A
+Round ends when a Player delivers the other's Flag, or when a Player's last
+Motorbike Token is gone: that Player loses. If both lose their last one on the
+same tick, nobody wins and the screen says so. R starts the Round again with
+full stocks.
+
+Keys 1 and 2 used to damage each Player's own Unit for testing; they are off
+now that weapons exist, and `debug_damage` in
 `src/gameplay/match/data/match_rules.tres` brings them back.
 
 Every Unit spawns with half a tank. The amber Fuel gauge beside the hit points
@@ -98,7 +111,7 @@ godot --headless -s -d --remote-debug tcp://127.0.0.1:0 res://addons/gdUnit4/bin
 ## Repository layout
 
 - `src/gameplay/` is the game: units, match rules, split screen, maps, chase
-  camera and the Flag (still named `canister`). `src/ui/hud/` is the HUD.
+  camera and the Flag. `src/ui/hud/` is the HUD.
 - `tests/` holds the gdUnit4 tests.
 - `design/` holds the brief, the rules of record and the author's Slovak
   source with its English translation.

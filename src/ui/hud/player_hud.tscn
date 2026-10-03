@@ -34,9 +34,10 @@ mouse_filter = 2
 script = ExtResource("1_hud")
 hit_points_format = "HP %d / %d"
 fuel_format = "Fuel %d / %d"
-carrying_text = "You carry the enemy Water Canister"
-home_text = "Your Water Canister is at home"
-away_text = "Your Water Canister is away"
+tokens_format = "%s Tokens: %d"
+carrying_text = "You carry the enemy Flag"
+home_text = "Your Flag is at home"
+away_text = "Your Flag is away"
 
 [node name="HitPointsBar" type="ProgressBar" parent="." unique_id=1610733521]
 unique_name_in_owner = true
@@ -92,17 +93,33 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="CanisterStatusLabel" type="Label" parent="." unique_id=1822146019]
+[node name="FlagStatusLabel" type="Label" parent="." unique_id=1822146019]
 unique_name_in_owner = true
 layout_mode = 1
-anchor_right = 1.0
 offset_left = 16.0
 offset_top = 46.0
-offset_right = -16.0
+offset_right = 316.0
 offset_bottom = 76.0
-grow_horizontal = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.06, 1)
 theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 20
+autowrap_mode = 3
+
+[node name="TokensLabel" type="Label" parent="." unique_id=2008001001]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -308.0
+offset_top = 46.0
+offset_right = -16.0
+offset_bottom = 76.0
+grow_horizontal = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 2
 autowrap_mode = 3

@@ -53,15 +53,15 @@ extends RefCounted
 ##                                 was freed, or the Unit is not alive after spawn() (it refused to
 ##                                 drive in _ready()): one push_error each
 ##   ALIVE        -> WAITING       note_destroyed(): the Unit emitted destroyed: stamp the frame,
-##                                 clear the choice, true, and the controller drops the canister it
+##                                 clear the choice, true, and the controller drops the Flag it
 ##                                 carried (if any) at the wreck and emits unit_destroyed; or
 ##                                 bench() from restart(): the Unit is put on its spawn point and
 ##                                 benched, the Player chooses
 ## A note_destroyed() for a Player who is not ALIVE is refused with a warning and false: a Unit
 ## that is not alive cannot be destroyed, so only a Unit spawned behind the controller's back could
 ## send one. A choose() for a Player who is not WAITING, or who has chosen already, is refused with
-## false and nothing changes; the Round's own refusals (not begun, over, an index outside the data)
-## are the controller's, before it asks.
+## false and nothing changes; the Round's own refusals (not begun, over, an index outside the data,
+## a type with no Token left) are the controller's, before it asks.
 ##
 ## The choice (Story 005 AC-6). The two halves of a respawn are independent: the due frame runs
 ## from the destruction whether or not the Player has chosen, and the choice may come before or
@@ -85,9 +85,9 @@ extends RefCounted
 ##
 ## The spawn settle rule. On the tick after Unit.spawn() the physics server still reports the Unit
 ## overlapping whatever stood at its OLD position (measured on Godot 4.7.2 with Jolt: a respawned
-## Carrier was reported touching its own dropped canister 10 m away, for one tick; the Story 004
-## evidence doc keeps the probe), so without a guard a Player would re-pick its dropped canister
-## from its Base, or deliver an enemy canister lying at its wreck. _spawn() therefore stamps the
+## Carrier was reported touching its own dropped Flag 10 m away, for one tick; the Story 004
+## evidence doc keeps the probe), so without a guard a Player would re-pick its dropped Flag
+## from its Base, or deliver an enemy Flag lying at its wreck. _spawn() therefore stamps the
 ## physics frame per Player and may_act() holds that Player back until SPAWN_SETTLE_TICKS frames
 ## have passed: at every spawn, so at the start of the Round, at every respawn and after a restart.
 ## The count is an engine latency with a margin, not a tuning value, so it is a constant here and
@@ -119,9 +119,10 @@ extends RefCounted
 ## bench stamp taken before the pause began is pushed on the same way, so a pause never counts as
 ## settled ticks: the physics server does not step while the tree is paused (the Story 004
 ## evidence doc keeps the run), so the ghost overlap the settle rules guard against would survive
-## the pause unstepped. The pause of a won Round ends in restart() after every Player was benched,
-## later than the pause began, so the benches' own stamps are not pushed; their due frames, taken
-## at the frame the pause began, are pushed to the frame of the unpause: due at once, as meant.
+## the pause unstepped. The pause of an ended Round ends in restart() after every Player was
+## benched, later than the pause began, so the benches' own stamps are not pushed; their due
+## frames, taken at the frame the pause began, are pushed to the frame of the unpause: due at once,
+## as meant.
 ##
 ## The respawn runs inside a physics tick, never from _process: inside a tick the drawn Unit and
 ## its camera jump together in one rendered frame, while from _process the frame of the teleport
@@ -212,9 +213,9 @@ func enlist(owner: MatchController, units: Array[Unit], bases: Array[Base], came
 ## Unit is left benched where the teleport put it; one that refused to drive is placed and left
 ## alone, and the spawn after its Player's choice reports it). A pending wait is cancelled, the
 ## choice cleared, and the Player is WAITING and due at once: at the frame the waits are measured
-## against, so a bench during the pause of a won Round is due on the first tick after the unpause.
-## The bench frame is stamped (the bench settle rule). Called from begin() before the first tick,
-## or from restart() inside a tick.
+## against, so a bench during the pause of an ended Round is due on the first tick after the
+## unpause. The bench frame is stamped (the bench settle rule). Called from begin() before the
+## first tick, or from restart() inside a tick.
 func bench(player_index: int) -> void:
 	var unit: Unit = _units[player_index]
 	unit.global_transform = _bases[player_index].spawn_point.global_transform
@@ -335,7 +336,7 @@ func seconds_until_respawn(player_index: int) -> float:
 
 ## One flag per Player, in Player order: true while that Player may pick up and deliver on this
 ## tick, that is ALIVE and settled, SPAWN_SETTLE_TICKS physics frames after its last spawn (the
-## spawn settle rule, class doc). The controller hands it to the canister rules. Empty before
+## spawn settle rule, class doc). The controller hands it to the Flag rules. Empty before
 ## enlist().
 func may_act() -> Array[bool]:
 	var frame: int = Engine.get_physics_frames()

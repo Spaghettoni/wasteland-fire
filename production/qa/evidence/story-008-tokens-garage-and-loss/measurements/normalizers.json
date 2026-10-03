@@ -1,0 +1,28 @@
+{
+ "hud": [
+  [
+   "FlagStatusLabel=\\(16,46 300x30\\) inside_margin=true widest_text=244 of 300 px lines=1 TokensLabel=\\(332,46 292x30\\) inside_margin=true widest_text=209 of 292 px lines=1",
+   "FlagStatusLabel=(16,46 608x30) inside_margin=true widest_text=349 of 608 px lines=1"
+  ]
+ ],
+ "choice": [
+  [
+   "panel=\\(40,1096 560x168\\)",
+   "panel=(40,1122 560x142)"
+  ],
+  [
+   "panel=\\(40,536 560x168\\)",
+   "panel=(40,562 560x142)"
+  ],
+  [
+   "panel=\\(40,570 560x134\\)",
+   "panel=(40,596 560x108)"
+  ]
+ ],
+ "fuel_cans": [
+  [
+   "status=16,46-316,76",
+   "status=16,46-624,76"
+  ]
+ ]
+}

@@ -25,7 +25,7 @@ A Player's home on the Map: Base A for Player 1 and Base B for Player 2 on Map 0
 _Avoid_: bunker, HQ, spawn point, camp
 
 **Flag (vlajka)**:
-The objective; it replaces the Water Canister of the earlier rules. One per Base. Only a Motorbike can carry it. When its Carrier is destroyed it stays where it fell. The code keeps the name WaterCanister until story 008 renames it.
+The objective; it replaces the Water Canister of the earlier rules. One per Base. Only a Motorbike can carry it. When its Carrier is destroyed it stays where it fell.
 _Avoid_: Water Canister, canister, water, banner, standard, objective, token
 
 **Carrier (nosič)**:
@@ -63,7 +63,7 @@ The flying combat Unit. Flying means only that it crosses cliffs and water, whic
 _Avoid_: helicopter, chopper, gyro, plane
 
 **Token (token)**:
-One spawn of one Unit type. Each Player holds a stock per type, set by the Map (the rules source's example: Motorbike 5, Buggy 3, Truck 2, Gyrocopter 2). A destruction takes one Token of that type, and a type with no Tokens left cannot be picked again.
+One Unit of one type in a Player's stock: a Player with five Motorbike Tokens can lose five Motorbikes. Each Player holds a stock per type, set by the Map (the rules source's example: Motorbike 5, Buggy 3, Truck 2, Gyrocopter 2). A Token is taken at the destruction of a Unit of its type, never at its spawn, so the Unit in play is not yet subtracted; a type with no Tokens left cannot be picked again, and a Player whose last Motorbike Token is gone has lost the Round.
 _Avoid_: life, lives, credit, ticket, respawn, coin
 
 **Garage (garáž)**:

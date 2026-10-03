@@ -25,6 +25,7 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_ros")
 winner_format = "Player %d wins!"
+nobody_text = "Nobody wins!"
 restart_format = "Press %s to play again"
 
 [node name="Panel" type="PanelContainer" parent="." unique_id=1099310442]

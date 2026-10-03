@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://src/gameplay/maps/base.gd" id="1_base"]
-[ext_resource type="PackedScene" path="res://src/gameplay/canister/water_canister.tscn" id="2_canister"]
+[ext_resource type="PackedScene" path="res://src/gameplay/flag/flag.tscn" id="2_flag"]
 [ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/wall.tres" id="3_wall"]
 [ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/tower.tres" id="4_tower"]
 [ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/garage_floor.tres" id="5_garage_floor"]
@@ -107,15 +107,15 @@ size = Vector3(0.6, 8, 0.6)
 [sub_resource type="BoxShape3D" id="BoxShape3D_leg"]
 size = Vector3(0.6, 8, 0.6)
 
-[node name="Base" type="Node3D" node_paths=PackedStringArray("spawn_point", "spare_spawn_points", "zone", "pad", "beacon", "canister", "canister_seat", "color_meshes")]
+[node name="Base" type="Node3D" node_paths=PackedStringArray("spawn_point", "spare_spawn_points", "zone", "pad", "beacon", "flag", "flag_seat", "color_meshes")]
 script = ExtResource("1_base")
 spawn_point = NodePath("SpawnPoint")
 spare_spawn_points = [NodePath("SpareSpawnLeft"), NodePath("SpareSpawnRight")]
 zone = NodePath("Zone")
 pad = NodePath("Pad")
 beacon = NodePath("WaterTower/Tank")
-canister = NodePath("Canister")
-canister_seat = NodePath("CanisterSeat")
+flag = NodePath("Flag")
+flag_seat = NodePath("FlagSeat")
 color_meshes = [NodePath("Walls/TowerGateLeft/Mesh"), NodePath("Walls/TowerGateRight/Mesh"), NodePath("Walls/TowerBackLeft/Mesh"), NodePath("Walls/TowerBackRight/Mesh"), NodePath("Garage/Marking/Dash01"), NodePath("Garage/Marking/Dash02"), NodePath("Garage/Marking/Dash03"), NodePath("Garage/Marking/Dash04"), NodePath("Garage/Marking/Dash05"), NodePath("Garage/Marking/Dash06"), NodePath("Garage/Marking/Dash07"), NodePath("Garage/Marking/Dash08"), NodePath("Garage/Marking/Dash09"), NodePath("Garage/Marking/Dash10"), NodePath("Garage/Marking/Dash11"), NodePath("Garage/Marking/Dash12"), NodePath("Garage/Marking/Dash13"), NodePath("Garage/Marking/Dash14"), NodePath("WaterTower/Roof")]
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
@@ -141,10 +141,10 @@ collision_mask = 2
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -0.15)
 shape = SubResource("BoxShape3D_zone")
 
-[node name="CanisterSeat" type="Marker3D" parent="."]
+[node name="FlagSeat" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -7)
 
-[node name="Canister" parent="." instance=ExtResource("2_canister")]
+[node name="Flag" parent="." instance=ExtResource("2_flag")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -7)
 
 [node name="Walls" type="Node3D" parent="."]

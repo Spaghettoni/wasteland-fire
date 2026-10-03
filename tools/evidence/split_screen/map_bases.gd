@@ -16,8 +16,8 @@ extends RefCounted
 const Harness: GDScript = preload("res://tools/evidence/split_screen_harness.gd")
 ## The shared helpers (check_kit.gd): the ticks and the verdict.
 const Kit: GDScript = preload("res://tools/evidence/split_screen/check_kit.gd")
-## The Story 004 helpers (canister_kit.gd): the Round's Flag and win record, drive_until().
-const Flags: GDScript = preload("res://tools/evidence/split_screen/canister_kit.gd")
+## The Story 004 helpers (flag_kit.gd): the Round's Flag and win record, drive_until().
+const Flags: GDScript = preload("res://tools/evidence/split_screen/flag_kit.gd")
 ## The Story 007 helpers (map_kit.gd): the staging, the wall contact, the pursuit, the tick log.
 const Map: GDScript = preload("res://tools/evidence/split_screen/map_kit.gd")
 
@@ -175,7 +175,7 @@ func _clearance(base: Base, marker: Marker3D, size: Vector3) -> float:
 
 ## base_flag_run (AC-6 and the win): Player 2's Unit parked off every lane, Player 1's Motorbike at
 ## rest on Base2's gate axis facing in; in until the Round's pick-up, then reverse to REVERSE_TO_Z
-## (canister_kit.gd's drive_until(), no steering), then _return_home(), each leg while the last
+## (flag_kit.gd's drive_until(), no steering), then _return_home(), each leg while the last
 ## succeeded, every tick logged (_log_raid()); the cover distance is kept apart for the gate axis.
 func _flag_run() -> String:
 	var raid: Base = _bases[Harness.PLAYER_2]
@@ -257,14 +257,14 @@ func _seat_inside(base: Base) -> bool:
 	var box: BoxShape3D = (shape.shape as BoxShape3D) if shape != null else null
 	if box == null:
 		return false
-	var seat: Vector3 = base.canister_seat.global_position
+	var seat: Vector3 = base.flag_seat.global_position
 	var local: Vector3 = shape.global_transform.affine_inverse() * seat
 	var off_axis: Vector3 = seat - base.beacon.global_position
 	return absf(local.x) <= box.size.x / 2.0 and absf(local.z) <= box.size.z / 2.0 \
 		and Vector2(off_axis.x, off_axis.z).length() <= base.beacon.get_aabb().size.x / 2.0
 
 
-## The base_flag_run verdict from the raid's numbers and the Round's record (canister_kit.gd): one
+## The base_flag_run verdict from the raid's numbers and the Round's record (flag_kit.gd): one
 ## pick-up, of Player 2's Flag by Player 1 inside Base2's gate, from a seat inside the zone under
 ## the tank; out to REVERSE_TO_Z; round; the win carrying it; no wall touched. The scenario never
 ## calls carry_by(): the Round's own rules hand the Flag over.
@@ -272,8 +272,8 @@ func _flag_verdict(raid: Base) -> void:
 	var problems: PackedStringArray = []
 	var took: bool = _flags.pick_ups.size() == 1 and _flags.pick_ups[0].x == Harness.PLAYER_1 and _flags.pick_ups[0].y == Harness.PLAYER_2
 	var won: bool = _flags.round_overs.size() == 1 and _flags.round_overs[0].x == Harness.PLAYER_1
-	var carried: bool = _flags.canisters[Harness.PLAYER_2].state == WaterCanister.State.CARRIED
-	var seat_z: float = raid.to_local(raid.canister_seat.global_position).z
+	var carried: bool = _flags.flags[Harness.PLAYER_2].state == Flag.State.CARRIED
+	var seat_z: float = raid.to_local(raid.flag_seat.global_position).z
 	var contacts: int = _map.contacts[Harness.PLAYER_1]
 	_kit.need(problems, took and _raid[&"pick_z"] > GATE_Z, "no pick-up of Player 2's Flag inside Base2's gate (%d pick-ups)" % _flags.pick_ups.size())
 	_kit.need(problems, _seat_inside(raid), "Base2's Flag seat (local z %.2f) is not inside its zone under its tank" % seat_z)

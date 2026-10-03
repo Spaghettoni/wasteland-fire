@@ -32,9 +32,10 @@ extends Label
 ##   counting -> hidden    the controller reports no wait for this player_index:
 ##                         seconds_until_respawn() is zero, so no respawn is coming (the Player was
 ##                         dropped out of the Round)
-##   counting -> hidden    the controller emitted round_over: a delivery won (Story 004 AC-6), the
-##                         Round-over screen takes the view, and no respawn comes until the
-##                         restart, which emits unit_spawned for every Player
+##   counting -> hidden    the controller emitted round_over: the Round ended (a delivery, a loss or
+##                         a double loss: Story 004 AC-6, Story 008 AC-4), the Round-over screen
+##                         takes the view, and no respawn comes until the restart, which emits
+##                         round_started and no unit_spawned
 ##   hidden   -> hidden    the controller emitted unit_spawned for this player_index (the start
 ##                         of the Round, or the restart: the Player was never waiting)
 ##   hidden   -> hidden    the controller emitted round_over while this Player's Unit was in play;
@@ -152,7 +153,7 @@ func _on_unit_spawned(spawned_player_index: int) -> void:
 		_set_counting(false)
 
 
-## A delivery won the Round, whoever won: hide. The Round-over screen takes the view, and the
-## restart announces itself with unit_spawned.
+## The Round ended, whoever won or nobody: hide. The Round-over screen takes the view, and the
+## restart announces itself with round_started.
 func _on_round_over(_winner_index: int) -> void:
 	_set_counting(false)

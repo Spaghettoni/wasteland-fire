@@ -22,7 +22,7 @@ extends CharacterBody3D
 ## production/epics/wasteland-fire/story-003-bases-destruction-respawn.md AC-2 (hit points from
 ## the data, destroyed at zero), AC-3 (what a respawn needs from the Unit: spawn()) and AC-5
 ## (Self-destruct: destroy()); production/epics/wasteland-fire/story-004-water-canister-and-win.md
-## AC-2 (whether this Unit may carry the Water Canister is data, can_carry and carry_offset from
+## AC-2 (whether this Unit may carry the Flag is data, can_carry and carry_offset from
 ## UnitStats, never a type check) and AC-7 (hit_points_changed, the hit points the HUD shows);
 ## production/epics/wasteland-fire/story-005-three-units-and-triangle.md AC-1 (the four types are
 ## four UnitStats that spawn() applies to the same body: stats, collider, layers and silhouette
@@ -118,12 +118,12 @@ extends CharacterBody3D
 ## leaves it alone. destroy() and leave_play() empty the tank and spawn() gives the type's starting
 ## share of it (step 5), so dying is never a free refuel (Story 006 AC-5).
 ##
-## Carrying (Story 004): whether this Unit may pick up the Water Canister, and where it rides, is
+## Carrying (Story 004): whether this Unit may pick up the Flag, and where it rides, is
 ## the Unit type's data (UnitStats.can_carry and carry_offset: true and a tail mount for the
 ## Motorbike, false and zero for a type that never carries), exposed read-only as can_carry and
 ## carry_offset and never a type check in code (AC-2). The Unit does none of the carrying: the
-## Round rules (MatchController) read the two values, reparent the canister under the Unit at
-## carry_offset and drop it where the Unit is destroyed. The Unit never calls the canister, the
+## Round rules (MatchController) read the two values, reparent the Flag under the Unit at
+## carry_offset and drop it where the Unit is destroyed. The Unit never calls the Flag, the
 ## MatchController or another Unit, and does not know it is a Carrier. Hit points are shown, not
 ## polled: hit_points_changed fires once per change (apply_damage(), destroy(), leave_play(),
 ## spawn()) with the value and the maximum, so a HUD can listen without reading the Unit every
@@ -162,7 +162,7 @@ extends CharacterBody3D
 ## removed and freed, the type's model scene is instanced as the last child named Model, and every
 ## MeshInstance3D under it in the "team_colour" group gets team_material as material_override (the
 ## Body, and the Truck's Cab). One node per Player, retyped in place, is the Story 004 hand-off:
-## the HUD, the chase camera, both input nodes, the Round and a carried canister all hold the node.
+## the HUD, the chase camera, both input nodes, the Round and a carried Flag all hold the node.
 ## The physics space lags one tick behind a spawn: the swapped shape answers queries at once, the
 ## teleport and the restored layer and mask on the next tick (measured on 4.7.2; the Story 005
 ## evidence doc keeps the run), which is why the Round stamps a settle tick and never tests a spot
@@ -255,7 +255,7 @@ var is_alive: bool:
 	set(_value):
 		push_error("Unit '%s': is_alive is read-only. Change it with destroy() or spawn()." % name)
 
-## Whether this Unit may pick up and carry a Water Canister: stats.can_carry, the Unit type's data
+## Whether this Unit may pick up and carry a Flag: stats.can_carry, the Unit type's data
 ## (Story 004 AC-2; true for the Motorbike, never a type check). False while the Unit refused to
 ## drive in _ready() (invalid stats). Read-only: assigning to it pushes an error and changes
 ## nothing; change it in the UnitStats .tres.
@@ -265,9 +265,9 @@ var can_carry: bool:
 	set(_value):
 		push_error("Unit '%s': can_carry is read-only. It is the Unit type's data: UnitStats.can_carry." % name)
 
-## Where a carried Water Canister rides, in this Unit's local space: stats.carry_offset, the Unit
+## Where a carried Flag rides, in this Unit's local space: stats.carry_offset, the Unit
 ## type's data (a tail mount for the Motorbike). Whoever carries (MatchController) places the
-## canister's origin here. Vector3.ZERO while the Unit refused to drive in _ready(). Read-only:
+## Flag's origin here. Vector3.ZERO while the Unit refused to drive in _ready(). Read-only:
 ## assigning to it pushes an error and changes nothing; change it in the UnitStats .tres.
 var carry_offset: Vector3:
 	get:
@@ -428,8 +428,8 @@ func reset_motion() -> void:
 ## twice. A Shot calls it from its own physics tick (see Shot), and the debug-damage key still does
 ## while match_rules.debug_damage is above zero. Call it from a physics tick or from _process,
 ## never from an Area3D or body signal handler: the Round's handler of `destroyed` reparents the
-## canister a Carrier held (WaterCanister.drop_at()), and the physics server refuses a reparent of
-## a node holding an Area3D while it flushes those signals, so the canister would stay a hidden
+## Flag a Carrier held (Flag.drop_at()), and the physics server refuses a reparent of
+## a node holding an Area3D while it flushes those signals, so the Flag would stay a hidden
 ## child of the wreck.
 func apply_damage(amount: float) -> void:
 	if not _is_alive or not (amount > 0.0):

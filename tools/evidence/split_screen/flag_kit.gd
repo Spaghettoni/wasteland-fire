@@ -1,6 +1,6 @@
 extends RefCounted
-## What the Story 004 scenarios share: the record of the MatchController's Round and Water Canister
-## signals with the runner's tick each arrived on, the Units, Bases, canisters and cameras of the
+## What the Story 004 scenarios share: the record of the MatchController's Round and Flag
+## signals with the runner's tick each arrived on, the Units, Bases, Flags and cameras of the
 ## launch scene, the moves (teleport, approach, a feathered drive until a reading holds, a rest),
 ## and the geometric test of a Unit's box against a Base zone's box: "entered" on the tick the Unit
 ## got there, while the physics server reports it about two ticks later (the Story 004 evidence
@@ -10,7 +10,7 @@ extends RefCounted
 const Harness: GDScript = preload("res://tools/evidence/split_screen_harness.gd")
 ## The shared helpers (check_kit.gd).
 const Kit: GDScript = preload("res://tools/evidence/split_screen/check_kit.gd")
-## The Player body materials each Base paints its canister with, in Player order (Story 002 data).
+## The Player body materials each Base paints its Flag with, in Player order (Story 002 data).
 const PLAYER_MATERIALS: Array[String] = [
 	"res://src/gameplay/split_screen/data/player_1_body_material.tres",
 	"res://src/gameplay/split_screen/data/player_2_body_material.tres",
@@ -32,15 +32,15 @@ var controller: MatchController
 var units: Array[Unit] = []
 ## The Bases of the launch scene, by Player.
 var bases: Array[Base] = []
-## The canisters by owner: canister N is bases[N].canister (CONTEXT.md: the canister of Player N).
-var canisters: Array[WaterCanister] = []
+## The Flags by owner: Flag N is bases[N].flag (CONTEXT.md: the Flag of Player N).
+var flags: Array[Flag] = []
 ## The cameras of the launch scene, by Player.
 var cameras: Array[ChaseCamera] = []
-## Every canister_picked_up since the scenario connected: (carrier_index, canister_index, tick).
+## Every flag_picked_up since the scenario connected: (carrier_index, flag_index, tick).
 var pick_ups: Array[Vector3i] = []
-## Every canister_dropped: (canister_index, tick).
+## Every flag_dropped: (flag_index, tick).
 var drops: Array[Vector2i] = []
-## Every canister_seated: (canister_index, tick).
+## Every flag_seated: (flag_index, tick).
 var seats: Array[Vector2i] = []
 ## Every round_over: (winner_index, tick).
 var round_overs: Array[Vector2i] = []
@@ -61,11 +61,11 @@ func _init(harness_node: Node, check_kit: Kit) -> void:
 	controller = split.match_controller
 	units.assign([split.player_1_unit, split.player_2_unit])
 	bases.assign([split.field.player_1_base, split.field.player_2_base])
-	canisters.assign([bases[0].canister, bases[1].canister])
+	flags.assign([bases[0].flag, bases[1].flag])
 	cameras.assign([split.player_1_camera, split.player_2_camera])
-	controller.canister_picked_up.connect(func(carrier: int, index: int) -> void: pick_ups.append(Vector3i(carrier, index, harness.ticks)))
-	controller.canister_dropped.connect(func(index: int) -> void: drops.append(Vector2i(index, harness.ticks)))
-	controller.canister_seated.connect(func(index: int) -> void: seats.append(Vector2i(index, harness.ticks)))
+	controller.flag_picked_up.connect(func(carrier: int, index: int) -> void: pick_ups.append(Vector3i(carrier, index, harness.ticks)))
+	controller.flag_dropped.connect(func(index: int) -> void: drops.append(Vector2i(index, harness.ticks)))
+	controller.flag_seated.connect(func(index: int) -> void: seats.append(Vector2i(index, harness.ticks)))
 	controller.round_over.connect(_on_round_over)
 	controller.round_started.connect(func() -> void: round_started += 1)
 	controller.unit_spawned.connect(func(player: int) -> void: spawns.append(Vector2i(player, harness.ticks)))
@@ -78,19 +78,19 @@ func _on_round_over(winner: int) -> void:
 	paused_at_signal = harness.get_tree().paused
 
 
-## The name of a canister's state (WaterCanister.State), for a detail line.
-func state_name(canister_index: int) -> String:
-	return String(WaterCanister.State.keys()[canisters[canister_index].state])
+## The name of a Flag's state (Flag.State), for a detail line.
+func state_name(flag_index: int) -> String:
+	return String(Flag.State.keys()[flags[flag_index].state])
 
 
-## The name of a Player's canister status (MatchController.CanisterStatus), for a detail line.
+## The name of a Player's Flag status (MatchController.FlagStatus), for a detail line.
 func status_name(player: int) -> String:
-	return String(MatchController.CanisterStatus.keys()[controller.canister_status(player)])
+	return String(MatchController.FlagStatus.keys()[controller.flag_status(player)])
 
 
-## Whether the canister's zone reports the Player's Unit touching it, as the rules will read it.
-func touching(canister_index: int, player: int) -> bool:
-	return canisters[canister_index].is_touching(units[player])
+## Whether the Flag's zone reports the Player's Unit touching it, as the rules will read it.
+func touching(flag_index: int, player: int) -> bool:
+	return flags[flag_index].is_touching(units[player])
 
 
 ## Puts a Unit down on the ground at a place facing a direction (runner place()); cargo rides along.

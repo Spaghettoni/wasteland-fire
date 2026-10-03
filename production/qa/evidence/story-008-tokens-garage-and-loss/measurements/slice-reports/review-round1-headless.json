@@ -1,0 +1,55 @@
+{
+ "clean": false,
+ "issues": [
+  {
+   "severity": "major",
+   "kind": "FIDELITY",
+   "file": "tools/evidence/split_screen/loss.gd",
+   "quote": "## T22: Player 1's last Motorbike takes Player 2's Flag, is put down on Base 2's gate axis and",
+   "problem": "No retained scenario proves that destroying a Flag Carrier costs exactly ONE Token while Motorbike Tokens remain (AC-2 on the central role). The only Carrier deaths in the 7 new scenarios are T22's, on the LAST Motorbike (count 1 to 0), where a second take is a silent no-op that only warns. Seeded defect V11 survived all 7 new scenarios AND the 31 retained ones (regress ALL_OK=True): in match_controller.gd _on_unit_destroyed, under 'if dropped != FlagRules.NONE:' add 'if _ledger.count_of(player_index, stats.type_id) > 0: _ledger.take(player_index, stats.type_id)', so a Carrier costs 2. My seeded random-key fuzz with teleports onto the enemy Flag catches it at once ('p2 lost 2 Tokens in one tick with 1 destructions'). The real code is right: probe edge9, Carrier with 5 Motorbike Tokens, Tab gives counts [[4,3,2,2],[5,3,2,2]], signals flag_dropped:1 then destroyed:0, Round runs, Flag DROPPED. A hole in the evidence, not in the product.",
+   "fix": "In loss.gd T22 (or tokens.gd T07) add one Carrier death with Tokens left: before = _tk.counts(); await _lk.carry_to_gate(0, 1, 1); await _tk.destruct(0); need _tk.counts() == Tokens.charged(before, 0, _lk.carrier), signals ['flag_dropped:1','destroyed:0'] and not _tk.controller.is_round_over()."
+  },
+  {
+   "severity": "minor",
+   "kind": "FIDELITY",
+   "file": "tools/evidence/split_screen/tokens_data.gd",
+   "quote": "##        assumed at index 0: a destroyed Truck is charged elsewhere when the order differs.",
+   "problem": "The T35 header claims to kill 'the carrier assumed at index 0', true only for the controller's carrier_type_index() query. TokenLedger.start() picks the carrier at begin() and restart(), and T35 swaps the order AFTER begin() and puts it back before any restart, so start() never sees a reordered list. Seeded defect W1 (token_ledger.gd:73 'if stats != null and stats.can_carry:' changed to 'if stats != null:', i.e. the carrier is the first type of the list) survived all 7 new and 31 retained scenarios; the mutation run found the same survivor ('force true' and 'flip and to or' on that line). The story note says the loss type is read from the can_carry data, not from position. The real code is right: probe edge10 builds the rules with the Motorbike LAST (index 3) before begin(): HUD reads 'Motorbike Tokens: 2', two Motorbike destructions end the Round, R restores 2, and an exhausted Gyrocopter at index 0 ends nothing.",
+   "fix": "End T35 with a loss and an R while the swapped copy is still in controller.rules (so start() runs with the Motorbike last), then assert the HUD line, carrier_type_index() and a Round ended by the Motorbike's last Token; or run one scenario on rules built reordered before begin()."
+  },
+  {
+   "severity": "minor",
+   "kind": "FIDELITY",
+   "file": "tools/evidence/split_screen/tokens_data_kit.gd",
+   "quote": "_variant(\"two carrier types\", {}, fixture, _rules_of(pair), [carrier.display_name, SECOND_CARRIER])]",
+   "problem": "T04's eight refusal variants have no 'type without a type_id'. Deleting token_ledger.gd lines 164-165 ('if stats.type_id.is_empty(): return \"unit_types[%d] ('%s') has no type_id, so no count can be kept for it\"') passes all 7 new and 31 retained scenarios (seeded defect D22d). Design 13.2 lists the refusal. Probe edge8 shows the branch works: one error 'unit_types[3] ('Gyrocopter') has no type_id' (only when the stock does not list that type's key; with the key present the unknown-key check fires first and names the key).",
+   "fix": "Add to variants(): a copy of rules whose first non-carrier type has type_id &\"\", the stock built with that type's key removed ({other.type_id: null}), wants ['no type_id', '[%d]' % index]."
+  },
+  {
+   "severity": "minor",
+   "kind": "FIDELITY",
+   "file": "src/gameplay/match/match_controller.gd",
+   "quote": "\tif not _has_begun or _round_state != RoundState.RUNNING:",
+   "problem": "choose()'s doc promises a refusal when 'the Round is over', but nothing exercises it: after a loss the tree is paused, so no key reaches choose(), and every scenario calls choose() only while the Round runs. Deleting '_round_state != RoundState.RUNNING' (seeded V7, mutation 'force false' on this line) passes all 7 new and 31 retained scenarios. Probe edge6 shows the real code refuses (choose(0, 1) and choose(1, 1) false while over, nothing chosen).",
+   "fix": "In loss.gd T18 after finish_with(): need not _tk.controller.choose(0, _lk.carrier) and not _tk.controller.choose(1, _lk.carrier), chosen_type_index == -1, no new unit_chosen event."
+  },
+  {
+   "severity": "minor",
+   "kind": "FIDELITY",
+   "file": "src/gameplay/match/match_controller.gd",
+   "quote": "## could, and none destroys anything) still costs its Token and is still announced, and the result",
+   "problem": "The class doc and design 13.10 say a destruction while the Round is OVER still costs its Token, is still announced and cannot change the result, and that 'a scenario that destroys during the pause expects exactly that'. None does: loss T21's Enter 'destroys nothing' because PlayerMatchInput is paused, so the documented branch is never run. Making _on_unit_destroyed return early when OVER (seeded V23) passes all 7 and 31. Probe edge7 (unit.destroy() from a non-pausable coroutine after a loss) confirms the doc: one destroyed event, Token taken (P2 Motorbike 1 to 0), winner stays 1, no second round_over, R refills.",
+   "fix": "In loss.gd T21 after the loss call _lk.fk.units[1].destroy() from the scenario and assert one extra destroyed event, the Token taken, winner_index unchanged, still one round_over."
+  },
+  {
+   "severity": "minor",
+   "kind": "DEFECT",
+   "file": "tools/evidence/split_screen/token_ui.gd",
+   "quote": "var record: Dictionary = _overs[-1] if _overs.size() == _over_mark + 1 else {\"winner\": -2, \"paused\": false, \"lines\": [[], []]}",
+   "problem": "The fallback record used when the Round did not end holds plain Arrays where the next line compares PackedStringArray (record['lines'][player] == want). Under any defect that stops a Round ending (seeded D04b, D10, D31) this raises 'SCRIPT ERROR: Invalid operands Array and PackedStringArray in operator ==' instead of printing a FAIL for T29; the run still fails, but through a script error. Same pattern: token_kit.gd:245 and tokens.gd:291, 295 use .get('panels', [[], []]) against PackedStringArray, harmless unless the key is missing.",
+   "fix": "Use \"lines\": [PackedStringArray(), PackedStringArray()] in the fallback record (and PackedStringArray defaults in the two other .get calls)."
+  }
+ ],
+ "measurements": [],
+ "checked": "Read the review notes, the full design block with the preflight corrections, the story, CONTEXT.md, the critic result (issues and missing cases), the whole of token_ledger.gd, match_controller.gd, player_choice_input.gd, unit_choice.gd/.tscn, player_hud.gd/.tscn, round_over_screen.gd/.tscn, token_stock.gd, the harness diff, the diffs of the retained scenarios (only the renames, the choice.gd NameLabel path and map_layout USE_MAP_STOCK differ), and loss.gd, loss_kit.gd, token_kit.gd, token_layout.gd, parts of tokens, token_choice, token_ui, tokens_data and their kits. I never wrote to the repo or to baseline-out or normalizers.json: every Godot run was one process at a time in rsync copies under my own scratch folder (lens-accept), the repo copy refreshed once because the orchestrator edited comments (and a flag.tscn resource id) during my run; no behaviour file changed. Ran: regress twice (second on the live repo copy), the 7 new scenarios twice each plus a third time on the live copy, frozen, assets, launch, parseall (95 files), --check-only, lint008; an independent probe scene of 142 checks written from the public API with my own key helpers (AC-1..AC-9 and the five critic edge cases, plus Carrier-with-Tokens-left, reordered unit_types and an exhaustive cursor model); a seeded random-key fuzz; 84 seeded defects (your 24 in 36 variants plus 48 of mine, patched into fresh copies and run against all 7 scenarios, the legacy-stock one against the 31); a 425-mutant run. Result: no defect found in the product (src/); every one of your 24 defects is killed except the empty-type_id variant of 22; the findings are 4 evidence holes (Carrier destroyed with Tokens left, carrier chosen by position, empty type_id refusal, and the two OVER-state API behaviours), one failure-path script error in token_ui.gd and the T35 header over-claiming. Not checked: windowed frames and the dim/colour look (the orchestrator's frames), fps, map_fps and input_ghosting_check, the Windows export, real-time frame pacing, the docs the orchestrator still writes (README, TD register, evidence doc, smoke file), and the pre-existing holes the mutation run touched (HUD flag_seated connection, begin() called twice) that predate this story."
+}

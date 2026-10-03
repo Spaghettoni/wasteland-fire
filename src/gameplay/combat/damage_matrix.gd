@@ -17,11 +17,12 @@ extends Resource
 ## the Motorbike's row and column, the own-type pairs and the fallback of design/rules.md (every
 ## multiplier 1.0, if the triangle shows without the matrix) are data edits, never code changes.
 ##
-## Data only: read, never written, at runtime (duplicate() it for a private copy). Every default
-## below is zero or empty on purpose, for the reason UnitStats gives: the engine leaves a property
-## out of a saved .tres when it equals the script default, so the 1.0 fallback lives in
-## damage_matrix.tres, not here. A matrix whose default_multiplier is zero would make every
-## unlisted pair deal nothing: write it in the data.
+## Data only: read, never written, at runtime (duplicate_deep() it for a private copy: duplicate()
+## shares the multipliers dictionary with the original, measured on Godot 4.7.2 in Story 008).
+## Every default below is zero or empty on purpose, for the reason UnitStats gives: the engine
+## leaves a property out of a saved .tres when it equals the script default, so the 1.0 fallback
+## lives in damage_matrix.tres, not here. A matrix whose default_multiplier is zero would make
+## every unlisted pair deal nothing: write it in the data.
 
 ## The multiplier of every attacker-target pair the table does not list: the shape of the matrix
 ## in design/rules.md puts 1.0 here (the own-type pairs, the Motorbike both ways). Zero by default

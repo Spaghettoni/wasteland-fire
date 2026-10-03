@@ -20,8 +20,8 @@ const Harness: GDScript = preload("res://tools/evidence/split_screen_harness.gd"
 const Kit: GDScript = preload("res://tools/evidence/split_screen/check_kit.gd")
 ## The Story 005 helpers (unit_kit.gd): the typed spawn, the signal record, the fire key, the waits.
 const Units: GDScript = preload("res://tools/evidence/split_screen/unit_kit.gd")
-## The Story 004 helpers (canister_kit.gd): the Flags' states and drops.
-const Flags: GDScript = preload("res://tools/evidence/split_screen/canister_kit.gd")
+## The Story 004 helpers (flag_kit.gd): the Flags' states and drops.
+const Flags: GDScript = preload("res://tools/evidence/split_screen/flag_kit.gd")
 ## The Story 006 helpers (fuel_kit.gd): the fuel_changed record, the holds, the coast.
 const Fuel: GDScript = preload("res://tools/evidence/split_screen/fuel_kit.gd")
 

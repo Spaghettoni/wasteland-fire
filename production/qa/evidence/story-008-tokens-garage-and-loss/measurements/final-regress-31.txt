@@ -1,0 +1,47 @@
+STRICT drive  coast              rc=0 result_ok=True identical=True
+STRICT drive  walls              rc=0 result_ok=True identical=True
+STRICT drive  showcase           rc=0 result_ok=True identical=True
+STRICT drive  soak               rc=0 result_ok=True identical=True
+STRICT split  layout             rc=0 result_ok=True identical=True
+STRICT split  isolation          rc=0 result_ok=True identical=True
+STRICT split  simultaneous       rc=0 result_ok=True identical=True
+STRICT split  showcase           rc=0 result_ok=True identical=True
+STRICT split  bases              rc=0 result_ok=True identical=True
+STRICT split  destruction        rc=0 result_ok=True identical=True
+STRICT split  countdown          rc=0 result_ok=True identical=True
+STRICT split  respawn_showcase   rc=0 result_ok=True identical=True
+STRICT split  units              rc=0 result_ok=True identical=True
+STRICT split  weapons            rc=0 result_ok=True identical=True
+STRICT split  gyro               rc=0 result_ok=True identical=True
+STRICT split  choice             rc=0 result_ok=True identical=False  NORMALIZED (3 rules)
+    --- baseline(mapped)
+    +++ now
+    @@ -4 +4 @@
+    -CHECK choice choice_panel PASS p1 start choosing: visible=true title="Choose your Unit" (expected "Choose your Unit") slots=["Motorbike", "Buggy", "Truck", "Gyrocopter"] marked=0 (expected 0) hint="A / D to choose, Space to confi
+    +CHECK choice choice_panel PASS p1 start choosing: visible=true title="Choose your Unit" (expected "Choose your Unit") slots=["Motorbike", "Buggy", "Truck", "Gyrocopter"] marked=0 (expected 0) hint="A / D to choose, Space to confi
+STRICT split  units_showcase     rc=0 result_ok=True identical=True
+STRICT split  fuel               rc=0 result_ok=True identical=True
+STRICT split  fuel_cans          rc=0 result_ok=True identical=False  NORMALIZED (1 rule)
+    --- baseline(mapped)
+    +++ now
+    @@ -31 +31 @@
+    -CHECK fuel_cans fuel_hud PASS spawn: p1 motorbike alive=true bar=50.00/100 line="Fuel 50 / 100" p2 motorbike alive=true bar=50.00/100 line="Fuel 50 / 100" | layout: p1 view=0,0-640,720 gauge=332,16-624,42 hit_points=16,16-316,42 
+    +CHECK fuel_cans fuel_hud PASS spawn: p1 motorbike alive=true bar=50.00/100 line="Fuel 50 / 100" p2 motorbike alive=true bar=50.00/100 line="Fuel 50 / 100" | layout: p1 view=0,0-640,720 gauge=332,16-624,42 hit_points=16,16-316,42 
+STRICT split  fuel_showcase      rc=0 result_ok=True identical=True
+STRICT split  map_layout         rc=0 result_ok=True identical=True
+STRICT split  map_edges          rc=0 result_ok=True identical=True
+STRICT split  map_ford           rc=0 result_ok=True identical=True
+STRICT split  map_bases          rc=0 result_ok=True identical=True
+STRICT split  map_cover          rc=0 result_ok=True identical=True
+STRICT split  map_showcase       rc=0 result_ok=True identical=True
+STRICT split  map_legibility     rc=0 result_ok=True identical=True
+STRICT split  flag_run           rc=0 result_ok=True identical=True
+STRICT split  hud                rc=0 result_ok=True identical=False  NORMALIZED (1 rule)
+    --- baseline(mapped)
+    +++ now
+    @@ -7 +7 @@
+    -CHECK hud fits_view PASS window=1280x720 margin_min=8 px | player_1: view=(0,0 640x720) root=(0,0 640x720) root_is_view=true HitPointsBar=(16,16 300x24) inside_margin=true HitPointsLabel=(16,16 300x26) inside_margin=true widest_t
+    +CHECK hud fits_view PASS window=1280x720 margin_min=8 px | player_1: view=(0,0 640x720) root=(0,0 640x720) root_is_view=true HitPointsBar=(16,16 300x24) inside_margin=true HitPointsLabel=(16,16 300x26) inside_margin=true widest_t
+STRICT split  round_over         rc=0 result_ok=True identical=True
+STRICT split  flag_showcase      rc=0 result_ok=True identical=True
+ALL_OK=True (every scenario identical to its baseline after the rename mapping and the normalizers of normalizers.json, exit 0, RESULT ok)

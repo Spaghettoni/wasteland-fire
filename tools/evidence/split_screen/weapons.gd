@@ -9,12 +9,12 @@ extends RefCounted
 ## (AC-4: all sixteen ordered type pairs through one real shot each at 10 m, the damage the
 ## attacker's damage times the table of the design held below, then all sixteen at 1.0 after the
 ## shooter's Weapon is given a duplicate of the rules whose matrix has no entries and default 1.0,
-## then restored) and carrier_fires (AC-7: a Motorbike that picked up a canister fires and hurts
-## with it on its tail; a Buggy, a Truck and a Gyrocopter standing on a canister never pick it up).
+## then restored) and carrier_fires (AC-7: a Motorbike that picked up a Flag fires and hurts
+## with it on its tail; a Buggy, a Truck and a Gyrocopter standing on a Flag never pick it up).
 ## The Units are put down as types with Unit.spawn(at, stats); a single shot waits out the longest
 ## fire interval of the data first (the Weapon's next-fire frame is absolute and keeps the interval
 ## of the type that last fired). The shipped data, no legacy override. Tooling only; the shared
-## helpers are check_kit.gd, unit_kit.gd and canister_kit.gd (the drive at the canister).
+## helpers are check_kit.gd, unit_kit.gd and flag_kit.gd (the drive at the Flag).
 ## Implements: production/epics/wasteland-fire/story-005-three-units-and-triangle.md AC-3, AC-4
 ## and AC-7; design/rules.md "Units"; design/game-brief.md MVP feature 5.
 ## Run: godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn \
@@ -26,8 +26,8 @@ const Harness: GDScript = preload("res://tools/evidence/split_screen_harness.gd"
 const Kit: GDScript = preload("res://tools/evidence/split_screen/check_kit.gd")
 ## The Story 005 helpers (unit_kit.gd): the shot and hit record, the typed spawn, the fire key.
 const Units: GDScript = preload("res://tools/evidence/split_screen/unit_kit.gd")
-## The Story 004 helpers (canister_kit.gd): the drive at a canister and the pick-up record.
-const Canisters: GDScript = preload("res://tools/evidence/split_screen/canister_kit.gd")
+## The Story 004 helpers (flag_kit.gd): the drive at a Flag and the pick-up record.
+const Flags: GDScript = preload("res://tools/evidence/split_screen/flag_kit.gd")
 
 ## The Player who shoots in every check: Player 1, whose fire key is Space.
 const SHOOTER: int = Harness.PLAYER_1
@@ -72,11 +72,11 @@ const MULTIPLIERS: Dictionary[StringName, float] = {&"buggy>truck": 1.5, &"buggy
 	&"truck>buggy": 0.5, &"truck>gyrocopter": 1.5, &"gyrocopter>buggy": 1.5, &"gyrocopter>truck": 0.5}
 ## The multiplier of every pair the matrix does not name.
 const DEFAULT_MULTIPLIER: float = 1.0
-## Toward Base 1 (+Z): the side the Motorbike approaches canister 2 from.
+## Toward Base 1 (+Z): the side the Motorbike approaches Flag 2 from.
 const TO_BASE_1: Vector3 = Vector3(0.0, 0.0, 1.0)
-## Where the Motorbike is put as a type before it drives at canister 2, clear of Base 2's zone.
+## Where the Motorbike is put as a type before it drives at Flag 2, clear of Base 2's zone.
 const STEAL_START: Vector3 = Vector3(0.0, 0.0, -8.0)
-## Ticks a non-carrier stands on a canister.
+## Ticks a non-carrier stands on a Flag.
 const HOLD_TICKS: int = 30
 ## Ticks the physics server may take to report the touch after the Unit was put down.
 const TOUCH_SLACK_TICKS: int = 4
@@ -243,56 +243,56 @@ func _fire_every_pair(table: bool, problems: PackedStringArray) -> String:
 	return " ".join(cells)
 
 
-## AC-7: the Motorbike picks up canister 2 and fires with it; the other three types never pick up.
+## AC-7: the Motorbike picks up Flag 2 and fires with it; the other three types never pick up.
 func _check_carrier_fires() -> void:
 	_harness.phase = &"carrier_fires"
 	var problems: PackedStringArray = []
-	var cans: Canisters = Canisters.new(_harness, _kit)
-	var canister: WaterCanister = cans.canisters[TARGET]
+	var flag_kit: Flags = Flags.new(_harness, _kit)
+	var flag: Flag = flag_kit.flags[TARGET]
 	var carrier: Unit = _units.units[SHOOTER]
 	var target: Unit = _units.units[TARGET]
 	_units.retype(TARGET, TRUCK, PAIR_TARGET, Vector3.LEFT)
 	_units.retype(SHOOTER, MOTORBIKE, STEAL_START, -TO_BASE_1)
 	await _kit.advance(Units.SETTLE_TICKS)
-	cans.approach(SHOOTER, canister.global_position, TO_BASE_1)
+	flag_kit.approach(SHOOTER, flag.global_position, TO_BASE_1)
 	await _kit.advance(Units.SETTLE_TICKS)
-	var drove: int = await cans.drive_until(SHOOTER, 1, Canisters.APPROACH_SPEED, func() -> bool: return canister.carrier == carrier)
-	await cans.rest(SHOOTER)
-	var carried: bool = drove > 0 and carrier.can_carry and canister.state == WaterCanister.State.CARRIED
-	_kit.need(problems, carried, "the Motorbike did not pick up canister 2 (drove %d ticks, can_carry=%s, canister_2=%s)" % [drove, carrier.can_carry, cans.state_name(TARGET)])
+	var drove: int = await flag_kit.drive_until(SHOOTER, 1, Flags.APPROACH_SPEED, func() -> bool: return flag.carrier == carrier)
+	await flag_kit.rest(SHOOTER)
+	var carried: bool = drove > 0 and carrier.can_carry and flag.state == Flag.State.CARRIED
+	_kit.need(problems, carried, "the Motorbike did not pick up flag 2 (drove %d ticks, can_carry=%s, flag_2=%s)" % [drove, carrier.can_carry, flag_kit.state_name(TARGET)])
 	_harness.place(carrier, _units.pose(PAIR_SHOOTER, Vector3.RIGHT), _units.cameras[SHOOTER])
 	await _kit.advance(_cadence_ticks())
 	var expected: float = carrier.stats.damage * float(MULTIPLIERS.get(_pair(carrier, target), DEFAULT_MULTIPLIER))
 	await _units.hold_fire(SHOOTER, 1)
 	var taken: float = await _units.wait_hit(TARGET)
-	var still: bool = canister.carrier == carrier and canister.state == WaterCanister.State.CARRIED and canister.get_parent() == carrier
-	_kit.need(problems, is_equal_approx(taken, expected) and still, "the carrier's shot took %.1f (expected %.1f), canister still carried=%s" % [taken, expected, still])
-	var holds: String = await _hold_on_canister(cans, problems)
-	_kit.verdict("carrier_fires", problems, ("motorbike can_carry=%s drove %d ticks into canister 2 and picked it up (%s); put 10 m from a truck with it on "
-		+ "its tail: one shot took %.1f (expected %.1f = damage %.1f x %.1f), canister_2 still CARRIED by it=%s | standing on canister 1 (AT_HOME on Base 1's "
-		+ "seat) for %d ticks each: %s") % [carrier.can_carry, drove, cans.state_name(TARGET), taken, expected, carrier.stats.damage,
+	var still: bool = flag.carrier == carrier and flag.state == Flag.State.CARRIED and flag.get_parent() == carrier
+	_kit.need(problems, is_equal_approx(taken, expected) and still, "the carrier's shot took %.1f (expected %.1f), flag still carried=%s" % [taken, expected, still])
+	var holds: String = await _hold_on_flag(flag_kit, problems)
+	_kit.verdict("carrier_fires", problems, ("motorbike can_carry=%s drove %d ticks into flag 2 and picked it up (%s); put 10 m from a truck with it on "
+		+ "its tail: one shot took %.1f (expected %.1f = damage %.1f x %.1f), flag_2 still CARRIED by it=%s | standing on flag 1 (AT_HOME on Base 1's "
+		+ "seat) for %d ticks each: %s") % [carrier.can_carry, drove, flag_kit.state_name(TARGET), taken, expected, carrier.stats.damage,
 			expected / carrier.stats.damage, still, HOLD_TICKS, holds])
 
 
-## The Buggy, the Truck and the Gyrocopter each stand on canister 1 for HOLD_TICKS: none picks it up
+## The Buggy, the Truck and the Gyrocopter each stand on Flag 1 for HOLD_TICKS: none picks it up
 ## (`can_carry` is false in their data). Adds to the problems and returns one row per type.
-func _hold_on_canister(cans: Canisters, problems: PackedStringArray) -> String:
+func _hold_on_flag(flag_kit: Flags, problems: PackedStringArray) -> String:
 	var target: Unit = _units.units[TARGET]
 	var holds: PackedStringArray = []
-	var seat: Vector3 = cans.canisters[SHOOTER].global_position
+	var seat: Vector3 = flag_kit.flags[SHOOTER].global_position
 	for type_index: int in [BUGGY, TRUCK, GYROCOPTER]:
-		var picks: int = cans.pick_ups.size()
+		var picks: int = flag_kit.pick_ups.size()
 		_units.retype(TARGET, type_index, seat, -TO_BASE_1)
 		var touched: int = 0
 		for _tick: int in HOLD_TICKS:
 			await _kit.tick()
-			touched += 1 if cans.touching(SHOOTER, TARGET) else 0
+			touched += 1 if flag_kit.touching(SHOOTER, TARGET) else 0
 		var seen: bool = touched >= HOLD_TICKS - TOUCH_SLACK_TICKS or type_index == GYROCOPTER
-		var no_pick: bool = cans.pick_ups.size() == picks and cans.canisters[SHOOTER].state == WaterCanister.State.AT_HOME and not target.can_carry
-		_kit.need(problems, seen and no_pick, "%s on canister 1: touching %d/%d ticks, pick_ups %d (before %d), can_carry=%s" % [
-			target.type_id, touched, HOLD_TICKS, cans.pick_ups.size(), picks, target.can_carry])
-		holds.append("%s: can_carry=%s touching %d/%d ticks%s pick_ups=%d (before %d) canister_1=%s" % [target.type_id, target.can_carry, touched, HOLD_TICKS,
-			" (its layer is outside the zone's mask)" if type_index == GYROCOPTER else "", cans.pick_ups.size(), picks, cans.state_name(SHOOTER)])
+		var no_pick: bool = flag_kit.pick_ups.size() == picks and flag_kit.flags[SHOOTER].state == Flag.State.AT_HOME and not target.can_carry
+		_kit.need(problems, seen and no_pick, "%s on flag 1: touching %d/%d ticks, pick_ups %d (before %d), can_carry=%s" % [
+			target.type_id, touched, HOLD_TICKS, flag_kit.pick_ups.size(), picks, target.can_carry])
+		holds.append("%s: can_carry=%s touching %d/%d ticks%s pick_ups=%d (before %d) flag_1=%s" % [target.type_id, target.can_carry, touched, HOLD_TICKS,
+			" (its layer is outside the zone's mask)" if type_index == GYROCOPTER else "", flag_kit.pick_ups.size(), picks, flag_kit.state_name(SHOOTER)])
 	return " | ".join(holds)
 
 

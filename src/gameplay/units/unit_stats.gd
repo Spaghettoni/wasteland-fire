@@ -9,7 +9,7 @@ extends Resource
 ## (production/epics/wasteland-fire/story-003-bases-destruction-respawn.md) adds the hit points
 ## to the same file: max_hit_points is a tuning value here, not a literal in the Unit. Story 004
 ## AC-2 (production/epics/wasteland-fire/story-004-water-canister-and-win.md) adds the Cargo
-## group: whether a Unit type carries the Water Canister, and where it rides, is data here too,
+## group: whether a Unit type carries the Flag, and where it rides, is data here too,
 ## so the Round rules never ask what type a Unit is.
 ##
 ## Story 005 AC-1, AC-2 and AC-9
@@ -85,7 +85,7 @@ extends Resource
 
 @export_group("Cargo")
 
-## Whether a Unit of this type may pick up the Water Canister and carry it (Story 004 AC-2,
+## Whether a Unit of this type may pick up the Flag and carry it (Story 004 AC-2,
 ## production/epics/wasteland-fire/story-004-water-canister-and-win.md; design/rules.md
 ## "Resources"): only the Motorbike carries, and that is decided here, by data, never by a type
 ## check in code. The Round rules (MatchController) read Unit.can_carry and nothing else.
@@ -95,10 +95,10 @@ extends Resource
 ## cannot carry.
 @export var can_carry: bool = false
 
-## Where a carried Water Canister rides, in this Unit type's local space, in metres: the
-## canister's origin (the centre of its base) is placed here, upright, and moves with the Unit.
+## Where a carried Flag rides, in this Unit type's local space, in metres: the
+## Flag's origin (the centre of its base) is placed here, upright, and moves with the Unit.
 ## Read only while can_carry is true. Zero by default like every value here, so the tuned offset
-## lives in the .tres (class doc). The Motorbike's is a tail mount, chosen so the canister hides
+## lives in the .tres (class doc). The Motorbike's is a tail mount, chosen so the Flag hides
 ## none of the cream nose from the chase camera (the Story 004 evidence doc keeps the comparison).
 @export var carry_offset: Vector3 = Vector3.ZERO
 

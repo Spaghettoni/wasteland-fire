@@ -4,7 +4,7 @@ extends Node
 ## press of the round_restart action restarts it; while the Round runs, the key does nothing.
 ##
 ## Implements: production/epics/wasteland-fire/story-004-water-canister-and-win.md AC-6 (the
-## Round-over screen offers restart on a key; restart resets both Units, both canisters, hit points
+## Round-over screen offers restart on a key; restart resets both Units, both Flags, hit points
 ## and the HUD and starts a new Round); design/game-brief.md MVP feature 4. Vocabulary: CONTEXT.md
 ## (Round, Player).
 ##
@@ -14,12 +14,14 @@ extends Node
 ## only place key codes appear.
 ##
 ## It acts on the MatchController and on nothing else: match_controller.restart(), which seats the
-## canisters, spawns the Units, unpauses the tree and emits round_started. It owns no state, so a
+## Flags, benches the Units with their Players choosing, unpauses the tree and emits
+## round_started. It owns no state, so a
 ## press is read fresh every tick: is_round_over() is asked first, and the action only while the
 ## Round is over, so a press during play reaches nothing (restart() itself would refuse it with a
 ## warning; it is never asked).
 ##
-## It runs while the tree is paused. The win freezes the game with get_tree().paused = true, and
+## It runs while the tree is paused. The end of a Round (a delivery, a loss or a double loss)
+## freezes the game with get_tree().paused = true, and
 ## this node is the one that must still hear the key, so the owning scene stores process_mode
 ## ALWAYS on it (split_screen.tscn); Input.is_action_just_pressed() works while paused, and the
 ## edge is read in _physics_process, as every input node of this project does: one press acts

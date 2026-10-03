@@ -1,0 +1,190 @@
+{
+ "clean": false,
+ "issues": [
+  {
+   "severity": "major",
+   "kind": "DEFECT",
+   "file": "src/ui/hud/respawn_countdown.gd",
+   "quote": "## A delivery won the Round, whoever won: hide. The Round-over screen takes the view, and the  (line 155; also line 35: \"counting -> hidden    the controller emitted round_over: a delivery won (Story 004 AC-6), the\")",
+   "problem": "Stale since Story 008: round_over is now also emitted for a loss and for a double loss, and the loser's countdown really does go counting -> hidden on it (it starts on unit_destroyed in the same controller tick, then round_over hides it; measured in the loss and token_ui scenarios). The class doc calls its state table complete, but it names a delivery as the only reason. The same table (line 37) and line 156 also claim the restart emits unit_spawned for every Player; MatchController.restart() emits round_started only and its doc says no unit_spawned goes out there (false since Story 005, still in the file).",
+   "fix": "Line 35: \"the controller emitted round_over: the Round ended (a delivery, a loss or a double loss)\"; line 155: \"The Round ended, whoever won or nobody: hide.\"; lines 37 and 156: the restart announces itself with round_started, and unit_spawned follows per Player once chosen."
+  },
+  {
+   "severity": "minor",
+   "kind": "DEFECT",
+   "file": "src/gameplay/match/round_restart_input.gd",
+   "quote": "## It runs while the tree is paused. The win freezes the game with get_tree().paused = true, and  (line 22); line 17: \"## Flags, spawns the Units, unpauses the tree and emits round_started. It owns no state, so a\"",
+   "problem": "A loss and a double loss freeze the game with the same pause (Story 008), so 'the win' is no longer the only cause; and restart() benches the Units and the Players choose, it does not spawn them (its own doc in match_controller.gd says so). The story edited the neighbouring line 16/17 (canisters -> Flags) without correcting it.",
+   "fix": "\"The end of a Round (a delivery, a loss or a double loss) freezes the game with get_tree().paused = true\" and \"Flags, benches the Units with their Players choosing, unpauses the tree and emits round_started\"."
+  },
+  {
+   "severity": "minor",
+   "kind": "DEFECT",
+   "file": "src/gameplay/match/garage_queue.gd",
+   "quote": "## the pause unstepped. The pause of a won Round ends in restart() after every Player was benched,  (line 122); line 215: \"## against, so a bench during the pause of a won Round is due on the first tick after the unpause.\"",
+   "problem": "A Round now also pauses when it is lost or lost by both Players (nobody won); 'won Round' reads as if only a delivery pauses. The behaviour is the same code path (measured: T30 restarts after a delivery, a loss and a double loss).",
+   "fix": "Say 'an ended Round' (or 'the pause at the end of a Round') in both places."
+  },
+  {
+   "severity": "minor",
+   "kind": "DEFECT",
+   "file": "src/gameplay/match/flag_rules.gd",
+   "quote": "## Player 1) and the index of its Base in the controller's arrays, so bases[N].Flag is Player  (line 20); line 62: \"## The Flag of the given index: bases[flag_index].Flag.\"; same slip in src/gameplay/maps/base.gd:64 \"## MatchController asks it for spawn_point, spare_spawn_points, Flag and flag_seat and\" and tools/evidence/split_screen/flag_kit.gd:35 \"Flag N is bases[N].Flag\"",
+   "problem": "The rename turned the identifier `canister` into the class name `Flag` inside prose that names a member; the Base export is `flag` (base.gd: `@export var flag: Flag`), so the docs name a member that does not exist.",
+   "fix": "bases[N].flag, bases[flag_index].flag, and 'flag and flag_seat' in those four lines."
+  },
+  {
+   "severity": "minor",
+   "kind": "DEFECT",
+   "file": "src/gameplay/flag/flag.gd",
+   "quote": "##     PickupZone (Area3D): a 1 m sphere about the body's middle, on physics layer 4 (\"Flags\",  (line 44); line 102: \"## The Area3D that reports Units touching the Flag (physics layer 4 \\\"Flags\\\", mask 2\")",
+   "problem": "The quoted project setting name is wrong: project.godot [layer_names] has 3d_physics/layer_4=\"flags\" (lowercase), the same lowercase style the sentence uses for \"units\".",
+   "fix": "Write (\"flags\", project.godot) and \"flags\" in both places."
+  },
+  {
+   "severity": "minor",
+   "kind": "STANDARD",
+   "file": "tools/evidence/split_screen/hud.gd",
+   "quote": "var _cans: Flags  (hud.gd:42; same variable in choice.gd:70, flag_run.gd:53, flag_showcase.gd:67, round_over.gd:48; weapons.gd:250 \"\tvar cans: Flags = Flags.new(_harness, _kit)\")",
+   "problem": "Vocabulary leftover of the rename (AC-8: no code name calls the Flag a canister): `_cans`/`cans` is the old abbreviation of `canisters` (it was `_cans: Canisters`), now holding the Flag kit. It also collides with Fuel Cans, which map_legibility.gd calls `_cans` too, so `_cans` means two different things under tools/evidence/split_screen. The rename mapping only matched the whole word `canister`.",
+   "fix": "Rename to `_flag_kit`/`flag_kit` (or `_fk` as loss_kit.gd does) in the six files; the name is never printed, so the 31 outputs stay identical (re-run dev08 regress to confirm)."
+  },
+  {
+   "severity": "minor",
+   "kind": "STANDARD",
+   "file": "src/gameplay/flag/flag.tscn",
+   "quote": "[ext_resource type=\"Script\" path=\"res://src/gameplay/flag/flag.gd\" id=\"1_wc\"]  (line 3; used at line 49: script = ExtResource(\"1_wc\"))",
+   "problem": "Vocabulary slip in a scene: the resource id `1_wc` is the abbreviation of Water Canister; every other renamed scene got `2_flag`. Internal id only, never shown to a player.",
+   "fix": "Rename the id to `1_flag` on lines 3 and 49 (the editor would keep whatever id is stored, so it will not be fixed by a re-save)."
+  }
+ ],
+ "measurements": [
+  {
+   "ac": "AC-8 parse",
+   "what": "godot-parse-check of every .gd under src/ and tools/ in a scratch copy (raw output read)",
+   "value": "95 scripts, rc 0, no WARNING or ERROR line in the raw output",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "AC-8 class cache",
+   "what": "fresh `godot --headless --import` in a scratch copy, then compare .godot/global_script_class_cache.cfg with the repo's",
+   "value": "byte-identical; lists Flag (res://src/gameplay/flag/flag.gd, base Node3D), FlagRules (match/flag_rules.gd), TokenLedger (match/token_ledger.gd), TokenStock; 0 occurrences of canister/Canister/WaterCanister/CanisterRules; all 236 script paths exist; every class_name script under src/tools is listed with the right path; 0 import ERROR/WARNING",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "AC-8 sidecars",
+   "what": ".uid files for every .gd under src/ and tools/",
+   "value": "every .gd has one, no orphan, no duplicate uid; flag.gd.uid (bd7lnsq3ftvn8) and flag_rules.gd.uid (b8xsx8557tdy1) equal the old water_canister.gd/canister_rules.gd uids; the sidecar set is identical after a fresh import; token_ledger.gd.uid present",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "AC-8 scene paths",
+   "what": "res:// and uid:// references in src, tools, project.godot, export_presets.cfg; NodePath exports of the renamed scenes",
+   "value": "0 dangling references (the only 2 hits are comment globs 'wasteland_' in unchanged files); no uid:// in any scene; no 'canister' in any .tscn/.tres/project.godot; src/gameplay/canister is gone; base.tscn/compound_base.tscn node_paths list flag and flag_seat and the nodes Flag and FlagSeat exist; layer 4 is named flags and flag.tscn PickupZone is collision_layer 8",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "AC-8 regress",
+   "what": "dev08 regress of the 31 retained scenarios, run in a scratch copy",
+   "value": "ALL_OK=True; every scenario rc 0 and RESULT ok; 28 raw-identical to the mapped baselines, 3 identical only through normalizers.json (choice panel rects, fuel_cans status rect, hud status/tokens rects)",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "AC-1..AC-9 scenarios",
+   "what": "the 7 new scenarios, headless --fixed-fps 60, my own run",
+   "value": "tokens 8/8, tokens_data 6/6, token_choice 8/8, loss 7/7, token_ui 5/5, token_layout 1/1, tokens_showcase RESULT ok (no CHECK in a normal run by design); engine log errors/warnings: tokens_data 16/1 and token_ui 2/0 as accepted, all others 0/0",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "AC-4/AC-6 frame pacing",
+   "what": "tokens, tokens_data, token_choice, token_ui, token_layout run twice at 60; plus tokens, tokens_data, token_choice, token_ui, token_layout and loss at --fixed-fps 30 (2 physics ticks per frame) and 144 (0 or 1 tick per frame)",
+   "value": "five scenarios byte-identical across two runs; every CHECK PASS at 30 and 144 fps (only physics-frame numbers inside notes move by a frame)",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "AC-2/AC-4/AC-5 fuzz",
+   "what": "throwaway fuzz scenario in the scratch copy only: random Tab/Enter/steer/fire/R presses on a small stock {motorbike 3, buggy 2, truck 2, gyrocopter 1}, 7 seeds x 12000 ticks plus one driving variant; checked every tick: tokens_left equals an independent count, never below 0, a live Unit and a standing choice always have a Token, is_round_over iff a carrier count is 0, winner (0/1/-1) right, tree paused iff over, panel dim/cursor/count texts and font colours, HUD line, refused choose() of empty types",
+   "value": "about 690 destructions, 66 Rounds ended (one double loss, seed 4), about 56000 empty-type choose() probes, 0 violations, 0 engine ERROR/WARNING",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "AC-1/AC-9 engine facts",
+   "what": "Resource.duplicate(), typed Dictionary assignment, negative index on 4.7.2 (probe)",
+   "value": "duplicate() shares TokenStock.counts (writing the copy changed the shipped stock) and MatchRules.unit_types (append on the copy grew the original 4 -> 5); duplicate_deep() is independent; an untyped Dictionary assigned to counts is a script error 'Invalid assignment'; a[-1] reads the last element; Array[Dictionary[K,V]] is a parse error 'Nested typed collections are not supported'; the claims in token_stock.gd, match_rules.gd, token_ledger.gd and player_hud.gd are true",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "AC-1 data loading",
+   "what": ".tres with a bad typed-dictionary value, default {} sharing, resource cache (probe)",
+   "value": "a String value empties the whole dictionary with 'Unable to convert value at key', 5.0 is converted to 5; two TokenStock.new() do not share the default {}; load() returns the one cached object, CACHE_MODE_IGNORE an independent copy (what T02 uses for 'on disk')",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "AC-3 UI engine facts",
+   "what": "Label default font_color, remove_theme_color_override, 500 repeated add_theme_stylebox_override with shared StyleBoxes (probe)",
+   "value": "default (1,1,1,1) and the same after remove_theme_color_override (the design block's 'grey' is wrong, the code never removes an override); 0 stray 'changed' connections on the style not in use, 4 (one per panel) on the one in use",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "AC-4 frame order",
+   "what": "a priority 0 node sets get_tree().paused = true inside its physics tick (probe, 4.7.2 fixed-fps)",
+   "value": "later priority-0, +1 and +5 pausable nodes did not tick that frame; a process_mode ALWAYS node did; the contract in match_controller.gd's class doc holds. loss.gd T20 asserts PlayerMatchInput priorities < controller priority, Shot priority == controller priority under World, World index < controller index, and passes",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "AC-7 pause and restart",
+   "what": "R after a delivery, a loss and a double loss (token_ui T30, loss start_round) and the Round-over screens while paused",
+   "value": "each R: unpaused, not over, winner -1, stocks equal the data, Flags AT_HOME, both choosing, Units in play 2 ticks after the choice (limit 5), no round_over, 0 engine messages; both screens read the winner line or 'Nobody wins!' with the bound key; RoundOverScreen process_mode ALWAYS (3) and RoundRestartInput ALWAYS (3) unchanged",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "AC-6 layout 640x720",
+   "what": "token_layout T27 in my own run (Tokens 100/99/100/99), plus three of the orchestrator's movie frames viewed (206, 686, 1480)",
+   "value": "HUD union (16,16 608x60), status (16,46 300x30), tokens (332,46 292x30) 16 px apart and inside the 8 px margin, widest 'Gyrocopter Tokens: 100' 234 px of 292, choosing panel (40,536 560x168) 452 px below the band, ready (40,570 560x134), Round-over nobody panel (60,294 520x133) lines 261/238 px; frames show the Tokens line, the dim Gyrocopter x0 slot and both Round-over texts as designed",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "AC-6 other widths (not required)",
+   "what": "HUD children rects when the view is wider than 640 (probe at 840 and 960 px)",
+   "value": "no overlap or clipping; FuelBar stays x 332..624 while TokensLabel moves to 532..824 (840) and 652..944 (960) because it is right-anchored; the Team edge width is unchanged from before the story (the old status label already spanned the full width). Only matters on windows wider than 16:9",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "scenario soundness",
+   "what": "PackedStringArray appended through a Dictionary[StringName, PackedStringArray] value and through a function parameter (probe)",
+   "value": "the appends reach the stored array (problems lists are not silently dropped), so the CHECK verdicts are not vacuous",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "AC-8 other tools",
+   "what": "launch (main scene 120 frames, driving_toy 60 frames), frozen files, assets snapshot, input_ghosting_check --self-test",
+   "value": "no ERROR/WARNING in either launch; all 9 frozen files OK; assets unchanged; GHOST SELF-TEST ok combos 8/8",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "standards",
+   "what": "lint of the changed/new .gd files: functions over 40 lines, ## lines over 100 columns, public func/signal/class/const/var/enum without ##, never-referenced declarations, unused locals and parameters (regex)",
+   "value": "0, 0, 0, 0, 0",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "repo untouched",
+   "what": "files modified in the repository during my review",
+   "value": "none by me (only the gitignored production/session-logs/agent-audit.log, written by the harness hooks); all probes and runs were in a scratch copy",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "AC-8 fps tools",
+   "what": "fps and map_fps (windowed frame-rate tools) and a real windowed, real-time session on a GPU",
+   "value": "not run by me (orchestrator's job at the end)",
+   "verdict": "NOT_VERIFIED"
+  },
+  {
+   "ac": "GDScript analyzer warnings",
+   "what": "warnings the editor analyzer would show (unused/shadowed/narrowing)",
+   "value": "the CLI exposes none (`--check-only` and the parse check print no warnings even for a script with an unused variable and a dead return, measured), so only a regex review was possible",
+   "verdict": "NOT_VERIFIED"
+  }
+ ],
+ "checked": "Read in full: match_controller.gd, token_ledger.gd, token_stock.gd, map_field.gd, player_choice_input.gd, unit_choice.gd and .tscn, player_hud.gd and .tscn, round_over_screen.gd and .tscn, flag.gd/.tscn, flag_rules.gd, round_restart_input.gd, base.gd and the base.tscn/compound_base.tscn diffs, split_screen.gd plus the split_screen.tscn wiring (node order, process_mode, NodePaths), project.godot and the class-cache diff, the diffs of garage_queue.gd, match_rules.gd, unit.gd, unit_stats.gd, shot.gd, fuel_can.gd, the whole harness diff (_apply_token_stock, _stock_from_counts, _legacy_stock), and the new scenarios and kits (token_kit with its Logger subclass and OS.add_logger/remove_logger, tokens, tokens_data and its kit, token_choice and its kit, loss and its kit, token_ui and its kit, token_layout, the head of tokens_showcase and its kit) plus the diffs of the renamed older scenarios (choice.gd carries exactly the one allowed path edit). Also the engine reference (breaking-changes, deprecated-apis, current-best-practices, ui/input modules) and .claude/rules/ui-code.md and gameplay-code.md: the change contradicts nothing in them. Ran, always in a scratch copy and one Godot process at a time: the parse check, a fresh --import with a byte compare of the class cache, the 31-scenario regress, the 7 new scenarios (twice, plus at 30 and 144 fps), launch/frozen/assets, input_ghosting_check --self-test, seven small probes (duplicate sharing, typed dictionary assignment and .tres loading, Label colour override, StyleBox connections, pause ordering, HUD rects at wider views, packed-array propagation) and a throwaway fuzz (7 seeds x 12000 ticks and a driving variant). Found no engine-level defect in the game code: the Token is taken before any signal, begin() validates before it changes anything, restart() refills before round_started, the cursor search is bounded, the Round-over screen and R work while paused, node lookups (%TokensLabel, %FlagStatusLabel, Lines/NameLabel, Lines/CountLabel, flag/flag_seat exports) all resolve, and nothing writes to the shared TokenStock/UnitStats/MatchRules. What remains is documentation and naming: one stale class doc (respawn_countdown.gd), a few stale or wrong phrases, rename slips that turned the member `flag` into `Flag` in prose, the layer name quoted as \\\"Flags\\\", and two leftover canister abbreviations (`_cans`, `1_wc`). Not checked: windowed real-time rendering and GPU frame pacing (fps, map_fps), the Windows export, how the editor re-saves the hand-written scenes, GDScript analyzer warnings (not visible from the CLI), accessibility and translation, documents outside code (README, rules, CONTEXT, TD register, evidence doc, the story file), the design/acceptance coverage judged by the other lenses, windows of other aspect ratios beyond the one HUD probe, and the second half of tokens_showcase.gd and tokens_showcase_kit.gd, which I skimmed rather than read line by line (their run and output were checked).\""
+}

@@ -15,6 +15,8 @@ Two Players, each with their own Base: Base A and Base B on Map 01. Each Base ho
 - The loss in Token terms (reading of the source, 2026-10-01): the destruction of a Motorbike that leaves the Player's Motorbike stock at 0 ends the Round with that Player's loss. A Player is never stranded without a loss: with Motorbike Tokens left they can always pick a Motorbike, and without any they have already lost.
 - A Map gives every Player at least 1 Motorbike Token; with 0 the Player could neither carry a Flag nor lose (reading of the source, 2026-10-01).
 - The choice and the respawn delay (decided 2026-10-01): the delay runs from the destruction; the Player may choose during the countdown, and the Unit appears in the Garage once the Player has chosen and the delay has passed, whichever is later. At the Round start there is no delay: the first Unit appears as soon as it is chosen.
+- What the screen shows (decided 2026-10-03, Story 008): the choice shows each type's Token count and dims a type with 0 Tokens, and the cursor skips it, so a Player with Motorbike Tokens left can always choose; the HUD shows the Player's Motorbike Tokens and counts the Unit in play, so it reads 5 while the first Motorbike drives, 4 once that one is destroyed and 1 on the last Motorbike; the Round-over screen names the winner, or says that nobody won after the double loss.
+- A Map's stock is checked when the Round begins (decided 2026-10-03, Story 008): the Round does not begin, and says why with one error, when the Map gives no stock, a negative count, a count for a Unit type that does not exist, a Unit type without an id or two with the same one, or when the Unit types are not exactly one that can carry the Flag with at least 1 Token (the Motorbike; "exactly one" is this file's reading of the source's "the last Motorbike").
 
 ## Units
 
@@ -47,7 +49,7 @@ Four Units: the combat trio Buggy, Truck and Gyrocopter, which beat one another 
 ## Resources
 
 - Fuel (benzín). Every Unit burns Fuel while moving, the Gyrocopter the most. Without Fuel nothing drives or flies. Fuel Cans (kanister) respawn at fixed places on the Map. Capacity, burn rates, the Fuel Can's amount, its places and its respawn time are tuning values; the source gives no numbers for them.
-- The Flag (vlajka). One in each Base. Only the Motorbike carries it; when the Carrier is destroyed the Flag stays lying where it was. Handling (decided 2026-09-29, built in story 004 under the name Water Canister): a Motorbike picks a Flag up by touching it; a Player may carry their own Flag back to their Base after it was stolen and dropped; the Carrier can shoot; a dropped Flag never returns home on its own. The code keeps the names WaterCanister, canister_rules and canister_* until story 008 renames them (decided 2026-10-01).
+- The Flag (vlajka). One in each Base. Only the Motorbike carries it; when the Carrier is destroyed the Flag stays lying where it was. Handling (decided 2026-09-29, built in story 004 under the name Water Canister): a Motorbike picks a Flag up by touching it; a Player may carry their own Flag back to their Base after it was stolen and dropped; the Carrier can shoot; a dropped Flag never returns home on its own. Story 008 renamed the code to the Flag's name (Flag, FlagRules, flag_*, the HUD's texts and the physics layer "flags"), as decided on 2026-10-01.
 - Backlog, not v0.1: water = a temporary boost; key = a repair.
 
 ## Destruction and respawn
@@ -58,7 +60,8 @@ Four Units: the combat trio Buggy, Truck and Gyrocopter, which beat one another 
 - Running out of Fuel (decided 2026-09-29): a ground Unit with no Fuel stops but can still turn and fire. A Gyrocopter with no Fuel crashes and counts as destroyed.
 - A fresh Unit spawns with a fixed partial tank of Fuel, so dying is never a free refuel (decided 2026-09-29).
 - The Unit swap at the own Base (driving into your Base to change type without dying, decided 2026-09-29) is dropped: v0.1 does not have it (decided 2026-10-01). The only way to change Unit type is a destruction, at the cost of a Token.
-- The loss: when the destroyed Motorbike was the Player's last (Motorbike stock 0 after the destruction), the Round ends and the opponent wins. If both Players lose their last Motorbike on the same tick, the Round ends with no winner (reading of the source, 2026-10-01).
+- The loss: when the destroyed Motorbike was the Player's last (Motorbike stock 0 after the destruction), the Round ends and the opponent wins. If both Players lose their last Motorbike on the same tick, the Round ends with no winner (reading of the source, 2026-10-01). The same tick is the same physics tick, decided at the end of it: a Self-destruct, a hit and a Fuel crash all land in the tick they happen (measured in Story 008), and a destruction one tick after the first is too late, because the Round is already over and the game stands still.
+- A Self-destruct of the last Motorbike is a forfeit: it costs a Token like any destruction, so a Player who spends their last Motorbike on it loses the Round (the two rules above, recorded 2026-10-03).
 
 ## Teams and visual style
 

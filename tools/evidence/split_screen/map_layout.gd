@@ -23,6 +23,8 @@ const Map: GDScript = preload("res://tools/evidence/split_screen/map_kit.gd")
 
 ## This scenario makes the first choice itself: it makes none, as nothing here drives.
 const OWN_CHOICE: bool = true
+## The runner keeps Map 01's own Token stock for this scenario (it reads it: TOKENS).
+const USE_MAP_STOCK: bool = true
 ## AC-1: a built place lies within this of its table entry, metres.
 const TOLERANCE: float = 1.0
 ## AC-2: a collider, marker or spot lies within this of its partner's mirror, metres.
@@ -36,7 +38,7 @@ const MEASURE_EPSILON: float = 1e-4
 ## half is each west path's mirror (_east()) at x negated.
 const POINTS: Dictionary[String, Vector2] = {"Base1/SpawnPoint": Vector2(-125, 0),
 	"Base1/SpareSpawnLeft": Vector2(-125, -4), "Base1/SpareSpawnRight": Vector2(-125, 4),
-	"Base1/CanisterSeat": Vector2(-113, 0), "Base1/Walls/TowerGateLeft": Vector2(-105, -16),
+	"Base1/FlagSeat": Vector2(-113, 0), "Base1/Walls/TowerGateLeft": Vector2(-105, -16),
 	"Base1/Walls/TowerGateRight": Vector2(-105, 16), "Base1/Walls/TowerBackLeft": Vector2(-135, -16),
 	"Base1/Walls/TowerBackRight": Vector2(-135, 16), "FuelCanCanyonWest": Vector2(-88, -26),
 	"FuelCanFlatWest": Vector2(-62, 14), "Depot/FuelCanDepot1": Vector2(-3, -3),
@@ -91,7 +93,7 @@ const FLOOR_RECT: Vector4 = Vector4(-150, 150, -50, 50)
 const LAYERS: Vector2i = Vector2i(1, 32)
 ## The scripts a node of Map 01 may carry: the Map's, the Fords', the Bases', the Flags', the Cans'.
 const SCRIPTS: Array[String] = ["res://src/gameplay/maps/map_field.gd", "res://src/gameplay/maps/ford.gd",
-	"res://src/gameplay/maps/base.gd", "res://src/gameplay/canister/water_canister.gd",
+	"res://src/gameplay/maps/base.gd", "res://src/gameplay/flag/flag.gd",
 	"res://src/gameplay/fuel/fuel_can.gd"]
 
 ## Points of the table on built edges, (x, z) metres, west half and centre, by the CSG polygons

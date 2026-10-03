@@ -111,7 +111,7 @@ func run(harness: Node) -> void:
 	_units = Units.new(harness, _kit)
 	_map = Map.new(harness, _kit)
 	_units.controller.unit_spawned.connect(func(player: int) -> void: _line("event=p%d_appears_as_%s" % [player + 1, _units.units[player].type_id]))
-	_units.controller.canister_picked_up.connect(func(carrier: int, flag: int) -> void: _line("event=p%d_takes_flag_of_p%d" % [carrier + 1, flag + 1]))
+	_units.controller.flag_picked_up.connect(func(carrier: int, flag: int) -> void: _line("event=p%d_takes_flag_of_p%d" % [carrier + 1, flag + 1]))
 	await _moment(&"panels")
 	await _kit.press_settled(Kit.KEYS_NEXT_2)
 	await _harness.confirm_choices()
@@ -272,7 +272,7 @@ func _premise_problems(spawns: PackedStringArray) -> PackedStringArray:
 	var expected: int = STILLS.size() + OTHER_MOMENTS
 	var carrying: int = 0
 	for player: int in Kit.PLAYERS:
-		carrying += int(_units.controller.canister_status(player) == MatchController.CanisterStatus.CARRYING_ENEMY)
+		carrying += int(_units.controller.flag_status(player) == MatchController.FlagStatus.CARRYING_ENEMY)
 	_kit.need(problems, _reached.size() == expected, "moments reached %d of %d" % [_reached.size(), expected])
 	_kit.need(problems, int(spawns.has("p1_motorbike")) + int(spawns.has("p2_buggy")) == 2, "no Motorbike for Player 1 or Buggy for Player 2")
 	_kit.need(problems, _road_done.count(true) == Kit.PLAYERS.size(), "a road path not driven to its end")

@@ -12,15 +12,15 @@ extends Control
 ## Vocabulary: CONTEXT.md (Player, Unit, Motorbike, Base, Map).
 ##
 ## The scene holds the pieces. This script only hands them to the MatchController, once, when the
-## scene is ready: begin() gets the two Units, the two Bases from the field and the two cameras,
-## in Player order. Putting a Unit on its Base, at the start of the Round and at every respawn, is
-## the MatchController's job (AC-1, AC-3); until Story 003 it was this script's (Story 002 put
-## each Unit on its start marker: the spawn of DrivingToy, done for two Players). This scene stays
-## the composition root because it is the one place that sees the field, both Units, both cameras
-## and the controller together: it injects them, so the MatchController needs no node path and no
-## singleton and can be built from stand-ins in a test. The world and the views stay here for the
-## same reason: they are how the pieces are laid out and seen on the screen, which is this scene's
-## business, and none of them depends on the Round. The layout of the scene:
+## scene is ready: begin() gets the two Units, the two Bases from the field, the two cameras, in
+## Player order, and the field's Token stock. Putting a Unit on its Base, at the start of the Round
+## and at every respawn, is the MatchController's job (AC-1, AC-3); until Story 003 it was this
+## script's (Story 002 put each Unit on its start marker: the spawn of DrivingToy, done for two
+## Players). This scene stays the composition root because it is the one place that sees the field,
+## both Units, both cameras and the controller together: it injects them, so the MatchController
+## needs no node path and no singleton and can be built from stand-ins in a test. The world and the
+## views stay here for the same reason: they are how the pieces are laid out and seen on the screen,
+## which is this scene's business, and none of them depends on the Round. The layout of the scene:
 ##   SplitScreen (this Control, filling the window)
 ##     World (Node3D): the Map first (map_01.tscn: its ground, its two Bases and its Fuel Cans),
 ##       then both Units, both PlayerDriveInputs, both PlayerMatchInputs, both Weapons with their
@@ -30,16 +30,19 @@ extends Control
 ##       screen
 ##     Divider (ColorRect): a thin line drawn over the seam between the two views
 ##     MatchController (Node): who is alive, who is choosing or waiting to respawn and the Round's
-##       canisters
+##       Flags
 ##     RoundRestartInput (Node): the restart key of a Round that is over; the last child
 ##
 ## The Map (production/epics/wasteland-fire/story-007-the-map.md AC-9 and its Map contract). field
 ## is typed MapField, the class every Map's root carries, so any Map scene can be World's field and
-## replacing the Map scene needs no change here. This scene reads only the Map's two Bases and
-## hands them to the MatchController; each Base brings its Flag, its zone, its pad and its
-## SpawnPoint markers itself (Base). The Map's Token stock (MapField.token_stock) is Story 008's to
-## read. The Map is World's first child (the node Map, unique name %Map), so a Map node that acts
-## on the Units in its physics tick runs before the Units do, in every tick.
+## replacing the Map scene needs no change here. This scene reads only the Map's two Bases and its
+## Token stock and hands them to the MatchController; each Base brings its Flag, its zone, its pad
+## and its SpawnPoint markers itself (Base). The Token stock (MapField.token_stock) goes to begin()
+## as it is: the controller copies it for each Player and refuses a Map without a usable one, so
+## this scene checks nothing about it
+## (production/epics/wasteland-fire/story-008-tokens-garage-and-loss.md AC-1 and AC-9). The Map is
+## World's first child (the node Map, unique name %Map), so a Map node that acts on the Units in its
+## physics tick runs before the Units do, in every tick.
 ##
 ## One world, two views (AC-1, AC-2). World sits in the window's own World3D, outside both
 ## SubViewports, and neither SubViewport sets own_world_3d or a world_3d, so both render the
@@ -103,8 +106,8 @@ const FUEL_CAN_GROUP: StringName = &"fuel_cans"
 
 ## The Map both Units drive on, typed MapField so any Map scene can be it (Story 007 AC-9). It
 ## carries the two Bases (player_1_base and player_2_base) where each Player's Unit starts the
-## Round and respawns, and the Map's Token stock, which this scene does not read. It sits under
-## World, so it is in the shared world.
+## Round and respawns, and the Map's Token stock, which this scene hands to the MatchController
+## with the Bases. It sits under World, so it is in the shared world.
 @export var field: MapField
 
 ## The Unit Player 1 drives. It sits under World, beside Player 1's PlayerDriveInput.
@@ -119,7 +122,7 @@ const FUEL_CAN_GROUP: StringName = &"fuel_cans"
 ## The camera that chases Player 2's Unit. It sits in the SubViewport of Player 2's view.
 @export var player_2_camera: ChaseCamera
 
-## The node that owns the Round's state: who is alive, the respawn timers and the canisters.
+## The node that owns the Round's state: who is alive, the respawn timers and the Flags.
 ## _ready() hands it the Units, the Bases and the cameras. It sits after the views in this scene's
 ## root, with RoundRestartInput after it, and what the screen shows about the Round (the respawn
 ## countdown, the HUD and the Round-over screen) listens to it.
@@ -136,7 +139,7 @@ func _ready() -> void:
 	var bases: Array[Base] = [field.player_1_base, field.player_2_base]
 	var cameras: Array[ChaseCamera] = [player_1_camera, player_2_camera]
 	_warm_up_models()
-	match_controller.begin(units, bases, cameras)
+	match_controller.begin(units, bases, cameras, field.token_stock)
 	match_controller.round_started.connect(_free_shots)
 	match_controller.round_started.connect(_restock_fuel_cans)
 

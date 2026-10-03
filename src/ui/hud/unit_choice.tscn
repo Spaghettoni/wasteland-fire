@@ -45,6 +45,22 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dim"]
+content_margin_left = 6.0
+content_margin_top = 8.0
+content_margin_right = 6.0
+content_margin_bottom = 8.0
+bg_color = Color(0.07, 0.07, 0.08, 0.55)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.07, 0.07, 0.08, 0)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
 [node name="UnitChoice" type="Control"]
 visible = false
 layout_mode = 3
@@ -58,8 +74,12 @@ script = ExtResource("1_choice")
 title_text = "Choose your Unit"
 hint_format = "%s / %s to choose, %s to confirm"
 ready_format = "%s ready"
+count_format = "x%d"
 slot_style = SubResource("StyleBoxFlat_slot")
 cursor_style = SubResource("StyleBoxFlat_cursor")
+dim_style = SubResource("StyleBoxFlat_dim")
+normal_font_color = Color(1, 1, 1, 1)
+dim_font_color = Color(0.5, 0.5, 0.54, 1)
 
 [node name="Panel" type="PanelContainer" parent="."]
 unique_name_in_owner = true
@@ -105,7 +125,20 @@ size_flags_horizontal = 3
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_slot")
 
-[node name="NameLabel" type="Label" parent="Panel/Lines/Slots/SlotTemplate"]
+[node name="Lines" type="VBoxContainer" parent="Panel/Lines/Slots/SlotTemplate"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="NameLabel" type="Label" parent="Panel/Lines/Slots/SlotTemplate/Lines"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="CountLabel" type="Label" parent="Panel/Lines/Slots/SlotTemplate/Lines"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 18

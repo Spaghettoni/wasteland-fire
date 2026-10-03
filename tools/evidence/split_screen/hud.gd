@@ -3,12 +3,12 @@ extends RefCounted
 ## of Story 004, read from the nodes under each Player's SubViewport and compared with what that
 ## Player's Unit and the MatchController say at the same moment. Three CHECK lines, every number
 ## measured, the texts read from the scene's exports and never typed here: the hit-point bar and
-## line through three debug-key hits and the one that destroys the Unit (AC-7); the canister status
-## line of BOTH Players in four situations of one canister run: at home, stolen, dropped, carried
+## line through three debug-key hits and the one that destroys the Unit (AC-7); the Flag status
+## line of BOTH Players in four situations of one Flag run: at home, stolen, dropped, carried
 ## back by its owner (AC-7); and the layout, every element inside its 640 x 720 view with
 ## a margin and every stored text inside its label (AC-8). Real key events (the debug key 1, W and
-## the arrows); the runner's teleport only shortens canister_run's lanes. Tooling only: nothing
-## under src/ depends on this file; the shared helpers are check_kit.gd and canister_kit.gd.
+## the arrows); the runner's teleport only shortens flag_run's lanes. Tooling only: nothing
+## under src/ depends on this file; the shared helpers are check_kit.gd and flag_kit.gd.
 ## Implements: production/epics/wasteland-fire/story-004-water-canister-and-win.md AC-7 and AC-8.
 ## Run: godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn \
 ##     -- --scenario=hud
@@ -17,18 +17,18 @@ extends RefCounted
 const Harness: GDScript = preload("res://tools/evidence/split_screen_harness.gd")
 ## The shared helpers (check_kit.gd).
 const Kit: GDScript = preload("res://tools/evidence/split_screen/check_kit.gd")
-## The Story 004 helpers (canister_kit.gd): the signal record, the moves and the names.
-const Canisters: GDScript = preload("res://tools/evidence/split_screen/canister_kit.gd")
+## The Story 004 helpers (flag_kit.gd): the signal record, the moves and the names.
+const Flags: GDScript = preload("res://tools/evidence/split_screen/flag_kit.gd")
 
-## Player 1: takes the debug-key hits and steals canister 2.
+## Player 1: takes the debug-key hits and steals Flag 2.
 const THIEF: int = Harness.PLAYER_1
-## Player 2: owns canister 2 and recovers it.
+## Player 2: owns Flag 2 and recovers it.
 const OWNER: int = Harness.PLAYER_2
 ## Debug-key hits the Unit survives before the one that destroys it (100, 75, 50, 25 with the data).
 const SURVIVED_HITS: int = 3
 ## Least room between a HUD element and the edge of its view, pixels (AC-8).
 const MARGIN_PX: float = 8.0
-## Where Player 2 waits out of the lane (canister_run's spot).
+## Where Player 2 waits out of the lane (flag_run's spot).
 const PARK_SPOT: Vector3 = Vector3(-12.0, 0.0, -8.0)
 ## Where the thief is destroyed (outside both zones).
 const RIDE_START: Vector3 = Vector3(12.0, 0.0, 0.0)
@@ -39,7 +39,7 @@ const TO_BASE_2: Vector3 = Vector3(0.0, 0.0, -1.0)
 
 var _harness: Harness
 var _kit: Kit
-var _cans: Canisters
+var _flag_kit: Flags
 ## The two HUDs by player_index, each found directly under its own Player's SubViewport.
 var _huds: Array[PlayerHud] = [null, null]
 
@@ -48,19 +48,19 @@ var _huds: Array[PlayerHud] = [null, null]
 func run(harness: Node) -> void:
 	_harness = harness as Harness
 	_kit = Kit.new(harness)
-	_cans = Canisters.new(harness, _kit)
+	_flag_kit = Flags.new(harness, _kit)
 	await _kit.advance(Kit.START_TICKS)
 	if not _find_huds():
 		_kit.verdict("hp_display", PackedStringArray(["no PlayerHud with player_index 0 and 1 under the SubViewports"]), "huds=%s" % [_huds])
 		_harness.finish("reason=no_huds")
 		return
 	await _check_hp_display()
-	await _check_canister_status_display()
+	await _check_flag_status_display()
 	_check_fits_view()
 	_harness.phase = &"end"
 	_harness.print_progress()
 	_harness.finish("picked_up=%d dropped=%d seated=%d spawned=%d" % [
-		_cans.pick_ups.size(), _cans.drops.size(), _cans.seats.size(), _cans.spawns.size()])
+		_flag_kit.pick_ups.size(), _flag_kit.drops.size(), _flag_kit.seats.size(), _flag_kit.spawns.size()])
 
 
 ## AC-7: both HUDs show their Unit's hit points (bar value and maximum, line numbers) at the start;
@@ -69,9 +69,9 @@ func run(harness: Node) -> void:
 func _check_hp_display() -> void:
 	_harness.phase = &"hp_display"
 	var problems: PackedStringArray = []
-	var thief: Unit = _cans.units[THIEF]
+	var thief: Unit = _flag_kit.units[THIEF]
 	var max_hp: float = thief.stats.max_hit_points
-	var damage: float = _cans.controller.rules.debug_damage
+	var damage: float = _flag_kit.controller.rules.debug_damage
 	var presses_max: int = ceili(max_hp / damage) if damage > 0.0 else 0
 	var steps: PackedStringArray = ["start: " + _read_hit_points(max_hp, max_hp, problems, "start")]
 	for count: int in range(1, SURVIVED_HITS + 1):
@@ -93,7 +93,7 @@ func _read_hit_points(expected_thief: float, expected_owner: float, problems: Pa
 	var parts: PackedStringArray = []
 	for player: int in Kit.PLAYERS:
 		var hud: PlayerHud = _huds[player]
-		var unit: Unit = _cans.units[player]
+		var unit: Unit = _flag_kit.units[player]
 		var bar: ProgressBar = hud.find_child("HitPointsBar", true, false) as ProgressBar
 		var line: Label = hud.find_child("HitPointsLabel", true, false) as Label
 		var max_hp: float = unit.stats.max_hit_points
@@ -108,44 +108,44 @@ func _read_hit_points(expected_thief: float, expected_owner: float, problems: Pa
 
 
 ## AC-7: each Player's status line equals the text the scene stores for the status the controller
-## reports, in four situations: both at home; canister 2 stolen (the thief carrying, the owner
+## reports, in four situations: both at home; Flag 2 stolen (the thief carrying, the owner
 ## away); dropped at the wreck (the owner away, the thief home); carried back by its owner (still
 ## away). Each situation also has to be the one the run meant. It first waits out the thief's
 ## respawn after the hit-point check, then parks the owner and puts the thief down SETTLE_TICKS
 ## later (a Unit put down beside a spot another Unit just left is thrown off it).
-func _check_canister_status_display() -> void:
-	_harness.phase = &"canister_status"
+func _check_flag_status_display() -> void:
+	_harness.phase = &"flag_status"
 	var problems: PackedStringArray = []
-	var canister: WaterCanister = _cans.canisters[OWNER]
-	var home: int = MatchController.CanisterStatus.OWN_AT_HOME
-	var away: int = MatchController.CanisterStatus.OWN_AWAY
-	var carrying: int = MatchController.CanisterStatus.CARRYING_ENEMY
-	await _kit.advance(_harness.ticks_in(_cans.controller.rules.respawn_delay_seconds) + Kit.RESPAWN_SLACK_TICKS)
+	var flag: Flag = _flag_kit.flags[OWNER]
+	var home: int = MatchController.FlagStatus.OWN_AT_HOME
+	var away: int = MatchController.FlagStatus.OWN_AWAY
+	var carrying: int = MatchController.FlagStatus.CARRYING_ENEMY
+	await _kit.advance(_harness.ticks_in(_flag_kit.controller.rules.respawn_delay_seconds) + Kit.RESPAWN_SLACK_TICKS)
 	var moments: PackedStringArray = [_read_status("at_home", [home, home] as Array[int], problems)]
 	await _kit.advance(Harness.SETTLE_TICKS)
-	_cans.teleport(OWNER, PARK_SPOT, TO_BASE_1)
+	_flag_kit.teleport(OWNER, PARK_SPOT, TO_BASE_1)
 	await _kit.advance(Harness.SETTLE_TICKS)
-	_cans.approach(THIEF, canister.global_position, TO_BASE_1)
-	var steal: int = await _cans.drive_until(THIEF, 1, Canisters.APPROACH_SPEED,
-		func() -> bool: return canister.carrier == _cans.units[THIEF])
-	_kit.need(problems, steal > 0, "the thief never picked up canister 2")
+	_flag_kit.approach(THIEF, flag.global_position, TO_BASE_1)
+	var steal: int = await _flag_kit.drive_until(THIEF, 1, Flags.APPROACH_SPEED,
+		func() -> bool: return flag.carrier == _flag_kit.units[THIEF])
+	_kit.need(problems, steal > 0, "the thief never picked up flag 2")
 	moments.append(_read_status("stolen", [carrying, away] as Array[int], problems))
-	await _cans.rest(THIEF)
-	_cans.teleport(THIEF, RIDE_START, TO_BASE_2)
-	var damage: float = _cans.controller.rules.debug_damage
-	var presses: int = ceili(_cans.units[THIEF].stats.max_hit_points / damage) if damage > 0.0 else 0
+	await _flag_kit.rest(THIEF)
+	_flag_kit.teleport(THIEF, RIDE_START, TO_BASE_2)
+	var damage: float = _flag_kit.controller.rules.debug_damage
+	var presses: int = ceili(_flag_kit.units[THIEF].stats.max_hit_points / damage) if damage > 0.0 else 0
 	for _press: int in presses:
 		await _kit.press_settled(Kit.KEYS_DEBUG_1)
-	_kit.need(problems, canister.state == WaterCanister.State.DROPPED, "canister 2 did not drop at the wreck")
+	_kit.need(problems, flag.state == Flag.State.DROPPED, "flag 2 did not drop at the wreck")
 	moments.append(_read_status("dropped", [home, away] as Array[int], problems))
-	_cans.approach(OWNER, canister.global_position, TO_BASE_1)
-	var recovery: int = await _cans.drive_until(OWNER, 1, Canisters.APPROACH_SPEED,
-		func() -> bool: return canister.carrier == _cans.units[OWNER])
-	_kit.need(problems, recovery > 0, "the owner never picked up its dropped canister")
+	_flag_kit.approach(OWNER, flag.global_position, TO_BASE_1)
+	var recovery: int = await _flag_kit.drive_until(OWNER, 1, Flags.APPROACH_SPEED,
+		func() -> bool: return flag.carrier == _flag_kit.units[OWNER])
+	_kit.need(problems, recovery > 0, "the owner never picked up its dropped flag")
 	moments.append(_read_status("carried_back", [home, away] as Array[int], problems))
 	_harness.print_progress()
 	var hud: PlayerHud = _huds[THIEF]
-	_kit.verdict("canister_status_display", problems, "texts (player_hud.tscn): home=\"%s\" away=\"%s\" carrying=\"%s\" | %s" % [
+	_kit.verdict("flag_status_display", problems, "texts (player_hud.tscn): home=\"%s\" away=\"%s\" carrying=\"%s\" | %s" % [
 		hud.home_text, hud.away_text, hud.carrying_text, " | ".join(moments)])
 
 
@@ -154,21 +154,21 @@ func _read_status(moment: String, expected: Array[int], problems: PackedStringAr
 	var parts: PackedStringArray = []
 	for player: int in Kit.PLAYERS:
 		var hud: PlayerHud = _huds[player]
-		var status: int = _cans.controller.canister_status(player)
-		var shown: String = (hud.find_child("CanisterStatusLabel", true, false) as Label).text
+		var status: int = _flag_kit.controller.flag_status(player)
+		var shown: String = (hud.find_child("FlagStatusLabel", true, false) as Label).text
 		var matches: bool = shown == _text_for(hud, status)
-		var wanted: String = MatchController.CanisterStatus.keys()[expected[player]]
+		var wanted: String = MatchController.FlagStatus.keys()[expected[player]]
 		_kit.need(problems, status == expected[player] and matches,
 			"%s: player_%d's status is not %s, or its line is not the scene's text for it" % [moment, player + 1, wanted])
-		parts.append("p%d status=%s (expected %s) line=\"%s\"" % [player + 1, _cans.status_name(player), wanted, shown])
-	return "%s (canister_1=%s canister_2=%s): %s" % [moment, _cans.state_name(0), _cans.state_name(1), " ".join(parts)]
+		parts.append("p%d status=%s (expected %s) line=\"%s\"" % [player + 1, _flag_kit.status_name(player), wanted, shown])
+	return "%s (flag_1=%s flag_2=%s): %s" % [moment, _flag_kit.state_name(0), _flag_kit.state_name(1), " ".join(parts)]
 
 
-## The text the scene stores on the HUD for a CanisterStatus value, through the HUD's own tr().
+## The text the scene stores on the HUD for a FlagStatus value, through the HUD's own tr().
 func _text_for(hud: PlayerHud, status: int) -> String:
-	if status == MatchController.CanisterStatus.CARRYING_ENEMY:
+	if status == MatchController.FlagStatus.CARRYING_ENEMY:
 		return hud.tr(hud.carrying_text)
-	if status == MatchController.CanisterStatus.OWN_AWAY:
+	if status == MatchController.FlagStatus.OWN_AWAY:
 		return hud.tr(hud.away_text)
 	return hud.tr(hud.home_text)
 
@@ -189,7 +189,7 @@ func _check_fits_view() -> void:
 ## by MARGIN_PX, each label's widest text against its width and the lines it shows. The rectangles.
 func _read_layout(player: int, problems: PackedStringArray) -> String:
 	var hud: PlayerHud = _huds[player]
-	var view: Rect2 = Rect2(Vector2.ZERO, Vector2((_cans.cameras[player].get_viewport() as SubViewport).size))
+	var view: Rect2 = Rect2(Vector2.ZERO, Vector2((_flag_kit.cameras[player].get_viewport() as SubViewport).size))
 	var inner: Rect2 = view.grow(-MARGIN_PX)
 	var root_is_view: bool = hud.get_global_rect().is_equal_approx(view)
 	_kit.need(problems, root_is_view, "player_%d's HUD root is not its view" % (player + 1))
@@ -220,7 +220,7 @@ func _read_layout(player: int, problems: PackedStringArray) -> String:
 ## The texts a label must hold: the one it shows and, for the status line, every stored status text.
 func _texts_of(hud: PlayerHud, label: Label) -> PackedStringArray:
 	var texts: PackedStringArray = [label.text]
-	if label.name == "CanisterStatusLabel":
+	if label.name == "FlagStatusLabel":
 		texts.append(hud.tr(hud.home_text))
 		texts.append(hud.tr(hud.away_text))
 		texts.append(hud.tr(hud.carrying_text))
@@ -235,7 +235,7 @@ func _text_width(label: Label, text: String) -> float:
 ## Files each PlayerHud that sits directly under its own Player's SubViewport, by player_index.
 func _find_huds() -> bool:
 	for player: int in Kit.PLAYERS:
-		for node: Node in (_cans.cameras[player].get_viewport() as SubViewport).get_children():
+		for node: Node in (_flag_kit.cameras[player].get_viewport() as SubViewport).get_children():
 			if node is PlayerHud and (node as PlayerHud).player_index == player:
 				_huds[player] = node as PlayerHud
 	return _huds[0] != null and _huds[1] != null

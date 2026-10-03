@@ -1,0 +1,50 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+SPLIT tokens_showcase t=1.000 frame=59 phase=choose_start moment=choose_start round=RUNNING p1_unit=none p1_panel=choosing p1_counts=x2,x4,x3,x1 p1_looks=cursor,plain,plain,plain p1_cursor=0 p1_hud="Motorbike Tokens: 2" p1_countdown="" p1_screen="" p2_unit=none p2_panel=choosing p2_counts=x2,x4,x3,x1 p2_looks=cursor,plain,plain,plain p2_cursor=0 p2_hud="Motorbike Tokens: 2" p2_countdown="" p2_screen=""
+SPLIT tokens_showcase t=1.117 frame=67 phase=both_choose event=p1_chose_gyrocopter round=RUNNING
+SPLIT tokens_showcase t=1.117 frame=67 phase=both_choose event=p2_chose_motorbike round=RUNNING
+SPLIT tokens_showcase t=1.117 frame=67 phase=both_choose event=p1_spawned_as_gyrocopter round=RUNNING
+SPLIT tokens_showcase t=1.117 frame=67 phase=both_choose event=p2_spawned_as_motorbike round=RUNNING
+SPLIT tokens_showcase t=2.183 frame=130 phase=units_in_play moment=units_in_play round=RUNNING p1_unit=gyrocopter p1_panel=hidden p1_counts=x2,x4,x3,x1 p1_looks=plain,plain,plain,plain p1_cursor=3 p1_hud="Motorbike Tokens: 2" p1_countdown="" p1_screen="" p2_unit=motorbike p2_panel=hidden p2_counts=x2,x4,x3,x1 p2_looks=plain,plain,plain,plain p2_cursor=0 p2_hud="Motorbike Tokens: 2" p2_countdown="" p2_screen=""
+SPLIT tokens_showcase t=2.200 frame=132 phase=p1_destroys_gyrocopter event=p1_destroyed round=RUNNING
+SPLIT tokens_showcase t=3.450 frame=206 phase=choose_after_gyro moment=choose_after_gyro round=RUNNING p1_unit=none p1_panel=choosing p1_counts=x2,x4,x3,x0 p1_looks=cursor,plain,plain,dim p1_cursor=0 p1_hud="Motorbike Tokens: 2" p1_countdown="Respawn in 2" p1_screen="" p2_unit=motorbike p2_panel=hidden p2_counts=x2,x4,x3,x1 p2_looks=plain,plain,plain,plain p2_cursor=0 p2_hud="Motorbike Tokens: 2" p2_countdown="" p2_screen=""
+SPLIT tokens_showcase t=4.483 frame=268 phase=cursor_skips_dim moment=cursor_skips_dim round=RUNNING p1_unit=none p1_panel=choosing p1_counts=x2,x4,x3,x0 p1_looks=plain,plain,cursor,dim p1_cursor=2 p1_hud="Motorbike Tokens: 2" p1_countdown="Respawn in 1" p1_screen="" p2_unit=motorbike p2_panel=hidden p2_counts=x2,x4,x3,x1 p2_looks=plain,plain,plain,plain p2_cursor=0 p2_hud="Motorbike Tokens: 2" p2_countdown="" p2_screen=""
+SPLIT tokens_showcase t=4.533 frame=272 phase=p1_chooses_motorbike event=p1_chose_motorbike round=RUNNING
+SPLIT tokens_showcase t=5.200 frame=312 phase=p1_chooses_motorbike event=p1_spawned_as_motorbike round=RUNNING
+SPLIT tokens_showcase t=6.267 frame=375 phase=hud_tokens moment=hud_tokens round=RUNNING p1_unit=motorbike p1_panel=hidden p1_counts=x2,x4,x3,x0 p1_looks=plain,plain,plain,dim p1_cursor=0 p1_hud="Motorbike Tokens: 2" p1_countdown="" p1_screen="" p2_unit=motorbike p2_panel=hidden p2_counts=x2,x4,x3,x1 p2_looks=plain,plain,plain,plain p2_cursor=0 p2_hud="Motorbike Tokens: 2" p2_countdown="" p2_screen=""
+SPLIT tokens_showcase t=6.283 frame=377 phase=p1_destroys_motorbike event=p1_destroyed round=RUNNING
+SPLIT tokens_showcase t=7.333 frame=439 phase=hud_after_destruct moment=hud_after_destruct round=RUNNING p1_unit=none p1_panel=choosing p1_counts=x1,x4,x3,x0 p1_looks=cursor,plain,plain,dim p1_cursor=0 p1_hud="Motorbike Tokens: 1" p1_countdown="Respawn in 2" p1_screen="" p2_unit=motorbike p2_panel=hidden p2_counts=x2,x4,x3,x1 p2_looks=plain,plain,plain,plain p2_cursor=0 p2_hud="Motorbike Tokens: 2" p2_countdown="" p2_screen=""
+SPLIT tokens_showcase t=7.350 frame=441 phase=p1_chooses_last_motorbike event=p1_chose_motorbike round=RUNNING
+SPLIT tokens_showcase t=9.283 frame=557 phase=p1_chooses_last_motorbike event=p1_spawned_as_motorbike round=RUNNING
+SPLIT tokens_showcase t=9.867 frame=592 phase=p1_loses_last_motorbike event=p1_destroyed round=RUNNING
+SPLIT tokens_showcase t=9.867 frame=592 phase=p1_loses_last_motorbike event=round_over_p2_wins round=OVER
+SPLIT tokens_showcase t=11.450 frame=686 phase=round_over_loss moment=round_over_loss round=OVER p1_unit=none p1_panel=hidden p1_counts=x0,x4,x3,x0 p1_looks=dim,cursor,plain,dim p1_cursor=1 p1_hud="Motorbike Tokens: 0" p1_countdown="" p1_screen="Player 2 wins! / Press R to play again" p2_unit=motorbike p2_panel=hidden p2_counts=x2,x4,x3,x1 p2_looks=plain,plain,plain,plain p2_cursor=0 p2_hud="Motorbike Tokens: 2" p2_countdown="" p2_screen="Player 2 wins! / Press R to play again"
+SPLIT tokens_showcase t=11.467 frame=688 phase=restart event=round_started round=RUNNING
+SPLIT tokens_showcase t=12.483 frame=748 phase=restart_a moment=restart_a round=RUNNING p1_unit=none p1_panel=choosing p1_counts=x2,x4,x3,x1 p1_looks=plain,cursor,plain,plain p1_cursor=1 p1_hud="Motorbike Tokens: 2" p1_countdown="" p1_screen="" p2_unit=none p2_panel=choosing p2_counts=x2,x4,x3,x1 p2_looks=cursor,plain,plain,plain p2_cursor=0 p2_hud="Motorbike Tokens: 2" p2_countdown="" p2_screen=""
+SPLIT tokens_showcase t=12.600 frame=756 phase=both_choose event=p1_chose_motorbike round=RUNNING
+SPLIT tokens_showcase t=12.600 frame=756 phase=both_choose event=p2_chose_motorbike round=RUNNING
+SPLIT tokens_showcase t=12.600 frame=756 phase=both_choose event=p1_spawned_as_motorbike round=RUNNING
+SPLIT tokens_showcase t=12.600 frame=756 phase=both_choose event=p2_spawned_as_motorbike round=RUNNING
+SPLIT tokens_showcase t=13.733 frame=824 phase=p1_takes_flag_2 event=p1_takes_flag_of_p2 round=RUNNING
+SPLIT tokens_showcase t=17.367 frame=1042 phase=p1_delivers event=round_over_p1_wins round=OVER
+SPLIT tokens_showcase t=18.883 frame=1132 phase=round_over_delivery moment=round_over_delivery round=OVER p1_unit=motorbike p1_panel=hidden p1_counts=x2,x4,x3,x1 p1_looks=plain,plain,plain,plain p1_cursor=0 p1_hud="Motorbike Tokens: 2" p1_countdown="" p1_screen="Player 1 wins! / Press R to play again" p2_unit=motorbike p2_panel=hidden p2_counts=x2,x4,x3,x1 p2_looks=plain,plain,plain,plain p2_cursor=0 p2_hud="Motorbike Tokens: 2" p2_countdown="" p2_screen="Player 1 wins! / Press R to play again"
+SPLIT tokens_showcase t=18.900 frame=1134 phase=restart event=round_started round=RUNNING
+SPLIT tokens_showcase t=19.917 frame=1194 phase=restart_b moment=restart_b round=RUNNING p1_unit=none p1_panel=choosing p1_counts=x2,x4,x3,x1 p1_looks=cursor,plain,plain,plain p1_cursor=0 p1_hud="Motorbike Tokens: 2" p1_countdown="" p1_screen="" p2_unit=none p2_panel=choosing p2_counts=x2,x4,x3,x1 p2_looks=cursor,plain,plain,plain p2_cursor=0 p2_hud="Motorbike Tokens: 2" p2_countdown="" p2_screen=""
+SPLIT tokens_showcase t=19.933 frame=1196 phase=both_choose event=p1_chose_motorbike round=RUNNING
+SPLIT tokens_showcase t=19.933 frame=1196 phase=both_choose event=p2_chose_motorbike round=RUNNING
+SPLIT tokens_showcase t=19.933 frame=1196 phase=both_choose event=p1_spawned_as_motorbike round=RUNNING
+SPLIT tokens_showcase t=19.933 frame=1196 phase=both_choose event=p2_spawned_as_motorbike round=RUNNING
+SPLIT tokens_showcase t=20.017 frame=1201 phase=both_destroy_motorbike event=p1_destroyed round=RUNNING
+SPLIT tokens_showcase t=20.017 frame=1201 phase=both_destroy_motorbike event=p2_destroyed round=RUNNING
+SPLIT tokens_showcase t=21.067 frame=1263 phase=both_destroyed moment=both_destroyed round=RUNNING p1_unit=none p1_panel=choosing p1_counts=x1,x4,x3,x1 p1_looks=cursor,plain,plain,plain p1_cursor=0 p1_hud="Motorbike Tokens: 1" p1_countdown="Respawn in 2" p1_screen="" p2_unit=none p2_panel=choosing p2_counts=x1,x4,x3,x1 p2_looks=cursor,plain,plain,plain p2_cursor=0 p2_hud="Motorbike Tokens: 1" p2_countdown="Respawn in 2" p2_screen=""
+SPLIT tokens_showcase t=21.083 frame=1265 phase=both_choose_last_motorbike event=p1_chose_motorbike round=RUNNING
+SPLIT tokens_showcase t=21.117 frame=1267 phase=both_choose_last_motorbike event=p2_chose_motorbike round=RUNNING
+SPLIT tokens_showcase t=23.017 frame=1381 phase=both_choose_last_motorbike event=p1_spawned_as_motorbike round=RUNNING
+SPLIT tokens_showcase t=23.017 frame=1381 phase=both_choose_last_motorbike event=p2_spawned_as_motorbike round=RUNNING
+SPLIT tokens_showcase t=23.100 frame=1386 phase=both_lose_last_motorbike event=p1_destroyed round=RUNNING
+SPLIT tokens_showcase t=23.100 frame=1386 phase=both_lose_last_motorbike event=p2_destroyed round=RUNNING
+SPLIT tokens_showcase t=23.100 frame=1386 phase=both_lose_last_motorbike event=round_over_nobody_wins round=OVER
+SPLIT tokens_showcase t=24.683 frame=1480 phase=round_over_nobody moment=round_over_nobody round=OVER p1_unit=none p1_panel=hidden p1_counts=x0,x4,x3,x1 p1_looks=dim,cursor,plain,plain p1_cursor=1 p1_hud="Motorbike Tokens: 0" p1_countdown="" p1_screen="Nobody wins! / Press R to play again" p2_unit=none p2_panel=hidden p2_counts=x0,x4,x3,x1 p2_looks=dim,cursor,plain,plain p2_cursor=1 p2_hud="Motorbike Tokens: 0" p2_countdown="" p2_screen="Nobody wins! / Press R to play again"
+SPLIT tokens_showcase t=24.700 frame=1482 phase=restart event=round_started round=RUNNING
+SPLIT tokens_showcase t=26.217 frame=1572 phase=restart_c moment=restart_c round=RUNNING p1_unit=none p1_panel=choosing p1_counts=x2,x4,x3,x1 p1_looks=plain,cursor,plain,plain p1_cursor=1 p1_hud="Motorbike Tokens: 2" p1_countdown="" p1_screen="" p2_unit=none p2_panel=choosing p2_counts=x2,x4,x3,x1 p2_looks=plain,cursor,plain,plain p2_cursor=1 p2_hud="Motorbike Tokens: 2" p2_countdown="" p2_screen=""
+RESULT tokens_showcase ok checks=0 failed=0 t=26.217 moments=13 chosen=10 spawned=10 destroyed=7 round_over=3 round_started=3 errors=0 warnings=0

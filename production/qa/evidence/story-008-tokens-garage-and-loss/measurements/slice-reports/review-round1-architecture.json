@@ -1,0 +1,200 @@
+{
+ "clean": false,
+ "issues": [
+  {
+   "severity": "minor",
+   "kind": "STANDARD",
+   "file": "docs/tech-debt-register.md (TD-008 and TD-010 rows) and src/gameplay/match/match_controller.gd",
+   "quote": "TD-008: \"... the controller keeps the Round state, the signals and the public API (src/gameplay/match/match_controller.gd, 480 lines, down from 560)\"; TD-010: \"Keep each paragraph in one file with a one-line pointer in the other when either file is next touched (Story 008 renames the canister code and touches both)\"",
+   "problem": "match_controller.gd is now 629 lines (311 doc, 250 code; HEAD 480 = 214 doc, 208 code), the second src file over 500 after unit.gd (735, docs-only edit here). unit_choice.gd went 377 -> 484 (219 doc, 204 code), player_hud.gd is 386, the new token_ledger.gd 201 (84 doc, 93 code). TD-010's own trigger fired (the story touched both match_controller.gd and garage_queue.gd) but about 500 words of ## doc are still duplicated between them (for example the seconds_until_respawn paragraph sits in both). TD-008 stays 'Resolved' on a 480-line figure that is no longer true. The orchestrator owns the TD-010 amendment; this only fixes what it must record.",
+   "fix": "In the TD-010 amendment record match_controller.gd 629 (311/250), unit_choice.gd 484 (219/204), player_hud.gd 386, token_ledger.gd 201, and say whether the garage_queue.gd/match_controller.gd doc dedupe is paid now or deferred; note under TD-008 that its 480-line figure is superseded."
+  },
+  {
+   "severity": "minor",
+   "kind": "DEFECT",
+   "file": "src/gameplay/match/token_ledger.gd:9-12",
+   "quote": "## its own and not more lines in the controller because the controller would pass 500 lines with it,\n## and then Story 008's Implementation Notes (docs/tech-debt-register.md TD-008) send the stock and",
+   "problem": "The class doc justifies the helper by the controller staying under 500 lines, but match_controller.gd is 629 lines even with the ledger (measured with wc and lint008). The sentence reads as if the 500-line bound holds.",
+   "fix": "Reword to the fact: the stock and the loss live here so the controller does not grow by the ledger's ~95 code lines; the controller is still over 500 (see TD-010)."
+  },
+  {
+   "severity": "minor",
+   "kind": "DEFECT",
+   "file": "src/gameplay/match/garage_queue.gd:63-64",
+   "quote": "## false and nothing changes; the Round's own refusals (not begun, over, an index outside the data)\n## are the controller's, before it asks.",
+   "problem": "Stale list. MatchController.choose() now has a fourth refusal of its own, a type with no Token left (can_choose(), documented as the single guard of AC-3). The paragraph describing the split of refusals between the controller and GarageQueue omits it; garage_queue.gd was otherwise only rename-edited.",
+   "fix": "Add 'a type with no Token left' to the parenthesis."
+  },
+  {
+   "severity": "minor",
+   "kind": "DEFECT",
+   "file": "src/gameplay/flag/flag.gd:44 and :102",
+   "quote": "##     PickupZone (Area3D): a 1 m sphere about the body's middle, on physics layer 4 (\"Flags\",   |   ## The Area3D that reports Units touching the Flag (physics layer 4 \"Flags\", mask 2",
+   "problem": "Mechanical-rename artifact: the layer is named \"flags\" in project.godot:104 (3d_physics/layer_4=\"flags\"), not \"Flags\". The doc quotes a name that does not exist.",
+   "fix": "Write \"flags\" in both places."
+  },
+  {
+   "severity": "minor",
+   "kind": "DEFECT",
+   "file": "src/gameplay/match/flag_rules.gd:20 and :62; tools/evidence/split_screen/flag_kit.gd:35",
+   "quote": "## Player 1) and the index of its Base in the controller's arrays, so bases[N].Flag is Player   |   ## The Flag of the given index: bases[flag_index].Flag.   |   ## The Flags by owner: Flag N is bases[N].Flag (CONTEXT.md: the Flag of Player N).",
+   "problem": "Rename artifact: the Base member is the lowercase export `flag` (base.gd: `@export var flag: Flag`, used as bases[flag_index].flag in the code just below), so `.Flag` names a property that does not exist.",
+   "fix": "Use bases[N].flag in the three docs."
+  },
+  {
+   "severity": "minor",
+   "kind": "DEFECT",
+   "file": "src/gameplay/maps/base.gd:64 and :113",
+   "quote": "## MatchController asks it for spawn_point, spare_spawn_points, Flag and flag_seat and   |   ## Flag (Story 004; the Flag of Story 007). Each Base holds its Player's Flag: the",
+   "problem": "Line 64 lists member names and `Flag` should be the export `flag`. Line 113 is the rename of the heading 'Water Canister (Story 004; the Flag of Story 007)': it now reads circularly, and 'the Flag of Story 007' is meaningless since Story 008 gave the thing its code name.",
+   "fix": "Line 64: `flag`. Line 113: 'Flag (built in Story 004 as the Water Canister, renamed in Story 008)'."
+  },
+  {
+   "severity": "minor",
+   "kind": "STANDARD",
+   "file": "tools/evidence/split_screen/choice.gd:70, flag_run.gd:53, flag_showcase.gd:67, hud.gd:42, round_over.gd:48 and :230, weapons.gd:250",
+   "quote": "var _cans: Flags   |   var can: Vector3 = _cans.flags[player].global_position   |   var cans: Flags = Flags.new(_harness, _kit)",
+   "problem": "Identifiers left by the canister->flag rename: the Flag kit is still held in `_cans`/`cans` and a Flag position in `can`. CONTEXT.md says 'canister' now means only the Fuel Can, and fuel_cans.gd/map_legibility.gd use `can`/`_cans` for real Fuel Cans, so the names are ambiguous. AC-8 asks that no code name call the Flag a canister. Output is unaffected.",
+   "fix": "Rename to `_flags_kit` / `flag_kit` and `flag_position` (mechanical; outputs stay identical)."
+  },
+  {
+   "severity": "minor",
+   "kind": "STANDARD",
+   "file": "tools/evidence/split_screen/tokens.gd:326 (also tokens_data.gd:394, token_ui.gd:318, token_layout.gd:250; loss.gd sets none)",
+   "quote": "_h.phase = &\"end\"",
+   "problem": "Harness convention: all 27 retained split outputs contain at least one SPLIT line (the older scenarios end with `phase = &\"end\"` followed by print_progress()). tokens, tokens_data, token_ui, token_layout and loss print no SPLIT line at all (retained outputs: SPLIT=0), and since `phase` is only printed by SPLIT lines the assignment `_h.phase = &\"end\"` in those four is dead.",
+   "fix": "Either add `_h.print_progress()` before finish() as units.gd/weapons.gd/gyro.gd do (outputs then gain one line), or drop the dead assignment and say in the header that the scenario prints CHECK and RESULT only."
+  },
+  {
+   "severity": "minor",
+   "kind": "DESIGN",
+   "file": "tools/evidence/split_screen/tokens_showcase.gd:96-98 and :255-269; loss_kit.gd:23-25 and :184-202",
+   "quote": "const DELIVERY_CRUISE: float = 12.0   |   const GATE_AXIS: Vector3 = Vector3(0.0, 0.0, -50.0)   |   func _carry_to_gate(thief: int, owner: int, gate_index: int) -> void:",
+   "problem": "Duplicated code: tokens_showcase.gd copies loss_kit.gd's two constants verbatim and its carry_to_gate() body line for line (approach, drive_until touching, rest, teleport to the gate axis, settle) plus the drive_until delivery line of deliver(); loss_kit.gd's own doc says it mirrors map_bases.gd's raid start. About 20 of the showcase's 297 lines.",
+   "fix": "Keep one copy in loss_kit.gd (or flag_kit.gd) and call it from tokens_showcase.gd."
+  },
+  {
+   "severity": "minor",
+   "kind": "STANDARD",
+   "file": "tools/evidence/split_screen/token_ui.gd (_restart), token_choice.gd (_last_motorbike, _snap, _truck, _only_motorbike), token_ui.gd (_idle_screens, _end_round), loss_kit.gd (_judge, start_round), loss.gd (_t23)",
+   "quote": "func _restart(label: String) -> void:",
+   "problem": "TD-006 names 'a complexity under 10' among the house rules. Counting branch keywords with string literals and comments stripped, ten new scenario functions exceed it: token_ui._restart 22 (28 lines), token_choice._last_motorbike 16, token_ui._idle_screens 15, token_choice._snap 14, _truck 13, _only_motorbike 13, token_ui._end_round 13, loss_kit._judge 11, loss._t23 11, loss_kit.start_round 11. All are assertion chains, the pattern TD-006 already records. In src nothing is over 10 (lint008's cc~12 on MatchController._first_problem is inflated by 'and'/'or' inside message strings; the real count is 9) and nothing is over 40 lines anywhere.",
+   "fix": "List the ten in the TD-006 amendment (table-drive token_ui._restart first); no code change needed this round."
+  },
+  {
+   "severity": "minor",
+   "kind": "SCOPE",
+   "file": "tools/evidence/split_screen/map_layout.gd:26-27",
+   "quote": "## The runner keeps Map 01's own Token stock for this scenario (it reads it: TOKENS).\nconst USE_MAP_STOCK: bool = true",
+   "problem": "A retained scenario was edited beyond the rename and beyond the one allowed choice.gd line; the design block does not name it. It is needed (without it the runner's legacy 99 stock replaces the Map's and its TOKENS reading changes), but it is undocumented outside the file. The other Map 01 scenarios (map_edges, map_ford, map_bases, map_cover, map_showcase, map_legibility, map_fps) now run on the legacy 99 stock, which is by design.",
+   "fix": "Record the edit in the evidence doc / decision log next to the runner's stock mechanism."
+  },
+  {
+   "severity": "minor",
+   "kind": "DEFECT",
+   "file": "README.md:66-68",
+   "quote": "same tick, nobody wins and the screen says so. R starts the Round again with\nfull stocks. Keys 1 and 2 used to damage each Player's own Unit",
+   "problem": "The new Tokens paragraph was inserted between 'R restarts from the round-over screen.' and the sentence about keys 1 and 2, so the debug-key sentence now ends the Tokens paragraph and reads as unrelated. (README is orchestrator-owned and still being written; reported because the text exists.)",
+   "fix": "Move the 'Keys 1 and 2 ...' sentences into their own paragraph after the Tokens paragraph, or back before it."
+  }
+ ],
+ "measurements": [
+  {
+   "ac": "AC-8 / scope",
+   "what": "Frozen files: git diff HEAD --stat over src/gameplay/camera/, player_drive_input.gd, motorbike.tscn, driving_toy.gd/.tscn, drive_harness.gd/.tscn, greybox_field.tscn, terrain_stand_ins.tscn, greybox_fuel_cans.tscn, plus dev08.py frozen",
+   "value": "diff empty; frozen: 9/9 OK; driving_toy launches clean headless in a scratch copy",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "scope",
+   "what": "assets/ untouched (dev08.py assets); HEAD still 8e09d55, nothing staged; every new .gd has its .uid and the five moved scripts keep their HEAD uid; class cache diff is exactly -CanisterRules -WaterCanister +Flag +FlagRules +TokenLedger",
+   "value": "ASSETS UNCHANGED; uid sidecars identical; cache diff as stated",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "standards: docs",
+   "what": "Every non-underscore func/signal/class/enum/const/var in the 52 changed or new .gd files under src/ and tools/ has a ## line directly above (own script, wider than lint008 docs which only checks const/var/enum)",
+   "value": "0 missing; underscore names undocumented exactly as at HEAD",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "standards: 100 columns",
+   "what": "## lines over 100 columns among lines the story added (lint008 cols, and again without its 'Run:' exemption)",
+   "value": "0; the new Run: lines are 97 columns; the 24 over-long ## lines in split_screen_harness.gd are all pre-existing",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "AC-9",
+   "what": "Integer literals other than 0/1 in src/gameplay/match and src/ui/hud (own scan, strings and comments stripped)",
+   "value": "9 hits, all pre-existing (SPAWN_SETTLE_TICKS 3, match_rules.gd @export_range bounds) or placeholder counts in format validation (count(\"%\") < 2 / < 3); no Token count, delay or text constant in src; LEGACY_TOKEN_COUNT = 99 only in tools/",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "architecture",
+   "what": "Signals up / calls down / UI display only / DI: grep of src/ui for controller use, of src/gameplay for UI classes, of src for autoload, get_node and singletons",
+   "value": "UI uses only read-only queries (tokens_left, can_choose, carrier_type_index, unit_types, flag_status, is_choosing, chosen_type_index, is_round_over, seconds_until_respawn) and connects; no emit/choose/restart/begin in src/ui; src/gameplay names no UI class; no [autoload]; only get_node is UnitChoice's relative slot path; begin(units, bases, cameras, token_stock) called once, from SplitScreen:142; TokenLedger has only pure static validators; only destruction sources are Shot.apply_damage, PlayerMatchInput and the Unit's Fuel crash, all ticking before the controller as the class doc says",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "vocabulary",
+   "what": "Avoid-list regex (CONTEXT.md) over every added line and new file in src/ and tools/; remaining 'canister' text; dangling references to deleted files",
+   "value": "no Token/Flag/Garage/Unit/Round slip in code or scenes; remaining 'canister' = story-004 file-name citations plus one deliberate history sentence (match_controller.gd:27); no reference to gameplay/canister, canister_rules or water_canister outside docs/tech-debt-register.md and design/game-brief.md; leftover `_cans` identifiers reported",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "standards: size",
+   "what": "lint008 sizes / fns, plus own recount",
+   "value": "match_controller.gd 629 (HEAD 480), unit_choice.gd 484 (HEAD 377), player_hud.gd 386, token_ledger.gd 201, runner 780 (HEAD 698); 13 new tools files = 3,622 lines, evidence set now 13,500 lines in 58 scripts; no function over 40 lines; src functions all cc <= 10 with strings stripped; 10 new tools functions cc 11-22",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "harness conventions",
+   "what": "OWN_CHOICE, USE_MAP_STOCK|STOCK_COUNTS, WATCHDOG_SECONDS, CHECK/RESULT shape, determinism, nondeterministic sources",
+   "value": "all 7 new scenarios declare OWN_CHOICE and exactly one stock constant; WATCHDOG_SECONDS declared where long (loss 600 for a 170 s run, tokens 300, token_ui 300, tokens_showcase 150), default 120 s elsewhere against t= 22.4 / 8.6 / 0.9; one RESULT each; no random or wall-clock source; SPLIT line missing in 5 of 7 (reported)",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "AC-1..AC-9 evidence",
+   "what": "Independent run of all 7 new scenarios in my own scratch copy (godot --headless --fixed-fps 60) diffed against the retained outputs",
+   "value": "7/7 byte-identical; stderr clean except the by-design 16 ERROR + 1 WARNING (tokens_data) and 2 ERROR (token_ui)",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "launch",
+   "what": "godot --headless --quit-after 120 on the main scene and --quit-after 60 on driving_toy.tscn in the scratch copy",
+   "value": "no ERROR or WARNING output, rc 0",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "docs true: engine claim",
+   "what": "match_rules.gd says Resource.duplicate() shares the unit_types array (probe on 4.7.2: appending to the copy's array)",
+   "value": "original size 4 -> 5, same array object; the copy's delay stayed private; duplicate_deep() separates the arrays",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "docs true: engine claim",
+   "what": "unit_choice.gd says a Label without an override is white in the default theme (probe on 4.7.2)",
+   "value": "get_theme_color(font_color) = (1,1,1,1) before and after remove_theme_color_override",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "docs true",
+   "what": "Class docs, state tables and 'Story 008' paragraphs in match_controller, token_ledger, token_stock, map_field, match_rules, split_screen, player_choice_input, unit_choice, player_hud, round_over_screen read against the code",
+   "value": "true now, including the begin()/restart() order (ledger before round_started), the unit_destroyed order (Token before flag_dropped and unit_destroyed), the frame order table and the HUD child count; stale or wrong spots are the six DEFECT items above",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "scope",
+   "what": "Non-comment changed lines in the lightly edited src files (shot, fuel_can, unit, unit_stats, garage_queue, round_restart_input, base, map_field, token_stock, match_rules, split_screen)",
+   "value": "only the Base export rename and the begin() call differ; the rest is ## text",
+   "verdict": "PASS"
+  },
+  {
+   "ac": "AC-8, fps tools, retained frames, mutation tests",
+   "what": "Full 31-baseline regress, fps/map_fps/input_ghosting_check, windowed frames, seeded defects, docs outside the code (rules.md, CONTEXT.md, TD register text, evidence doc)",
+   "value": "not run or not judged by this lens; the orchestrator owns them",
+   "verdict": "NOT_VERIFIED"
+  }
+ ],
+ "checked": "Read first: review-notes.txt, design.txt (incl. sections 13/14), the story file, CONTEXT.md, design/rules.md, CLAUDE.md and its imports, coding-standards, the .claude/rules files, src/CLAUDE.md, project.yaml and the whole tech-debt register. Read in full: token_ledger.gd, match_controller.gd (plus its diff), player_choice_input.gd, unit_choice.gd/.tscn, player_hud.gd/.tscn, round_over_screen.gd/.tscn, and the diffs of base.gd/.tscn, compound_base.tscn, flag.gd/flag_rules.gd against the old canister files, map_field, token_stock, match_rules, split_screen, garage_queue, unit, unit_stats, shot, fuel_can, round_restart_input, project.godot, the class cache, the runner and all retained-scenario edits; token_kit, tokens, tokens_data(+kit), token_choice (+ part of its kit), loss (+ most of loss_kit), token_ui (+ head of its kit), token_layout (first half), tokens_showcase (+ head of its kit). I ran lint008 all and judged its counts with my own recounts (strings stripped), scripted checks for docs on public declarations, ## width, unused declarations, duplicated function bodies, avoid-list words, numeric literals, UI and gameplay coupling, uid sidecars and indentation; checked the frozen files with git diff and dev08 frozen/assets; in a rsync scratch copy I ran all 7 new scenarios (all byte-identical to the retained outputs), the main scene and driving_toy launches, and two engine probes. Not checked by me: the 31-baseline regress, fps tools, windowed frames and the visual look, seeded-defect (mutation) strength of the new checks, token_layout's second half, the tails of token_ui_kit/token_choice_kit/tokens_showcase_kit and loss_kit's start_round body beyond skimming, and any doc outside code except the quoted README/CONTEXT/rules/smoke diffs. No blocking or major finding: every issue is a doc, naming, convention or register slip; behaviour, the ACs I could judge from this lens and the frozen files hold."
+}

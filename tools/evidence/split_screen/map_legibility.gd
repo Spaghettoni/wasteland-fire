@@ -76,7 +76,7 @@ var _units: Units
 var _map: Map
 ## The two staged Fuel Cans (CAN_PATHS order) and the two Flags (by Player), and where each stood.
 var _cans: Array[Node3D] = []
-var _flags: Array[WaterCanister] = []
+var _flags: Array[Flag] = []
 var _homes: Dictionary[Node3D, Vector3] = {}
 ## The moments reached, in order, and the problems they found.
 var _reached: PackedStringArray = []
@@ -93,7 +93,7 @@ func run(harness: Node) -> void:
 	_map = Map.new(harness, _kit)
 	for player: int in Kit.PLAYERS:
 		_cans.append(_map.find(CAN_PATHS[player]) as Node3D)
-		_flags.append(_units.bases[player].canister)
+		_flags.append(_units.bases[player].flag)
 		for node: Node3D in [_cans[player], _flags[player]]:
 			if node != null:
 				_homes[node] = node.global_position
@@ -132,7 +132,7 @@ func _surface(surface: StringName) -> void:
 		_put(_flags[player], spots[1 - player] * 2.0 - cans[player])
 	await _moment(surface, 3)
 	for player: int in Kit.PLAYERS:
-		_kit.need(_problems, _flags[player].state == WaterCanister.State.AT_HOME, "p%d's Flag picked up at %s" % [player + 1, surface])
+		_kit.need(_problems, _flags[player].state == Flag.State.AT_HOME, "p%d's Flag picked up at %s" % [player + 1, surface])
 
 
 ## Moves a staged Can or Flag to a spot on the ground, at its own height (a staging step).
@@ -181,7 +181,7 @@ func _line(label: String) -> void:
 	var fields: PackedStringArray = []
 	for player: int in Kit.PLAYERS:
 		var unit: Unit = _units.units[player]
-		var flag: String = WaterCanister.State.keys()[_flags[player].state]
+		var flag: String = Flag.State.keys()[_flags[player].state]
 		fields.append("p%d_type=%s p%d_x=%.2f p%d_z=%.2f flag%d=%s" % [player + 1, unit.type_id, player + 1,
 			unit.global_position.x, player + 1, unit.global_position.z, player + 1, flag])
 	print("SPLIT %s t=%.3f frame=%d phase=%s %s %s round=%s" % [_harness.scenario, _harness.time(),

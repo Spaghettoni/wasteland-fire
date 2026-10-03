@@ -12,7 +12,7 @@ extends Node3D
 ## the Map, and their amount and respawn time are tuning values: FuelCanSettings). Vocabulary:
 ## CONTEXT.md (Fuel Can, Fuel, Unit, Gyrocopter, Round, Map).
 ##
-## The Can acts on its own, unlike the Flag (WaterCanister in code), because a refill needs no
+## The Can acts on its own, unlike the Flag, because a refill needs no
 ## Player, Base or Round: the Unit's tank is the whole rule (Unit.refuel() adds Fuel up to the
 ## capacity and says how much it added). So the Can polls its own zone, calls down on the Unit and
 ## says what happened with `taken` and `restocked`, which nothing in v0.1 has to act on. It reads
