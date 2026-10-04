@@ -1,0 +1,8 @@
+# seeded defect: the camera reads target.global_transform (the physics tick) instead of get_global_transform_interpolated()
+SPLIT camera_smooth t=5.800 view=above run=1 samples=96 fraction_spread=0.63 aim_error_max=0.58411deg lag_residual_rms=0.0067 lag_residual_max=0.0126
+SPLIT camera_smooth t=8.600 view=above run=2 samples=96 fraction_spread=0.62 aim_error_max=0.59249deg lag_residual_rms=0.0045 lag_residual_max=0.0132
+SPLIT camera_smooth t=11.400 view=above run=3 samples=96 fraction_spread=0.50 aim_error_max=0.56018deg lag_residual_rms=0.0033 lag_residual_max=0.0037
+SPLIT camera_smooth t=14.200 view=chase run=1 samples=96 fraction_spread=0.50 aim_error_max=0.33972deg lag_residual_rms=0.0033 lag_residual_max=0.0037
+SPLIT camera_smooth t=17.000 view=chase run=2 samples=96 fraction_spread=0.50 aim_error_max=0.34299deg lag_residual_rms=0.0033 lag_residual_max=0.0037
+SPLIT camera_smooth t=19.800 view=chase run=3 samples=96 fraction_spread=0.50 aim_error_max=0.34626deg lag_residual_rms=0.0033 lag_residual_max=0.0037
+RESULT camera_smooth fail checks=1 failed=1 t=19.800 display=macOS refresh_hz=120.0 errors=0 warnings=0

@@ -1,0 +1,26 @@
+MUTANT pitch_60_not_75                          KILLED | camera_views rc=1 FAIL fails=T1_above_pose,T7_data
+MUTANT distance_ignored                         KILLED | camera_views rc=1 FAIL fails=T1_above_pose,T2_unit_in_view,T5_straight_down_guard,T8_towers
+MUTANT no_look_ahead                            KILLED | camera_views rc=1 FAIL fails=T1_above_pose,T5_straight_down_guard
+MUTANT look_ahead_behind                        KILLED | camera_views rc=1 FAIL fails=T1_above_pose,T2_unit_in_view,T3_turns_with_unit,T5_straight_down_guard
+MUTANT follow_rotation_ignored                  KILLED | camera_views rc=1 FAIL fails=T1_above_pose,T2_unit_in_view,T3_turns_with_unit,T5_straight_down_guard,T6_switch,T4_snaps
+MUTANT straight_down_guard_removed              KILLED | camera_views rc=1 FAIL fails=T5_straight_down_guard
+MUTANT guard_uses_target_not_frame              KILLED | camera_views rc=1 FAIL fails=T5_straight_down_guard
+MUTANT switch_never_changes                     KILLED | camera_views rc=1 FAIL fails=T6_switch,T4_snaps
+MUTANT switch_level_triggered                   KILLED | camera_views rc=1 FAIL fails=T6_switch
+MUTANT switch_snaps                             KILLED | camera_views rc=1 FAIL fails=T6_switch
+MUTANT player_2_key_steers_player_1             KILLED | camera_views rc=1 FAIL fails=T6_switch,T7_data,T4_snaps
+MUTANT round_starts_in_chase                    KILLED | camera_views rc=1 FAIL fails=T1_above_pose,T5_straight_down_guard,T6_switch,T8_towers,T4_snaps
+MUTANT tower_top_not_hidden                     KILLED | camera_views rc=1 FAIL fails=T8_towers
+MUTANT tank_back_on_layer_1                     KILLED | camera_views rc=1 FAIL fails=T8_towers
+MUTANT cull_mask_never_set                      KILLED | camera_views rc=1 FAIL fails=T8_towers
+MUTANT chase_view_hides_the_tower               KILLED | camera_views rc=1 FAIL fails=T6_switch,T7_data
+MUTANT driving_toy_gets_the_view_from_above     KILLED | camera_views rc=1 FAIL fails=T7_data
+MUTANT camera_key_unbound                       KILLED | camera_views rc=1 FAIL fails=T6_switch,T7_data
+MUTANT data_look_ahead_8                        KILLED | camera_views rc=1 FAIL fails=T1_above_pose,T7_data
+MUTANT runner_gives_no_chase_settings           KILLED | destruction rc=1 output differs from the baseline
+MUTANT follow_rotation_default_false            KILLED | destruction rc=1 output differs from the baseline
+MUTANT chase_view_offset_changed_by_pitch_code  KILLED | destruction rc=0 output differs from the baseline
+MUTANT chase_aim_a_centimetre_high              KILLED | camera_views rc=1 FAIL fails=T6_switch
+MUTANT toy_loses_chase_rotation                 KILLED | walls rc=0 output differs from the baseline
+MUTANT camera_reads_physics_tick_transform      KILLED | camera_smooth (windowed) rc=1 FAIL aim error 0.34 to 0.59 degrees in all 6 runs (normal 0.00001)
+KILLED=25 SURVIVED=0

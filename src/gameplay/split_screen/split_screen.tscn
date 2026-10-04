@@ -25,6 +25,9 @@
 [ext_resource type="StyleBoxFlat" path="res://src/ui/hud/data/team_orange_edge.tres" id="24_edge_orange"]
 [ext_resource type="StyleBoxFlat" path="res://src/ui/hud/data/team_teal_edge.tres" id="25_edge_teal"]
 [ext_resource type="PackedScene" path="res://src/ui/hud/self_destruct_hint.tscn" id="26_hint"]
+[ext_resource type="Script" path="res://src/gameplay/camera/chase_camera_settings.gd" id="27_ccs"]
+[ext_resource type="Resource" path="res://src/gameplay/camera/data/above_camera_settings.tres" id="28_above"]
+[ext_resource type="Script" path="res://src/gameplay/camera/player_camera_input.gd" id="29_pcam"]
 
 [node name="SplitScreen" type="Control" unique_id=9000001 node_paths=PackedStringArray("field", "player_1_unit", "player_2_unit", "player_1_camera", "player_2_camera", "match_controller")]
 layout_mode = 3
@@ -65,16 +68,20 @@ script = ExtResource("4_pdi")
 unit = NodePath("%Player2Unit")
 action_prefix = &"p2_"
 
-[node name="Player1MatchInput" type="Node" parent="World" unique_id=9000013 node_paths=PackedStringArray("unit")]
+[node name="Player1MatchInput" type="Node" parent="World" unique_id=9000013 node_paths=PackedStringArray("unit", "match_controller")]
 script = ExtResource("11_pmi")
 unit = NodePath("%Player1Unit")
 rules = ExtResource("10_rules")
+match_controller = NodePath("%MatchController")
+player_index = 0
 action_prefix = &"p1_"
 
-[node name="Player2MatchInput" type="Node" parent="World" unique_id=9000014 node_paths=PackedStringArray("unit")]
+[node name="Player2MatchInput" type="Node" parent="World" unique_id=9000014 node_paths=PackedStringArray("unit", "match_controller")]
 script = ExtResource("11_pmi")
 unit = NodePath("%Player2Unit")
 rules = ExtResource("10_rules")
+match_controller = NodePath("%MatchController")
+player_index = 1
 action_prefix = &"p2_"
 
 [node name="Player1Weapon" type="Node" parent="World" node_paths=PackedStringArray("unit")]
@@ -115,6 +122,18 @@ match_controller = NodePath("%MatchController")
 player_index = 1
 action_prefix = &"p2_"
 
+[node name="Player1CameraInput" type="Node" parent="World" node_paths=PackedStringArray("camera")]
+script = ExtResource("29_pcam")
+camera = NodePath("%Player1Camera")
+views = Array[ExtResource("27_ccs")]([ExtResource("28_above"), ExtResource("6_set")])
+action_prefix = &"p1_"
+
+[node name="Player2CameraInput" type="Node" parent="World" node_paths=PackedStringArray("camera")]
+script = ExtResource("29_pcam")
+camera = NodePath("%Player2Camera")
+views = Array[ExtResource("27_ccs")]([ExtResource("28_above"), ExtResource("6_set")])
+action_prefix = &"p2_"
+
 [node name="Body" parent="World/Player1Unit" index="1" unique_id=1812089259]
 material_override = ExtResource("7_m1")
 
@@ -143,7 +162,7 @@ unique_name_in_owner = true
 current = true
 script = ExtResource("5_cam")
 target = NodePath("%Player1Unit")
-settings = ExtResource("6_set")
+settings = ExtResource("28_above")
 
 [node name="Player1Countdown" parent="Views/Player1View/SubViewport" unique_id=9000043 node_paths=PackedStringArray("match_controller") instance=ExtResource("12_cd")]
 match_controller = NodePath("%MatchController")
@@ -168,6 +187,7 @@ match_controller = NodePath("%MatchController")
 [node name="Player1SelfDestructHint" parent="Views/Player1View/SubViewport" node_paths=PackedStringArray("match_controller", "unit") instance=ExtResource("26_hint")]
 match_controller = NodePath("%MatchController")
 unit = NodePath("%Player1Unit")
+player_index = 0
 action_prefix = &"p1_"
 
 [node name="Player2View" type="SubViewportContainer" parent="Views" unique_id=9000022]
@@ -183,7 +203,7 @@ unique_name_in_owner = true
 current = true
 script = ExtResource("5_cam")
 target = NodePath("%Player2Unit")
-settings = ExtResource("6_set")
+settings = ExtResource("28_above")
 
 [node name="Player2Countdown" parent="Views/Player2View/SubViewport" unique_id=9000044 node_paths=PackedStringArray("match_controller") instance=ExtResource("12_cd")]
 match_controller = NodePath("%MatchController")
@@ -208,6 +228,7 @@ match_controller = NodePath("%MatchController")
 [node name="Player2SelfDestructHint" parent="Views/Player2View/SubViewport" node_paths=PackedStringArray("match_controller", "unit") instance=ExtResource("26_hint")]
 match_controller = NodePath("%MatchController")
 unit = NodePath("%Player2Unit")
+player_index = 1
 action_prefix = &"p2_"
 
 [node name="Divider" type="ColorRect" parent="." unique_id=9000004]

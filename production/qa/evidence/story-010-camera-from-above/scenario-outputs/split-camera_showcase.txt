@@ -1,0 +1,10 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+SPLIT camera_showcase t=1.667 frame=102 moment=round_start p1=above p2=above
+SPLIT camera_showcase t=3.017 frame=183 moment=open_flat p1=above p2=above speeds=24.0,24.0
+SPLIT camera_showcase t=4.617 frame=279 moment=water_tower p1=above p2=above
+SPLIT camera_showcase t=7.517 frame=453 moment=flag_taken p1=above p2=above ticks=84 carrying=[true, true]
+SPLIT camera_showcase t=9.117 frame=549 moment=canyon p1=above p2=above
+SPLIT camera_showcase t=10.717 frame=645 moment=depot p1=above p2=above
+SPLIT camera_showcase t=12.350 frame=743 moment=one_player_switched p1=chase p2=above
+RESULT camera_showcase ok checks=0 failed=0 t=12.350 moments=7 errors=0 warnings=0

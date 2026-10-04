@@ -3,7 +3,7 @@
 > **Status**: Active
 > **Tier**: `workflow: minimal` — implicit epic synthesised from `design/game-brief.md` by `/create-stories` on 2026-09-30. No GDD, ADRs, TR registry or control manifest exist at this tier; every story traces to the brief.
 > **Governing ADRs**: N/A (minimal — no ADRs)
-> **Last Updated**: 2026-10-03: story 009 (playtest quick fixes) Complete after the first playtest with friends, with the camera from above and the Unit swap next; story 008 Complete, so all eight stories of the First Playable are built (2026-10-01: brought to version 0.1 of the author's artifact; the source is archived under `design/source/`; the rules of record are `design/rules.md`).
+> **Last Updated**: 2026-10-04: story 011 (the Unit swap at the own Base) Complete, with story 010 (the camera from above) and story 009 (playtest quick fixes) after the first playtest with friends; story 008 Complete, so all eight stories of the First Playable are built (2026-10-01: brought to version 0.1 of the author's artifact; the source is archived under `design/source/`; the rules of record are `design/rules.md`).
 
 ## Goal
 
@@ -44,3 +44,5 @@ The author's list from the first playtest with friends (`story-009-playtest-quic
 | # | Story | Type | Status | ADR |
 |---|-------|------|--------|-----|
 | 009 | Playtest quick fixes: solid depot tanks, the Gyrocopter over the cover, turning on the spot, the idle Fuel burn, the out-of-Fuel Self-destruct hint | Integration | Complete | N/A (minimal) |
+| 010 | The camera from above: almost straight down with a slight forward tilt, one key per Player back to the chase view | Visual/Feel | Complete | N/A (minimal) |
+| 011 | The Unit swap at the own Base: Self-destruct inside the own Base puts the Unit away for free | Integration | Complete | N/A (minimal) |

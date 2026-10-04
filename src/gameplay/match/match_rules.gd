@@ -17,6 +17,10 @@ extends Resource
 ## fires and is hit at (shooting_height) and the layers that stop a shot (shot_collision_mask).
 ## MatchController reads the types; the Weapon and the Shot read the rest.
 ##
+## Story 011 (production/epics/wasteland-fire/story-011-unit-swap-at-own-base.md AC-5; design/rules.md
+## "Destruction and respawn") adds one switch: whether the Self-destruct key swaps a Unit inside its
+## own Base instead of destroying it (own_base_swap). MatchController reads it.
+##
 ## Data only. Both read these numbers and never write them. The .tres is shared, so treat it as
 ## read-only at runtime. A copy for a test: duplicate() makes the numbers private but shares the
 ## unit_types array with the original (writing the copy's array writes the original's: measured on
@@ -39,6 +43,16 @@ extends Resource
 ## gate which keeps them out of a build with weapons. Story 005 ships it at zero in
 ## match_rules.tres, so the debug keys are off in the game; the code stays, gated by this value.
 @export_range(0.0, 1000.0, 1.0, "or_greater", "suffix:hp") var debug_damage: float = 0.0
+
+## Whether the Self-destruct key puts a Unit away instead of destroying it while that Unit is inside
+## its own Base (Story 011 AC-1 and AC-5): no Token is taken, no respawn delay runs, and the Player
+## chooses the next Unit type at once from the types that have Tokens left. "Inside" is each Base's
+## zone, which the Map's scenes set (a zone must watch the physics layer of every Unit type, and
+## MatchController refuses to begin a Round with this on while one does not). Off, the key is the
+## Self-destruct of Stories 003 and 008 everywhere, which is also what a scenario written before
+## Story 011 runs with. False by default (class doc: a flag left at its default would live in this
+## script and vanish from the data file); the shipped data turns it on in match_rules.tres.
+@export var own_base_swap: bool = false
 
 ## The Unit types a Player may choose from at every spawn, in the order the choice panel lists
 ## them: Motorbike, Buggy, Truck, Gyrocopter (Story 005 AC-1 and AC-6; design/rules.md "Units").

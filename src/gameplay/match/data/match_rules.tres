@@ -12,6 +12,7 @@
 script = ExtResource("1_ln5dp")
 respawn_delay_seconds = 3.0
 debug_damage = 0.0
+own_base_swap = true
 unit_types = Array[ExtResource("2_us")]([ExtResource("3_moto"), ExtResource("4_buggy"), ExtResource("5_truck"), ExtResource("6_gyro")])
 damage_matrix = ExtResource("7_matrix")
 shooting_height = 0.5

@@ -1,0 +1,11 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+Movie Maker mode enabled, recording movie in 1280×720 @ 60 FPS...
+--------------------------------------------------------------------------------
+Done recording movie at path: /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/ff88ff6c-a8fa-43ca-9d0f-d66d7487cbc1/scratchpad/launch/launch.png
+90 frames at 60 FPS (movie length: 00:00:01:30), recorded in 00:00:10 (10% of real-time speed).
+CPU render time: 0.00 seconds (average: 0.02 ms/frame)
+GPU render time: 0.00 seconds (average: 0.00 ms/frame)
+Encoding time: 9.39 seconds (average: 104.38 ms/frame)
+--------------------------------------------------------------------------------

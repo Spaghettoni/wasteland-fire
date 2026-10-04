@@ -24,7 +24,7 @@ extends Control
 ##   SplitScreen (this Control, filling the window)
 ##     World (Node3D): the Map first (map_01.tscn: its ground, its two Bases and its Fuel Cans),
 ##       then both Units, both PlayerDriveInputs, both PlayerMatchInputs, both Weapons with their
-##       PlayerFireInputs and both PlayerChoiceInputs
+##       PlayerFireInputs, both PlayerChoiceInputs and both PlayerCameraInputs
 ##     Views (HBoxContainer): a SubViewportContainer per Player, each holding a SubViewport that
 ##       holds that Player's ChaseCamera, respawn countdown, HUD, Unit choice panel and Round-over
 ##       screen
@@ -68,6 +68,13 @@ extends Control
 ## Godot 4.7 does not tell two keyboards apart, and it moved the keyboard's device ID from 0 to
 ## InputEvent.DEVICE_ID_KEYBOARD, so nothing in this project compares InputEvent.device with 0,
 ## and this script reads no input.
+##
+## The views (Story 010, production/epics/wasteland-fire/story-010-camera-from-above.md AC-4 and
+## AC-5). Each camera starts in the view from above (above_camera_settings.tres, the first entry of
+## its Player's list of views) and its PlayerCameraInput, which reads that Player's p1_ or p2_camera
+## key, steps it through the list: the view from above, then the chase view of Stories 001 to 009
+## (chase_camera_settings.tres), then round again. The list, the two resources and the keys are data
+## of this scene and of project.godot; the other Player's camera is never touched.
 ##
 ## Player colour. Each Unit is coloured on its Body mesh only, by a material_override on the
 ## instanced Body node in this scene (the Motorbike's mesh is one shared resource, so a material

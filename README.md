@@ -38,6 +38,8 @@ The rules of record are in `design/rules.md`, the one-page brief in
 | 007 | Map 01 with the Team colours | Done |
 | 008 | Tokens, the Garage and the loss | Done |
 | 009 | Playtest quick fixes: solid depot tanks, the Gyrocopter over the cover, turning on the spot, slower Fuel burn standing, the out-of-Fuel hint | Done |
+| 010 | The camera from above, with a key back to the chase view | Done |
+| 011 | The Unit swap at the own Base | Done |
 
 Map 01 and the four Units have their low-poly look: the Map is built from
 Godot's built-in meshes with textures generated in code, and the Units are the
@@ -54,10 +56,19 @@ game loads. The older evidence scenarios still run on the greybox field.
 | Choose a Unit (previous / next) | A / D | Left / Right |
 | Confirm the Unit | Space | Period |
 | Self-destruct | Tab | Enter |
+| Switch the camera view | Q | Slash |
 
 Each Player chooses a Unit type at the start of a Round and after every
 destruction, with the choice panel at the bottom of their own view. R restarts
 from the round-over screen.
+
+A Round starts in the view from above: the camera stands high over your Unit,
+tilted a little forward so you see more ground ahead than behind, and turns
+with the Unit. The camera key switches your own view, at any time, between that
+and the chase camera from behind; the other Player's view does not change, and
+your choice stays through a restart. The tops of the water towers are not drawn
+in the view from above, so the Flag on its seat and the Unit that takes it
+stay in sight.
 
 Each Player has a stock of Tokens for every Unit type; Map 01 gives both of
 them Motorbike 5, Buggy 3, Truck 2 and Gyrocopter 2. A destroyed Unit costs one

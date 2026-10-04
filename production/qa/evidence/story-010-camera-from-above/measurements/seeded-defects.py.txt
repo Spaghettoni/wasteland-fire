@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+"""Seeded defects for Story 010: each one exact text replacement in a scratch copy of the repo,
+run against the scenario that guards it. KILLED when the scenario fails (rc != 0 or a FAIL CHECK),
+or, for the regression kind, when an older scenario's output differs from its baseline."""
+import subprocess, sys, shutil, re, os
+COPY = os.path.join(os.path.dirname(os.path.abspath(__file__)), "copy")
+BASE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "baseline2")
+M = [
+ # name, file, old, new, scenario, kind
+ ("pitch_60_not_75", "src/gameplay/camera/data/above_camera_settings.tres", "pitch_degrees = 75.0", "pitch_degrees = 60.0", "camera_views", "check"),
+ ("distance_ignored", "src/gameplay/camera/chase_camera_settings.gd", "if distance <= 0.0:\n\t\treturn offset", "if true:\n\t\treturn offset", "camera_views", "check"),
+ ("no_look_ahead", "src/gameplay/camera/chase_camera.gd", "+ frame * Vector3(0.0, 0.0, -settings.look_ahead)", "+ Vector3.ZERO", "camera_views", "check"),
+ ("look_ahead_behind", "src/gameplay/camera/chase_camera.gd", "-settings.look_ahead)", "settings.look_ahead)", "camera_views", "check"),
+ ("follow_rotation_ignored", "src/gameplay/camera/chase_camera.gd", "target_transform.basis if settings.follow_rotation else Basis.IDENTITY", "Basis.IDENTITY", "camera_views", "check"),
+ ("straight_down_guard_removed", "src/gameplay/camera/chase_camera.gd", "if absf(view.normalized().dot(Vector3.UP)) > STRAIGHT_DOWN_LIMIT:", "if false:", "camera_views", "check"),
+ ("guard_uses_target_not_frame", "src/gameplay/camera/chase_camera.gd", "up = -frame.z", "up = -target_transform.basis.z", "camera_views", "check"),
+ ("switch_never_changes", "src/gameplay/camera/player_camera_input.gd", "camera.settings = views[(views.find(camera.settings) + 1) % views.size()]", "camera.settings = views[0]", "camera_views", "check"),
+ ("switch_level_triggered", "src/gameplay/camera/player_camera_input.gd", "Input.is_action_just_pressed(_action)", "Input.is_action_pressed(_action)", "camera_views", "check"),
+ ("switch_snaps", "src/gameplay/camera/player_camera_input.gd", "camera.settings = views[(views.find(camera.settings) + 1) % views.size()]", "camera.settings = views[(views.find(camera.settings) + 1) % views.size()]\n\tcamera.snap_to_target()", "camera_views", "check"),
+ ("player_2_key_steers_player_1", "src/gameplay/split_screen/split_screen.tscn", 'node_paths=PackedStringArray("camera")]\nscript = ExtResource("29_pcam")\ncamera = NodePath("%Player2Camera")', 'node_paths=PackedStringArray("camera")]\nscript = ExtResource("29_pcam")\ncamera = NodePath("%Player1Camera")', "camera_views", "check"),
+ ("round_starts_in_chase", "src/gameplay/split_screen/split_screen.tscn", 'settings = ExtResource("28_above")', 'settings = ExtResource("6_set")', "camera_views", "check"),
+ ("tower_top_not_hidden", "src/gameplay/camera/data/above_camera_settings.tres", "hidden_layers = 2", "hidden_layers = 0", "camera_views", "check"),
+ ("tank_back_on_layer_1", "src/gameplay/maps/map_01/compound_base.tscn", 'layers = 2\nmesh = SubResource("CylinderMesh_tank")', 'mesh = SubResource("CylinderMesh_tank")', "camera_views", "check"),
+ ("cull_mask_never_set", "src/gameplay/camera/chase_camera.gd", "cull_mask = ALL_VISUAL_LAYERS if settings == null else ALL_VISUAL_LAYERS & ~settings.hidden_layers", "pass", "camera_views", "check"),
+ ("chase_view_hides_the_tower", "src/gameplay/camera/data/chase_camera_settings.tres", "look_height = 1.0", "look_height = 1.0\nhidden_layers = 2", "camera_views", "check"),
+ ("driving_toy_gets_the_view_from_above", "src/gameplay/driving_toy.tscn", "chase_camera_settings.tres", "above_camera_settings.tres", "camera_views", "check"),
+ ("camera_key_unbound", "project.godot", '"physical_keycode":81,', '"physical_keycode":0,', "camera_views", "check"),
+ ("data_look_ahead_8", "src/gameplay/camera/data/above_camera_settings.tres", "look_ahead = 4.0", "look_ahead = 8.0", "camera_views", "check"),
+ # the older scenarios keep their outputs: the runner's chase settings and the default of follow_rotation
+ ("runner_gives_no_chase_settings", "tools/evidence/split_screen_harness.gd", "	if bool(script.get_script_constant_map().get(SHIPPED_CAMERA_CONSTANT, false)):\n		return", "	return", "destruction", "regress"),
+ ("follow_rotation_default_false", "src/gameplay/camera/chase_camera_settings.gd", "@export var follow_rotation: bool = true", "@export var follow_rotation: bool = false", "destruction", "regress"),
+ ("chase_view_offset_changed_by_pitch_code", "src/gameplay/camera/chase_camera_settings.gd", "	if distance <= 0.0:\n		return offset", "	if distance <= 0.0:\n		return offset + Vector3(0.0, 0.01, 0.0)", "destruction", "regress"),
+ ("chase_aim_a_centimetre_high", "src/gameplay/camera/chase_camera.gd", "look_at(focus, up)", "look_at(focus + Vector3(0.0, 0.01, 0.0), up)", "camera_views", "check"),
+ ("toy_loses_chase_rotation", "src/gameplay/camera/chase_camera_settings.gd", "@export var follow_rotation: bool = true", "@export var follow_rotation: bool = false", "walls", "drive"),
+]
+def run(scn, kind="check"):
+    scene = "res://tools/evidence/drive_harness.tscn" if kind == "drive" else "res://tools/evidence/split_screen_harness.tscn"
+    p = subprocess.run(["godot","--headless","--fixed-fps","60","--path",COPY,scene,"--","--scenario="+scn],capture_output=True,text=True,timeout=300)
+    return p.returncode, p.stdout + p.stderr
+only = sys.argv[1:] 
+killed = survived = 0
+for name, rel, old, new, scn, kind in M:
+    if only and name not in only: continue
+    path = os.path.join(COPY, rel)
+    orig = open(path).read()
+    if orig.count(old) < 1:
+        print("MUTANT %-40s NOT APPLIED (text not found)" % name); continue
+    if orig.count(old) > 1 and name not in ("round_starts_in_chase",):
+        print("MUTANT %-40s NOT APPLIED (text found %d times)" % (name, orig.count(old))); continue
+    open(path,"w").write(orig.replace(old, new))
+    try:
+        rc, out = run(scn, kind)
+    finally:
+        open(path,"w").write(orig)
+    if kind == "check":
+        fails = re.findall(r"^CHECK \S+ (\S+) FAIL", out, re.M)
+        dead = rc != 0 or bool(fails)
+        detail = "%s rc=%d %s fails=%s" % (scn, rc, "FAIL" if dead else "ok", ",".join(fails))
+    else:
+        base = open(os.path.join(BASE, ("drive-%s.txt" if kind == "drive" else "split-%s.txt") % scn)).read()
+        # compare lines that start with the scenario's own output (drop the engine banner)
+        keep = lambda text: [l for l in text.splitlines() if l.startswith(("SPLIT ","CHECK ","RESULT ","DRIVE ","WALLS","PINNED","VIOLATION","FPS","SOAK"))]
+        dead = keep(out) != keep(base) or rc != 0
+        detail = "%s rc=%d output %s the baseline" % (scn, rc, "differs from" if dead else "equals")
+    if dead: killed += 1
+    else: survived += 1
+    print("MUTANT %-40s %s | %s" % (name, "KILLED" if dead else "SURVIVED", detail), flush=True)
+print("KILLED=%d SURVIVED=%d" % (killed, survived))

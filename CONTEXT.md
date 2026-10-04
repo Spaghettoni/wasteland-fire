@@ -67,12 +67,16 @@ One Unit of one type in a Player's stock: a Player with five Motorbike Tokens ca
 _Avoid_: life, lives, credit, ticket, respawn, coin
 
 **Garage (garáž)**:
-The place at a Player's Base where the chosen Unit appears, at the start of a Round and after every destruction. It is the spawn point of stories 003 and 004.
+The place at a Player's Base where the chosen Unit appears, at the start of a Round, after every destruction and after a Swap. It is the spawn point of stories 003 and 004.
 _Avoid_: spawn point, hangar, depot, pad
 
 **Self-destruct**:
-A Player's action that destroys their own Unit on purpose, so a stranded Unit can be replaced. It counts as a destruction and costs a Token. A Player whose ground Unit has run out of Fuel is shown the key. Decided after the first playtest (2026-10-03), not built yet: inside the own Base the same key will put the Unit away instead, a free swap to another type with Tokens left.
+A Player's action that destroys their own Unit on purpose, so a stranded Unit can be replaced. It counts as a destruction and costs a Token. A Player whose ground Unit has run out of Fuel is shown the key. Inside the own Base the same key does the Swap instead (story 011), and a stranded Unit there is shown the key for that.
 _Avoid_: suicide, reset, respawn button
+
+**Swap**:
+Putting a Player's Unit away inside its own Base with the Self-destruct key, so the Player chooses another type at once and at no cost (story 011, decided 2026-10-03 after the first playtest). It is not a destruction: no Token is taken and no respawn delay runs, and it takes no Flag with it. It acts only on a Unit in play standing inside its own Base's walls, the Garage included, whatever its type; anywhere else the key destroys.
+_Avoid_: change, trade, repair
 
 ### Resources
 
@@ -101,3 +105,7 @@ _Avoid_: creek, river, mud, shallows
 **Cover**:
 A static obstacle on the Map that stops every ground Unit and every shot and is never destroyed; the Gyrocopter flies over it (decided 2026-10-03, after the first playtest). On Map 01 the eight wrecks, the two long containers and the two scrap walls; the drawings' wrecks are cover, not destroyed Units. The depot's three Fuel tanks are not cover: they stop every Unit, the Gyrocopter included, like walls.
 _Avoid_: obstacle, barricade, prop, destructible
+
+**View**:
+What a Player's camera shows, one of two: the view from above (the Round's start: high over the Unit, almost straight down with a slight forward tilt, turning with the Unit; the tops of the water towers are not drawn in it, so the Flag on its seat stays in sight) or the chase view (from behind and above). Each Player switches their own with one key, at any time; the other Player's view does not change (decided 2026-10-03, after the first playtest, as a trial the friends compare in one playtest).
+_Avoid_: camera mode, zoom, perspective

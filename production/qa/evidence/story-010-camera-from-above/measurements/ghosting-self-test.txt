@@ -1,0 +1,1 @@
+GHOST SELF-TEST ok combos_seen=11/11 max_actions_at_once=4 max_raw_keys_at_once=4

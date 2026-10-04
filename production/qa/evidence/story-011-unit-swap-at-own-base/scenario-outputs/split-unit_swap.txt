@@ -1,0 +1,23 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK unit_swap swap_at_home PASS 8 swaps, every type once for each Player, the Gyrocopter included: p1 motorbike swapped, then buggy in 4 ticks (zone 1) | p1 buggy swapped, then truck in 4 ticks (zone 1) | p1 truck swapped, then gyrocopter in 4 ticks (zone 1) | p1 gyrocopter swapped, then motorbike in 4 ticks (zone 1) | p2 motorbike swapped, then buggy in 4 ticks (zone 1) | p2 buggy swapped, then truck in 4 ticks (zone 1) | p2 truck swapped, then gyrocopter in 4 ticks (zone 1) | p2 gyrocopter swapped, then motorbike in 4 ticks (zone 1)
+CHECK unit_swap swap_screens PASS at each swap, read inside the handler: the swapping Player's panel open with the counts as before, the other Player's hidden, no countdown, the HUD's Tokens line unchanged; Player 2 drove on through Player 1's first swap
+CHECK unit_swap destruct_elsewhere PASS a press acting one tick before the zone reports the Unit (latency 2): destroyed, Token motorbike 3 -> 2, 2.98 s wait | in the open: destroyed, Token motorbike 2 -> 1, 2.98 s wait | inside Player 2's Base: destroyed, Token buggy 3 -> 2, 2.98 s wait; zone latency after a spawn 1-2 ticks
+CHECK unit_swap last_motorbike PASS swapped at home with 1 Motorbike Token left: the Round ran on, the count stayed 1 and the Motorbike was chosen again; Self-destructed outside: Round over, Player 2 wins, Player 1 has 0 Motorbike Tokens, and nobody can swap once the Round is over
+CHECK unit_swap swap_vs_delivery PASS the key acted on tick 713, the tick the zone first reported the Carrier (2 ticks after it was put in): the Round was won on tick 713 by Player 1 with 0 swaps and the counts as before
+CHECK unit_swap swap_vs_homecoming PASS the key acted on tick 787, the tick the zone first reported the Carrier of its own Flag: 787 seated 0, 787 swapped 0; the Flag stands on its seat, nothing was carried away and the counts are as before
+CHECK unit_swap swap_vs_destruction PASS the Gyrocopter had 0.0417 Fuel (one tick's burn is 0.0208) when the key was set to act on the tick it emptied: it crashed, the Gyrocopter Token went 3 -> 2, the 2.98 s wait runs and no swap was made
+CHECK unit_swap swap_hint PASS p1 at home 'Out of Fuel! Press Tab to swap your Unit' | p2 at home 'Out of Fuel! Press Enter to swap your Unit' | p1 carried out of its gate 'Out of Fuel! Press Tab to Self-destruct' | p1 carried back in 'Out of Fuel! Press Tab to swap your Unit' | the key swapped the Unit and the hint went
+CHECK unit_swap swap_data PASS masks [18, 18] | p2 swap off 'Out of Fuel! Press Enter to Self-destruct', then the press destroyed and took a Token | refusal: MatchController 'Throwaway': bases[0].zone does not watch the physics layer of rules.unit_types[3] ('Gyrocopter'), so that type could not swap at home, so the Round does not begin.
+CHECK unit_swap no_engine_noise PASS errors=1 warnings=0, the refusal of swap_data accounts for 1
+RESULT unit_swap ok checks=10 failed=0 t=19.267 swaps=11 spawns=21 zone_latency_ticks=1-2 over=false errors=1 warnings=0 expected_errors=1
+ERROR: MatchController 'Throwaway': bases[0].zone does not watch the physics layer of rules.unit_types[3] ('Gyrocopter'), so that type could not swap at home, so the Round does not begin.
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] begin (res://src/gameplay/match/match_controller.gd:331)
+       [1] _refused_round (res://tools/evidence/split_screen/unit_swap_flows.gd:221)
+       [2] _data (res://tools/evidence/split_screen/unit_swap_flows.gd:203)
+       [3] destruct (res://tools/evidence/split_screen/token_kit.gd:292)
+       [4] press_settled (res://tools/evidence/split_screen/check_kit.gd:107)
+       [5] tick (res://tools/evidence/split_screen/check_kit.gd:80)
+       [6] advance_ticks (res://tools/evidence/split_screen_harness.gd:779)

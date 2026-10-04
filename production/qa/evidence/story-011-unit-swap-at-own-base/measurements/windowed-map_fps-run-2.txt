@@ -1,0 +1,21 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+SPLIT map_fps t=1.033 phase=flat_and_road fps=50.0 draw_calls=210 primitives=88408 objects=468 p1_x=-115.82 p1_z=0.00 p2_x=108.19 p2_z=-26.00
+SPLIT map_fps t=2.033 phase=flat_and_road fps=120.0 draw_calls=176 primitives=68198 objects=401 p1_x=-92.40 p1_z=-0.02 p2_x=88.92 p2_z=-26.00
+SPLIT map_fps t=3.033 phase=flat_and_road fps=120.0 draw_calls=187 primitives=72056 objects=423 p1_x=-72.78 p1_z=-12.97 p2_x=71.16 p2_z=-32.58
+SPLIT map_fps t=4.033 phase=flat_and_road fps=120.0 draw_calls=189 primitives=74718 objects=432 p1_x=-49.35 p1_z=-15.53 p2_x=52.40 p2_z=-36.11
+SPLIT map_fps t=5.033 phase=flat_and_road fps=120.0 draw_calls=206 primitives=87304 objects=494 p1_x=-35.95 p1_z=-15.46 p2_x=33.77 p2_z=-31.24
+SPLIT map_fps t=6.033 phase=flat_and_road fps=120.0 draw_calls=220 primitives=121092 objects=527 p1_x=-19.25 p1_z=-15.50 p2_x=14.80 p2_z=-27.89
+SPLIT map_fps t=7.033 phase=flat_and_road fps=120.0 draw_calls=222 primitives=124178 objects=513 p1_x=4.74 p1_z=-15.50 p2_x=-4.80 p2_z=-28.00
+SPLIT map_fps t=8.033 phase=flat_and_road fps=120.0 draw_calls=177 primitives=78966 objects=418 p1_x=28.74 p1_z=-15.49 p2_x=-24.39 p2_z=-28.08
+SPLIT map_fps t=9.033 phase=flat_and_road fps=120.0 draw_calls=174 primitives=68522 objects=400 p1_x=42.94 p1_z=-15.50 p2_x=-42.50 p2_z=-35.18
+SPLIT map_fps t=10.033 phase=flat_and_road fps=119.0 draw_calls=171 primitives=70964 objects=404 p1_x=58.64 p1_z=-15.49 p2_x=-62.01 p2_z=-36.03
+SPLIT map_fps t=11.033 phase=flat_and_road fps=120.0 draw_calls=206 primitives=81842 objects=439 p1_x=82.64 p1_z=-15.51 p2_x=-79.14 p2_z=-27.30
+SPLIT map_fps t=12.033 phase=flat_and_road fps=120.0 draw_calls=196 primitives=81488 objects=434 p1_x=94.83 p1_z=-15.82 p2_x=-98.53 p2_z=-25.95
+SPLIT map_fps t=13.033 phase=flat_and_road fps=120.0 draw_calls=185 primitives=81004 objects=422 p1_x=94.83 p1_z=-15.82 p2_x=-117.73 p2_z=-26.00
+SPLIT map_fps t=14.033 phase=into_bases fps=119.0 draw_calls=190 primitives=74514 objects=421 p1_x=72.58 p1_z=0.00 p2_x=-72.20 p2_z=0.00
+SPLIT map_fps t=15.033 phase=into_bases fps=118.0 draw_calls=193 primitives=80802 objects=455 p1_x=91.80 p1_z=0.00 p2_x=-88.26 p2_z=0.00
+SPLIT map_fps t=16.033 phase=into_bases fps=119.0 draw_calls=188 primitives=80664 objects=460 p1_x=112.02 p1_z=0.00 p2_x=-107.54 p2_z=0.00
+SPLIT map_fps t=17.033 phase=end fps=120.0 draw_calls=186 primitives=80698 objects=462 p1_x=112.80 p1_z=0.00 p2_x=-111.10 p2_z=0.00
+RESULT map_fps ok checks=0 failed=0 t=17.500 fps_avg=115.6 fps_avg_steady=119.7 fps_min=50.0 fps_min_steady=118.0 refresh_hz=120.0 draw_calls_max=222 primitives_max=124178 samples=17 legs=flat_and_road:ok,into_bases:ok display=macOS

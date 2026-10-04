@@ -1,0 +1,23 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ok: res://src/gameplay/camera/chase_camera.gd
+ok: res://src/gameplay/camera/chase_camera_settings.gd
+ok: res://src/gameplay/maps/base.gd
+ok: res://src/gameplay/match/garage_queue.gd
+ok: res://src/gameplay/match/match_controller.gd
+ok: res://src/gameplay/match/match_rules.gd
+ok: res://src/gameplay/match/player_match_input.gd
+ok: res://src/gameplay/split_screen/split_screen.gd
+ok: res://src/ui/hud/self_destruct_hint.gd
+ok: res://src/ui/hud/unit_choice.gd
+ok: res://tools/evidence/input_ghosting_check.gd
+ok: res://tools/evidence/split_screen/map_fps.gd
+ok: res://tools/evidence/split_screen_harness.gd
+ok: res://src/gameplay/camera/player_camera_input.gd
+ok: res://tools/evidence/split_screen/camera_showcase.gd
+ok: res://tools/evidence/split_screen/camera_smooth.gd
+ok: res://tools/evidence/split_screen/camera_views.gd
+ok: res://tools/evidence/split_screen/unit_swap.gd
+ok: res://tools/evidence/split_screen/unit_swap_flows.gd
+ok: res://tools/evidence/split_screen/unit_swap_kit.gd
+ok: res://tools/evidence/split_screen/unit_swap_showcase.gd

@@ -1,0 +1,24 @@
+# run 1
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+SPLIT camera_smooth t=5.800 view=above run=1 samples=96 fraction_spread=0.50 aim_error_max=0.00001deg lag_residual_rms=0.0001 lag_residual_max=0.0005
+SPLIT camera_smooth t=8.600 view=above run=2 samples=96 fraction_spread=0.50 aim_error_max=0.00001deg lag_residual_rms=0.0001 lag_residual_max=0.0005
+SPLIT camera_smooth t=11.400 view=above run=3 samples=96 fraction_spread=0.50 aim_error_max=0.00001deg lag_residual_rms=0.0001 lag_residual_max=0.0005
+SPLIT camera_smooth t=14.200 view=chase run=1 samples=96 fraction_spread=0.50 aim_error_max=0.00000deg lag_residual_rms=0.0001 lag_residual_max=0.0005
+SPLIT camera_smooth t=17.000 view=chase run=2 samples=96 fraction_spread=0.50 aim_error_max=0.00001deg lag_residual_rms=0.0001 lag_residual_max=0.0005
+SPLIT camera_smooth t=19.800 view=chase run=3 samples=96 fraction_spread=0.50 aim_error_max=0.00000deg lag_residual_rms=0.0001 lag_residual_max=0.0005
+CHECK camera_smooth smooth PASS above run 1: samples=96 fraction_spread=0.50 aim_error_max=0.00001deg lag_residual_rms=0.0001 lag_residual_max=0.0005 | above run 2: samples=96 fraction_spread=0.50 aim_error_max=0.00001deg lag_residual_rms=0.0001 lag_residual_max=0.0005 | above run 3: samples=96 fraction_spread=0.50 aim_error_max=0.00001deg lag_residual_rms=0.0001 lag_residual_max=0.0005 | chase run 1: samples=96 fraction_spread=0.50 aim_error_max=0.00000deg lag_residual_rms=0.0001 lag_residual_max=0.0005 | chase run 2: samples=96 fraction_spread=0.50 aim_error_max=0.00001deg lag_residual_rms=0.0001 lag_residual_max=0.0005 | chase run 3: samples=96 fraction_spread=0.50 aim_error_max=0.00000deg lag_residual_rms=0.0001 lag_residual_max=0.0005 refresh_hz=120.0
+RESULT camera_smooth ok checks=1 failed=0 t=19.800 display=macOS refresh_hz=120.0 errors=0 warnings=0
+# run 2
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+SPLIT camera_smooth t=5.800 view=above run=1 samples=96 fraction_spread=0.50 aim_error_max=0.00001deg lag_residual_rms=0.0001 lag_residual_max=0.0005
+SPLIT camera_smooth t=8.600 view=above run=2 samples=96 fraction_spread=0.50 aim_error_max=0.00001deg lag_residual_rms=0.0001 lag_residual_max=0.0005
+SPLIT camera_smooth t=11.400 view=above run=3 samples=96 fraction_spread=0.50 aim_error_max=0.00001deg lag_residual_rms=0.0001 lag_residual_max=0.0005
+SPLIT camera_smooth t=14.200 view=chase run=1 samples=96 fraction_spread=0.50 aim_error_max=0.00000deg lag_residual_rms=0.0001 lag_residual_max=0.0005
+SPLIT camera_smooth t=17.000 view=chase run=2 samples=96 fraction_spread=0.50 aim_error_max=0.00000deg lag_residual_rms=0.0001 lag_residual_max=0.0005
+SPLIT camera_smooth t=19.800 view=chase run=3 samples=96 fraction_spread=0.50 aim_error_max=0.00001deg lag_residual_rms=0.0001 lag_residual_max=0.0005
+CHECK camera_smooth smooth PASS above run 1: samples=96 fraction_spread=0.50 aim_error_max=0.00001deg lag_residual_rms=0.0001 lag_residual_max=0.0005 | above run 2: samples=96 fraction_spread=0.50 aim_error_max=0.00001deg lag_residual_rms=0.0001 lag_residual_max=0.0005 | above run 3: samples=96 fraction_spread=0.50 aim_error_max=0.00001deg lag_residual_rms=0.0001 lag_residual_max=0.0005 | chase run 1: samples=96 fraction_spread=0.50 aim_error_max=0.00000deg lag_residual_rms=0.0001 lag_residual_max=0.0005 | chase run 2: samples=96 fraction_spread=0.50 aim_error_max=0.00000deg lag_residual_rms=0.0001 lag_residual_max=0.0005 | chase run 3: samples=96 fraction_spread=0.50 aim_error_max=0.00001deg lag_residual_rms=0.0001 lag_residual_max=0.0005 refresh_hz=120.0
+RESULT camera_smooth ok checks=1 failed=0 t=19.800 display=macOS refresh_hz=120.0 errors=0 warnings=0

@@ -24,6 +24,10 @@ const Map: GDScript = preload("res://tools/evidence/split_screen/map_kit.gd")
 
 ## This scenario makes the first choice itself: the runner presses no fire key before run().
 const OWN_CHOICE: bool = true
+## Since Story 010 it measures the camera the build ships with, the view from above, which sees more
+## of the Map than the chase view did (production/epics/wasteland-fire/
+## story-010-camera-from-above.md AC-6). Its Story 007 and 009 numbers are the chase view's.
+const SHIPPED_CAMERA: bool = true
 ## Seconds between samples, one SPLIT line each.
 const SAMPLE_SECONDS: float = 1.0
 ## The first leg, Player 1's route, world (x, z) metres: from Base A's SpawnPoint out of the gate on

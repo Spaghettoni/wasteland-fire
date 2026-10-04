@@ -17,7 +17,10 @@ extends Node
 ## other Player plays on meanwhile);
 ## production/epics/wasteland-fire/story-008-tokens-garage-and-loss.md AC-1 to AC-5 and AC-9 (the
 ## Map's Token stock, a Token per destruction, the choice from the Tokens left, the loss of the last
-## Motorbike and the double loss; every count is data); design/game-brief.md MVP features 3 (Bases,
+## Motorbike and the double loss; every count is data);
+## production/epics/wasteland-fire/story-011-unit-swap-at-own-base.md AC-1 to AC-5 (the Self-destruct
+## key inside the own Base swaps the Unit instead of destroying it; the swap decides nothing and takes
+## nothing; every rule of it is data); design/game-brief.md MVP features 3 (Bases,
 ## destruction and respawn), 4 (Flag and the win), 5 (the four Units) and 8 (Tokens, the Garage and
 ## the loss); design/rules.md "Tokens and the Garage", "Destruction and respawn" and "Resources".
 ## Vocabulary: CONTEXT.md (Player, Unit, Base, Garage, Round, Flag, Carrier, Token).
@@ -44,10 +47,11 @@ extends Node
 ## unit_chosen, unit_spawned and round_over and asks is_choosing(), chosen_type_index(),
 ## unit_types() and tokens_left(); the Round-over screen listens to round_over and round_started;
 ## this script references no UI class, draws nothing and holds no text, so the display can
-## change, or go, without touching the Round. It reads no input either: what a key
-## does to a Unit is PlayerMatchInput's business, and that acts on the Unit, so a Self-destruct
-## reaches its respawn by the same path as a lost fight; the choice keys are PlayerChoiceInput's,
-## which calls choose(); the restart key is RoundRestartInput's, which calls restart().
+## change, or go, without touching the Round. It reads no input either: the Self-destruct key is
+## PlayerMatchInput's, which calls request_self_destruct() (Story 011), and a Self-destruct that is
+## not a swap destroys the Unit, so it reaches its respawn by the same path as a lost fight; the
+## choice keys are PlayerChoiceInput's, which calls choose(); the restart key is RoundRestartInput's,
+## which calls restart().
 ##
 ## State per Player. The per-Player state (State: OUT_OF_ROUND, ALIVE, WAITING, where WAITING
 ## covers both the Player choosing and the Player waiting, chosen, for the delay or a free spot)
@@ -68,6 +72,24 @@ extends Node
 ## the tick in which it has no Token left of the type that can carry the Flag, the Motorbike in the
 ## data (_apply_losses(), after the deliveries): the other Player wins, and when both have none by
 ## that tick it is a double loss and nobody wins.
+##
+## The swap (Story 011). While rules.own_base_swap is on, the Self-destruct key of a Player whose Unit
+## is in play inside that Player's own Base (can_swap(): the Base's zone reports the Unit, the zone
+## that deliveries use) puts the Unit away instead: GarageQueue.bench(), the very call of the start of
+## a Round, so no `destroyed` goes out, no Token is taken and no respawn wait starts, and the Player is
+## choosing at once from the types with Tokens left (the type just put away included, because its
+## Token was never spent); the chosen Unit appears after the bench settle, with the hit points and the
+## spawn tank of its type. Everywhere else, and with the switch off, the key destroys the Unit as it
+## did. request_self_destruct() decides which at the press: a destruction is made on the spot, in the
+## input node's tick, so nothing about it moved when the swap came; a swap is only noted, and made in
+## this node's tick after the deliveries (_apply_swaps(), before the loss check). So a Carrier that
+## brings the other Player's Flag into its own Base wins first and the Round is over before any swap,
+## one that brings its own Flag home has it re-seated first, a Unit destroyed on the same tick by a Shot
+## or a Fuel crash (they run in their own ticks, before this one) is no longer in play and stays
+## destroyed, and a swap changes no Flag and no Token count and pauses nothing. The zone reports a Unit
+## one to two ticks after it drives in or is put there, so a press on the very tick a Unit enters is
+## still a Self-destruct (the Story 011 evidence doc measures it). A swap is announced with
+## unit_swapped and with no other signal, so the choice panel opens and nothing counts a destruction.
 ##
 ## The order of a physics frame, which the loss relies on. The loss is decided in this node's tick,
 ## so every way a Unit is destroyed must run earlier in the same physics frame. Measured on Godot
@@ -101,9 +123,9 @@ extends Node
 ##                       Player choosing, both Token stocks full again, the tree unpaused, emit
 ##                       round_started
 ##   RUNNING -> RUNNING  everything else: a destruction (also one that spends the last Token of a
-##                       type but the carrier's), a choice, a spawn, a pick-up, a drop, an owner's
-##                       re-seat, a Unit in its own Base empty-handed, both Players choosing or
-##                       waiting at once
+##                       type but the carrier's), a swap at the own Base (Story 011), a choice, a
+##                       spawn, a pick-up, a drop, an owner's re-seat, a Unit in its own Base
+##                       empty-handed, both Players choosing or waiting at once
 ## begin() starts RUNNING and emits round_started after the benches, the seating and the full
 ## stocks, with both Players choosing and no Unit in play; restart() while RUNNING is refused with
 ## a warning. Only a delivery or a loss ends a Round (Story 008 AC-5): a type that runs out, or a
@@ -133,6 +155,14 @@ signal unit_chosen(player_index: int, type_index: int)
 ## of its type and its camera has snapped behind it; is_alive(player_index) is already true and
 ## chosen_type_index(player_index) is -1 again when this fires.
 signal unit_spawned(player_index: int)
+
+## A Player's Unit was put away inside that Player's own Base instead of destroyed (Story 011): the
+## swap of the class doc. The Unit is benched on the Base's spawn point, out of play, and the Player
+## is choosing: is_choosing(player_index) is true, is_alive(player_index) false, and every Token count
+## is what it was before (tokens_left() reads the same), no Flag moved, and the other Player was not
+## touched. Neither unit_destroyed nor unit_spawned goes out for it, so a respawn countdown has
+## nothing to show; the choice panel opens on this signal. Player 1 is index 0.
+signal unit_swapped(player_index: int)
 
 ## The Round began, or began again: both Units are benched on their Bases, hidden, with both
 ## Players choosing a type, and every Flag stands on its Base's seat. Emitted by begin() after
@@ -232,6 +262,9 @@ var _ledger: TokenLedger = TokenLedger.new()
 var _token_stock: TokenStock = null
 var _round_state: RoundState = RoundState.RUNNING
 var _winner: int = NO_WINNER
+## One flag per Player: that Player's Self-destruct press of this frame was read as a swap and waits
+## for this node's tick (request_self_destruct()). Cleared at the end of every tick and at a restart.
+var _swap_requested: Array[bool] = []
 var _has_begun: bool = false
 
 
@@ -251,8 +284,9 @@ func _notification(what: int) -> void:
 ## else a spare one) is spawned as that type, and announced here with one unit_spawned each; then,
 ## while the Round runs, the Flag rules in their order (pick-ups, then deliveries), the loss (only
 ## while no delivery ended the Round in this tick) and, when the Round ended, the pause of the tree
-## and the winner. The wait and the settle rules are counted in physics ticks, not in delta: see
-## GarageQueue. Where this tick sits in the physics frame is in the class doc.
+## and the winner. The swaps of the frame come after the deliveries and before the loss check (class
+## doc, the paragraph on the swap). The wait and the settle rules are counted in physics ticks, not
+## in delta: see GarageQueue. Where this tick sits in the physics frame is in the class doc.
 func _physics_process(_delta: float) -> void:
 	for player_index: int in _garage.tick():
 		unit_spawned.emit(player_index)
@@ -262,7 +296,9 @@ func _physics_process(_delta: float) -> void:
 	_apply_pick_ups(may_act)
 	_apply_deliveries(may_act)
 	if _round_state == RoundState.RUNNING:
+		_apply_swaps()
 		_apply_losses()
+	_swap_requested.fill(false)
 	if _round_state == RoundState.OVER:
 		get_tree().paused = true
 		round_over.emit(_winner)
@@ -304,6 +340,8 @@ func begin(units: Array[Unit], bases: Array[Base], cameras: Array[ChaseCamera], 
 	_round_state = RoundState.RUNNING
 	_winner = NO_WINNER
 	_start_ledger()
+	_swap_requested.resize(_units.size())
+	_swap_requested.fill(false)
 	for player_index: int in _units.size():
 		_units[player_index].destroyed.connect(_on_unit_destroyed.bind(player_index))
 	for player_index: int in _units.size():
@@ -329,6 +367,7 @@ func restart() -> void:
 		_garage.bench(player_index)
 	_round_state = RoundState.RUNNING
 	_winner = NO_WINNER
+	_swap_requested.fill(false)
 	_start_ledger()
 	get_tree().paused = false
 	round_started.emit()
@@ -354,6 +393,31 @@ func choose(player_index: int, type_index: int) -> bool:
 		return false
 	unit_chosen.emit(player_index, type_index)
 	return true
+
+
+## A Player pressed Self-destruct (Story 011; PlayerMatchInput calls this on the key's edge): the
+## swap of the class doc when can_swap() is true now, else the Self-destruct of Stories 003 and 008,
+## made at once with Unit.destroy(), which ignores a Unit that is not in play. A swap is only noted
+## here and made in this node's tick, after the deliveries (_apply_swaps()). Call it from a physics
+## tick, never from a physics signal handler (Unit.destroy()); a player_index that is not in the
+## Round does nothing.
+func request_self_destruct(player_index: int) -> void:
+	if not _is_player(player_index):
+		return
+	if can_swap(player_index):
+		_swap_requested[player_index] = true
+	else:
+		_units[player_index].destroy()
+
+
+## True while a Self-destruct of this Player would be a swap (Story 011): rules.own_base_swap is on,
+## the Round has begun and runs, the Player's Unit is in play and the Player's own Base zone reports
+## it inside. Read-only and polled: it reads the zone as the physics server last reported it (about
+## two ticks behind the Unit's movement; see Base), so a hint asks it every frame it is shown.
+func can_swap(player_index: int) -> bool:
+	if rules == null or not rules.own_base_swap or not _has_begun or _round_state != RoundState.RUNNING:
+		return false
+	return is_alive(player_index) and _flags.is_in_own_zone(player_index)
 
 
 ## True while the Player is out of play and has not chosen the next type: the time the choice
@@ -499,6 +563,23 @@ func _apply_deliveries(may_act: Array[bool]) -> void:
 			return
 
 
+## Rule (3) of the tick (Story 011): each Player whose Self-destruct press of this frame was read as a
+## swap (request_self_destruct()) and whose Unit is still in play is put away on its Base's spawn
+## point (GarageQueue.bench()) and the swap announced; a Unit that was destroyed since the press
+## (a Shot, a Fuel crash) is not in play and is left destroyed. Only while the Round runs, after the
+## deliveries, so a delivery has been applied first (a Carrier in its own zone has delivered or
+## re-seated its own Flag: it carries nothing here, and one that somehow did would be left in play,
+## because a swap takes no Flag with it).
+func _apply_swaps() -> void:
+	for player_index: int in _units.size():
+		if not _swap_requested[player_index] or not is_alive(player_index):
+			continue
+		if _flags.carried_flag(player_index) != FlagRules.NONE:
+			continue
+		_garage.bench(player_index)
+		unit_swapped.emit(player_index)
+
+
 ## The loss check of the tick (Story 008 AC-4), run after the deliveries and only while the Round is
 ## still RUNNING: a Player with no Token left of the carrier type has lost (TokenLedger.has_lost()).
 ## When exactly one Player has not lost, the Round is OVER with that Player as the winner; when both
@@ -548,6 +629,9 @@ func _first_problem(units: Array[Unit], bases: Array[Base], cameras: Array[Chase
 		var problem: String = _first_player_problem(units, bases, cameras, player_index)
 		if not problem.is_empty():
 			return problem
+	var swap_problem: String = _first_swap_problem(bases)
+	if not swap_problem.is_empty():
+		return swap_problem
 	return TokenLedger.first_problem(token_stock, rules.unit_types)
 
 
@@ -564,6 +648,24 @@ func _first_type_problem() -> String:
 		var type_problem: String = type_stats.first_problem()
 		if not type_problem.is_empty():
 			return "rules.unit_types[%d] ('%s') is unusable: %s" % [type_index, type_stats.display_name, type_problem]
+	return ""
+
+
+## What is wrong with the Bases' zones while the swap is on (Story 011 AC-5), or an empty string: a
+## zone that is not assigned, or whose mask does not watch the physics layer of a Unit type (the
+## type's collision_layer, where it is not zero), so a Unit of that type standing inside would not be
+## reported and its Self-destruct would destroy it at home. Nothing is asked while the swap is off.
+func _first_swap_problem(bases: Array[Base]) -> String:
+	if not rules.own_base_swap:
+		return ""
+	for player_index: int in bases.size():
+		var zone: Area3D = bases[player_index].zone
+		if not is_instance_valid(zone):
+			return "bases[%d].zone is not assigned, and the own-Base swap needs it" % player_index
+		for type_index: int in rules.unit_types.size():
+			var layer: int = rules.unit_types[type_index].collision_layer
+			if layer != 0 and (zone.collision_mask & layer) == 0:
+				return "bases[%d].zone does not watch the physics layer of rules.unit_types[%d] ('%s'), so that type could not swap at home" % [player_index, type_index, rules.unit_types[type_index].display_name]
 	return ""
 
 

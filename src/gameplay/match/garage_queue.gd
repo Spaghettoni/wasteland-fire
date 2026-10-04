@@ -56,7 +56,8 @@ extends RefCounted
 ##                                 clear the choice, true, and the controller drops the Flag it
 ##                                 carried (if any) at the wreck and emits unit_destroyed; or
 ##                                 bench() from restart(): the Unit is put on its spawn point and
-##                                 benched, the Player chooses
+##                                 benched, the Player chooses; or bench() from the swap (Story
+##                                 011): the same, mid-Round, with no destruction and no wait
 ## A note_destroyed() for a Player who is not ALIVE is refused with a warning and false: a Unit
 ## that is not alive cannot be destroyed, so only a Unit spawned behind the controller's back could
 ## send one. A choose() for a Player who is not WAITING, or who has chosen already, is refused with
@@ -207,7 +208,8 @@ func enlist(owner: MatchController, units: Array[Unit], bases: Array[Base], came
 
 
 ## Takes the Player's Unit out of play while the Player chooses the next type: the start of the
-## Round (begin()) and a restart. The Unit is put on its Base's spawn point first (global_transform,
+## Round (begin()), a restart and the swap at the own Base (Story 011, mid-Round: the Unit is alive
+## and inside its Base, and nothing is destroyed or counted). The Unit is put on its Base's spawn point first (global_transform,
 ## then Unit.reset_motion(): the teleport order) and its camera snapped after it, so each view
 ## shows its own Base while its Player chooses, then benched with Unit.leave_play() (a destroyed
 ## Unit is left benched where the teleport put it; one that refused to drive is placed and left
@@ -215,7 +217,7 @@ func enlist(owner: MatchController, units: Array[Unit], bases: Array[Base], came
 ## choice cleared, and the Player is WAITING and due at once: at the frame the waits are measured
 ## against, so a bench during the pause of an ended Round is due on the first tick after the
 ## unpause. The bench frame is stamped (the bench settle rule). Called from begin() before the
-## first tick, or from restart() inside a tick.
+## first tick, or from restart() or the controller's swap inside a tick.
 func bench(player_index: int) -> void:
 	var unit: Unit = _units[player_index]
 	unit.global_transform = _bases[player_index].spawn_point.global_transform

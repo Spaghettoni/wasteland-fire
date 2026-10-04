@@ -1,0 +1,7 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+SPLIT unit_swap_showcase t=0.633 frame=37 moment=in_the_garage p1=truck p2=motorbike
+SPLIT unit_swap_showcase t=1.333 frame=79 moment=after_the_swap p1_panel=true p2_panel=false counts_unchanged=true p2_speed=14.00 ["x5", "x3", "x2", "x2"]
+SPLIT unit_swap_showcase t=1.967 frame=117 moment=new_unit p1=buggy hp=100 fuel=49.7 at_spawn_point=true
+SPLIT unit_swap_showcase t=3.517 frame=210 moment=stranded p1_hint='Out of Fuel! Press Tab to swap your Unit' p2_hint='Out of Fuel! Press Enter to Self-destruct'
+RESULT unit_swap_showcase ok checks=0 failed=0 t=3.517 moments=4 swaps=1 errors=0 warnings=0

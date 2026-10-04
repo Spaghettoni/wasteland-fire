@@ -1,0 +1,91 @@
+#!/usr/bin/env python3
+"""Seeded defects for Story 011: each one exact text replacement in a scratch copy of the repo, run
+against the scenario that guards it. KILLED when the scenario fails (rc != 0 or a FAIL CHECK) or, for the
+regression kind, when an older scenario's output differs from its baseline."""
+import subprocess, sys, shutil, re, os
+from concurrent.futures import ThreadPoolExecutor
+HERE = os.path.dirname(os.path.abspath(__file__))
+REPO = "/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire"
+BASE = os.path.join(HERE, "baseline1")
+WORKERS = 3
+MC = "src/gameplay/match/match_controller.gd"
+M = [
+ # name, file, old, new, scenario, kind
+ ("swap_never_made", MC, "	if can_swap(player_index):\n		_swap_requested[player_index] = true", "	if false:\n		_swap_requested[player_index] = true", "unit_swap", "check"),
+ ("swap_destroys_the_unit", MC, "		_garage.bench(player_index)\n		unit_swapped.emit(player_index)", "		_units[player_index].destroy()\n		unit_swapped.emit(player_index)", "unit_swap", "check"),
+ ("swap_takes_a_token", MC, "		_garage.bench(player_index)\n		unit_swapped.emit(player_index)", "		_garage.bench(player_index)\n		_ledger.take(player_index, _units[player_index].stats.type_id)\n		unit_swapped.emit(player_index)", "unit_swap", "check"),
+ ("swap_starts_the_respawn_wait", MC, "		_garage.bench(player_index)\n		unit_swapped.emit(player_index)", "		_garage.bench(player_index)\n		_garage._respawn_frame[player_index] = Engine.get_physics_frames() + 180\n		unit_swapped.emit(player_index)", "unit_swap", "check"),
+ ("swap_not_announced", MC, "		_garage.bench(player_index)\n		unit_swapped.emit(player_index)", "		_garage.bench(player_index)", "unit_swap", "check"),
+ ("swap_before_deliveries", MC, "	_apply_pick_ups(may_act)\n	_apply_deliveries(may_act)\n	if _round_state == RoundState.RUNNING:\n		_apply_swaps()\n		_apply_losses()", "	_apply_pick_ups(may_act)\n	_apply_swaps()\n	_apply_deliveries(may_act)\n	if _round_state == RoundState.RUNNING:\n		_apply_losses()", "unit_swap", "check"),
+ ("swap_ignores_a_unit_destroyed_this_tick", MC, "		if not _swap_requested[player_index] or not is_alive(player_index):", "		if not _swap_requested[player_index]:", "unit_swap", "check"),
+ ("swap_after_the_round_is_over", MC, "	if rules == null or not rules.own_base_swap or not _has_begun or _round_state != RoundState.RUNNING:", "	if rules == null or not rules.own_base_swap or not _has_begun:", "unit_swap", "check"),
+ ("swap_anywhere", MC, "	return is_alive(player_index) and _flags.is_in_own_zone(player_index)", "	return is_alive(player_index)", "unit_swap", "check"),
+ ("swap_in_either_zone", MC, "	return is_alive(player_index) and _flags.is_in_own_zone(player_index)", "	return is_alive(player_index) and (_bases[0].zone.overlaps_body(_units[player_index]) or _bases[1].zone.overlaps_body(_units[player_index]))", "unit_swap", "check"),
+ ("swap_switch_ignored", MC, "	if rules == null or not rules.own_base_swap or not _has_begun or _round_state != RoundState.RUNNING:", "	if rules == null or not _has_begun or _round_state != RoundState.RUNNING:", "unit_swap", "check"),
+ ("destruct_outside_does_nothing", MC, "	else:\n		_units[player_index].destroy()", "	else:\n		pass", "unit_swap", "check"),
+ ("zone_does_not_watch_gyrocopters", "src/gameplay/maps/map_01/compound_base.tscn", "collision_mask = 18", "collision_mask = 2", "unit_swap", "check"),
+ ("shipped_data_swap_off", "src/gameplay/match/data/match_rules.tres", "own_base_swap = true", "own_base_swap = false", "unit_swap", "check"),
+ ("player_2_key_asks_for_player_1", "src/gameplay/split_screen/split_screen.tscn", 'match_controller = NodePath("%MatchController")\nplayer_index = 1\naction_prefix = &"p2_"\n\n[node name="Player1Weapon"', 'match_controller = NodePath("%MatchController")\nplayer_index = 0\naction_prefix = &"p2_"\n\n[node name="Player1Weapon"', "unit_swap", "check"),
+ ("panel_ignores_the_swap", "src/ui/hud/unit_choice.gd", "	match_controller.unit_swapped.connect(_on_unit_swapped)\n", "", "unit_swap", "check"),
+ ("panel_shown_for_both_players", "src/ui/hud/unit_choice.gd", "	if swapped_player_index == player_index:\n		_refresh()\n\n\n## This Player chose", "	visible = true\n\n\n## This Player chose", "unit_swap", "check"),
+ ("hint_never_says_swap", "src/ui/hud/self_destruct_hint.gd", "swap_format if match_controller.can_swap(player_index) else format", "format", "unit_swap", "check"),
+ ("hint_not_reread_while_shown", "src/ui/hud/self_destruct_hint.gd", "	set_process(visible)\n\n\n## The hint is shown", "	set_process(false)\n\n\n## The hint is shown", "unit_swap", "check"),
+ ("hint_swap_text_without_the_key", "src/ui/hud/self_destruct_hint.tscn", 'swap_format = "Out of Fuel! Press %s to swap your Unit"', 'swap_format = "Out of Fuel! Press %s to Self-destruct"', "unit_swap", "check"),
+ ("begin_does_not_check_zone_masks", MC, "	var swap_problem: String = _first_swap_problem(bases)\n	if not swap_problem.is_empty():\n		return swap_problem\n", "", "unit_swap", "check"),
+ # the older scenarios keep their outputs: the runner turns the swap off for them
+ ("runner_leaves_the_swap_on", "tools/evidence/split_screen_harness.gd", "	if bool(script.get_script_constant_map().get(OWN_BASE_SWAP_CONSTANT, false)):\n		return\n	var rules: MatchRules = load(MATCH_RULES_PATH) as MatchRules\n	if rules == null:\n		push_error(\"split_screen_harness: %s did not load as MatchRules, so the swap is not turned off.\"", "	return\n	var rules: MatchRules = load(MATCH_RULES_PATH) as MatchRules\n	if rules == null:\n		push_error(\"split_screen_harness: %s did not load as MatchRules, so the swap is not turned off.\"", "destruction", "regress"),
+ ("destroy_moved_out_of_the_tick", MC, "	else:\n		_units[player_index].destroy()", "	else:\n		_swap_requested[player_index] = false\n		_units[player_index].destroy.call_deferred()", "loss", "regress"),
+]
+def prepare(i):
+    d = os.path.join(HERE, "copy%d" % i)
+    if os.path.exists(d): subprocess.run(["find", d, "-delete"], check=True)
+    subprocess.run(["rsync", "-a", "--exclude", ".git", REPO + "/", d + "/"], check=True)
+    return d
+def run(copy, scn, kind="check"):
+    p = subprocess.run(["godot","--headless","--fixed-fps","60","--path",copy,"res://tools/evidence/split_screen_harness.tscn","--","--scenario="+scn],capture_output=True,text=True,timeout=600)
+    return p.returncode, p.stdout + p.stderr
+def one(copy, mutant):
+    name, rel, old, new, scn, kind = mutant
+    path = os.path.join(copy, rel)
+    orig = open(path).read()          # this worker is the only one that touches this copy
+    if orig.count(old) != 1:
+        return name, None, "NOT APPLIED (text found %d times)" % orig.count(old)
+    open(path, "w").write(orig.replace(old, new))
+    try:
+        rc, out = run(copy, scn, kind)
+    finally:
+        open(path, "w").write(orig)
+    if kind == "check":
+        fails = re.findall(r"^CHECK \S+ (\S+) FAIL", out, re.M)
+        dead = rc != 0 or bool(fails)
+        detail = "%s rc=%d fails=%s" % (scn, rc, ",".join(fails) or "-")
+    else:
+        base = open(os.path.join(BASE, "split-%s.txt" % scn)).read()
+        keep = lambda t: [l for l in t.splitlines() if l.startswith(("SPLIT ","CHECK ","RESULT "))]
+        dead = keep(out) != keep(base) or rc != 0
+        detail = "%s rc=%d output %s the baseline" % (scn, rc, "differs from" if dead else "equals")
+    return name, dead, detail
+def worker(i, jobs):
+    copy = COPIES[i]
+    return [one(copy, m) for m in jobs[i::WORKERS]]
+if __name__ == "__main__":
+    only = set(sys.argv[1:])
+    COPIES = [prepare(i) for i in range(WORKERS)]
+    jobs = [m for m in M if not only or m[0] in only]
+    killed = survived = 0
+    with ThreadPoolExecutor(WORKERS) as ex:
+        results = list(ex.map(lambda i: worker(i, jobs), range(WORKERS)))
+    byname = {r[0]: r for part in results for r in part}
+    for m in jobs:
+        name, dead, detail = byname[m[0]]
+        if dead is None:
+            print("MUTANT %-42s %s" % (name, detail)); continue
+        killed += 1 if dead else 0
+        survived += 0 if dead else 1
+        print("MUTANT %-42s %s | %s" % (name, "KILLED" if dead else "SURVIVED", detail))
+    print("KILLED=%d SURVIVED=%d" % (killed, survived))
+    # a clean copy must still equal the repo: the guard against the bug of the first version of this script
+    for i in range(WORKERS):
+        r = subprocess.run(["diff", "-rq", "--exclude=.godot", REPO + "/src", COPIES[i] + "/src"], capture_output=True, text=True)
+        r2 = subprocess.run(["diff", "-rq", REPO + "/tools", COPIES[i] + "/tools"], capture_output=True, text=True)
+        print("COPY%d CLEAN=%s" % (i, not (r.stdout.strip() or r2.stdout.strip())))

@@ -1,14 +1,17 @@
 class_name PlayerMatchInput
 extends Node
-## Turns one Player's Round keys into calls on that Player's Unit: Self-destruct, and the
-## debug-damage key while MatchRules.debug_damage is above zero.
+## Turns one Player's Round keys into calls: Self-destruct, asked of the MatchController, which
+## decides whether it destroys the Unit or swaps it at the own Base, and the debug-damage key, on the
+## Unit, while MatchRules.debug_damage is above zero.
 ##
 ## Implements: production/epics/wasteland-fire/story-003-bases-destruction-respawn.md AC-5
 ## (Self-destruct: one key per Player destroys that Player's own Unit immediately, and the Unit then
 ## goes through the normal respawn path) and AC-8 (until weapons arrived in Story 005, a debug key
 ## applied damage to the local Unit, gated so it can be switched off); design/game-brief.md MVP
-## feature 3 (a Self-destruct action so a stranded Unit can respawn). Vocabulary: CONTEXT.md
-## (Player, Unit).
+## feature 3 (a Self-destruct action so a stranded Unit can respawn);
+## production/epics/wasteland-fire/story-011-unit-swap-at-own-base.md AC-1 and AC-2 (inside the own
+## Base the key swaps the Unit instead; everywhere else it is the Self-destruct it was). Vocabulary:
+## CONTEXT.md (Player, Unit).
 ##
 ## The two Input Map actions are the prefix plus self_destruct and debug_damage, declared in
 ## project.godot. Gameplay code names actions, never keys. Like PlayerDriveInput, the prefix is
@@ -16,12 +19,15 @@ extends Node
 ## default: a node without a prefix pushes an error and reads nothing, so a forgotten one cannot
 ## bind two Players to the same keys without a word.
 ##
-## It acts on the Unit and on nobody else: unit.destroy() and unit.apply_damage(). It does not
-## know the MatchController. The Unit emits destroyed and the controller reacts (signals up, calls
-## down), so Self-destruct and a lost fight take the same path to the same respawn (AC-5) and this
-## node adds no second way to start one. A key pressed while the Unit is already destroyed does
-## nothing, because destroy() and apply_damage() ignore a Unit that is not alive: mashing the key
-## cannot queue a second respawn.
+## Self-destruct is a call down to the MatchController (request_self_destruct(player_index), as
+## PlayerChoiceInput calls choose()): the controller knows whether the Unit stands inside its own
+## Base and whether the swap is on, so it either destroys the Unit, in this node's tick, or makes the
+## swap in its own tick of the same frame, after the deliveries. The debug key acts on the Unit,
+## unit.apply_damage(). The Unit emits destroyed and the controller reacts (signals up, calls down), so
+## Self-destruct and a lost fight take the same path to the same respawn (AC-5) and this node adds no
+## second way to start one. A key pressed while the Unit is already destroyed does nothing, because
+## destroy() and apply_damage() ignore a Unit that is not alive and a swap is made only for a Unit in
+## play: mashing the key cannot queue a second respawn.
 ##
 ## Both keys are edge-triggered: one press acts once and a held key does not repeat. The edge is
 ## read in _physics_process, never _process, like the drive input. An action reads as just pressed
@@ -34,12 +40,13 @@ extends Node
 ## may then delete the action from project.godot. While the value is above zero the action is
 ## expected: a missing one is an error at _ready(), and it costs only the debug key, because
 ## Self-destruct is read whenever its own action exists. The only things that make this node read
-## nothing at all are wiring faults, each an error at _ready(): no Unit, no rules, no prefix or no
-## self_destruct action.
+## nothing at all are wiring faults, each an error at _ready(): no Unit, no rules, no
+## MatchController, no Player index, no prefix or no self_destruct action.
 ##
 ## Ordering: _ready() sets process_physics_priority one below the Unit's own (lower runs first),
 ## as PlayerDriveInput does, so a Self-destruct lands before the Unit's own tick of the same
-## physics tick and not one tick after it.
+## physics tick and not one tick after it. The controller's tick of that frame comes after the
+## Unit's, so a swap lands there (MatchController's class doc).
 
 ## Added to the Unit's process_physics_priority so this node runs just before it.
 const PRIORITY_OFFSET: int = -1
@@ -54,6 +61,16 @@ const _SUFFIX_DEBUG_DAMAGE: String = "debug_damage"
 ## Unit, and zero switches the debug key off. Required. The resource is shared, so never write to
 ## it at runtime.
 @export var rules: MatchRules
+
+## The Round this Player's Self-destruct is asked of (Story 011): request_self_destruct() destroys the
+## Unit or swaps it. Required: without it the node pushes an error and reads nothing, because a
+## Self-destruct that skipped the Round could destroy a Unit that should have been swapped.
+@export var match_controller: MatchController
+
+## This Player's index in the MatchController (0 is Player 1). Required, with no default: the owning
+## scene stores it, and a forgotten one pushes an error instead of Self-destructing the other
+## Player's Unit.
+@export var player_index: int = -1
 
 ## Prefix shared by this Player's Input Map actions, for example p1_. Required, with no default:
 ## the owning scene stores it. Read once, in _ready().
@@ -73,6 +90,14 @@ func _ready() -> void:
 		return
 	if rules == null:
 		push_error("PlayerMatchInput '%s': rules is not assigned, so nothing is read." % name)
+		set_physics_process(false)
+		return
+	if match_controller == null:
+		push_error("PlayerMatchInput '%s': match_controller is not assigned, so nothing is read." % name)
+		set_physics_process(false)
+		return
+	if player_index < 0:
+		push_error("PlayerMatchInput '%s': player_index is not set, so nothing is read. Set the Player's index (0, 1) in the scene." % name)
 		set_physics_process(false)
 		return
 	if action_prefix.is_empty():
@@ -95,7 +120,7 @@ func _physics_process(_delta: float) -> void:
 	if not is_instance_valid(unit):
 		return
 	if Input.is_action_just_pressed(_self_destruct_action):
-		unit.destroy()
+		match_controller.request_self_destruct(player_index)
 	if _debug_enabled and Input.is_action_just_pressed(_debug_damage_action):
 		unit.apply_damage(rules.debug_damage)
 

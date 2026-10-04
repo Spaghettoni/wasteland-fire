@@ -13,7 +13,9 @@ extends Node
 ## fuel_cans and fuel_showcase; since Story 007, on Map 01, map_layout, map_edges, map_ford,
 ## map_bases, map_cover, map_showcase, map_legibility and map_fps; since Story 008, tokens,
 ## tokens_data, token_choice, loss, token_ui, token_layout and tokens_showcase; since Story 009, the
-## scenarios its evidence doc lists.
+## scenarios its evidence doc lists; since Story 010, camera_views, camera_showcase and camera_smooth
+## (windowed), and map_fps now runs on the shipped camera; since Story 011, unit_swap and
+## unit_swap_showcase (windowed).
 ## Each is a script under tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
@@ -99,6 +101,22 @@ extends Node
 ## (_apply_pre_009_map()). A scenario of Story 009 or later is not listed and runs on the shipped
 ## data and Map.
 ##
+## The camera (Story 010). The launch scene's cameras now start in the view from above, and every
+## scenario written before it was measured on the chase view of Stories 001 to 009, whose settings
+## are the second view of each Player's list. The runner therefore gives both cameras that chase
+## settings before the scene enters the tree (_apply_chase_camera(): the instanced scene's
+## ChaseCamera.settings, never the shared .tres), unless the scenario script declares
+## const SHIPPED_CAMERA: bool = true, which keeps the camera the build ships with. A scenario of
+## Story 010 declares it; any other scenario, now and later, runs on the chase view.
+##
+## The swap (Story 011). The shipped rules now swap a Unit at its own Base when its Player presses
+## Self-destruct there (MatchRules.own_base_swap), and the scenarios written before it Self-destruct
+## Units standing in their own Garage and count the destruction. The runner therefore turns the swap
+## off on the shared match_rules.tres before the scene is instanced (_apply_swap_off()), unless the
+## scenario script declares const OWN_BASE_SWAP: bool = true, which keeps the rules the build ships
+## with. A scenario of Story 011 declares it; any other scenario, now and later, runs with the swap
+## off. The Map's Base zones watch the gyrocopters layer now: no older output changed with that.
+##
 ## Output: SPLIT <scenario> t=<seconds> key=value ... (progress), CHECK <scenario> <check name> PASS|FAIL
 ## <detail> and exactly one last RESULT <scenario> ok|fail checks=<n> failed=<n> key=value ...; then quit with
 ## exit code 0 when every check passed, 1 when one failed, 2 for a missing or unknown scenario. TD-003
@@ -155,6 +173,11 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"idle_burn": preload("res://tools/evidence/split_screen/idle_burn.gd"),
 	&"fuel_hint": preload("res://tools/evidence/split_screen/fuel_hint.gd"),
 	&"quick_fixes_showcase": preload("res://tools/evidence/split_screen/quick_fixes_showcase.gd"),
+	&"camera_views": preload("res://tools/evidence/split_screen/camera_views.gd"),
+	&"camera_showcase": preload("res://tools/evidence/split_screen/camera_showcase.gd"),
+	&"camera_smooth": preload("res://tools/evidence/split_screen/camera_smooth.gd"),
+	&"unit_swap": preload("res://tools/evidence/split_screen/unit_swap.gd"),
+	&"unit_swap_showcase": preload("res://tools/evidence/split_screen/unit_swap_showcase.gd"),
 }
 
 ## The shared step class (drive_step.gd): keys held for a time.
@@ -233,6 +256,15 @@ const STORY_005_SCENARIOS: Array[StringName] = [&"units", &"weapons", &"gyro", &
 ## The constant a scenario script declares (const OWN_CHOICE: bool = true) to make the first choice
 ## of the Round itself: the runner then presses no fire key before run().
 const OWN_CHOICE_CONSTANT: StringName = &"OWN_CHOICE"
+## The constant a scenario script declares as true to run on the camera the launch scene ships
+## with, the view from above, instead of the chase view (_apply_chase_camera()).
+const SHIPPED_CAMERA_CONSTANT: StringName = &"SHIPPED_CAMERA"
+## The constant a scenario script declares as true to run with the swap at the own Base the shipped
+## rules turn on, instead of the swap off (_apply_swap_off()).
+const OWN_BASE_SWAP_CONSTANT: StringName = &"OWN_BASE_SWAP"
+## The chase view of Stories 001 to 009 (the second view of each Player's list in the launch scene):
+## the settings every scenario that does not declare SHIPPED_CAMERA runs on.
+const CHASE_CAMERA_SETTINGS: ChaseCameraSettings = preload("res://src/gameplay/camera/data/chase_camera_settings.tres")
 ## Raw physics ticks confirm_choices() waits for the chosen Units to appear before it gives up: the
 ## bench settle, the key's tick and margin.
 const CHOICE_LIMIT_TICKS: int = 120
@@ -387,7 +419,9 @@ func _ready() -> void:
 		_apply_greybox_models()
 	if GREYBOX_SCENARIOS.has(scenario) or PRE_009_MAP_SCENARIOS.has(scenario):
 		_apply_pre_009_data()
+	_apply_swap_off(SCENARIOS[scenario])
 	split = SPLIT_SCENE.instantiate() as SplitScreen
+	_apply_chase_camera(split, SCENARIOS[scenario])
 	if GREYBOX_SCENARIOS.has(scenario):
 		_apply_greybox_composition(split)
 	if PRE_009_MAP_SCENARIOS.has(scenario):
@@ -549,6 +583,31 @@ func _apply_pre_009_map(root: SplitScreen) -> void:
 		if collider != null:
 			tank.remove_child(collider)
 			collider.free()
+
+
+## Turns the swap at the own Base off (MatchRules.own_base_swap = false) on the shared
+## match_rules.tres, before the scene is instanced, unless the scenario script declares
+## OWN_BASE_SWAP (the class doc says why). The resource is the one object the scene's controller and
+## match inputs hold, so nothing else is needed; rules that fail to load are an error.
+func _apply_swap_off(script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(OWN_BASE_SWAP_CONSTANT, false)):
+		return
+	var rules: MatchRules = load(MATCH_RULES_PATH) as MatchRules
+	if rules == null:
+		push_error("split_screen_harness: %s did not load as MatchRules, so the swap is not turned off." % MATCH_RULES_PATH)
+		return
+	rules.own_base_swap = false
+
+
+## Gives both cameras of a freshly instanced launch scene the chase view's settings
+## (CHASE_CAMERA_SETTINGS), before the scene enters the tree, unless the scenario script declares
+## SHIPPED_CAMERA (the class doc says why). Only the two cameras' property is assigned: the shared
+## .tres is never touched, and each Player's list of views in the scene is left as it is.
+func _apply_chase_camera(root: SplitScreen, script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(SHIPPED_CAMERA_CONSTANT, false)):
+		return
+	root.player_1_camera.settings = CHASE_CAMERA_SETTINGS
+	root.player_2_camera.settings = CHASE_CAMERA_SETTINGS
 
 
 ## Gives the launch scene the Token stock the scenario asks for, on the field's token_stock and

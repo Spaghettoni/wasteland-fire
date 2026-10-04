@@ -1,0 +1,45 @@
+STRICT drive coast              rc=0 result_ok=True identical=True
+STRICT drive showcase           rc=0 result_ok=True identical=True
+STRICT drive soak               rc=0 result_ok=True identical=True
+STRICT drive walls              rc=0 result_ok=True identical=True
+STRICT split bases              rc=0 result_ok=True identical=True
+STRICT split choice             rc=0 result_ok=True identical=True
+STRICT split countdown          rc=0 result_ok=True identical=True
+STRICT split depot_tanks        rc=0 result_ok=True identical=True
+STRICT split destruction        rc=0 result_ok=True identical=True
+STRICT split flag_run           rc=0 result_ok=True identical=True
+STRICT split flag_showcase      rc=0 result_ok=True identical=True
+STRICT split fuel               rc=0 result_ok=True identical=True
+STRICT split fuel_cans          rc=0 result_ok=True identical=True
+STRICT split fuel_hint          rc=0 result_ok=True identical=True
+STRICT split fuel_showcase      rc=0 result_ok=True identical=True
+STRICT split gyro               rc=0 result_ok=True identical=True
+STRICT split gyro_cover         rc=0 result_ok=True identical=True
+STRICT split hud                rc=0 result_ok=True identical=True
+STRICT split idle_burn          rc=0 result_ok=True identical=True
+STRICT split isolation          rc=0 result_ok=True identical=True
+STRICT split layout             rc=0 result_ok=True identical=True
+STRICT split loss               rc=0 result_ok=True identical=True
+STRICT split map_bases          rc=0 result_ok=True identical=True
+STRICT split map_cover          rc=0 result_ok=True identical=True
+STRICT split map_edges          rc=0 result_ok=True identical=True
+STRICT split map_ford           rc=0 result_ok=True identical=True
+STRICT split map_layout         rc=0 result_ok=True identical=True
+STRICT split map_legibility     rc=0 result_ok=True identical=True
+STRICT split map_showcase       rc=0 result_ok=True identical=True
+STRICT split quick_fixes_showcase rc=0 result_ok=True identical=True
+STRICT split respawn_showcase   rc=0 result_ok=True identical=True
+STRICT split round_over         rc=0 result_ok=True identical=True
+STRICT split showcase           rc=0 result_ok=True identical=True
+STRICT split simultaneous       rc=0 result_ok=True identical=True
+STRICT split spot_turn          rc=0 result_ok=True identical=True
+STRICT split token_choice       rc=0 result_ok=True identical=True
+STRICT split token_layout       rc=0 result_ok=True identical=True
+STRICT split token_ui           rc=0 result_ok=True identical=False  NORMALIZED (1 rule: the harness line number in an engine backtrace)
+STRICT split tokens             rc=0 result_ok=True identical=True
+STRICT split tokens_data        rc=0 result_ok=True identical=False  NORMALIZED (1 rule: the harness line number in an engine backtrace)
+STRICT split tokens_showcase    rc=0 result_ok=True identical=True
+STRICT split units              rc=0 result_ok=True identical=True
+STRICT split units_showcase     rc=0 result_ok=True identical=True
+STRICT split weapons            rc=0 result_ok=True identical=True
+ALL_OK=True (every scenario identical to its baseline after the normalizers of normalizers.json, exit 0, RESULT ok)

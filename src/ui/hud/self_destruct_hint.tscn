@@ -35,3 +35,4 @@ vertical_alignment = 1
 autowrap_mode = 3
 script = ExtResource("1_hint")
 format = "Out of Fuel! Press %s to Self-destruct"
+swap_format = "Out of Fuel! Press %s to swap your Unit"

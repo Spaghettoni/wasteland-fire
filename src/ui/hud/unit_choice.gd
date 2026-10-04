@@ -16,17 +16,20 @@ extends Control
 ## that Player's Team colour, here as an edge; open question 17);
 ## production/epics/wasteland-fire/story-008-tokens-garage-and-loss.md AC-3 (the choice shows each
 ## type's Token count, and a type with 0 Tokens left cannot be chosen: its slot is dimmed and never
-## wears the cursor mark); design/game-brief.md MVP features 5 (the four Units) and 8 (Tokens, the
+## wears the cursor mark);
+## production/epics/wasteland-fire/story-011-unit-swap-at-own-base.md AC-4 (a swap at the own Base
+## opens the panel on its tick, in that Player's view only, with the counts as they were);
+## design/game-brief.md MVP features 5 (the four Units) and 8 (Tokens, the
 ## Garage and the loss); design/rules.md "Tokens and the Garage" and "Teams and visual style".
 ## Vocabulary: CONTEXT.md (Player, Unit, Garage, Round, Token).
 ##
 ## Display only (.claude/rules/ui-code.md). The Round, the choice and the Tokens belong to the
 ## MatchController and the cursor to PlayerChoiceInput. This panel connects to the controller's
-## round_started, unit_destroyed, unit_chosen, unit_spawned and round_over and to the choice
-## input's cursor_moved, reads is_choosing(), chosen_type_index(), unit_types(), tokens_left(),
+## round_started, unit_destroyed, unit_swapped, unit_chosen, unit_spawned and round_over and to the
+## choice input's cursor_moved, reads is_choosing(), chosen_type_index(), unit_types(), tokens_left(),
 ## can_choose() and is_round_over() and the cursor, and that is all it asks of them: it owns no
 ## state another node reads, calls nothing that changes the Round or the cursor, reads no input and
-## polls nothing (no _process: every change it shows is announced by one of the six signals, and
+## polls nothing (no _process: every change it shows is announced by one of the seven signals, and
 ## the handler rereads the answers, the Token counts among them). Take it out of the scene and the
 ## choice is made unchanged; only the picture of it is gone.
 ##
@@ -55,7 +58,9 @@ extends Control
 ## whenever the Round is over. The table of what moves it is complete; a pair it does not list
 ## cannot happen.
 ##   hidden   -> choosing  round_started: begin() or the restart benched every Unit with its Player
-##                         choosing; or unit_destroyed for this player_index while the Round runs
+##                         choosing; or unit_destroyed for this player_index while the Round runs;
+##                         or unit_swapped for this player_index (Story 011: the Unit was put
+##                         away at the own Base, and no Token was taken, so the counts are as before)
 ##   choosing -> choosing  cursor_moved: the marked slot follows the cursor
 ##   choosing -> ready     unit_chosen for this player_index: the controller accepted the choice
 ##   ready    -> hidden    unit_spawned for this player_index: the Unit appeared (on the tick of
@@ -64,8 +69,8 @@ extends Control
 ##   choosing -> hidden    round_over: the Round ended (a delivery, a loss or a double loss) while
 ##   ready    -> hidden    this Player was choosing, or while its choice stood; the Round-over
 ##                         screen takes the view until the restart
-##   hidden   -> hidden    unit_spawned, unit_destroyed or unit_chosen for another player_index;
-##                         round_over while this Player's Unit was in play
+##   hidden   -> hidden    unit_spawned, unit_destroyed, unit_swapped or unit_chosen for another
+##                         player_index; round_over while this Player's Unit was in play
 ## _ready() starts in whatever state the controller reports: hidden before begin(), since nobody is
 ## choosing then; a panel added after the Round began shows at once. The Token counts need no
 ## state of their own: a count changes only when the controller fills the stocks (begin() and
@@ -138,7 +143,7 @@ const _PATH_NAME_LABEL: NodePath = ^"Lines/NameLabel"
 const _PATH_COUNT_LABEL: NodePath = ^"Lines/CountLabel"
 
 ## The MatchController this panel reads: the node that emits round_started, unit_destroyed,
-## unit_chosen, unit_spawned and round_over and answers is_choosing(), chosen_type_index(),
+## unit_swapped, unit_chosen, unit_spawned and round_over and answers is_choosing(), chosen_type_index(),
 ## unit_types(), tokens_left(), can_choose() and is_round_over(). Required: without it the panel
 ## pushes an error and shows nothing.
 @export var match_controller: MatchController
@@ -234,6 +239,7 @@ func _ready() -> void:
 		return
 	match_controller.round_started.connect(_on_round_started)
 	match_controller.unit_destroyed.connect(_on_unit_destroyed)
+	match_controller.unit_swapped.connect(_on_unit_swapped)
 	match_controller.unit_chosen.connect(_on_unit_chosen)
 	match_controller.unit_spawned.connect(_on_unit_spawned)
 	match_controller.round_over.connect(_on_round_over)
@@ -458,6 +464,14 @@ func _on_round_started() -> void:
 ## is not ours.
 func _on_unit_destroyed(destroyed_player_index: int) -> void:
 	if destroyed_player_index == player_index:
+		_refresh()
+
+
+## This Player's Unit was put away at its own Base (Story 011): the Player chooses again, so show the
+## choice. No Token was taken, so the counts are the ones the Unit left with. Another Player's swap
+## is not ours.
+func _on_unit_swapped(swapped_player_index: int) -> void:
+	if swapped_player_index == player_index:
 		_refresh()
 
 

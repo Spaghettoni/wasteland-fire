@@ -1,0 +1,12 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK camera_views T1_above_pose PASS p1 pitch=75.000 distance=26.000 aim_error=0.00001deg error=0.0000 local=(0.00, 26.11, 2.73) | p2 pitch=75.000 distance=26.000 aim_error=0.00001deg error=0.0000 local=(0.00, 26.11, 2.73)
+CHECK camera_views T2_unit_in_view PASS p1 view=640x720 footprint_margin=261.4px ground_ahead=31.3m ground_behind=13.5m heading_error=0.000deg | p2 view=640x720 footprint_margin=261.4px ground_ahead=31.3m ground_behind=13.5m heading_error=0.000deg
+CHECK camera_views T3_turns_with_unit PASS p1 turned 80.2 degrees, camera heading error 0.000 degrees; p2 stood: 0.000 degrees
+CHECK camera_views T5_straight_down_guard PASS follow_rotation=true down=1.00000 up_vs_frame=1.00000 det=1.00000 | follow_rotation=false down=1.00000 up_vs_frame=1.00000 det=1.00000
+CHECK camera_views T6_switch PASS q: p1 chase_camera_settings p2 above_camera_settings, two ticks later p1 had crossed 0.12 of a 21.7 m gap | settled 0.0001 m from the chase place | chase aim error 0.00000 degrees at the point 1.0 m over the Unit | held 45 ticks: 1 step, now above_camera_settings | slash: p1 above_camera_settings p2 chase_camera_settings
+CHECK camera_views T8_towers PASS from above: 16 sight lines to a Flag or a Unit at a seat, 0 tower pieces in the way; with the layer drawn: 16 of 16 lines blocked | cull masks: above 1048573, chase 1048575
+CHECK camera_views T9_screen_unchanged PASS 40 Controls in each view, the same rectangles in both camera views
+CHECK camera_views T7_data PASS above pitch=75.0 distance=26.0 look_ahead=4.0 look_height=1.0 sharpness=8.0 follow_rotation=true hidden_layers=2 | chase offset=(0.0, 7.0, 13.0) pitch=0.0 distance=0.0 look_ahead=0.0 hidden_layers=0 | p1 list=true action=p1_camera key_bound=true | p2 list=true action=p2_camera key_bound=true | driving toy camera settings: chase_camera_settings.tres
+CHECK camera_views T4_snaps PASS start p1 0.0000 m | respawn true p1 0.0000 m | restart true true p1 0.0000 m p2 0.0000 m, p1 above_camera_settings p2 chase_camera_settings
+RESULT camera_views ok checks=9 failed=0 t=11.517 errors=0 warnings=0

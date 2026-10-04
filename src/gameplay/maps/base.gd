@@ -98,11 +98,15 @@ extends Node3D
 ## Base B). Because the override is per instance, compound_base.tscn's corner towers wear the Team
 ## colour while the walls, which share their material, stay dark.
 ##
-## Zone. An Area3D on physics layer 3 ("zones", project.godot) that watches layer 2 ("units"). It
-## reports Units entering and leaving and never touches them: no Unit's collision mask includes
+## Zone. An Area3D on physics layer 3 ("zones", project.godot) that watches layer 2 ("units") and, in
+## Map 01's compound, layer 5 ("gyrocopters") too (mask 18: a Gyrocopter swaps at home like every
+## type, so the zone must see its layer; base.tscn keeps mask 2 and its scenarios run with the swap
+## off). It reports Units entering and leaving and never touches them: no Unit's collision mask includes
 ## layer 3, so the zone neither blocks nor slows one. Story 004 consumes it (the MatchController
 ## polls zone.overlaps_body() once per physics tick for a Unit delivering a Flag to the
-## own Base, or bringing its own home) and Story 005 (swapping Unit type at the own Base) will.
+## own Base, or bringing its own home) and Story 011 (the Unit swap at the own Base: when a Player
+## presses Self-destruct, MatchController.can_swap() asks whether the zone reports that Player's Unit,
+## and begin() refuses a Round, with the swap on, whose zone does not watch a Unit type's layer).
 ## What the zone watches is a Unit's collision layer, which Unit.destroy() zeroes and Unit.spawn()
 ## restores, so a Unit destroyed inside the zone leaves it and one spawned inside it enters it: a
 ## respawn at the own Base is an enter, and so is the first spawn of a Round. The physics server
@@ -140,8 +144,9 @@ extends Node3D
 @export var spare_spawn_points: Array[Marker3D] = []
 
 ## The zone over the pad that reports Units entering and leaving this Base. The MatchController
-## polls it once per physics tick for a delivery (Story 004), and Story 005 will for the Unit
-## swap. Its layer (3, "zones") and mask (2, "units") are set in the scene.
+## polls it once per physics tick for a delivery (Story 004) and asks it for the Unit swap (Story 011).
+## Its layer (3, "zones") and mask (2, "units" in base.tscn; 18, units and gyrocopters, in
+## compound_base.tscn) are set in the scene.
 @export var zone: Area3D
 
 ## The flat slab that marks the Base on the ground. It gets color_material in _ready(). No

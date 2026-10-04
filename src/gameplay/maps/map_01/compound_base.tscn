@@ -135,7 +135,7 @@ mesh = SubResource("BoxMesh_pad")
 
 [node name="Zone" type="Area3D" parent="."]
 collision_layer = 4
-collision_mask = 2
+collision_mask = 18
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Zone"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -0.15)
@@ -352,19 +352,23 @@ mesh = SubResource("PlaneMesh_marking_dash")
 
 [node name="Tank" type="MeshInstance3D" parent="WaterTower"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.8, -7)
+layers = 2
 mesh = SubResource("CylinderMesh_tank")
 
 [node name="Roof" type="MeshInstance3D" parent="WaterTower"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13.3, -7)
+layers = 2
 mesh = SubResource("SphereMesh_roof")
 
 [node name="Platform" type="MeshInstance3D" parent="WaterTower"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.15, -7)
+layers = 2
 cast_shadow = 0
 mesh = SubResource("CylinderMesh_platform")
 
 [node name="Band" type="MeshInstance3D" parent="WaterTower"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13.13, -7)
+layers = 2
 cast_shadow = 0
 mesh = SubResource("CylinderMesh_band")
 

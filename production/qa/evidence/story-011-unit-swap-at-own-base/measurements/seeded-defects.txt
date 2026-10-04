@@ -1,0 +1,27 @@
+MUTANT swap_never_made                            KILLED | unit_swap rc=1 fails=swap_at_home,destruct_elsewhere,last_motorbike,swap_vs_delivery,swap_vs_homecoming,swap_hint,swap_data
+MUTANT swap_destroys_the_unit                     KILLED | unit_swap rc=1 fails=swap_at_home,swap_screens,destruct_elsewhere,last_motorbike,swap_vs_homecoming
+MUTANT swap_takes_a_token                         KILLED | unit_swap rc=1 fails=swap_at_home,swap_screens,destruct_elsewhere,last_motorbike,swap_vs_homecoming
+MUTANT swap_starts_the_respawn_wait               KILLED | unit_swap rc=1 fails=swap_at_home
+MUTANT swap_not_announced                         KILLED | unit_swap rc=1 fails=swap_at_home,last_motorbike,swap_vs_homecoming,swap_hint
+MUTANT swap_before_deliveries                     KILLED | unit_swap rc=1 fails=swap_vs_homecoming
+MUTANT swap_ignores_a_unit_destroyed_this_tick    KILLED | unit_swap rc=1 fails=swap_vs_destruction
+MUTANT swap_after_the_round_is_over               KILLED | unit_swap rc=1 fails=last_motorbike
+MUTANT swap_anywhere                              KILLED | unit_swap rc=1 fails=destruct_elsewhere,last_motorbike,swap_vs_delivery,swap_vs_homecoming,swap_hint,swap_data
+MUTANT swap_in_either_zone                        KILLED | unit_swap rc=1 fails=destruct_elsewhere
+MUTANT swap_switch_ignored                        KILLED | unit_swap rc=1 fails=swap_data
+MUTANT destruct_outside_does_nothing              KILLED | unit_swap rc=1 fails=destruct_elsewhere,last_motorbike,swap_vs_homecoming,swap_hint,swap_data
+MUTANT zone_does_not_watch_gyrocopters            KILLED | unit_swap rc=1 fails=destruct_elsewhere,last_motorbike,swap_vs_delivery,swap_vs_homecoming,swap_vs_destruction,swap_hint,swap_data,no_engine_noise
+MUTANT shipped_data_swap_off                      KILLED | unit_swap rc=1 fails=swap_at_home,destruct_elsewhere,last_motorbike,swap_vs_delivery,swap_vs_homecoming,swap_hint,swap_data
+MUTANT player_2_key_asks_for_player_1             KILLED | unit_swap rc=1 fails=swap_at_home,destruct_elsewhere,swap_vs_homecoming,swap_hint,swap_data
+MUTANT panel_ignores_the_swap                     KILLED | unit_swap rc=1 fails=swap_screens,last_motorbike
+MUTANT panel_shown_for_both_players               KILLED | unit_swap rc=1 fails=swap_screens
+MUTANT hint_never_says_swap                       KILLED | unit_swap rc=1 fails=swap_hint
+MUTANT hint_not_reread_while_shown                KILLED | unit_swap rc=1 fails=swap_hint,swap_data
+MUTANT hint_swap_text_without_the_key             KILLED | unit_swap rc=1 fails=swap_hint
+MUTANT begin_does_not_check_zone_masks            KILLED | unit_swap rc=1 fails=swap_data,no_engine_noise
+MUTANT runner_leaves_the_swap_on                  KILLED | destruction rc=1 output differs from the baseline
+MUTANT destroy_moved_out_of_the_tick              KILLED | loss rc=1 output differs from the baseline
+KILLED=23 SURVIVED=0
+COPY0 CLEAN=True
+COPY1 CLEAN=True
+COPY2 CLEAN=True
