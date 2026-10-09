@@ -34,3 +34,5 @@ fuel_use = 3.0
 fuel_use_idle = 0.75
 spawn_fuel_fraction = 0.5
 empty_turn_rate = 0.45
+mine_capacity = 5
+mine_drop_offset = Vector3(0, 0, 3.4)

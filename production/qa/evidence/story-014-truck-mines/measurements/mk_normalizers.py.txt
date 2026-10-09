@@ -1,0 +1,80 @@
+"""Write the planned rewrites of story 014 from the SOURCE, never from the outputs.
+
+Two things move in the retained outputs because of this story's edits:
+  advance_ticks (res://tools/evidence/split_screen_harness.gd:N)  in every output that cites it: the
+      runner gains lines above advance_ticks(). The new line is found in the runner as it is now: the
+      _sample() call that ends advance_ticks(). The old line is the baseline's (it is cited, not derived).
+  the tokens_data lint of src/gameplay/match and src/ui/hud (files, code lines): a new file (mine_count.gd)
+      and the lines this story adds to player_notice.gd. scan() below is the lint's algorithm
+      (tokens_data_kit.gd: scan(), _code_of(), _big_literals()) run on the sources as they are now. The old
+      numbers are the baseline's printed ones; the algorithm is first checked to reproduce them from the
+      sources with the one changed file (player_notice.gd) at its old state (a copy of the final story 013
+      state, scratchpad dev14/old-sources) and the new file left out, so the numbers written come from
+      the sources and the check only confirms the algorithm.
+usage: mk_normalizers14.py REPO BASELINE_DIR OLD_SOURCES_DIR OUT.json
+"""
+import json
+import re
+import sys
+from pathlib import Path
+
+repo, base, old_sources, out = (Path(a) for a in sys.argv[1:5])
+HARNESS = "res://tools/evidence/split_screen_harness.gd"
+
+
+def line_after(path: Path, start_marker: str, wanted: str) -> int:
+    lines = path.read_text(encoding="utf-8").split("\n")
+    start = next(i for i, l in enumerate(lines) if l.startswith(start_marker))
+    for i in range(start, len(lines)):
+        if lines[i] == wanted:
+            return i + 1
+    raise SystemExit(f"{wanted!r} not found after {start_marker!r} in {path}")
+
+
+QUOTED = re.compile(r"\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*'")
+LITERAL = re.compile(r"(?<![\w.])\d+(?![\w.])")
+LINT_DIRS = ["src/gameplay/match", "src/ui/hud"]
+
+
+def scan(texts: dict) -> dict:
+    found = {"files": 0, "code": 0, "literals": 0}
+    for path in sorted(texts):
+        found["files"] += 1
+        for line in texts[path].split("\n"):
+            code = QUOTED.sub("", line).split("#")[0]
+            found["code"] += 0 if code.strip() == "" else 1
+            found["literals"] += len([m for m in LITERAL.findall(code) if int(m) not in (0, 1)])
+    return found
+
+
+current = {}
+for d in LINT_DIRS:
+    for f in (repo / d).rglob("*.gd"):
+        current[str(f.relative_to(repo))] = f.read_text(encoding="utf-8")
+new_lint = scan(current)
+old_state = dict(current)
+old_state.pop("src/ui/hud/mine_count.gd", None)
+old_state["src/ui/hud/player_notice.gd"] = (old_sources / "src/ui/hud/player_notice.gd").read_text(encoding="utf-8")
+reproduced = scan(old_state)
+printed = (base / "split-tokens_data.txt").read_text(encoding="utf-8")
+m = re.search(r"lint: (\d+) files, (\d+) code lines, (\d+) integer literals", printed)
+old_lint = {"files": int(m.group(1)), "code": int(m.group(2)), "literals": int(m.group(3))}
+if reproduced != old_lint:
+    raise SystemExit(f"the lint algorithm does not reproduce the baseline: {reproduced} vs {old_lint}")
+
+new_tick = line_after(repo / "tools/evidence/split_screen_harness.gd", "func advance_ticks(", "\t\t_sample()")
+pattern = re.compile(r"advance_ticks \(" + re.escape(HARNESS) + r":(\d+)\)")
+rules = {}
+old_ticks = set()
+for txt in sorted(base.glob("*.txt")):
+    found = set(pattern.findall(txt.read_text(encoding="utf-8", errors="replace")))
+    if found:
+        old_ticks |= found
+        name = txt.stem.split("-", 1)[1]
+        rules[name] = [[f"advance_ticks ({HARNESS}:{next(iter(found))})", f"advance_ticks ({HARNESS}:{new_tick})"]]
+assert len(old_ticks) == 1, old_ticks
+rules.setdefault("tokens_data", []).extend([
+    ["lint: %d files, %d code lines" % (old_lint["files"], old_lint["code"]), "lint: %d files, %d code lines" % (new_lint["files"], new_lint["code"])],
+    ["lint_files=%d " % old_lint["files"], "lint_files=%d " % new_lint["files"]]])
+out.write_text(json.dumps(rules, indent=1) + "\n", encoding="utf-8")
+print(f"advance_ticks {old_ticks} -> {new_tick} in {sorted(rules)}; lint {old_lint} -> {new_lint}; wrote {out}")

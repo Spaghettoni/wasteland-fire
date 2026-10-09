@@ -44,7 +44,9 @@ extends Node3D
 ## and a body on it lifts the model until its lowest point stands rise_clearance above the highest
 ## of its GeometryInstance3D children, with the same margin, lead and rates. A body on rise_mask
 ## alone is still a bare body, flown over at the hover (the water), so the rise over the cliffs and
-## the water is what it was before Story 009.
+## the water is what it was before Story 009. The Flag Walls of Story 012 stand on the cover layer
+## too, each drawn by a direct Mesh child, so the model rises over them as over a piece of cover; a
+## Flag Wall that has fallen has no layer and is not found.
 
 ## Name of the child that carries the Team accent, which the Unit paints.
 const ACCENT_NODE_NAME: StringName = &"Accent"
@@ -91,7 +93,8 @@ const COLLIDER_KEY: String = "collider"
 ## default, when rise_over_cliffs is set.
 @export_flags_3d_physics var rise_mask: int = 0
 ## The physics layers whose bodies the model also rises over, at the top of what each draws (its
-## GeometryInstance3D children): the cover layer (value 64) on the Gyrocopter's scene (Story 009).
+## GeometryInstance3D children): the cover layer (value 64) on the Gyrocopter's scene (Story 009),
+## where the Flag Walls (Story 012) stand too.
 ## Optional: 0, the default, rises over the drawn colliders of rise_mask alone.
 @export_flags_3d_physics var rise_body_mask: int = 0
 ## Height the model's lowest point keeps above a cliff's top, metres. Required, with no default,

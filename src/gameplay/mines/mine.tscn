@@ -1,0 +1,45 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/mines/mine.gd" id="1_mine"]
+[ext_resource type="Resource" path="res://src/gameplay/mines/data/mine_settings.tres" id="2_mine_settings"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_disc"]
+top_radius = 1.0
+bottom_radius = 1.0
+height = 0.04
+radial_segments = 32
+rings = 1
+cap_bottom = false
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_flash"]
+shading_mode = 0
+albedo_color = Color(1, 0.95, 0.55, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_flash"]
+material = SubResource("StandardMaterial3D_flash")
+radius = 1.0
+height = 2.0
+radial_segments = 16
+rings = 8
+
+[node name="Mine" type="Area3D" node_paths=PackedStringArray("trigger_shape", "body", "flash") groups=["mines"]]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_mine")
+settings = ExtResource("2_mine_settings")
+trigger_shape = NodePath("Trigger")
+body = NodePath("Body")
+flash = NodePath("Flash")
+
+[node name="Trigger" type="CollisionShape3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_disc")
+
+[node name="Flash" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+visible = false
+cast_shadow = 0
+mesh = SubResource("SphereMesh_flash")

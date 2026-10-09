@@ -1,0 +1,31 @@
+[gd_resource type="NoiseTexture2D" format=3]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_cracks_2"]
+noise_type = 2
+seed = 131
+frequency = 0.032
+fractal_type = 0
+cellular_distance_function = 0
+cellular_jitter = 0.9
+cellular_return_type = 4
+domain_warp_enabled = true
+domain_warp_type = 0
+domain_warp_amplitude = 11.0
+domain_warp_frequency = 0.04
+domain_warp_fractal_type = 1
+domain_warp_fractal_octaves = 3
+domain_warp_fractal_lacunarity = 2.5
+domain_warp_fractal_gain = 0.5
+
+[sub_resource type="Gradient" id="Gradient_cracks_2"]
+offsets = PackedFloat32Array(0.0, 0.075, 0.115, 1.0)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1)
+
+[resource]
+width = 512
+height = 512
+seamless = true
+seamless_blend_skirt = 0.1
+generate_mipmaps = true
+color_ramp = SubResource("Gradient_cracks_2")
+noise = SubResource("FastNoiseLite_cracks_2")

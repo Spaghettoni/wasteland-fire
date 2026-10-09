@@ -1,0 +1,53 @@
+KILLED  fires_at_its_own_player                          turrets rc=1 fails=targets,reach,sight,path,friendly,fall,carrier,loss,double
+KILLED  player_2s_turrets_aim_at_player_2                turrets rc=1 fails=targets,friendly,loss
+KILLED  base_b_turrets_never_armed                       turrets rc=1 fails=turrets_data,targets,loss
+EQUIVALENT aims_at_a_benched_unit                       turrets rc=0 fails=- | the sight ray already refuses a Unit that is out of play (its layer is zero), so the check only saves two ray queries a tick
+KILLED  ignores_range                                    turrets rc=1 fails=reach,lead,damage,friendly
+KILLED  reach_from_the_resting_muzzle                    turrets rc=1 fails=reach,lead
+KILLED  sight_ray_dropped                                turrets rc=1 fails=targets,sight,damage,lock
+KILLED  path_ray_dropped                                 turrets rc=1 fails=path
+KILLED  cliffs_out_of_the_sight_ray                      turrets rc=1 fails=turrets_data,sight,path,damage
+KILLED  never_fires                                      turrets rc=1 fails=targets,reach,sight,path,barrel,lead,friendly,fall,carrier,loss,double,no_engine_noise
+KILLED  lead_removed                                     turrets rc=1 fails=path,lead
+KILLED  aim_tolerance_widened                            turrets rc=1 fails=turrets_data,barrel,lead,friendly
+KILLED  barrel_turns_twice_as_fast                       turrets rc=1 fails=turrets_data,barrel,lock
+KILLED  damage_typed_in_code                             turrets rc=1 fails=shot_timing
+KILLED  cadence_halved_in_code                           turrets rc=1 fails=shot_timing,lead,lock,carrier,loss,double
+KILLED  muzzle_from_the_centre                           turrets rc=1 fails=turrets_data,refusals,solid,targets,reach,sight,path,barrel,lead,damage,friendly,fall,lock,line,carrier,loss,double,no_engine_noise
+KILLED  one_thousand_hit_points                          turrets rc=1 fails=turrets_data,damage,fall
+KILLED  a_destroyed_turret_still_turns_and_fires         turrets rc=1 fails=reach,fall
+KILLED  its_shots_take_nothing_off_friends_removed       turrets rc=1 fails=friendly
+KILLED  turret_on_the_cover_layer                        turrets rc=1 fails=turrets_data,solid,loss
+KILLED  turret_drum_half_as_wide                         turrets rc=1 fails=turrets_data,solid
+KILLED  rubble_given_a_body                              turrets rc=1 fails=turrets_data
+KILLED  r_does_not_restore_turrets                       turrets rc=1 fails=loss
+KILLED  head_not_reset_at_r                              turrets rc=1 fails=sight,path,lock,loss
+KILLED  cadence_not_ready_after_r                        turrets rc=1 fails=loss
+KILLED  lock_gate_removed                                turrets rc=1 fails=lock,line,carrier,loss
+KILLED  lock_applied_to_the_owner_too                    turrets rc=1 fails=carrier
+KILLED  locks_flag_false_in_the_data                     turrets rc=1 fails=turrets_data,lock,line,carrier,loss
+KILLED  only_one_turret_locks                            turrets rc=1 fails=lock
+KILLED  notice_shown_in_both_views                       turrets rc=1 fails=lock,line
+KILLED  notice_not_hidden_at_round_over                  turrets rc=1 fails=line
+KILLED  notice_shown_to_a_carrier                        turrets rc=1 fails=carrier
+KILLED  arm_accepts_rules_without_a_matrix               turrets rc=1 fails=refusals
+EQUIVALENT freed_target_not_guarded                     turrets rc=0 fails=- | a freed Unit compares equal to null in Godot 4, so `_target == null` already refuses it; is_instance_valid() states the intent (the refusals check keeps the behaviour)
+KILLED  destroyed_turret_keeps_its_aim                   turrets rc=1 fails=fall
+WINDOWED   head_interpolation_not_reset_at_r            turrets rc=0 fails=- | killed by the windowed swing probe, which the headless run cannot be
+KILLED  barrel_snaps_to_the_aim                          turrets rc=1 fails=barrel,lock,no_engine_noise
+KILLED  fires_off_the_aim                                turrets rc=1 fails=path,barrel,lead,friendly
+KILLED  shot_lag_assumed_three_ticks                     turrets rc=1 fails=lead
+EQUIVALENT cadence_on_physics_frames                    turrets rc=0 fails=- | restore() readies the cadence at every restart and no other pause exists in a Round, so the frame count and the Turret's own count never differ where anything reads them
+KILLED  one_turret_not_listed_in_structures              turrets rc=1 fails=turrets_data,solid,targets,reach,sight,path,friendly,fall,lock,loss,double
+KILLED  one_accent_not_painted                           turrets rc=1 fails=turrets_data
+KILLED  turret_on_no_layer                               turrets rc=1 fails=turrets_data,solid,sight,damage,friendly,fall,loss
+KILLED  matrix_row_makes_a_turret_immune_to_motorbikes   turrets rc=1 fails=turrets_data,sight,damage
+KILLED  notice_text_changed                              turrets rc=1 fails=turrets_data,lock,line
+KILLED  notice_over_the_hud_band                         turrets rc=1 fails=line
+KILLED  line_shown_without_touching                      turrets rc=1 fails=lock,line,carrier
+KILLED  runner_leaves_the_turrets_in                     map_layout rc=0 output differs from the baseline
+KILLED  runner_leaves_the_accents_in_color_meshes        flag_walls rc=0 output differs from the baseline
+KILLED  runner_leaves_the_structures_listed              flag_walls rc=1 output differs from the baseline
+KILLED  runner_leaves_the_notice_labels_in               camera_views rc=0 output differs from the baseline
+-- 51 mutants: 51 killed, equivalent or killed by the windowed probe, 0 survived, 0 broken or not applied
+-- the 3 scratch copies equal the repo (apart from .godot, production, design, docs)

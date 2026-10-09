@@ -7,7 +7,10 @@ extends RefCounted
 ## signal; this class emits none, is not a node and reads no input, so a test can drive it with
 ## stand-in Units and Bases and read back the answers.
 ##
-## Implements: production/epics/wasteland-fire/story-004-water-canister-and-win.md AC-2 (a Unit
+## Implements: production/epics/wasteland-fire/story-013-turrets.md AC-5 (the other Player cannot
+## take a Flag while a Structure of its Base whose data says locks_flag stands: a Turret, and the
+## owner is never locked);
+## production/epics/wasteland-fire/story-004-water-canister-and-win.md AC-2 (a Unit
 ## whose data says can_carry picks a Flag up by touching it; a Unit carries one Flag at a
 ## time; carrying is gated by the data flag, never by a type check), AC-3 (the Flag of a
 ## destroyed Carrier drops at the wreck), AC-4 (an owner may pick up its own dropped Flag and
@@ -29,6 +32,13 @@ extends RefCounted
 ## gate and the carries-nothing gate are read here, the alive gate from the Unit, the touch from the
 ## Flag's zone: every answer is polled, nothing is remembered between ticks except who carries
 ## what, so a Flag lying where two Units stand is taken on the first tick a taker qualifies.
+##
+## The lock (Story 013 AC-5). A Player who is not the Flag's owner does not qualify while a
+## Structure in the Flag's Base's structures list stands and its data says locks_flag: the Flag
+## rules read that switch and name no class. It is tested before the touch query. The owner is never
+## locked, so its own dropped Flag is taken wherever it lies. The lock lifts on the first tick the
+## last such Structure has fallen: a Unit already touching the Flag takes it then. is_locked_out()
+## answers the notice's question: would this Player's Unit take a Flag this tick but for the lock.
 ##
 ## The calls down. pick_up() hands the Flag to the Unit (Flag.carry_by()), drop()
 ## stands it where the Carrier is (drop_at(), at the Unit's global position: the wreck when
@@ -137,9 +147,24 @@ func seat_all() -> void:
 	_carried.fill(NONE)
 
 
+## True when the Player's Unit would take a Flag on this tick but for the lock (class doc): the
+## Round lets the Player act, a Flag that is not carried and not its own lies within the Unit's
+## touch, the Unit may carry and carries nothing, and a standing Structure of that Flag's Base locks
+## it. False for a Unit that already carries a Flag, which could not take a second one anyway.
+func is_locked_out(player_index: int, may_act: Array[bool]) -> bool:
+	if not may_act[player_index]:
+		return false
+	for flag_index: int in _bases.size():
+		var target: Flag = flag(flag_index)
+		if target.state != Flag.State.CARRIED and _is_locked_for(player_index, flag_index) \
+				and _qualifies(player_index, target, flag_index, false):
+			return true
+	return false
+
+
 ## The pick-up test of one Player for one Flag that is not carried (class doc), cheapest
-## checks first and the physics query last.
-func _qualifies(player_index: int, target: Flag, flag_index: int) -> bool:
+## checks first and the physics query last. honour_lock false skips the lock, for is_locked_out().
+func _qualifies(player_index: int, target: Flag, flag_index: int, honour_lock: bool = true) -> bool:
 	if _carried[player_index] != NONE:
 		return false
 	var unit: Unit = _units[player_index]
@@ -147,7 +172,20 @@ func _qualifies(player_index: int, target: Flag, flag_index: int) -> bool:
 		return false
 	if player_index == flag_index and target.state == Flag.State.AT_HOME:
 		return false
+	if honour_lock and _is_locked_for(player_index, flag_index):
+		return false
 	return target.is_touching(unit)
+
+
+## True when the Player is not the Flag's owner and a Structure of the Flag's Base stands whose data
+## says locks_flag (class doc).
+func _is_locked_for(player_index: int, flag_index: int) -> bool:
+	if player_index == flag_index:
+		return false
+	for structure: Structure in _bases[flag_index].structures:
+		if structure != null and structure.is_standing and structure.locks_flag:
+			return true
+	return false
 
 
 func _seat(flag_index: int) -> void:

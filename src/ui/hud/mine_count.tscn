@@ -1,0 +1,19 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/ui/hud/mine_count.gd" id="1_mine_count"]
+
+[node name="MineCount" type="Label"]
+visible = false
+offset_left = 332.0
+offset_top = 92.0
+offset_right = 624.0
+offset_bottom = 120.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 2
+autowrap_mode = 3
+script = ExtResource("1_mine_count")
+format = "Mines %d / %d"

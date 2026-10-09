@@ -5,24 +5,27 @@ THE ONE-PAGE BRIEF. At the `minimal` workflow tier this is the ENTIRE design doc
 it replaces the full concept doc, systems decomposition, and per-system GDDs.
 Rules of record: design/rules.md (translated from the author's Slovak source).
 Vocabulary: CONTEXT.md — Player, Base, Flag, Carrier, Round, Team colour, Unit,
-Motorbike, Buggy, Truck, Gyrocopter, Token, Garage, Self-destruct, Fuel, Fuel Can,
-Map, First Playable.
+Motorbike, Buggy, Truck, Gyrocopter, Token, Garage, Self-destruct, Swap, Fuel,
+Fuel Can, Map, Gate, Cover, Turret, Flag Wall, Mine, First Playable.
 Engine is set separately (project.yaml / /setup-engine) — not restated here.
 Written 2026-09-30 by /brainstorm (Lean Brief flow, autonomous run); rewritten
-2026-10-01 for the author's artifact version 0.1 (archived under design/source/).
+2026-10-01 for the author's artifact version 0.1 (archived under design/source/);
+updated 2026-10-07 for the Turrets, Flag Walls and Mines (the developer's request
+and the author's board, archived under design/source/).
 -->
 
 **One-sentence pitch:** Two friends on one couch drive wasteland Motorbikes, Buggies, Trucks and Gyrocopters across a split screen to steal each other's Flag and haul it home on a Motorbike, burning Fuel they must keep finding and paying a Token for every wreck.
 
 ## Core loop
 - Spawn in the Garage from your remaining Tokens: pick a Unit type, drive out, burning Fuel.
-- Hunt the other Player with the Unit that beats theirs; grab Fuel Cans to keep moving.
+- Hunt the other Player with the Unit that beats theirs; grab Fuel Cans to keep moving; with a Truck, lay Mines on their routes (any ground Unit sets them off, yours too).
+- Break into their Base with a combat Unit: destroy the two Turrets outside their Gate, which fire at you, and one of the Flag Walls around their Flag. The Motorbike cannot break a Flag Wall, and no Flag can be taken while a Turret of its Base stands.
 - Reach their Base on a Motorbike, touch their Flag and carry it home while they chase you.
 - Destroyed: a Token of that type is gone. Pick again from what is left and go again.
 
 ## Player goal & fail state — what "working" looks like
 - Goal: deliver the opponent's Flag to your own Base; the Round ends the moment it arrives.
-- Fail: your last Motorbike is destroyed, which leaves your Motorbike stock at 0; without a Motorbike you can never carry a Flag, so the opponent wins.
+- Fail: your last Motorbike is destroyed, whatever destroyed it (a Turret or a Mine counts too), which leaves your Motorbike stock at 0; without a Motorbike you can never carry a Flag, so the opponent wins.
 - Nothing else ends a Round. A stranded Unit can Self-destruct at the cost of a Token. A dropped Flag stays where it fell until a Motorbike touches it.
 
 ## MVP — what must exist to be the game
@@ -37,15 +40,15 @@ Written 2026-09-30 by /brainstorm (Lean Brief flow, autonomous run); rewritten
 8. **Tokens, the Garage and the loss**: the per-Map Token stock; minus one per destruction, Self-destruct and Fuel crash included; the choice from the remaining stock at the start and after every destruction while the game keeps running; the chosen Unit appears in the Garage; the loss when the last Motorbike is gone; the Round-over screen naming the win or the loss. The code renames the Water Canister to the Flag here (WaterCanister, canister_rules, canister_*).
 
 ## Out of scope — not building this
-- No online play, no AI bots or drones, no turrets or mines: the other Player is the only threat.
-- No second Map, no map editor, no destructible buildings.
+- No online play, no AI bots or drones: no Unit is driven by the computer. Turrets and Mines are no longer excluded (decided 2026-10-07): each Base's two Turrets fire on their own and the Truck lays Mines, so the other Player is no longer the only threat (see the paragraph after the Build order).
+- No second Map, no map editor, and no destructible buildings beyond the Turrets and the Flag Walls: the Base walls, the towers and the cover stand all Round.
 - No downloaded asset kits or meshes: Godot's built-in meshes and code-generated textures instead.
 - No Unit swap at the own Base in the First Playable: a Unit type changes only through a destruction. After the first playtest the swap is back (decided 2026-10-03): a story after the playtest fixes (`design/rules.md`, Destruction and respawn).
 - No camera or control-mode test in v0.1: the turning chase camera and the vehicle-relative keys of items 1 and 2 stay; the test, and the arrow or north-up minimap it may call for, come after v0.1.
 - No water boost and no key repair: the source's backlog, not v0.1.
 - Keyboard only: no gamepad support, no key-rebinding UI.
 - No music or sound, no menus beyond the Round-over screen, no save or settings, no export or Steam work: run from the editor or a local build.
-- Nothing from Return Fire that the rules dropped: no flag hunt in towers, no ammo or repair economy, no radar.
+- Nothing from Return Fire that the rules dropped: no flag hunt in towers, no ammo or repair economy (Shots are unlimited, and a Truck's Mines come only with a new Truck), no radar.
 
 ## Build order
 1. Driving toy: done.
@@ -59,9 +62,11 @@ Written 2026-09-30 by /brainstorm (Lean Brief flow, autonomous run); rewritten
 
 After the first playtest with friends (2026-10-03) the author listed seven changes; `production/epics/wasteland-fire/story-009-playtest-quick-fixes.md` quotes them. Quick fixes first (decided 2026-10-03): solid depot tanks, the Gyrocopter over the cover, turning on the spot, slower Fuel burn while standing and the out-of-Fuel Self-destruct hint (story 009); then the camera from almost straight above and the Unit swap at the own Base, each its own story, once the author has played 009.
 
+After the First Playable (2026-10-07) the developer asked for Turrets, walls around the Flag and Mines laid by the Truck, and shared five cards of the author's board (`design/source/wasteland-fire-board-2026-10-07.en.md`; the rules are in `design/rules.md`, Turrets, Flag Walls and Mines). Built in this order, each its own story (reading, 2026-10-07: the Flag Walls first, as the passive target for the new way Shots damage what is not a Unit): story 012, Flag Walls (four panels close the gaps between each water tower's legs around the Flag; every Unit but the Motorbike breaks them and the Gyrocopter flies over them; new Units appear on the Garage's side spots); story 013, Turrets (two per Base outside the Gate fire at the other Player's Unit when they see it, and no Flag can be taken while a Turret of its Base stands); story 014, the Truck's Mines (5 per Truck, live after 3 s, destroying at once any ground Unit that drives onto them, its owner's included, never the Gyrocopter, and never laid in or near a Base). The board's other two cards, Bushes and a simpler Map 01, come later.
+
 ---
 **Who it's for / what they feel:** Two friends on one couch who want a ten-minute rivalry: the panic of being chased with the Flag and the grin of stealing it back.
 
 **Art & audio direction:** Low-poly built from Godot's built-in meshes with code-generated textures in one flat-shaded palette; the Team colours Orange and Teal on everything a Player owns, never mixed within a model; the concept art in Discord #wasteland-fire is the reference; no downloaded kits; no audio in the First Playable.
 
-**Reference game:** Return Fire (1995): its two-player split-screen flag run with vehicle counters; the MVP keeps the flag run and the counters, now four vehicles (Buggy beats Truck, Truck beats Gyrocopter, Gyrocopter beats Buggy, the Motorbike apart for the Flag), and drops towers, turrets, mines, the hidden-flag hunt and the classical soundtrack.
+**Reference game:** Return Fire (1995): its two-player split-screen flag run with vehicle counters; the MVP keeps the flag run and the counters, now four vehicles (Buggy beats Truck, Truck beats Gyrocopter, Gyrocopter beats Buggy, the Motorbike apart for the Flag), and drops the flag towers, the hidden-flag hunt and the classical soundtrack. Its turrets and mines came back after the First Playable (2026-10-07) in this game's own form: two Turrets per Base and the Truck's Mines.

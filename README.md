@@ -19,6 +19,30 @@ friends at home.
   Flag. The Buggy beats the Truck, the Truck beats the Gyrocopter and the
   Gyrocopter beats the Buggy. Only the Gyrocopter crosses cliffs and water.
 - Every Unit burns Fuel while moving. Fuel Cans on the Map refill it.
+- Each Base keeps its Flag in a box of four Flag Walls under its water tower.
+  A Buggy, a Truck or a Gyrocopter breaks one with its Shots (the Motorbike's
+  Shots do nothing to it); a hit wall looks damaged, darker and cracked with
+  chunks at its foot, and worse below about a third of its strength. Once one
+  falls, and both Turrets of that Base are down, a Motorbike can drive in and
+  take the Flag. The Gyrocopter flies over the walls but cannot carry. A broken
+  Flag Wall stays down until the Round is played again.
+- Two Turrets stand outside each Gate, one on each side. They shoot only at the
+  other Player's Unit, aim ahead of it where it will be, and need a clear line
+  of sight; every Unit's Shots hurt them (20 Motorbike Shots break one) and
+  they cannot be built or taken. While either Turret of a Base stands the other
+  Player cannot take that Base's Flag: their view says "Destroy the turrets
+  first" while their Motorbike touches it. A broken Turret stays down until the
+  Round is played again.
+- The Truck lays Mines, five a Truck: one press of its lay key drops one just
+  behind its tail. A new Mine blinks in its owner's Team colour for 3 seconds
+  and is harmless; then it shines steadily and is live, and destroys any ground
+  Unit that drives onto it at once, a full Truck and its owner's own Unit
+  included, in a short flash. The Gyrocopter flies over Mines and Shots never
+  set them off. A Mine cannot be laid in or near a Base (the yard, and about
+  10 m in front of each Gate) or where it would not lie on open ground (a wall,
+  the cover, a tank, a cliff, water): the Player's view says why for a moment.
+  A Mine stays when its Truck is destroyed, and a Round played again starts
+  with none.
 - Win by delivering the opponent's Flag to your own Base. Lose by losing your
   last Motorbike, because without one you can never carry a Flag.
 
@@ -40,6 +64,9 @@ The rules of record are in `design/rules.md`, the one-page brief in
 | 009 | Playtest quick fixes: solid depot tanks, the Gyrocopter over the cover, turning on the spot, slower Fuel burn standing, the out-of-Fuel hint | Done |
 | 010 | The camera from above, with a key back to the chase view | Done |
 | 011 | The Unit swap at the own Base | Done |
+| 012 | Flag Walls: a box of four breakable walls around each Flag, which look damaged as they take hits; new Units appear on the Garage's side spots | Done |
+| 013 | Turrets: two per Base outside the Gate that shoot at the other Player's Unit; no Flag can be taken while one of its Base's Turrets stands | Done |
+| 014 | The Truck's Mines: five per Truck, laid with E or Comma, live after 3 s, destroying any ground Unit that drives onto them; never laid in or near a Base | Done |
 
 Map 01 and the four Units have their low-poly look: the Map is built from
 Godot's built-in meshes with textures generated in code, and the Units are the
@@ -56,6 +83,7 @@ game loads. The older evidence scenarios still run on the greybox field.
 | Choose a Unit (previous / next) | A / D | Left / Right |
 | Confirm the Unit | Space | Period |
 | Self-destruct | Tab | Enter |
+| Lay a Mine (Truck) | E | Comma |
 | Switch the camera view | Q | Slash |
 
 Each Player chooses a Unit type at the start of a Round and after every

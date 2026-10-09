@@ -729,3 +729,15 @@ func _on_unit_destroyed(player_index: int) -> void:
 	if dropped != FlagRules.NONE:
 		flag_dropped.emit(dropped)
 	unit_destroyed.emit(player_index)
+
+
+## True while the Round runs, the Player may act and the Player's Unit would take the other
+## Player's Flag on this tick but for the lock of that Flag's Turrets (Story 013 AC-5): the one
+## condition under which that Player's view shows its notice. False for a Unit that already carries
+## a Flag, for a Flag nobody touches, once the Round is over and before it begins. Read-only; ask it
+## every frame, since nothing signals a touch. It sits at the end of this file so that no line
+## before it moves.
+func is_flag_locked_for(player_index: int) -> bool:
+	if not _is_player(player_index) or _flags == null or _round_state != RoundState.RUNNING:
+		return false
+	return _flags.is_locked_out(player_index, _garage.may_act())

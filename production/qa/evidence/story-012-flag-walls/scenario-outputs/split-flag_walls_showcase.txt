@@ -1,0 +1,12 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+SPLIT flag_walls_showcase t=0.633 frame=37 moment=in_the_garages p1=truck p2=motorbike walls_standing=8
+SPLIT flag_walls_showcase t=1.667 frame=99 moment=motorbike_shot tracer_to_face=2.10 wall_hp=40
+SPLIT flag_walls_showcase t=4.483 frame=268 moment=first_damaged_look wall_hp=15 look=1
+SPLIT flag_walls_showcase t=5.850 frame=350 moment=truck_breaks wall_standing=false rubble=true others_standing=3
+SPLIT flag_walls_showcase t=7.567 frame=453 moment=takes_flag hud='You carry the enemy Flag' along=0.48
+SPLIT flag_walls_showcase t=10.450 frame=626 moment=round_won lines=["Player 1 wins!", "Press R to play again"]
+SPLIT flag_walls_showcase t=10.983 frame=658 moment=boxes_back_after_r walls_whole=8 panels=[true, true]
+SPLIT flag_walls_showcase t=13.700 frame=821 moment=second_damaged_look wall_hp=10 look=2
+SPLIT flag_walls_showcase t=15.133 frame=907 moment=gyro_over over=true model_bottom=2.25 wall_top=2.00 look=2
+RESULT flag_walls_showcase ok checks=0 failed=0 t=15.183 moments=9 falls=1 errors=0 warnings=0

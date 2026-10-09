@@ -3,7 +3,7 @@
 > **Status**: Active
 > **Tier**: `workflow: minimal` — implicit epic synthesised from `design/game-brief.md` by `/create-stories` on 2026-09-30. No GDD, ADRs, TR registry or control manifest exist at this tier; every story traces to the brief.
 > **Governing ADRs**: N/A (minimal — no ADRs)
-> **Last Updated**: 2026-10-04: story 011 (the Unit swap at the own Base) Complete, with story 010 (the camera from above) and story 009 (playtest quick fixes) after the first playtest with friends; story 008 Complete, so all eight stories of the First Playable are built (2026-10-01: brought to version 0.1 of the author's artifact; the source is archived under `design/source/`; the rules of record are `design/rules.md`).
+> **Last Updated**: 2026-10-09: story 014 (the Truck's Mines) Complete, the last story of the build order; 2026-10-08: stories 012 (Flag Walls, with the damaged looks the developer added when it closed) and 013 (Turrets) Complete; stories 012 to 014 (Flag Walls, Turrets, the Truck's Mines) added as Ready after the First Playable, from the developer's request and the author's board of 2026-10-07 (archived under `design/source/`); 2026-10-04: story 011 (the Unit swap at the own Base) Complete, with story 010 (the camera from above) and story 009 (playtest quick fixes) after the first playtest with friends; story 008 Complete, so all eight stories of the First Playable are built (2026-10-01: brought to version 0.1 of the author's artifact; the source is archived under `design/source/`; the rules of record are `design/rules.md`).
 
 ## Goal
 
@@ -46,3 +46,13 @@ The author's list from the first playtest with friends (`story-009-playtest-quic
 | 009 | Playtest quick fixes: solid depot tanks, the Gyrocopter over the cover, turning on the spot, the idle Fuel burn, the out-of-Fuel Self-destruct hint | Integration | Complete | N/A (minimal) |
 | 010 | The camera from above: almost straight down with a slight forward tilt, one key per Player back to the chase view | Visual/Feel | Complete | N/A (minimal) |
 | 011 | The Unit swap at the own Base: Self-destruct inside the own Base puts the Unit away for free | Integration | Complete | N/A (minimal) |
+
+## After the First Playable: Turrets, Flag Walls and Mines (2026-10-07)
+
+The developer's request of 2026-10-07 for Turrets, walls around the Flag and the Truck's Mines, and five cards of the author's board shared the same day (archived under `design/source/` as `wasteland-fire-board-2026-10-07.png`, `.sk.txt` and `.en.md`; each story quotes its card in Slovak with a translation). Three of them, Turrets, destructible walls and Mines, are this batch, together with the Bushes card's line-of-sight rule for the Turrets; the rest of the Bushes card and "Simplify Map 01" come later (decided 2026-10-07). The developer's four answers of that day and the rules are in `design/rules.md`, Turrets, Flag Walls and Mines. Built in this order (reading, 2026-10-07): the Flag Walls first, a passive target for the new way Shots damage what is not a Unit, then the Turrets, then the Truck's Mines.
+
+| # | Story | Type | Status | ADR |
+|---|-------|------|--------|-----|
+| 012 | Flag Walls: four panels between each water tower's legs around the Flag, broken by every Unit but the Motorbike and flown over by the Gyrocopter; new Units appear on the Garage's side spots | Integration | Complete | N/A (minimal) |
+| 013 | Turrets: two per Base outside the Gate fire at the other Player's Unit; no Flag can be taken while a Turret of its Base stands | Integration | Complete | N/A (minimal) |
+| 014 | The Truck's Mines: 5 per Truck, live after 3 s, destroying any ground Unit that drives onto them; never laid in or near a Base | Integration | Complete | N/A (minimal) |

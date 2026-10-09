@@ -1,0 +1,208 @@
+#!/usr/bin/env python3
+"""Seeded defects for Story 013 (Turrets): each one exact text replacement in a scratch copy of the repo, run
+against the scenario that guards it. KILLED when the scenario fails (rc != 0 or a FAIL CHECK) or, for the
+regression kind, when an older scenario's output differs from its baseline. A mutant whose run prints no
+RESULT line for its scenario is BROKEN (the replacement made the script unusable, not a verdict) and is
+counted apart. One worker per scratch copy, so no two mutants ever share a file.
+
+usage: seeded-defects.py.txt BASELINE_DIR WORK_DIR [--dry]
+  BASELINE_DIR holds the baselines of the older scenarios as split-NAME.txt (the regression kind)
+  WORK_DIR gets copy0..copy2 (scratch copies of the repo; they are diffed against the repo at the end)
+  --dry only checks that every replacement text occurs exactly once in its file
+"""
+import os
+import re
+import subprocess
+import sys
+from concurrent.futures import ThreadPoolExecutor
+
+REPO = "/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire"
+BASE = sys.argv[1]
+WORK = sys.argv[2]
+DRY = "--dry" in sys.argv
+WORKERS = 3
+COPIES = [os.path.join(WORK, "copy%d" % i) for i in range(WORKERS)]
+
+TURRET = "src/gameplay/defences/turret.gd"
+STATS = "src/gameplay/defences/data/turret_stats.tres"
+SCENE = "src/gameplay/defences/turret.tscn"
+RULES = "src/gameplay/match/flag_rules.gd"
+SPLIT = "src/gameplay/split_screen/split_screen.gd"
+NOTICE = "src/ui/hud/player_notice.gd"
+RUNNER = "tools/evidence/split_screen_harness.gd"
+COMPOUND = "src/gameplay/maps/map_01/compound_base.tscn"
+NOTICE_SCENE = "src/ui/hud/player_notice.tscn"
+MATRIX = "src/gameplay/combat/data/damage_matrix.tres"
+
+M = [
+ # name, file, old, new, scenario, kind
+ # who it fires at
+ ("fires_at_its_own_player", SPLIT, "turret.arm(units[(player + 1) % units.size()],", "turret.arm(units[player],", "turrets", "check"),
+ ("player_2s_turrets_aim_at_player_2", SPLIT, "turret.arm(units[(player + 1) % units.size()],", "turret.arm(units[1 if player == 1 else (player + 1) % units.size()],", "turrets", "check"),
+ ("base_b_turrets_never_armed", SPLIT, "func _arm_turrets(units: Array[Unit], bases: Array[Base]) -> void:\n	for player: int in bases.size():", "func _arm_turrets(units: Array[Unit], bases: Array[Base]) -> void:\n	for player: int in 1:", "turrets", "check"),
+ ("aims_at_a_benched_unit", TURRET, "	if _rules == null or not is_instance_valid(_target) or not _target.is_alive:", "	if _rules == null or not is_instance_valid(_target):", "turrets", "check"),
+ # reach, sight and path
+ ("ignores_range", TURRET, "	if muzzle.distance_to(aim) > _data.weapon_range or not _sees(muzzle):", "	if not _sees(muzzle):", "turrets", "check"),
+ ("reach_from_the_resting_muzzle", TURRET, "	var muzzle: Vector3 = _aimed_muzzle(aim)\n", "	var muzzle: Vector3 = global_position + (-global_transform.basis.z) * _data.muzzle_forward + Vector3.UP * _rules.shooting_height\n", "turrets", "check"),
+ ("sight_ray_dropped", TURRET, "	if muzzle.distance_to(aim) > _data.weapon_range or not _sees(muzzle):", "	if muzzle.distance_to(aim) > _data.weapon_range:", "turrets", "check"),
+ ("path_ray_dropped", TURRET, "aim_error <= _data.aim_tolerance and _path_clear(muzzle, aim):", "aim_error <= _data.aim_tolerance:", "turrets", "check"),
+ ("cliffs_out_of_the_sight_ray", STATS, "sight_extra_mask = 32", "sight_extra_mask = 0", "turrets", "check"),
+ # the barrel, the lead, the cadence
+ ("never_fires", TURRET, "	if _ticks >= _next_fire and aim_error <= _data.aim_tolerance", "	if false and aim_error <= _data.aim_tolerance", "turrets", "check"),
+ ("lead_removed", TURRET, "	var velocity: Vector3 = _target.get_real_velocity()", "	var velocity: Vector3 = Vector3.ZERO", "turrets", "check"),
+ ("aim_tolerance_widened", STATS, "aim_tolerance = 0.25", "aim_tolerance = 3.0", "turrets", "check"),
+ ("barrel_turns_twice_as_fast", STATS, "turn_rate = 1.5707963267949", "turn_rate = 3.1415926535898", "turrets", "check"),
+ ("damage_typed_in_code", TURRET, "muzzle, facing, _data.damage,", "muzzle, facing, 5.0,", "turrets", "check"),
+ ("cadence_halved_in_code", TURRET, "maxi(roundi(_data.fire_interval_seconds * Engine.physics_ticks_per_second), 1)", "maxi(roundi(_data.fire_interval_seconds * Engine.physics_ticks_per_second * 0.5), 1)", "turrets", "check"),
+ ("muzzle_from_the_centre", STATS, "muzzle_forward = 1.6", "muzzle_forward = 0.0", "turrets", "check"),
+ # hit points, damage, the fall
+ ("one_thousand_hit_points", STATS, "max_hit_points = 100.0", "max_hit_points = 1000.0", "turrets", "check"),
+ ("a_destroyed_turret_still_turns_and_fires", TURRET, "	if not is_standing:\n		return\n	_ticks += 1", "	_ticks += 1", "turrets", "check"),
+ ("its_shots_take_nothing_off_friends_removed", TURRET, "shot.launch_from(get_rid(), type_id, player_index, muzzle, facing,", "shot.launch_from(get_rid(), type_id, -1, muzzle, facing,", "turrets", "check"),
+ ("turret_on_the_cover_layer", SCENE, 'collision_layer = 1\ncollision_mask = 0\nscript = ExtResource("1_turret")', 'collision_layer = 64\ncollision_mask = 0\nscript = ExtResource("1_turret")', "turrets", "check"),
+ ("turret_drum_half_as_wide", SCENE, "height = 1.8\nradius = 1.0", "height = 1.8\nradius = 0.5", "turrets", "check"),
+ ("rubble_given_a_body", SCENE, '[node name="Rubble" type="Node3D" parent="."]\nvisible = false\n', '[node name="Rubble" type="StaticBody3D" parent="."]\nvisible = false\n', "turrets", "check"),
+ # the restart
+ ("r_does_not_restore_turrets", SPLIT, "			if structure != null:\n				structure.restore()", "			if structure != null and not structure is Turret:\n				structure.restore()", "turrets", "check"),
+ ("head_not_reset_at_r", TURRET, "		head.rotation = Vector3.ZERO\n", "		pass\n", "turrets", "check"),
+ ("cadence_not_ready_after_r", TURRET, "	_next_fire = 0\n	_state = State.IDLE\n	aim_point = Vector3.INF", "	_state = State.IDLE\n	aim_point = Vector3.INF", "turrets", "check"),
+ # the hard rule and its line
+ ("lock_gate_removed", RULES, "	if honour_lock and _is_locked_for(player_index, flag_index):\n		return false\n", "", "turrets", "check"),
+ ("lock_applied_to_the_owner_too", RULES, "	if player_index == flag_index:\n		return false\n	for structure: Structure in _bases[flag_index].structures:", "	for structure: Structure in _bases[flag_index].structures:", "turrets", "check"),
+ ("locks_flag_false_in_the_data", STATS, "locks_flag = true", "locks_flag = false", "turrets", "check"),
+ ("only_one_turret_locks", RULES, "if structure != null and structure.is_standing and structure.locks_flag:", "if structure != null and structure.is_standing and structure.locks_flag and structure.name == &\"TurretLeft\":", "turrets", "check"),
+ ("notice_shown_in_both_views", NOTICE, "	visible = match_controller.is_flag_locked_for(player_index)", "	visible = match_controller.is_flag_locked_for(0) or match_controller.is_flag_locked_for(1)", "turrets", "check"),
+ ("notice_not_hidden_at_round_over", NOTICE, "func _on_round_over(_winner_index: int) -> void:\n	visible = false", "func _on_round_over(_winner_index: int) -> void:\n	pass", "turrets", "check"),
+ ("notice_shown_to_a_carrier", RULES, "	if _carried[player_index] != NONE:\n		return false\n	var unit: Unit = _units[player_index]", "	var unit: Unit = _units[player_index]", "turrets", "check"),
+ ("arm_accepts_rules_without_a_matrix", TURRET, "	if rules == null or rules.damage_matrix == null:\n		push_error(\"Turret '%s': the rules or their damage matrix are not assigned, so it never aims or fires.\" % name)\n		set_physics_process(false)\n		return\n", "", "turrets", "check"),
+ ("freed_target_not_guarded", TURRET, "	if _rules == null or not is_instance_valid(_target) or not _target.is_alive:", "	if _target == null or _rules == null or not _target.is_alive:", "turrets", "check"),
+ ("destroyed_turret_keeps_its_aim", TURRET, "	super.destroy()\n	aim_point = Vector3.INF\n	aim_error = INF\n", "	super.destroy()\n", "turrets", "check"),
+ ("head_interpolation_not_reset_at_r", TURRET, "		head.reset_physics_interpolation()\n", "", "turrets", "check"),
+ ("barrel_snaps_to_the_aim", TURRET, "	head.rotation.y += clampf(angle_difference(head.rotation.y, wanted), -step, step)", "	head.rotation.y += angle_difference(head.rotation.y, wanted)", "turrets", "check"),
+ ("fires_off_the_aim", TURRET, "	if _ticks >= _next_fire and aim_error <= _data.aim_tolerance and _path_clear(muzzle, aim):", "	if _ticks >= _next_fire and _path_clear(muzzle, aim):", "turrets", "check"),
+ ("shot_lag_assumed_three_ticks", TURRET, "const LAUNCH_LAG_TICKS: int = 0", "const LAUNCH_LAG_TICKS: int = 3", "turrets", "check"),
+ ("cadence_on_physics_frames", TURRET, "	if not is_standing:\n		return\n	_ticks += 1", "	if not is_standing:\n		return\n	_ticks = Engine.get_physics_frames()", "turrets", "check"),
+ ("one_turret_not_listed_in_structures", COMPOUND, ', NodePath("Turrets/TurretLeft"), NodePath("Turrets/TurretRight")]', ', NodePath("Turrets/TurretLeft")]', "turrets", "check"),
+ ("one_accent_not_painted", COMPOUND, ', NodePath("Turrets/TurretLeft/Look/Head/Band"), NodePath("Turrets/TurretRight/Look/Head/Band")]', ', NodePath("Turrets/TurretLeft/Look/Head/Band")]', "turrets", "check"),
+ ("turret_on_no_layer", SCENE, 'collision_layer = 1\ncollision_mask = 0\nscript = ExtResource("1_turret")', 'collision_layer = 0\ncollision_mask = 0\nscript = ExtResource("1_turret")', "turrets", "check"),
+ ("matrix_row_makes_a_turret_immune_to_motorbikes", MATRIX, '&"motorbike>flag_wall": 0.0,\n', '&"motorbike>flag_wall": 0.0,\n&"motorbike>turret": 0.0,\n', "turrets", "check"),
+ ("notice_text_changed", NOTICE_SCENE, 'message = "Destroy the turrets first"', 'message = "Destroy the towers first"', "turrets", "check"),
+ ("notice_over_the_hud_band", NOTICE_SCENE, "offset_top = 128.0\noffset_right = 600.0\noffset_bottom = 178.0", "offset_top = 40.0\noffset_right = 600.0\noffset_bottom = 90.0", "turrets", "check"),
+ ("line_shown_without_touching", RULES, "	return target.is_touching(unit)\n", "	return target.is_touching(unit) or not honour_lock\n", "turrets", "check"),
+ # the older scenarios keep their outputs: the runner strips the Turrets and the notice Labels for them
+ ("runner_leaves_the_turrets_in", RUNNER, "	if bool(script.get_script_constant_map().get(TURRETS_CONSTANT, false)):\n		return\n	for node: Node in root.find_children(\"*\", \"PlayerNotice\", true, false):", "	if true:\n		return\n	for node: Node in root.find_children(\"*\", \"PlayerNotice\", true, false):", "map_layout", "regress"),
+ ("runner_leaves_the_accents_in_color_meshes", RUNNER, "			if mesh == null or not turrets.is_ancestor_of(mesh):\n				meshes.append(mesh)\n		base.color_meshes = meshes\n", "			if mesh == null or not turrets.is_ancestor_of(mesh):\n				meshes.append(mesh)\n", "flag_walls", "regress"),
+ ("runner_leaves_the_structures_listed", RUNNER, "			if structure == null or not turrets.is_ancestor_of(structure):\n				kept.append(structure)\n		base.structures = kept\n", "			if structure == null or not turrets.is_ancestor_of(structure):\n				kept.append(structure)\n", "flag_walls", "regress"),
+ ("runner_leaves_the_notice_labels_in", RUNNER, "	for node: Node in root.find_children(\"*\", \"PlayerNotice\", true, false):\n		node.get_parent().remove_child(node)\n		node.free()\n", "", "camera_views", "regress"),
+]
+
+
+# Mutants no output can tell from the build: reported apart, with the reason, when they survive.
+EQUIVALENT = {
+    "aims_at_a_benched_unit": "the sight ray already refuses a Unit that is out of play (its layer is zero), so the check only saves two ray queries a tick",
+    "freed_target_not_guarded": "a freed Unit compares equal to null in Godot 4, so `_target == null` already refuses it; is_instance_valid() states the intent (the refusals check keeps the behaviour)",
+    "cadence_on_physics_frames": "restore() readies the cadence at every restart and no other pause exists in a Round, so the frame count and the Turret's own count never differ where anything reads them",
+}
+
+
+# Mutants only a window that renders between two physics ticks can tell from the build: not run headless,
+# killed by the windowed probe the evidence keeps (measurements/turrets_swing_probe.gd.txt and
+# windowed-swing-probe-run.txt: the first frame after restore() is drawn 0.15 to 0.20 off the head's own facing
+# without the line, exactly on it with it).
+WINDOWED = {
+    "head_interpolation_not_reset_at_r": "killed by the windowed swing probe, which the headless run cannot be",
+}
+
+
+def prepare(i):
+    d = COPIES[i]
+    os.makedirs(WORK, exist_ok=True)
+    if os.path.exists(d):
+        subprocess.run(["find", d, "-delete"], check=True)
+    subprocess.run(["rsync", "-a", "--exclude", ".git", "--exclude", "production", "--exclude", "design", "--exclude", "docs", REPO + "/", d + "/"], check=True)
+    return d
+
+
+def run(copy, scn):
+    p = subprocess.run(["godot", "--headless", "--fixed-fps", "60", "--path", copy, "res://tools/evidence/split_screen_harness.tscn", "--", "--scenario=" + scn],
+                       capture_output=True, text=True, timeout=900)
+    return p.returncode, p.stdout + p.stderr
+
+
+def one(copy, mutant):
+    name, rel, old, new, scn, kind = mutant
+    path = os.path.join(copy, rel)
+    orig = open(path).read()          # this worker is the only one that touches this copy
+    if orig.count(old) != 1:
+        return name, None, "NOT APPLIED (text found %d times)" % orig.count(old)
+    open(path, "w").write(orig.replace(old, new))
+    try:
+        rc, out = run(copy, scn)
+    finally:
+        open(path, "w").write(orig)
+    if not re.search(r"^RESULT %s " % scn, out, re.M):
+        return name, None, "BROKEN: no RESULT line (rc=%d)" % rc
+    if kind == "check":
+        fails = re.findall(r"^CHECK \S+ (\S+) FAIL", out, re.M)
+        dead = rc != 0 or bool(fails)
+        detail = "%s rc=%d fails=%s" % (scn, rc, ",".join(fails) or "-")
+    else:
+        base = open(os.path.join(BASE, "split-%s.txt" % scn)).read()
+        keep = lambda t: [l for l in t.splitlines() if l.startswith(("SPLIT ", "CHECK ", "RESULT ", "SCRIPT ERROR", "ERROR:", "WARNING:"))]
+        dead = keep(out) != keep(base) or rc != 0
+        detail = "%s rc=%d output %s the baseline" % (scn, rc, "differs from" if dead else "equals")
+    return name, dead, detail
+
+
+def worker(i, jobs):
+    return [one(COPIES[i], m) for m in jobs[i::WORKERS]]
+
+
+def main():
+    if DRY:
+        bad = 0
+        for name, rel, old, new, scn, kind in M:
+            n = open(os.path.join(REPO, rel)).read().count(old)
+            if n != 1:
+                bad += 1
+                print("DRY  %-48s text found %d times in %s" % (name, n, rel))
+        print("DRY: %d mutants, %d with a replacement text that is not found exactly once" % (len(M), bad))
+        return 1 if bad else 0
+    jobs = M
+    if "--only" in sys.argv:
+        wanted = sys.argv[sys.argv.index("--only") + 1].split(",")
+        jobs = [m for m in M if m[0] in wanted]
+    for i in range(WORKERS):
+        prepare(i)
+    with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+        results = [r for part in pool.map(lambda i: worker(i, jobs), range(WORKERS)) for r in part]
+    order = {m[0]: k for k, m in enumerate(M)}
+    results.sort(key=lambda r: order[r[0]])
+    killed = survived = broken = 0
+    for name, dead, detail in results:
+        if dead is False and name in WINDOWED:
+            print("WINDOWED   %-44s %s | %s" % (name, detail, WINDOWED[name]))
+            killed += 1
+            continue
+        if dead is False and name in EQUIVALENT:
+            print("EQUIVALENT %-44s %s | %s" % (name, detail, EQUIVALENT[name]))
+            killed += 1
+            continue
+        status = "BROKEN " if dead is None else ("KILLED " if dead else "SURVIVED")
+        killed += dead is True
+        survived += dead is False
+        broken += dead is None
+        print("%s %-48s %s" % (status, name, detail))
+    print("-- %d mutants: %d killed, equivalent or killed by the windowed probe, %d survived, %d broken or not applied" % (len(jobs), killed, survived, broken))
+    clean = True
+    for i in range(WORKERS):
+        d = subprocess.run(["diff", "-rq", "--exclude=.godot", "--exclude=production", "--exclude=.git", "--exclude=design", "--exclude=docs", REPO, COPIES[i]], capture_output=True, text=True)
+        if d.stdout.strip():
+            clean = False
+            print("COPY %d DIFFERS FROM THE REPO:\n%s" % (i, d.stdout[:600]))
+    print("-- the %d scratch copies %s the repo (apart from .godot, production, design, docs)" % (WORKERS, "equal" if clean else "DIFFER FROM"))
+    return 0 if survived == 0 and broken == 0 and clean else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

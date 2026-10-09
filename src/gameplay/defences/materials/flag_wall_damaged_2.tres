@@ -1,0 +1,18 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://src/gameplay/maps/map_01/textures/scrap.tres" id="1_scrap_texture"]
+[ext_resource type="Texture2D" path="res://src/gameplay/defences/textures/flag_wall_cracks_2.tres" id="2_cracks_texture"]
+[ext_resource type="Texture2D" path="res://src/gameplay/defences/textures/flag_wall_scar.tres" id="3_scar_texture"]
+
+[resource]
+albedo_color = Color(0.22, 0.22, 0.22, 1)
+albedo_texture = ExtResource("1_scrap_texture")
+roughness = 1.0
+detail_enabled = true
+detail_mask = ExtResource("2_cracks_texture")
+detail_blend_mode = 0
+detail_albedo = ExtResource("3_scar_texture")
+uv1_scale = Vector3(0.0625, 0.0625, 0.0625)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5

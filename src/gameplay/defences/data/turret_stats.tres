@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="TurretStats" format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/defences/turret_stats.gd" id="1_ts"]
+
+[resource]
+script = ExtResource("1_ts")
+damage = 12.0
+fire_interval_seconds = 0.8
+weapon_range = 35.0
+shot_speed = 60.0
+turn_rate = 1.5707963267949
+muzzle_forward = 1.6
+aim_tolerance = 0.25
+sight_extra_mask = 32
+type_id = &"turret"
+display_name = "Turret"
+max_hit_points = 100.0
+locks_flag = true

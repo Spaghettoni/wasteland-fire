@@ -25,11 +25,17 @@
 [ext_resource type="StyleBoxFlat" path="res://src/ui/hud/data/team_orange_edge.tres" id="24_edge_orange"]
 [ext_resource type="StyleBoxFlat" path="res://src/ui/hud/data/team_teal_edge.tres" id="25_edge_teal"]
 [ext_resource type="PackedScene" path="res://src/ui/hud/self_destruct_hint.tscn" id="26_hint"]
+[ext_resource type="PackedScene" path="res://src/ui/hud/player_notice.tscn" id="29_notice"]
 [ext_resource type="Script" path="res://src/gameplay/camera/chase_camera_settings.gd" id="27_ccs"]
 [ext_resource type="Resource" path="res://src/gameplay/camera/data/above_camera_settings.tres" id="28_above"]
 [ext_resource type="Script" path="res://src/gameplay/camera/player_camera_input.gd" id="29_pcam"]
+[ext_resource type="Script" path="res://src/gameplay/mines/mine_layer.gd" id="30_ml"]
+[ext_resource type="Resource" path="res://src/gameplay/mines/data/mine_settings.tres" id="31_mset"]
+[ext_resource type="PackedScene" path="res://src/gameplay/mines/mine.tscn" id="32_mine"]
+[ext_resource type="Script" path="res://src/gameplay/mines/player_mine_input.gd" id="33_pmi"]
+[ext_resource type="PackedScene" path="res://src/ui/hud/mine_count.tscn" id="34_mcount"]
 
-[node name="SplitScreen" type="Control" unique_id=9000001 node_paths=PackedStringArray("field", "player_1_unit", "player_2_unit", "player_1_camera", "player_2_camera", "match_controller")]
+[node name="SplitScreen" type="Control" unique_id=9000001 node_paths=PackedStringArray("field", "player_1_unit", "player_2_unit", "player_1_camera", "player_2_camera", "match_controller", "player_1_mine_layer", "player_2_mine_layer")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -43,6 +49,8 @@ player_2_unit = NodePath("%Player2Unit")
 player_1_camera = NodePath("%Player1Camera")
 player_2_camera = NodePath("%Player2Camera")
 match_controller = NodePath("%MatchController")
+player_1_mine_layer = NodePath("%Player1MineLayer")
+player_2_mine_layer = NodePath("%Player2MineLayer")
 
 [node name="World" type="Node3D" parent="." unique_id=9000002]
 physics_interpolation_mode = 1
@@ -106,6 +114,30 @@ action_prefix = &"p1_"
 [node name="Player2FireInput" type="Node" parent="World" node_paths=PackedStringArray("weapon")]
 script = ExtResource("19_pfi")
 weapon = NodePath("%Player2Weapon")
+action_prefix = &"p2_"
+
+[node name="Player1MineLayer" type="Node" parent="World" node_paths=PackedStringArray("unit")]
+unique_name_in_owner = true
+script = ExtResource("30_ml")
+unit = NodePath("%Player1Unit")
+settings = ExtResource("31_mset")
+mine_scene = ExtResource("32_mine")
+
+[node name="Player2MineLayer" type="Node" parent="World" node_paths=PackedStringArray("unit")]
+unique_name_in_owner = true
+script = ExtResource("30_ml")
+unit = NodePath("%Player2Unit")
+settings = ExtResource("31_mset")
+mine_scene = ExtResource("32_mine")
+
+[node name="Player1MineInput" type="Node" parent="World" node_paths=PackedStringArray("mine_layer")]
+script = ExtResource("33_pmi")
+mine_layer = NodePath("%Player1MineLayer")
+action_prefix = &"p1_"
+
+[node name="Player2MineInput" type="Node" parent="World" node_paths=PackedStringArray("mine_layer")]
+script = ExtResource("33_pmi")
+mine_layer = NodePath("%Player2MineLayer")
 action_prefix = &"p2_"
 
 [node name="Player1ChoiceInput" type="Node" parent="World" node_paths=PackedStringArray("match_controller")]
@@ -190,6 +222,14 @@ unit = NodePath("%Player1Unit")
 player_index = 0
 action_prefix = &"p1_"
 
+[node name="Player1Notice" parent="Views/Player1View/SubViewport" node_paths=PackedStringArray("match_controller", "mine_layer") instance=ExtResource("29_notice")]
+match_controller = NodePath("%MatchController")
+mine_layer = NodePath("%Player1MineLayer")
+player_index = 0
+
+[node name="Player1MineCount" parent="Views/Player1View/SubViewport" node_paths=PackedStringArray("mine_layer") instance=ExtResource("34_mcount")]
+mine_layer = NodePath("%Player1MineLayer")
+
 [node name="Player2View" type="SubViewportContainer" parent="Views" unique_id=9000022]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -230,6 +270,14 @@ match_controller = NodePath("%MatchController")
 unit = NodePath("%Player2Unit")
 player_index = 1
 action_prefix = &"p2_"
+
+[node name="Player2Notice" parent="Views/Player2View/SubViewport" node_paths=PackedStringArray("match_controller", "mine_layer") instance=ExtResource("29_notice")]
+match_controller = NodePath("%MatchController")
+mine_layer = NodePath("%Player2MineLayer")
+player_index = 1
+
+[node name="Player2MineCount" parent="Views/Player2View/SubViewport" node_paths=PackedStringArray("mine_layer") instance=ExtResource("34_mcount")]
+mine_layer = NodePath("%Player2MineLayer")
 
 [node name="Divider" type="ColorRect" parent="." unique_id=9000004]
 layout_mode = 1

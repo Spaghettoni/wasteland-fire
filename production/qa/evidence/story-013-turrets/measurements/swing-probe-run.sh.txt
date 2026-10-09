@@ -1,0 +1,25 @@
+#!/bin/sh
+# usage: run.sh TAG [mutate]   a scratch copy of the repo with the probe registered; windowed run; prints the SPLIT and RESULT lines
+R=/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire
+D=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/8efc3c45-f7d3-46b0-802c-58fa0d5291b2/scratchpad/dev13
+C=$D/swing/copy-$1
+mkdir -p $C
+rsync -a --exclude .git --exclude production --exclude design --exclude docs $R/ $C/
+cp $D/swing/turrets_swing_probe.gd $C/tools/evidence/split_screen/
+python3 - "$C" "$2" <<'PY'
+import sys
+c, mutate = sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else ""
+p = c + "/tools/evidence/split_screen_harness.gd"
+s = open(p).read()
+old = '	&"turrets_fps": preload("res://tools/evidence/split_screen/turrets_fps.gd"),\n'
+assert s.count(old) == 1
+open(p, "w").write(s.replace(old, old + '	&"turrets_swing_probe": preload("res://tools/evidence/split_screen/turrets_swing_probe.gd"),\n'))
+if mutate:
+    t = c + "/src/gameplay/defences/turret.gd"
+    u = open(t).read()
+    old = "		head.reset_physics_interpolation()\n"
+    assert u.count(old) == 1
+    open(t, "w").write(u.replace(old, ""))
+PY
+godot --headless --path $C --import > /dev/null 2>&1
+cd $C && godot --path . --windowed --resolution 1280x720 res://tools/evidence/split_screen_harness.tscn -- --scenario=turrets_swing_probe 2>&1 | grep -E "^SPLIT swing|^RESULT|SCRIPT ERROR|ERROR"

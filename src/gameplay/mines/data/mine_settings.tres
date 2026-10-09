@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MineSettings" format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/mines/mine_settings.gd" id="1_msset"]
+
+[resource]
+script = ExtResource("1_msset")
+arming_seconds = 3.0
+blink_period_seconds = 0.5
+blink_lit_fraction = 0.5
+trigger_radius = 0.8
+trigger_height = 1.0
+approach_past_zone = 11.0
+open_ground_mask = 97
+probe_floor = 0.1
+probe_top = 20.0
+flash_seconds = 0.3
+flash_radius = 1.6

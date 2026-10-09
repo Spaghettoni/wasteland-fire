@@ -1,0 +1,45 @@
+extends RefCounted
+## Scratch probe (never in the repo): does a Turret's head swing across the restart? A head turned
+## toward a Unit is brought back by restore(), and the facing World draws (the interpolated pose) is
+## read on each of the next process frames and compared with the head's own facing. Windowed, on the
+## 120 Hz display, where a process frame falls between two physics ticks. Run in a scratch copy only.
+
+const Quick: GDScript = preload("res://tools/evidence/split_screen/quick_fix_kit.gd")
+const Kit13: GDScript = preload("res://tools/evidence/split_screen/turrets_kit.gd")
+
+const OWN_CHOICE: bool = true
+const OWN_BASE_SWAP: bool = true
+const SHIPPED_CAMERA: bool = true
+const BASE_DEFENCES: bool = true
+const TURRETS: bool = true
+const STOCK_COUNTS: Dictionary = {&"motorbike": 30, &"buggy": 30, &"truck": 30, &"gyrocopter": 30}
+const WATCHDOG_SECONDS: float = 100.0
+
+func run(harness: Node) -> void:
+	var k: Kit13 = Kit13.new(harness)
+	var q: Quick = k.w.s.q
+	await k.w.s.both_play()
+	var turret: Turret = k.turret(0, Kit13.RIGHT)
+	k.turret(0, Kit13.LEFT).destroy()
+	var bearing: Vector3 = k.w.way(0, Vector3.FORWARD).rotated(Vector3.UP, deg_to_rad(70.0))
+	await k.stage(1, Quick.TRUCK, turret.global_position + bearing * 12.0, -bearing)
+	for _tick: int in 120:
+		if absf(turret.head.rotation.y) > 1.0:
+			break
+		await q.kit.tick()
+	await k.clear(1)
+	print("SPLIT swing_probe interpolation_setting=%s head_yaw_before=%.3f fps=%.1f" % [ProjectSettings.get_setting("physics/common/physics_interpolation"), turret.head.rotation.y, Engine.get_frames_per_second()])
+	await harness.get_tree().process_frame
+	turret.restore()
+	var worst: float = 0.0
+	var rows: PackedStringArray = []
+	for index: int in 12:
+		await harness.get_tree().process_frame
+		var drawn: Vector3 = turret.head.get_global_transform_interpolated().basis * Vector3.FORWARD
+		var own: Vector3 = turret.head.global_transform.basis * Vector3.FORWARD
+		var gap: float = drawn.distance_to(own)
+		worst = maxf(worst, gap)
+		rows.append("%d:%.3f" % [index, gap])
+	print("SPLIT swing_probe worst=%.4f frames=%s" % [worst, " ".join(rows)])
+	k.close()
+	harness.finish("swing_worst=%.4f" % worst)

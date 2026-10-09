@@ -1,0 +1,96 @@
+"""Write the planned rewrites of story 013 from the SOURCE, never from the outputs.
+
+Frames of intended engine backtraces move in this story (the lines it adds above them):
+  advance_ticks (res://tools/evidence/split_screen_harness.gd:852)  in token_ui, tokens_data, unit_swap
+  _ready (res://src/gameplay/defences/structure.gd:132 and :140)     in flag_walls (the two push_error
+                                                                     lines of Structure._ready())
+The new line of each is found in the file as it is now: the _sample() call that ends advance_ticks(), and
+the two push_error() lines of Structure._ready(), by their text. The old lines are the retained outputs'.
+The tokens_data lint reads the .gd files under src/gameplay/match and src/ui/hud (a new file, player_notice.gd, and
+the lines this story adds to flag_rules.gd and match_controller.gd move its counts): scan() below is the lint's
+algorithm (tokens_data_kit.gd: scan(), _code_of(), _big_literals()) run on the sources as they are now and, for
+the old numbers, on the committed ones (git show HEAD: the two files are untouched by story 012, so HEAD holds
+their state at the start of this story). The old numbers are checked against the baseline output, which only
+confirms the algorithm; the numbers written come from the sources.
+usage: mk_normalizers.py REPO OUT.json [BASELINE_TOKENS_DATA_OUTPUT]
+"""
+import json
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+repo = Path(sys.argv[1])
+out = Path(sys.argv[2])
+
+
+def line_after(path: Path, start_marker: str, wanted: str) -> int:
+    lines = path.read_text(encoding="utf-8").split("\n")
+    start = next(i for i, l in enumerate(lines) if l.startswith(start_marker))
+    for i in range(start, len(lines)):
+        if lines[i] == wanted:
+            return i + 1
+    raise SystemExit(f"{wanted!r} not found after {start_marker!r} in {path}")
+
+
+def line_containing(path: Path, start_marker: str, needle: str) -> int:
+    lines = path.read_text(encoding="utf-8").split("\n")
+    start = next(i for i, l in enumerate(lines) if l.startswith(start_marker))
+    for i in range(start, len(lines)):
+        if needle in lines[i]:
+            return i + 1
+    raise SystemExit(f"{needle!r} not found after {start_marker!r} in {path}")
+
+
+QUOTED = re.compile(r"\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*'")
+LITERAL = re.compile(r"(?<![\w.])\d+(?![\w.])")
+LINT_DIRS = ["src/gameplay/match", "src/ui/hud"]
+
+
+def scan(texts: dict) -> dict:
+    """The lint of tokens_data_kit.gd on {path: text}: files, code lines, integer literals other than 0 and 1."""
+    found = {"files": 0, "code": 0, "literals": 0}
+    for path in sorted(texts):
+        found["files"] += 1
+        for line in texts[path].split("\n"):
+            code = QUOTED.sub("", line).split("#")[0]
+            found["code"] += 0 if code.strip() == "" else 1
+            found["literals"] += len([m for m in LITERAL.findall(code) if int(m) not in (0, 1)])
+    return found
+
+
+def lint_numbers(repo: Path) -> tuple:
+    new = {}
+    for d in LINT_DIRS:
+        for f in (repo / d).rglob("*.gd"):
+            new[str(f.relative_to(repo))] = f.read_text(encoding="utf-8")
+    old = {}
+    names = subprocess.run(["git", "ls-tree", "-r", "HEAD", "--name-only"] + LINT_DIRS, cwd=repo, capture_output=True, text=True, check=True).stdout.split()
+    for n in names:
+        if n.endswith(".gd"):
+            old[n] = subprocess.run(["git", "show", "HEAD:" + n], cwd=repo, capture_output=True, text=True, check=True).stdout
+    return scan(old), scan(new)
+
+
+harness = repo / "tools/evidence/split_screen_harness.gd"
+structure = repo / "src/gameplay/defences/structure.gd"
+new_tick = line_after(harness, "func advance_ticks(", "\t\t_sample()")
+new_stats = line_containing(structure, "func _ready()", "stays plain solid geometry that nothing can damage")
+new_looks = line_containing(structure, "func _ready()", "shows only its intact look until it falls")
+tick = ["advance_ticks (res://tools/evidence/split_screen_harness.gd:852)",
+        f"advance_ticks (res://tools/evidence/split_screen_harness.gd:{new_tick})"]
+stats = ["_ready (res://src/gameplay/defences/structure.gd:132)",
+         f"_ready (res://src/gameplay/defences/structure.gd:{new_stats})"]
+looks = ["_ready (res://src/gameplay/defences/structure.gd:140)",
+         f"_ready (res://src/gameplay/defences/structure.gd:{new_looks})"]
+old_lint, new_lint = lint_numbers(repo)
+if len(sys.argv) > 3:
+    base = Path(sys.argv[3]).read_text(encoding="utf-8")
+    want = "lint: %d files, %d code lines, %d integer literals" % (old_lint["files"], old_lint["code"], old_lint["literals"])
+    if want not in base:
+        raise SystemExit(f"the lint algorithm does not reproduce the baseline: {want!r} is not in {sys.argv[3]}")
+lint = ["lint: %d files, %d code lines" % (old_lint["files"], old_lint["code"]), "lint: %d files, %d code lines" % (new_lint["files"], new_lint["code"])]
+files = ["lint_files=%d " % old_lint["files"], "lint_files=%d " % new_lint["files"]]
+rules = {"token_ui": [tick], "tokens_data": [tick, lint, files], "unit_swap": [tick], "flag_walls": [tick, stats, looks]}
+out.write_text(json.dumps(rules, indent=1) + "\n", encoding="utf-8")
+print(f"advance_ticks 852 -> {new_tick}; structure.gd 132 -> {new_stats}, 140 -> {new_looks}; lint {old_lint} -> {new_lint}; wrote {out}")

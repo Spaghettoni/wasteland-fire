@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="StructureStats" format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/defences/structure_stats.gd" id="1_ss"]
+
+[resource]
+script = ExtResource("1_ss")
+type_id = &"flag_wall"
+display_name = "Flag Wall"
+max_hit_points = 40.0
+damaged_below = Array[float]([0.8, 0.35])

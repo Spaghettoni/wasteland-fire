@@ -15,7 +15,9 @@ extends Node
 ## tokens_data, token_choice, loss, token_ui, token_layout and tokens_showcase; since Story 009, the
 ## scenarios its evidence doc lists; since Story 010, camera_views, camera_showcase and camera_smooth
 ## (windowed), and map_fps now runs on the shipped camera; since Story 011, unit_swap and
-## unit_swap_showcase (windowed).
+## unit_swap_showcase (windowed); since Story 012, flag_walls and flag_walls_showcase (windowed); since
+## Story 013, turrets, turrets_showcase and turrets_fps (windowed); since Story 014, mines and
+## mines_showcase (windowed).
 ## Each is a script under tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
@@ -117,6 +119,49 @@ extends Node
 ## with. A scenario of Story 011 declares it; any other scenario, now and later, runs with the swap
 ## off. The Map's Base zones watch the gyrocopters layer now: no older output changed with that.
 ##
+## The Flag Walls (Story 012). Map 01's Bases now close a box of four Flag Walls around their Flag
+## (the Structures under each Base's Defences node, listed in its structures) and put a Unit on
+## the Garage's side spots, not the middle one. Every scenario written before it was measured
+## without them. The runner therefore strips them in the freshly instanced launch scene, before
+## it enters the tree (_apply_defences_off()), unless the scenario script declares
+## const BASE_DEFENCES: bool = true, which keeps the Map as it ships: each Map Base's Defences
+## node is removed and freed at once, with its entries of color_meshes and structures dropped from
+## those lists (a NodePath export is resolved to nodes when the scene is instanced, so a freed
+## entry would be walked), and the Story 007 spots are given back (SpawnPoint with the two side
+## spots as its spares). Only what stands under Defences is stripped, so a piece that a later story
+## lists from elsewhere stays listed. A Base with no Defences node is left alone: the greybox
+## composition has freed the Map before this runs, and its Bases keep their own spawn assignment.
+## A scenario of Story 012 declares it; any other scenario, now and later, runs without the
+## Flag Walls.
+##
+## The Turrets (Story 013). Map 01's Bases now stand two Turrets outside the Gate (the Structures
+## under each Base's Turrets node, listed in its structures, each with an accent in its color_meshes)
+## and each Player's view has a PlayerNotice Label. They change what a scenario sees (a Turret fires
+## at the other Player's Unit, and while one stands the other Player cannot take the Flag), so the
+## runner strips them from the freshly instanced launch scene, before it enters the tree
+## (_apply_turrets_off()), unless the scenario script declares const TURRETS: bool = true: each Map
+## Base's Turrets node is removed and freed, with its entries of color_meshes and structures dropped
+## from those lists, and both PlayerNotice Labels are freed (camera_views counts every Control in
+## each view). It is a constant of its own beside BASE_DEFENCES because the scenarios of Story 012
+## declare BASE_DEFENCES and keep their outputs, which standing Turrets would change. Each strip
+## takes out only its own pieces. A Base with no Turrets node is left alone (the greybox
+## composition has none); there only the Labels go. The Labels are kept only by declaring TURRETS
+## (and, from Story 014, MINES). A scenario of Story 013 declares it, with BASE_DEFENCES when it
+## needs the Flag Walls and the side spawn spots; any other scenario runs without the Turrets.
+##
+## The Mines (Story 014). Every Player's view now has a MineCount Label and the Truck carries Mines
+## (UnitStats.mine_capacity 5), and a lay key is part of the Input Map. A scenario written before it
+## was measured with none of that, so the runner takes the Mines out before the scene enters the
+## tree unless the scenario script declares const MINES: bool = true: every UnitStats of
+## match_rules.tres's unit_types gets mine_capacity 0 on the shared resources before the scene is
+## instanced (_apply_mines_off(): no type lays one, so no MineLayer ever emits or lays), and both
+## MineCount Labels are freed in the instanced scene (_apply_mine_counts_off(): camera_views counts
+## every Control in each view). The MineLayers and the lay inputs stay, inert. The PlayerNotice
+## Labels follow the rule of Story 013, extended: they stay for a scenario that declares TURRETS or
+## MINES and are freed for one that declares neither, while the Turrets stay only for TURRETS, so a
+## scenario of Story 014 that needs the Turrets declares TURRETS as well. Each opt-in keeps only
+## its own pieces.
+##
 ## Output: SPLIT <scenario> t=<seconds> key=value ... (progress), CHECK <scenario> <check name> PASS|FAIL
 ## <detail> and exactly one last RESULT <scenario> ok|fail checks=<n> failed=<n> key=value ...; then quit with
 ## exit code 0 when every check passed, 1 when one failed, 2 for a missing or unknown scenario. TD-003
@@ -178,6 +223,13 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"camera_smooth": preload("res://tools/evidence/split_screen/camera_smooth.gd"),
 	&"unit_swap": preload("res://tools/evidence/split_screen/unit_swap.gd"),
 	&"unit_swap_showcase": preload("res://tools/evidence/split_screen/unit_swap_showcase.gd"),
+	&"flag_walls": preload("res://tools/evidence/split_screen/flag_walls.gd"),
+	&"flag_walls_showcase": preload("res://tools/evidence/split_screen/flag_walls_showcase.gd"),
+	&"turrets": preload("res://tools/evidence/split_screen/turrets.gd"),
+	&"turrets_showcase": preload("res://tools/evidence/split_screen/turrets_showcase.gd"),
+	&"turrets_fps": preload("res://tools/evidence/split_screen/turrets_fps.gd"),
+	&"mines": preload("res://tools/evidence/split_screen/mines.gd"),
+	&"mines_showcase": preload("res://tools/evidence/split_screen/mines_showcase.gd"),
 }
 
 ## The shared step class (drive_step.gd): keys held for a time.
@@ -262,6 +314,27 @@ const SHIPPED_CAMERA_CONSTANT: StringName = &"SHIPPED_CAMERA"
 ## The constant a scenario script declares as true to run with the swap at the own Base the shipped
 ## rules turn on, instead of the swap off (_apply_swap_off()).
 const OWN_BASE_SWAP_CONSTANT: StringName = &"OWN_BASE_SWAP"
+## The constant a scenario script declares as true to keep the Flag Walls and the side spawn spots
+## the shipped Map 01 has, instead of the Map without them (_apply_defences_off()).
+const BASE_DEFENCES_CONSTANT: StringName = &"BASE_DEFENCES"
+## The node of a Map Base that holds its Flag Walls (Story 012); the Turrets of Story 013 stand
+## under a node of their own.
+const DEFENCES_NODE_NAME: StringName = &"Defences"
+## The constant a scenario script declares as true to keep the Turrets and the two PlayerNotice
+## Labels the shipped Map 01 and launch scene have, instead of the scene without them
+## (_apply_turrets_off()).
+const TURRETS_CONSTANT: StringName = &"TURRETS"
+## The node of a Map Base that holds its Turrets (Story 013).
+const TURRETS_NODE_NAME: StringName = &"Turrets"
+## The constant a scenario script declares as true to keep the Mines the shipped data and launch scene
+## have (the Truck's load, the two MineCount Labels, and the notice line for the refusals), instead of
+## the scene without them (_apply_mines_off(), _apply_mine_counts_off()).
+const MINES_CONSTANT: StringName = &"MINES"
+## The Story 007 spawn point of a compound Base and the two side spots that were its spares: the
+## nodes _apply_defences_off() hands back to the Base.
+const STORY_007_SPAWN_POINT: NodePath = ^"SpawnPoint"
+## The two side spots of a compound Base's Garage, in the order of its spare_spawn_points.
+const STORY_007_SPARE_SPOTS: Array[NodePath] = [^"SpareSpawnLeft", ^"SpareSpawnRight"]
 ## The chase view of Stories 001 to 009 (the second view of each Player's list in the launch scene):
 ## the settings every scenario that does not declare SHIPPED_CAMERA runs on.
 const CHASE_CAMERA_SETTINGS: ChaseCameraSettings = preload("res://src/gameplay/camera/data/chase_camera_settings.tres")
@@ -420,12 +493,16 @@ func _ready() -> void:
 	if GREYBOX_SCENARIOS.has(scenario) or PRE_009_MAP_SCENARIOS.has(scenario):
 		_apply_pre_009_data()
 	_apply_swap_off(SCENARIOS[scenario])
+	_apply_mines_off(SCENARIOS[scenario])
 	split = SPLIT_SCENE.instantiate() as SplitScreen
 	_apply_chase_camera(split, SCENARIOS[scenario])
 	if GREYBOX_SCENARIOS.has(scenario):
 		_apply_greybox_composition(split)
 	if PRE_009_MAP_SCENARIOS.has(scenario):
 		_apply_pre_009_map(split)
+	_apply_defences_off(split, SCENARIOS[scenario])
+	_apply_turrets_off(split, SCENARIOS[scenario])
+	_apply_mine_counts_off(split, SCENARIOS[scenario])
 	_apply_token_stock(split, SCENARIOS[scenario])
 	if split.match_controller != null:
 		split.match_controller.unit_spawned.connect(_on_round_start_spawn)
@@ -597,6 +674,112 @@ func _apply_swap_off(script: GDScript) -> void:
 		push_error("split_screen_harness: %s did not load as MatchRules, so the swap is not turned off." % MATCH_RULES_PATH)
 		return
 	rules.own_base_swap = false
+
+
+## Takes the Flag Walls and the side spawn spots of Story 012 off a freshly instanced launch scene,
+## before it enters the tree, unless the scenario script declares BASE_DEFENCES (the class doc says
+## why). For each Map Base with a DEFENCES_NODE_NAME child: every color_meshes entry under it and
+## every Structure under it, and only those, is dropped from its list; the node is removed and
+## freed at once (remove_child() and free(), as _apply_greybox_composition() frees the Map); and
+## the Story 007 spots are given back. A Base with no such child is left alone.
+func _apply_defences_off(root: SplitScreen, script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(BASE_DEFENCES_CONSTANT, false)):
+		return
+	if root.field == null:
+		return
+	for base: Base in [root.field.player_1_base, root.field.player_2_base]:
+		var defences: Node = null if base == null else base.get_node_or_null(NodePath(String(DEFENCES_NODE_NAME)))
+		if defences == null:
+			continue
+		var meshes: Array[MeshInstance3D] = []
+		for mesh: MeshInstance3D in base.color_meshes:
+			if mesh == null or not defences.is_ancestor_of(mesh):
+				meshes.append(mesh)
+		base.color_meshes = meshes
+		var kept: Array[Structure] = []
+		for structure: Structure in base.structures:
+			if structure == null or not defences.is_ancestor_of(structure):
+				kept.append(structure)
+		base.structures = kept
+		base.remove_child(defences)
+		defences.free()
+		_give_back_story_007_spots(base)
+
+
+## Takes the Turrets of Story 013 off a freshly instanced launch scene, before it enters the tree,
+## unless the scenario script declares TURRETS (the class doc says why), and the two PlayerNotice
+## Labels unless it declares TURRETS or MINES (the notice line also shows the Mine refusals of Story
+## 014). The Labels are freed first, for every scenario that declares neither, greybox or not. Then,
+## for each Map Base with a TURRETS_NODE_NAME child: every color_meshes entry under it and every
+## Structure under it, and only those, is dropped from its list, and the node is removed and freed
+## at once. A Base with no such child is left alone.
+func _apply_turrets_off(root: SplitScreen, script: GDScript) -> void:
+	var constants: Dictionary = script.get_script_constant_map()
+	var keeps_turrets: bool = bool(constants.get(TURRETS_CONSTANT, false))
+	if not keeps_turrets and not bool(constants.get(MINES_CONSTANT, false)):
+		for node: Node in root.find_children("*", "PlayerNotice", true, false):
+			node.get_parent().remove_child(node)
+			node.free()
+	if keeps_turrets or root.field == null:
+		return
+	for base: Base in [root.field.player_1_base, root.field.player_2_base]:
+		var turrets: Node = null if base == null else base.get_node_or_null(NodePath(String(TURRETS_NODE_NAME)))
+		if turrets == null:
+			continue
+		var meshes: Array[MeshInstance3D] = []
+		for mesh: MeshInstance3D in base.color_meshes:
+			if mesh == null or not turrets.is_ancestor_of(mesh):
+				meshes.append(mesh)
+		base.color_meshes = meshes
+		var kept: Array[Structure] = []
+		for structure: Structure in base.structures:
+			if structure == null or not turrets.is_ancestor_of(structure):
+				kept.append(structure)
+		base.structures = kept
+		base.remove_child(turrets)
+		turrets.free()
+
+
+## Takes the Mines out of the data every scenario that does not declare MINES runs on (Story 014),
+## on the shared resources before the launch scene is instanced: mine_capacity 0 on every UnitStats
+## of match_rules.tres's unit_types (one cached object per type, the one the Units spawn with), so no
+## type lays a Mine and no MineLayer ever emits or lays. Rules that fail to load are an error, and
+## nothing is applied.
+func _apply_mines_off(script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(MINES_CONSTANT, false)):
+		return
+	var rules: MatchRules = load(MATCH_RULES_PATH) as MatchRules
+	if rules == null:
+		push_error("split_screen_harness: %s did not load as MatchRules, so the Mines are not turned off." % MATCH_RULES_PATH)
+		return
+	for stats: UnitStats in rules.unit_types:
+		if stats != null:
+			stats.mine_capacity = 0
+
+
+## Frees both MineCount Labels of a freshly instanced launch scene, before it enters the tree, unless
+## the scenario script declares MINES (Story 014: camera_views counts every Control in each view, and
+## the older outputs were measured without the line).
+func _apply_mine_counts_off(root: SplitScreen, script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(MINES_CONSTANT, false)):
+		return
+	for node: Node in root.find_children("*", "MineCount", true, false):
+		node.get_parent().remove_child(node)
+		node.free()
+
+
+## Gives a compound Base its Story 007 spawn assignment back: SpawnPoint as spawn_point and the two
+## side spots as its spares. A spot the Base does not have is an error and nothing is changed.
+func _give_back_story_007_spots(base: Base) -> void:
+	var first: Marker3D = base.get_node_or_null(STORY_007_SPAWN_POINT) as Marker3D
+	var spares: Array[Marker3D] = []
+	for path: NodePath in STORY_007_SPARE_SPOTS:
+		spares.append(base.get_node_or_null(path) as Marker3D)
+	if first == null or spares.has(null):
+		push_error("split_screen_harness: Base '%s' has no SpawnPoint or no side spot, so the Story 007 spawn spots are not given back." % base.name)
+		return
+	base.spawn_point = first
+	base.spare_spawn_points = spares
 
 
 ## Gives both cameras of a freshly instanced launch scene the chase view's settings

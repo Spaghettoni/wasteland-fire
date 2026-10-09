@@ -1,0 +1,16 @@
+Wasteland Fire — five cards of the author's board, transcribed from a screenshot shared on 2026-10-07 (wasteland-fire-board-2026-10-07.png); the Slovak exactly as written on the board.
+
+Vežičky
+Každý tím má svoje, strieľajú len na nepriateľa. Automatické, otočná hlaveň, hráči ich neovládajú, nedajú sa stavať ani obsadiť. HP ako bugina (100), nekonečná munícia, kadencia polovičná oproti bugine. Treba ich rozbiť, aby sa dalo k vlajke.
+
+Zničiteľné múry
+Len o trochu vyššie ako vozidlá, gyrokoptéra cez ne preletí. Malá výdrž (~ako motorka, 40 HP), potom sa rozpadnú. Motorka ich zničiť nevie – jej strely sú príliš slabé (múr ignoruje jej poškodenie).
+
+Míny
+Kladí ich len truck, samostatná munícia: 5 mín na truck. Po položení ~3 s bliká farbou tímu (orange / teal) a ešte nie je aktívna, potom už len svieti a je ostrá. Vybuchne pod akýmkoľvek pozemným vozidlom, aj vlastným, a zničí ho okamžite – aj truck. Gyrokoptéru nie (preletí).
+
+Zjednodušiť Map 01
+Čaká na návrh.
+
+Kríky
+Rozmiestnené po mape. Kryt: za kríkom sa dá schovať, ale dá sa cezeň strieľať. Keď cezeň prejde bugina alebo truck, spláskne a kryt zmizne. Motorka prejde bez zničenia, gyrokoptéra preletí ponad. Vežičky potrebujú priamy výhľad: na cieľ za kríkom nestrieľajú, takže sa k nim dá prikradnúť (vyskúšať).

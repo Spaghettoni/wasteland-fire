@@ -1,0 +1,61 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK flag_walls walls_data PASS Base1 x -115.3..-110.7 z -2.3..2.3 ; Base2 x 110.7..115.3 z -2.3..2.3 | 8 Flag Walls on layer 64, mask 0, flag_wall_stats.tres, 40 hit points | mirror items=125 self=7 worst=0.0000 m | first spots (-125,0,-4) and (125,0,-4), spares mirrored | matrix: [&"motorbike>flag_wall"]
+CHECK flag_walls layer_timing PASS a ray on mask 83 through the Gate-side Flag Wall of Base B: standing blocks; destroyed in the scenario's tick it answers false in that tick and false a tick later; restored it answers true in that tick and true a tick later (true means it still blocks); a Motorbike pressed against it moved 0.0389 m in the first tick after it fell and 0.0444 in the second; a Motorbike approaching at speed when it was restored ended 0.000 m from the face
+CHECK flag_walls spawn_and_exits PASS 16 runs, two at a time, straight from rest to Base-local z -30 on the throttle alone, no wall contact; seconds from the first spot and the spare (Base A / Base B): motorbike 2.05/2.05 2.05/2.05 s; buggy 2.37/2.37 2.37/2.37 s; truck 3.82/3.82 3.82/3.82 s; gyrocopter 2.68/2.68 2.68/2.68 s; the Truck passes 0.300 m from a Gate post and 0.500 m from the box
+CHECK flag_walls stops PASS full throttle from 14 m out: p1 motorbike met it at 23.3 m/s, stopped in 1 ticks at 1.300 m | p2 motorbike met it at 23.3 m/s, stopped in 1 ticks at 1.300 m | p1 buggy met it at 19.6 m/s, stopped in 1 ticks at 1.500 m | p2 buggy met it at 19.6 m/s, stopped in 1 ticks at 1.500 m | p1 truck met it at 10.9 m/s, stopped in 1 ticks at 2.202 m | p2 truck met it at 10.9 m/s, stopped in 1 ticks at 2.202 m; a Shot fired pressed against the face ended at the muzzle inside the wall (a Shot at the face from afar ends on it: damage)
+CHECK flag_walls gyro_over PASS p1: model >= 0.250 m over the 2 m top for 27 ticks, never under 16.4 m/s, out over the Garage side | p2: model >= 0.250 m over the 2 m top for 27 ticks, never under 16.4 m/s, out over the Garage side | braking from 4 m/s inside the box it stopped -0.00 m across and -0.28 m along from the seat | flown at the Gate-side leg it touched it on 127 ticks and stopped at local z -10.50, short of its face at -9.30
+CHECK flag_walls flag_visible PASS 48 views (2 Bases x 4 sides x 6 distances) in the view from above: the Flag's top shows from every side through 20 m (farthest shown: top 25 m, middle 15 m at the worst side); in the chase view the near Flag Wall hides the top in 48 of 48
+ERROR: Structure 'FlagWall': stats is not assigned, so it stays plain solid geometry that nothing can damage.
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://src/gameplay/defences/structure.gd:132)
+       [1] run (res://tools/evidence/split_screen/flag_walls_bodies.gd:57)
+       [2] shoot (res://tools/evidence/split_screen/flag_walls_kit.gd:241)
+       [3] wait_until (res://tools/evidence/split_screen/unit_swap_kit.gd:203)
+       [4] tick (res://tools/evidence/split_screen/check_kit.gd:80)
+       [5] advance_ticks (res://tools/evidence/split_screen_harness.gd:852)
+CHECK flag_walls damage PASS per-shot damage and the shots to fall (motorbike 0, buggy 12, truck 25, gyrocopter 15, motorbike falls on shot -1, buggy falls on shot 4, truck falls on shot 2, gyrocopter falls on shot 3, a body with no type_id and a Flag Wall with no stats stop a Shot silently (one error at the bare scene's _ready())): each Player's Shots of every type took the multiplier from the other Player's Gate-side Flag Wall and nothing from its own, and every Shot ended on the face
+ERROR: Structure 'FlagWall': 1 damaged looks for 2 damaged_below fractions, so it shows only its intact look until it falls.
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://src/gameplay/defences/structure.gd:140)
+       [1] _built_wrong (res://tools/evidence/split_screen/flag_walls_looks.gd:196)
+       [2] run (res://tools/evidence/split_screen/flag_walls_looks.gd:87)
+       [3] _edges (res://tools/evidence/split_screen/flag_walls_looks.gd:174)
+       [4] restore_all (res://tools/evidence/split_screen/flag_walls_kit.gd:160)
+       [5] advance (res://tools/evidence/split_screen/check_kit.gd:87)
+       [6] tick (res://tools/evidence/split_screen/check_kit.gd:80)
+       [7] advance_ticks (res://tools/evidence/split_screen_harness.gd:852)
+ERROR: Structure 'FlagWall': damaged look 2 is not assigned, so it shows only its intact look until it falls.
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://src/gameplay/defences/structure.gd:140)
+       [1] _built_wrong (res://tools/evidence/split_screen/flag_walls_looks.gd:196)
+       [2] run (res://tools/evidence/split_screen/flag_walls_looks.gd:87)
+       [3] _edges (res://tools/evidence/split_screen/flag_walls_looks.gd:174)
+       [4] restore_all (res://tools/evidence/split_screen/flag_walls_kit.gd:160)
+       [5] advance (res://tools/evidence/split_screen/check_kit.gd:87)
+       [6] tick (res://tools/evidence/split_screen/check_kit.gd:80)
+       [7] advance_ticks (res://tools/evidence/split_screen_harness.gd:852)
+ERROR: Structure 'FlagWall': stats are refused: damaged_below is not fractions above 0 and below 1, highest first, so it stays plain solid geometry that nothing can damage.
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://src/gameplay/defences/structure.gd:132)
+       [1] _built_wrong (res://tools/evidence/split_screen/flag_walls_looks.gd:210)
+       [2] run (res://tools/evidence/split_screen/flag_walls_looks.gd:87)
+       [3] _edges (res://tools/evidence/split_screen/flag_walls_looks.gd:174)
+       [4] restore_all (res://tools/evidence/split_screen/flag_walls_kit.gd:160)
+       [5] advance (res://tools/evidence/split_screen/check_kit.gd:87)
+       [6] tick (res://tools/evidence/split_screen/check_kit.gd:80)
+       [7] advance_ticks (res://tools/evidence/split_screen_harness.gd:852)
+CHECK flag_walls looks PASS 8 Flag Walls with damaged_below [0.8, 0.35], two damaged looks each drawing Mesh's box on its layers over the wall's texture with a crack layer of its own (albedo 0.55 > 0.34 > 0.22; chunks [4, 8], on the ground at the foot), no collider, hidden while whole and in the scene; the look after each Shot of the runs to the fall, as the data predict (0 whole, 1 and 2 damaged, -1 rubble): motorbike [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], buggy [1, 1, 2, -1], truck [1, -1], gyrocopter [1, 2, -1]; all 275 hit_points_changed emitted with the predicted look; at exactly 80%, just below, at exactly 35%, just below and restored: [0, 1, 1, 2, 0]; a short list or an empty slot: one error each and only the whole look until the fall; fractions out of order: refused with one error, whole look; other fractions [0.6, 0.2] followed: [0, 1, 2]; fractions in percent, at 1, at 0 or NaN and a NaN maximum refused
+CHECK flag_walls flags_untouched PASS no Flag was picked up, dropped or seated and no Round ended during walls_data, layer_timing, spawn_and_exits, stops, gyro_over, flag_visible and damage
+CHECK flag_walls spots PASS each Player's new Unit stood on the Garage's first spot after a respawn and after a Swap, and on the spare while the other Player's Unit stood on the first
+CHECK flag_walls closed PASS 8 drives at full throttle for 90 ticks, one at each side of both boxes: stopped at the face (3.60, 3.60, 3.60, 3.60, 3.60, 3.60, 3.60, 3.60 m from the seat), touching() false throughout, no pick-up, the owner's HUD 'at home' and the raider's never 'carry'
+CHECK flag_walls raids PASS p1: 2 Truck Shots, rubble, the Motorbike carried the Flag out through the gap and won | p2: 2 Truck Shots, rubble, the Motorbike carried the Flag out through the gap and won
+CHECK flag_walls breach PASS 8 cases: with any one Flag Wall down (four sides, both Bases) the other Player's Motorbike drove in, was handed the Flag ('You carry the enemy Flag'), reversed out and delivered it
+CHECK flag_walls owner_return PASS dropped inside the breached box, taken by its owner through the breach and seated on tick 9113 (9113 picked 0 by 0, 9113 seated 0) | dropped 1.35 m outside the standing Gate-side Flag Wall, a Unit at the seat inside the box did not touch it in 30 ticks, and from outside it was taken and seated
+CHECK flag_walls reset PASS a fallen Flag Wall (stayed down, rubble) and a hurt one (30 of 40, its first damaged look) stayed as they were through a destruction, a respawn and a Swap; R brought back all 8 whole (40 hit points, layer 64, the whole look alone: damaged looks and rubble hidden) with both Units benched and both Flags seated when the Round started; the restored box stopped the Motorbike again
+CHECK flag_walls no_engine_noise PASS errors=4 warnings=0, the Flag Walls built wrong on purpose (no stats; a list of looks short or with an empty slot; fractions out of order) account for 4
+RESULT flag_walls ok checks=16 failed=0 t=165.850 walls=8 falls=16 ray_after_destroy=false/false ray_after_restore=true/true drive_first_tick_after_destroy=0.0389 m restored_at_gap=0.000 m

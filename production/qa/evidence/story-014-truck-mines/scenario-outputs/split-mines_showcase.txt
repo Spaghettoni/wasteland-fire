@@ -1,0 +1,14 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+SPLIT mines_showcase t=0.683 frame=40 moment=just_laid line_p1='Mines 4 / 5' line_p2='hidden' mine_lit=true
+SPLIT mines_showcase t=1.267 frame=75 moment=arming_lit own_tick=38 lit=true state=0
+SPLIT mines_showcase t=1.500 frame=89 moment=arming_dark own_tick=52 lit=false state=0
+SPLIT mines_showcase t=4.667 frame=279 moment=live lit=true state=1
+SPLIT mines_showcase t=8.367 frame=501 moment=salt_flat state=1 at=(-70, -14)
+SPLIT mines_showcase t=8.867 frame=531 moment=canyon_road state=1 at=(-55, -36)
+SPLIT mines_showcase t=9.367 frame=561 moment=ford state=1 at=(-40, 0)
+SPLIT mines_showcase t=14.450 frame=866 moment=flash state=2 flash=true victim_alive=false
+SPLIT mines_showcase t=21.417 frame=1284 moment=gyro_over state=1 gyro_alive=true gap=0.00
+SPLIT mines_showcase t=21.817 frame=1308 moment=refused_at_gate notice_p1='No Mines in or near a Base' notice_p2='hidden' line_p1='Mines 5 / 5'
+SPLIT mines_showcase t=23.933 frame=1435 moment=none_left line_p1='Mines 0 / 5' notice_p1='No Mines left'
+RESULT mines_showcase ok checks=0 failed=0 t=23.933 moments=11 mines=11 errors=0 warnings=0

@@ -1,0 +1,18 @@
+#!/bin/sh
+# usage: render.sh COPY_DIR OUT_DIR
+# Runs the look probe windowed (Movie Maker, 1280x720) in a scratch copy of the repo, keeps only the
+# frames named by the probe's frame= lines as OUT_DIR/<moment>.png, deletes the other frames, and
+# prints the probe's SPLIT/RESULT lines and any ERROR or WARNING. Never touches the real repo.
+COPY="$1"; OUT="$2"
+case "$COPY" in /Users/tomas.kunzo/projects/*) echo "refusing: $COPY is not a scratch copy"; exit 2;; esac
+mkdir -p "$OUT/raw"
+godot --path "$COPY" --windowed --resolution 1280x720 --write-movie "$OUT/raw/probe.png" \
+  res://tools/evidence/split_screen_harness.tscn -- --scenario=flag_walls_look_probe > "$OUT/run.txt" 2>&1
+echo "godot rc $?"
+grep -E "^SPLIT|^RESULT|^CHECK|ERROR|WARNING" "$OUT/run.txt"
+grep -o "frame=[0-9]* moment=[a-z_]*" "$OUT/run.txt" | while read -r f m; do
+  n=${f#frame=}; name=${m#moment=}
+  src=$(printf "%s/raw/probe%08d.png" "$OUT" "$n")
+  if [ -f "$src" ]; then cp "$src" "$OUT/$name.png"; echo "kept $OUT/$name.png (frame $n)"; else echo "MISSING frame $n for $name"; fi
+done
+find "$OUT/raw" -name 'probe*.png' -delete

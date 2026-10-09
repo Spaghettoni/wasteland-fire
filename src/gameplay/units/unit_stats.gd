@@ -45,6 +45,12 @@ extends Resource
 ## fuel_use, which is now the moving rate). The four .tres hold starting values, to tune by
 ## playing: half of each turn_rate, and a quarter of each fuel_use.
 ##
+## Story 014 (production/epics/wasteland-fire/story-014-truck-mines.md AC-1, AC-2 and AC-9;
+## design/rules.md "Turrets, Flag Walls and Mines") adds the Mines group: how many Mines a Unit of
+## this type carries (mine_capacity) and where its MineLayer drops one (mine_drop_offset), so the
+## Truck alone lays them by data and nothing in code asks what type a Unit is. A type whose .tres
+## has no line carries none.
+##
 ## Data only. A Unit reads these numbers and never writes them. One .tres is shared by every
 ## Unit that references it, so treat it as read-only at runtime (duplicate() it for a private
 ## copy).
@@ -281,12 +287,32 @@ extends Resource
 ## doc): an empty ground Unit of a type whose .tres has no line cannot turn.
 @export_range(0.0, 10.0, 0.01, "or_greater", "suffix:rad/s") var empty_turn_rate: float = 0.0
 
+@export_group("Mines")
+
+## How many Mines a Unit of this type carries after every spawn (Story 014 AC-2; design/rules.md
+## "Turrets, Flag Walls and Mines": only the Truck lays them, five per Truck): the MineLayer
+## refills its count to this on the first tick it finds the Unit in play, so a respawn and a Swap
+## at the own Base both bring a full load. Zero by default (class doc), and zero means the type
+## lays none: the Motorbike, the Buggy and the Gyrocopter leave it out, and the lay key does
+## nothing for them. No branch anywhere names a type for this.
+@export_range(0, 100, 1, "or_greater") var mine_capacity: int = 0
+
+## Where the MineLayer drops a Mine, in this Unit type's local space, in metres (Story 014 AC-1;
+## a Unit faces its local -Z, so a positive z is behind it): just clear of the type's own collider
+## and of the trigger, so a Unit standing or turning on the spot never sets off its own Mine. Read
+## only while mine_capacity is above zero, and then it must not be zero (first_problem()). Zero by
+## default (class doc). The Truck's box is 2.4 x 4.4 m, so a drop 3.4 m behind its origin leaves a
+## 0.8 m trigger 0.4 m clear of it.
+@export var mine_drop_offset: Vector3 = Vector3.ZERO
+
 
 ## The reason these stats cannot drive a Unit, or an empty String when they can: max_speed,
 ## ground_snap_length and max_hit_points must each be above zero (the rule Unit._ready() applies;
-## the class doc says why). MatchController asks it of every entry of MatchRules.unit_types before
-## a Round begins, and Unit.spawn() of the type it is handed, so a bad .tres is one named error
-## and never a Unit that spawns already destroyed.
+## the class doc says why), and a type that carries Mines must say where it drops them: a zero
+## mine_drop_offset would lay every Mine under the Unit's own origin, where it destroys the Unit
+## once it is live (Story 014). MatchController asks it of every entry of MatchRules.unit_types
+## before a Round begins, and Unit.spawn() of the type it is handed, so a bad .tres is one named
+## error and never a Unit that spawns already destroyed.
 func first_problem() -> String:
 	if max_speed <= 0.0:
 		return "max_speed is not above zero"
@@ -294,4 +320,6 @@ func first_problem() -> String:
 		return "ground_snap_length is not above zero"
 	if max_hit_points <= 0.0:
 		return "max_hit_points is not above zero"
+	if mine_capacity > 0 and mine_drop_offset.is_zero_approx():
+		return "mine_drop_offset is zero while mine_capacity is above zero"
 	return ""

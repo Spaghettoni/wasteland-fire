@@ -232,6 +232,12 @@ const MODEL_NODE_NAME: StringName = &"Model"
 ## null leaves the model its own neutral colour.
 @export var team_material: Material
 
+## The Player this Unit belongs to (Story 012 AC-3): 0 for Player 1, 1 for Player 2, -1 for a Unit
+## no Player owns (the driving toy's, a stand-in). SplitScreen sets it once, before the Round
+## begins, and nothing in this script reads it: a Shot reads it, so that a Player's own Shots end
+## on that Player's own Structures and do nothing to them. At -1 a Unit behaves exactly as it did.
+var player_index: int = -1
+
 ## The drive speed along the facing direction in metres per second: positive forward, negative
 ## in reverse. Read-only: assigning to it pushes an error and changes nothing; it moves only
 ## through set_drive_input() and the physics tick. It is the speed the Unit is commanding, not

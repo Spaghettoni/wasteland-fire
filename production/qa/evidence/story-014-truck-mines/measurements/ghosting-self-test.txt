@@ -1,0 +1,3 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+GHOST SELF-TEST ok combos_seen=16/16 max_actions_at_once=4 max_raw_keys_at_once=4

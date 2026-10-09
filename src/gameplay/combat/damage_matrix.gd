@@ -12,10 +12,12 @@ extends Resource
 ## (data/damage_matrix.tres, referenced by MatchRules.damage_matrix); a Shot reads it when it
 ## hits.
 ##
-## No branch in code names a Unit type: the table is keyed by the UnitStats.type_id of the two
-## types ("attacker>target"), and every pair the table does not list reads default_multiplier, so
-## the Motorbike's row and column, the own-type pairs and the fallback of design/rules.md (every
-## multiplier 1.0, if the triangle shows without the matrix) are data edits, never code changes.
+## No branch in code names a type: the table is keyed by the type id of the attacker and of the
+## target ("attacker>target"), a UnitStats' or a StructureStats' (the Motorbike deals nothing to a
+## Flag Wall: &"motorbike>flag_wall", Story 012), and every pair the table does not list reads
+## default_multiplier, so the Motorbike's row and column, the own-type pairs and the fallback of
+## design/rules.md (every multiplier 1.0, if the triangle shows without the matrix) are data
+## edits, never code changes.
 ##
 ## Data only: read, never written, at runtime (duplicate_deep() it for a private copy: duplicate()
 ## shares the multipliers dictionary with the original, measured on Godot 4.7.2 in Story 008).
@@ -29,9 +31,9 @@ extends Resource
 ## (class doc); the tuned value lives in the .tres.
 @export var default_multiplier: float = 0.0
 
-## The listed pairs, keyed "attacker>target" from the two UnitStats.type_id values (for example
-## &"buggy>truck"), each mapped to its multiplier. Only the pairs that differ from
-## default_multiplier need an entry.
+## The listed pairs, keyed "attacker>target" from the two type ids, each a UnitStats.type_id or a
+## StructureStats.type_id (for example &"buggy>truck" or &"motorbike>flag_wall"), each mapped to
+## its multiplier. Only the pairs that differ from default_multiplier need an entry.
 @export var multipliers: Dictionary[StringName, float] = {}
 
 

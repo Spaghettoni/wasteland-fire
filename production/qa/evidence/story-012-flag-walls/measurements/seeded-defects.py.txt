@@ -1,0 +1,177 @@
+#!/usr/bin/env python3
+"""Seeded defects for Story 012 (AC-9 joined on 2026-10-08): each one exact text replacement in a scratch copy of the repo, run
+against the scenario that guards it. KILLED when the scenario fails (rc != 0 or a FAIL CHECK) or, for the
+regression kind, when an older scenario's output differs from its baseline. A mutant whose run prints no
+RESULT line for its scenario is BROKEN (the replacement made the script unusable, not a verdict) and is
+counted apart. One worker per scratch copy, so no two mutants ever share a file.
+
+usage: seeded-defects.py.txt BASELINE_DIR WORK_DIR [--dry]
+  BASELINE_DIR holds the baselines of the older scenarios as split-NAME.txt (the regression kind)
+  WORK_DIR gets copy0..copy2 (scratch copies of the repo; they are diffed against the repo at the end)
+  --dry only checks that every replacement text occurs exactly once in its file
+"""
+import os
+import re
+import subprocess
+import sys
+from concurrent.futures import ThreadPoolExecutor
+
+REPO = "/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire"
+BASE = sys.argv[1]
+WORK = sys.argv[2]
+DRY = "--dry" in sys.argv
+WORKERS = 3
+COPIES = [os.path.join(WORK, "copy%d" % i) for i in range(WORKERS)]
+
+STRUCT = "src/gameplay/defences/structure.gd"
+SHOT = "src/gameplay/combat/shot.gd"
+SPLIT = "src/gameplay/split_screen/split_screen.gd"
+COMPOUND = "src/gameplay/maps/map_01/compound_base.tscn"
+WALL_SCENE = "src/gameplay/defences/flag_wall.tscn"
+RUNNER = "tools/evidence/split_screen_harness.gd"
+
+M = [
+ # name, file, old, new, scenario, kind
+ ("matrix_row_deleted", "src/gameplay/combat/data/damage_matrix.tres", '&"motorbike>flag_wall": 0.0,\n', "", "flag_walls", "check"),
+ ("apply_damage_does_nothing", STRUCT, "	if not _standing or not (amount > 0.0):\n		return\n	_hit_points = maxf", "	if true:\n		return\n	_hit_points = maxf", "flag_walls", "check"),
+ ("zero_amount_accepted", STRUCT, "	if not _standing or not (amount > 0.0):\n		return\n	_hit_points = maxf", "	if not _standing or amount < 0.0:\n		return\n	_hit_points = maxf", "flag_walls", "check"),
+ ("fallen_keeps_its_layer", STRUCT, "	collision_layer = 0\n	collision_mask = 0\n	_show_look()", "	collision_mask = 0\n	_show_look()", "flag_walls", "check"),
+ ("rubble_never_shown", STRUCT, "		wreck.visible = not _standing", "		wreck.visible = false", "flag_walls", "check"),
+ ("drawn_box_stays_after_the_fall", STRUCT, "		intact.visible = _standing and stage == 0", "		intact.visible = true", "flag_walls", "check"),
+ ("restore_keeps_the_hit_points", STRUCT, "	_standing = true\n	_hit_points = stats.max_hit_points\n	collision_layer = _scene_layer", "	_standing = true\n	collision_layer = _scene_layer", "flag_walls", "check"),
+ ("restore_keeps_it_fallen", STRUCT, "	collision_layer = _scene_layer\n	collision_mask = _scene_mask\n	_show_look()", "	_show_look()", "flag_walls", "check"),
+ ("type_id_getter_unguarded", STRUCT, "		return stats.type_id if _usable else &\"\"", "		return stats.type_id", "flag_walls", "check"),
+ ("flag_wall_on_layer_1", WALL_SCENE, "collision_layer = 64", "collision_layer = 1", "flag_walls", "check"),
+ ("flag_wall_on_layer_0", WALL_SCENE, "collision_layer = 64", "collision_layer = 0", "flag_walls", "check"),
+ ("flag_wall_drawn_taller_than_its_collider", WALL_SCENE, '[sub_resource type="BoxMesh" id="BoxMesh_panel"]\nmaterial = ExtResource("3_wall")\nsize = Vector3(3.4, 2, 1)', '[sub_resource type="BoxMesh" id="BoxMesh_panel"]\nmaterial = ExtResource("3_wall")\nsize = Vector3(3.4, 3, 1)', "flag_walls", "check"),
+ ("flag_wall_120_hit_points", "src/gameplay/defences/data/flag_wall_stats.tres", "max_hit_points = 40.0", "max_hit_points = 120.0", "flag_walls", "check"),
+ ("base_zone_watches_the_flag_walls_layer", COMPOUND, "collision_layer = 4\ncollision_mask = 18", "collision_layer = 4\ncollision_mask = 82", "flag_walls", "check"),
+ ("flag_touch_watches_the_flag_walls_layer", "src/gameplay/flag/flag.tscn", "collision_layer = 8\ncollision_mask = 2", "collision_layer = 8\ncollision_mask = 66", "flag_walls", "check"),
+ ("shot_owner_test_removed", SHOT, "	if _shooter_player_index >= 0 and target_player == _shooter_player_index:\n		return\n", "", "flag_walls", "check"),
+ ("shot_owner_test_inverted", SHOT, "target_player == _shooter_player_index:\n		return", "target_player != _shooter_player_index:\n		return", "flag_walls", "check"),
+ ("shot_type_id_test_removed", SHOT, "	if typeof(type_value) != TYPE_STRING_NAME:\n		return\n", "", "flag_walls", "check"),
+ ("launch_passes_no_player", SHOT, "	launch_from(shooter.get_rid(), shooter.type_id, shooter.player_index, origin, direction,", "	launch_from(shooter.get_rid(), shooter.type_id, -1, origin, direction,", "flag_walls", "check"),
+ ("units_get_no_player_index", SPLIT, "		units[player].player_index = player\n", "", "flag_walls", "check"),
+ ("structures_get_no_player_index", SPLIT, "				structure.player_index = player\n", "				pass\n", "flag_walls", "check"),
+ ("restore_not_connected", SPLIT, "	match_controller.round_started.connect(_restore_structures)\n", "", "flag_walls", "check"),
+ ("restore_only_player_1s_base", SPLIT, "	for base: Base in [field.player_1_base, field.player_2_base]:\n		for structure: Structure in base.structures:\n			if structure != null:\n				structure.restore()", "	for base: Base in [field.player_1_base]:\n		for structure: Structure in base.structures:\n			if structure != null:\n				structure.restore()", "flag_walls", "check"),
+ ("compound_spawn_point_back_on_the_middle_spot", COMPOUND, 'spawn_point = NodePath("SpareSpawnLeft")\nspare_spawn_points = [NodePath("SpareSpawnRight")]\n', 'spawn_point = NodePath("SpawnPoint")\nspare_spawn_points = [NodePath("SpareSpawnLeft"), NodePath("SpareSpawnRight")]\n', "flag_walls", "check"),
+ ("base_b_override_removed", "src/gameplay/maps/map_01/map_01.tscn", '[node name="Base2" parent="." node_paths=PackedStringArray("spawn_point", "spare_spawn_points") instance=ExtResource("7_compound_base")]\ntransform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 120, 0, 0)\ncolor_material = ExtResource("9_team_teal_material")\nspawn_point = NodePath("SpareSpawnRight")\nspare_spawn_points = [NodePath("SpareSpawnLeft")]\n', '[node name="Base2" parent="." instance=ExtResource("7_compound_base")]\ntransform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 120, 0, 0)\ncolor_material = ExtResource("9_team_teal_material")\n', "flag_walls", "check"),
+ ("one_flag_wall_not_listed", COMPOUND, ', NodePath("Defences/FlagWallRight")]', ']', "flag_walls", "check"),
+ ("one_flag_wall_missing", COMPOUND, '[node name="FlagWallRight" parent="Defences" instance=ExtResource("7_flag_wall")]\ntransform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 1.8, 0, -7)\n', '', "flag_walls", "check"),
+ # AC-9 (2026-10-08): the damaged looks
+ ("damaged_looks_never_shown", STRUCT, "			look.visible = _standing and stage == index + 1", "			look.visible = false", "flag_walls", "check"),
+ ("damaged_look_stage_off_by_one", STRUCT, "			look.visible = _standing and stage == index + 1", "			look.visible = _standing and stage == index", "flag_walls", "check"),
+ ("intact_kept_beside_a_damaged_look", STRUCT, "		intact.visible = _standing and stage == 0", "		intact.visible = _standing", "flag_walls", "check"),
+ ("below_made_inclusive", STRUCT, "		if _hit_points < fraction * stats.max_hit_points:", "		if _hit_points <= fraction * stats.max_hit_points:", "flag_walls", "check"),
+ ("look_not_updated_on_a_hit", STRUCT, "		destroy()\n		return\n	_show_look()\n", "		destroy()\n		return\n", "flag_walls", "check"),
+ ("fall_keeps_the_damaged_look", STRUCT, "	collision_mask = 0\n	_show_look()\n", "	collision_mask = 0\n", "flag_walls", "check"),
+ ("restore_keeps_the_damaged_look", STRUCT, "	collision_mask = _scene_mask\n	_show_look()\n", "	collision_mask = _scene_mask\n", "flag_walls", "check"),
+ ("looks_list_check_removed", STRUCT, "	_looks_usable = looks_problem.is_empty()\n	if not _looks_usable:", "	_looks_usable = true\n	if false:", "flag_walls", "check"),
+ ("stats_accept_fractions_out_of_order", "src/gameplay/defences/structure_stats.gd", "		if not (fraction > 0.0 and fraction < above):", "		if not (fraction > 0.0 and fraction < 1.0):", "flag_walls", "check"),
+ ("fractions_changed_in_the_data", "src/gameplay/defences/data/flag_wall_stats.tres", "damaged_below = Array[float]([0.8, 0.35])", "damaged_below = Array[float]([0.5, 0.35])", "flag_walls", "check"),
+ ("looks_swapped_in_the_scene", WALL_SCENE, 'damaged_looks = [NodePath("MeshDamaged1"), NodePath("MeshDamaged2")]', 'damaged_looks = [NodePath("MeshDamaged2"), NodePath("MeshDamaged1")]', "flag_walls", "check"),
+ ("a_chunk_given_a_body", WALL_SCENE, '[node name="Chunk1" type="MeshInstance3D" parent="MeshDamaged1"]', '[node name="Body" type="StaticBody3D" parent="MeshDamaged1"]\n\n[node name="Chunk1" type="MeshInstance3D" parent="MeshDamaged1"]', "flag_walls", "check"),
+ ("damaged_look_drawn_taller", WALL_SCENE, '[node name="MeshDamaged1" type="MeshInstance3D" parent="."]\nvisible = false\ntransform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)', '[node name="MeshDamaged1" type="MeshInstance3D" parent="."]\nvisible = false\ntransform = Transform3D(1, 0, 0, 0, 1.5, 0, 0, 0, 1, 0, 1.5, 0)', "flag_walls", "check"),
+ ("a_chunk_casts_a_shadow", WALL_SCENE, 'parent="MeshDamaged1"]\ntransform = Transform3D(0.9396926, 0, 0.3420201, 0, 1, 0, -0.3420201, 0, 0.9396926, -0.9, -0.87, 0.85)\ncast_shadow = 0', 'parent="MeshDamaged1"]\ntransform = Transform3D(0.9396926, 0, 0.3420201, 0, 1, 0, -0.3420201, 0, 0.9396926, -0.9, -0.87, 0.85)\ncast_shadow = 1', "flag_walls", "check"),
+ ("a_chunk_inside_the_panel", WALL_SCENE, '-0.9, -0.87, 0.85)\ncast_shadow = 0\nmesh = SubResource("BoxMesh_chip")\n\n[node name="Chunk2" type="MeshInstance3D" parent="MeshDamaged1"]', '-0.9, -0.87, 0.2)\ncast_shadow = 0\nmesh = SubResource("BoxMesh_chip")\n\n[node name="Chunk2" type="MeshInstance3D" parent="MeshDamaged1"]', "flag_walls", "check"),
+ # AC-9 review (2026-10-08): the survivors of the adversarial acceptance lens and the engine lens
+ ("unassigned_damaged_look_accepted", STRUCT, "		if damaged_looks[index] == null:\n			return", "		if false:\n			return", "flag_walls", "check"),
+ ("fractions_typed_into_the_code", STRUCT, "	for fraction: float in stats.damaged_below:\n		if _hit_points < fraction * stats.max_hit_points:", "	for fraction: float in [0.8, 0.35]:\n		if _hit_points < fraction * stats.max_hit_points:", "flag_walls", "check"),
+ ("stats_accept_fractions_of_one_and_more", "src/gameplay/defences/structure_stats.gd", "	var above: float = 1.0", "	var above: float = INF", "flag_walls", "check"),
+ ("nan_fraction_accepted", "src/gameplay/defences/structure_stats.gd", "		if not (fraction > 0.0 and fraction < above):", "		if fraction <= 0.0 or fraction >= above:", "flag_walls", "check"),
+ ("nan_maximum_accepted", "src/gameplay/defences/structure_stats.gd", "	if not (max_hit_points > 0.0):", "	if max_hit_points <= 0.0:", "flag_walls", "check"),
+ ("refused_piece_shows_a_look", STRUCT, "nothing can damage.\" % [name, problem])\n		return\n", "nothing can damage.\" % [name, problem])\n		_show_look()\n		return\n", "flag_walls", "check"),
+ ("signal_before_the_look", STRUCT, "	_show_look()\n	hit_points_changed.emit(_hit_points, stats.max_hit_points)\n\n\n## Makes", "	hit_points_changed.emit(_hit_points, stats.max_hit_points)\n	_show_look()\n\n\n## Makes", "flag_walls", "check"),
+ ("first_damaged_look_without_cracks", "src/gameplay/defences/materials/flag_wall_damaged_1.tres", "detail_enabled = true", "detail_enabled = false", "flag_walls", "check"),
+ ("first_damaged_look_lighter_than_whole", "src/gameplay/defences/materials/flag_wall_damaged_1.tres", 'albedo_texture = ExtResource("1_scrap_texture")\n', "", "flag_walls", "check"),
+ ("first_damaged_look_on_no_render_layer", WALL_SCENE, '[node name="MeshDamaged1" type="MeshInstance3D" parent="."]\nvisible = false\n', '[node name="MeshDamaged1" type="MeshInstance3D" parent="."]\nvisible = false\nlayers = 0\n', "flag_walls", "check"),
+ ("damaged_look_shown_in_the_scene", WALL_SCENE, '[node name="MeshDamaged1" type="MeshInstance3D" parent="."]\nvisible = false\n', '[node name="MeshDamaged1" type="MeshInstance3D" parent="."]\n', "flag_walls", "check"),
+ ("a_chunk_buried", WALL_SCENE, 'parent="MeshDamaged2"]\ntransform = Transform3D(0.6330222, -0.1116189, 0.7660444, 0.1736482, 0.9848078, 0, -0.7544065, 0.1330222, 0.6427876, -0.35, -0.81, 1.0)', 'parent="MeshDamaged2"]\ntransform = Transform3D(0.6330222, -0.1116189, 0.7660444, 0.1736482, 0.9848078, 0, -0.7544065, 0.1330222, 0.6427876, -0.35, -1.81, 1.0)', "flag_walls", "check"),
+ ("a_chunk_three_metres_from_the_wall", WALL_SCENE, 'parent="MeshDamaged1"]\ntransform = Transform3D(0.9063078, 0, -0.4226183, 0, 1, 0, 0.4226183, 0, 0.9063078, 0.55, -0.87, -0.86)', 'parent="MeshDamaged1"]\ntransform = Transform3D(0.9063078, 0, -0.4226183, 0, 1, 0, 0.4226183, 0, 0.9063078, 0.55, -0.87, -3.86)', "flag_walls", "check"),
+ # the older scenarios keep their outputs: the runner strips the Flag Walls and the side spots for them
+ ("runner_leaves_the_flag_walls_in", RUNNER, "	if bool(script.get_script_constant_map().get(BASE_DEFENCES_CONSTANT, false)):\n		return\n	if root.field == null:", "	if true:\n		return\n	if root.field == null:", "map_bases", "regress"),
+ ("runner_leaves_the_side_spots_in", RUNNER, "		_give_back_story_007_spots(base)\n", "		pass\n", "map_bases", "regress"),
+]
+
+
+def prepare(i):
+    d = COPIES[i]
+    os.makedirs(WORK, exist_ok=True)
+    if os.path.exists(d):
+        subprocess.run(["find", d, "-delete"], check=True)
+    subprocess.run(["rsync", "-a", "--exclude", ".git", "--exclude", "production", "--exclude", "design", "--exclude", "docs", REPO + "/", d + "/"], check=True)
+    return d
+
+
+def run(copy, scn):
+    p = subprocess.run(["godot", "--headless", "--fixed-fps", "60", "--path", copy, "res://tools/evidence/split_screen_harness.tscn", "--", "--scenario=" + scn],
+                       capture_output=True, text=True, timeout=900)
+    return p.returncode, p.stdout + p.stderr
+
+
+def one(copy, mutant):
+    name, rel, old, new, scn, kind = mutant
+    path = os.path.join(copy, rel)
+    orig = open(path).read()          # this worker is the only one that touches this copy
+    if orig.count(old) != 1:
+        return name, None, "NOT APPLIED (text found %d times)" % orig.count(old)
+    open(path, "w").write(orig.replace(old, new))
+    try:
+        rc, out = run(copy, scn)
+    finally:
+        open(path, "w").write(orig)
+    if not re.search(r"^RESULT %s " % scn, out, re.M):
+        return name, None, "BROKEN: no RESULT line (rc=%d)" % rc
+    if kind == "check":
+        fails = re.findall(r"^CHECK \S+ (\S+) FAIL", out, re.M)
+        dead = rc != 0 or bool(fails)
+        detail = "%s rc=%d fails=%s" % (scn, rc, ",".join(fails) or "-")
+    else:
+        base = open(os.path.join(BASE, "split-%s.txt" % scn)).read()
+        keep = lambda t: [l for l in t.splitlines() if l.startswith(("SPLIT ", "CHECK ", "RESULT "))]
+        dead = keep(out) != keep(base) or rc != 0
+        detail = "%s rc=%d output %s the baseline" % (scn, rc, "differs from" if dead else "equals")
+    return name, dead, detail
+
+
+def worker(i, jobs):
+    return [one(COPIES[i], m) for m in jobs[i::WORKERS]]
+
+
+def main():
+    if DRY:
+        bad = 0
+        for name, rel, old, new, scn, kind in M:
+            n = open(os.path.join(REPO, rel)).read().count(old)
+            if n != 1:
+                bad += 1
+                print("DRY  %-48s text found %d times in %s" % (name, n, rel))
+        print("DRY: %d mutants, %d with a replacement text that is not found exactly once" % (len(M), bad))
+        return 1 if bad else 0
+    for i in range(WORKERS):
+        prepare(i)
+    with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+        results = [r for part in pool.map(lambda i: worker(i, M), range(WORKERS)) for r in part]
+    order = {m[0]: k for k, m in enumerate(M)}
+    results.sort(key=lambda r: order[r[0]])
+    killed = survived = broken = 0
+    for name, dead, detail in results:
+        status = "BROKEN " if dead is None else ("KILLED " if dead else "SURVIVED")
+        killed += dead is True
+        survived += dead is False
+        broken += dead is None
+        print("%s %-48s %s" % (status, name, detail))
+    print("-- %d mutants: %d killed, %d survived, %d broken or not applied" % (len(M), killed, survived, broken))
+    clean = True
+    for i in range(WORKERS):
+        d = subprocess.run(["diff", "-rq", "--exclude=.godot", "--exclude=production", "--exclude=.git", "--exclude=design", "--exclude=docs", REPO, COPIES[i]], capture_output=True, text=True)
+        if d.stdout.strip():
+            clean = False
+            print("COPY %d DIFFERS FROM THE REPO:\n%s" % (i, d.stdout[:600]))
+    print("-- the %d scratch copies %s the repo (apart from .godot, production, design, docs)" % (WORKERS, "equal" if clean else "DIFFER FROM"))
+    return 0 if survived == 0 and broken == 0 and clean else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

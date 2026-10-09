@@ -91,10 +91,12 @@ const FORD_COUNT: int = 2
 const FLOOR_RECT: Vector4 = Vector4(-150, 150, -50, 50)
 ## The map physics layer (layer 1) and the cliffs_water layer (layer 6), by value.
 const LAYERS: Vector2i = Vector2i(1, 32)
-## The scripts a node of Map 01 may carry: the Map's, the Fords', the Bases', the Flags', the Cans'.
+## The scripts a node of Map 01 may carry: the Map's, the Fords', the Bases', the Flags' and the Cans',
+## and since Story 012 the Flag Walls' (Structure) and since Story 013 the Turrets' (Turret).
 const SCRIPTS: Array[String] = ["res://src/gameplay/maps/map_field.gd", "res://src/gameplay/maps/ford.gd",
 	"res://src/gameplay/maps/base.gd", "res://src/gameplay/flag/flag.gd",
-	"res://src/gameplay/fuel/fuel_can.gd"]
+	"res://src/gameplay/fuel/fuel_can.gd", "res://src/gameplay/defences/structure.gd",
+	"res://src/gameplay/defences/turret.gd"]
 
 ## Points of the table on built edges, (x, z) metres, west half and centre, by the CSG polygons
 ## they lie on: the island's outline (as the story's table has it), the canyon rock's slanted end

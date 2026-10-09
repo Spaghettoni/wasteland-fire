@@ -1,0 +1,56 @@
+KILLED  gyrocopter_sets_it_off                           mines rc=1 fails=mines_data,gyrocopter_hovers_and_crashes_on_a_mine,no_engine_noise
+KILLED  no_arming                                        mines rc=1 fails=arming_and_blink,parked_unit_under_a_new_mine,mine_stays_when_its_truck_is_swapped,last_motorbike_on_a_mine_ends_the_round,double_loss_with_a_mine,turret_shot_and_mine_on_one_unit,no_engine_noise
+KILLED  never_live                                       mines rc=1 fails=clear_while_turning,arming_and_blink,going_live_destroys,both_players_see_every_mine,parked_unit_under_a_new_mine,grazing_offset,blast_latency,destroys_a_buggy,destroys_a_truck,destroys_its_owner,stacked_mines_spend_one_per_unit,respawn_ghost_sets_off_nothing,gyrocopter_hovers_and_crashes_on_a_mine,gyrocopter_crosses_a_mine,shots_fly_over_mines,mine_under_a_dropped_flag,mine_on_a_fuel_can_spot,mine_stays_when_its_truck_is_destroyed,mine_stays_when_its_truck_is_swapped,carrier_on_a_mine,last_motorbike_on_a_mine_ends_the_round,restart_removes_every_mine,double_loss_with_a_mine,lay_on_the_loss_frame,turret_shot_and_mine_on_one_unit
+KILLED  damage_in_place_of_destroy                       mines rc=1 fails=mines_lint,going_live_destroys,parked_unit_under_a_new_mine,stacked_mines_spend_one_per_unit,mine_under_a_dropped_flag,mine_on_a_fuel_can_spot,double_loss_with_a_mine,lay_on_the_loss_frame,no_engine_noise
+KILLED  one_tick_of_listing                              mines rc=1 fails=blast_latency,shots_fly_over_mines,no_engine_noise
+KILLED  no_is_alive_test                                 mines rc=1 fails=stacked_mines_spend_one_per_unit,no_engine_noise
+KILLED  mine_at_priority_plus_one                        mines rc=1 fails=last_motorbike_on_a_mine_ends_the_round,double_loss_with_a_mine,lay_on_the_loss_frame
+KILLED  its_owners_units_ignored                         mines rc=1 fails=going_live_destroys,destroys_its_owner,stacked_mines_spend_one_per_unit
+KILLED  only_the_first_unit_destroyed                    mines rc=1 fails=going_live_destroys,no_engine_noise
+EQUIVALENT names_not_sorted                             mines rc=0 fails=- | the engine's list order happens to put Player 1's Unit first in the one run that has two Units on a Mine; the sort is there because that order is not reproducible, and no retained output can force the other order
+KILLED  mine_never_spent                                 mines rc=1 fails=going_live_destroys,parked_unit_under_a_new_mine,grazing_offset,destroys_a_buggy,destroys_a_truck,destroys_its_owner,stacked_mines_spend_one_per_unit,respawn_ghost_sets_off_nothing,carrier_on_a_mine,last_motorbike_on_a_mine_ends_the_round
+KILLED  flash_never_shown                                mines rc=1 fails=going_live_destroys
+KILLED  disc_stays_after_the_blast                       mines rc=1 fails=going_live_destroys
+KILLED  mine_never_freed                                 mines rc=1 fails=going_live_destroys
+KILLED  disc_always_lit                                  mines rc=1 fails=arming_and_blink
+KILLED  disc_not_scaled_to_the_trigger                   mines rc=1 fails=mines_data
+KILLED  arming_two_seconds                               mines rc=1 fails=mines_data,arming_and_blink,arming_mine_is_harmless,going_live_destroys
+KILLED  blink_one_second                                 mines rc=1 fails=mines_data,arming_and_blink
+KILLED  trigger_half_as_wide                             mines rc=1 fails=mines_data,mines_line_layout,grazing_offset,blast_latency,destroys_a_buggy,destroys_a_truck,destroys_its_owner,stacked_mines_spend_one_per_unit,no_mine_areas_edges,refused_in_and_near_a_base,open_ground_test,last_motorbike_on_a_mine_ends_the_round,restart_removes_every_mine
+KILLED  flash_twice_as_long                              mines rc=1 fails=mines_data,going_live_destroys
+KILLED  probe_top_at_two_metres                          mines rc=1 fails=mines_data,rock_is_refused_and_the_probe_must_reach_it
+KILLED  approach_ten_metres                              mines rc=1 fails=mines_data,mines_line_layout,no_mine_areas_edges,refused_in_and_near_a_base,last_motorbike_on_a_mine_ends_the_round,restart_removes_every_mine
+KILLED  open_ground_mask_without_the_cover               mines rc=1 fails=mines_data,open_ground_test
+KILLED  truck_carries_six                                mines rc=1 fails=mines_data,swap_brings_a_load,lays_behind_the_tail,held_key_lays_one,stranded_truck_lays,no_lay_out_of_play,player_two_lays_with_comma,mines_line_layout,refused_in_and_near_a_base,rock_is_refused_and_the_probe_must_reach_it,lays_on_the_rest_of_the_map,mine_stays_when_its_truck_is_destroyed,mine_stays_when_its_truck_is_swapped,restart_removes_every_mine,lay_on_the_loss_frame,no_engine_noise
+KILLED  drop_in_front_of_the_truck                       mines rc=1 fails=mines_data,lays_behind_the_tail,held_key_lays_one,player_two_lays_with_comma,arming_mine_is_harmless,going_live_destroys,parked_unit_under_a_new_mine,destroys_its_owner,stacked_mines_spend_one_per_unit,refused_in_and_near_a_base,rock_is_refused_and_the_probe_must_reach_it,lays_on_the_rest_of_the_map,mine_under_a_dropped_flag,mine_on_a_fuel_can_spot,carrier_on_a_mine
+KILLED  drop_too_close_to_the_truck                      mines rc=1 fails=mines_data,lays_behind_the_tail,held_key_lays_one,no_lay_out_of_play,player_two_lays_with_comma,destroys_its_owner,refused_in_and_near_a_base,lays_on_the_rest_of_the_map,mine_under_a_dropped_flag,mine_on_a_fuel_can_spot,double_loss_with_a_mine,lay_on_the_loss_frame,no_engine_noise
+KILLED  lay_key_moved                                    mines rc=1 fails=mines_data,lays_behind_the_tail,held_key_lays_one,stranded_truck_lays,player_two_lays_with_comma,mines_line_layout,parked_unit_under_a_new_mine,refused_in_and_near_a_base,rock_is_refused_and_the_probe_must_reach_it,lays_on_the_rest_of_the_map,mine_on_a_fuel_can_spot,no_cap_on_the_mines,double_loss_with_a_mine,lay_on_the_loss_frame,no_engine_noise
+KILLED  no_area_test                                     mines rc=1 fails=mines_line_layout,refused_in_and_near_a_base,last_motorbike_on_a_mine_ends_the_round,restart_removes_every_mine
+KILLED  no_open_ground_test                              mines rc=1 fails=rock_is_refused_and_the_probe_must_reach_it
+KILLED  approach_without_the_trigger_radius              mines rc=1 fails=mines_line_layout,no_mine_areas_edges,refused_in_and_near_a_base,last_motorbike_on_a_mine_ends_the_round,restart_removes_every_mine
+KILLED  area_of_the_own_base_only                        mines rc=1 fails=no_mine_areas_edges,refused_in_and_near_a_base,open_ground_test
+KILLED  open_ground_before_the_area                      mines rc=1 fails=refused_in_and_near_a_base
+KILLED  capacity_reported_out_of_play                    mines rc=1 fails=no_lay_out_of_play,mines_line_layout,mine_stays_when_its_truck_is_destroyed,restart_removes_every_mine
+KILLED  a_motorbike_lays                                 mines rc=1 fails=other_types_lay_none,no_lay_out_of_play
+KILLED  none_left_lays_anyway                            mines rc=1 fails=no_engine_noise
+KILLED  lay_does_not_take_one                            mines rc=1 fails=lays_behind_the_tail,held_key_lays_one,stranded_truck_lays,player_two_lays_with_comma,refused_in_and_near_a_base,lays_on_the_rest_of_the_map,mine_stays_when_its_truck_is_swapped,no_engine_noise
+KILLED  level_triggered_key                              mines rc=1 fails=held_key_lays_one,other_types_lay_none,no_lay_out_of_play,lay_on_the_loss_frame
+KILLED  mine_not_in_the_players_colour                   mines rc=1 fails=lays_behind_the_tail,player_two_lays_with_comma,mine_stays_when_its_truck_is_destroyed,no_engine_noise
+KILLED  mine_owner_not_recorded                          mines rc=1 fails=lays_behind_the_tail,player_two_lays_with_comma,mine_stays_when_its_truck_is_destroyed,mine_stays_when_its_truck_is_swapped
+KILLED  line_shown_for_every_type                        mines rc=1 fails=swap_brings_a_load,other_types_lay_none,no_lay_out_of_play,mines_line_layout,mine_stays_when_its_truck_is_destroyed,restart_removes_every_mine
+KILLED  line_follows_the_other_players_layer             mines rc=1 fails=swap_brings_a_load,lays_behind_the_tail,no_lay_out_of_play,count_and_none_left,player_two_lays_with_comma,mines_line_layout,mine_stays_when_its_truck_is_swapped,restart_removes_every_mine
+KILLED  player_2s_refusals_shown_to_player_1             mines rc=1 fails=count_and_none_left,mines_line_layout,refused_in_and_near_a_base
+KILLED  refusal_stays_forever                            mines rc=1 fails=refused_in_and_near_a_base,lays_on_the_rest_of_the_map
+EQUIVALENT refusal_not_cleared_at_round_over            mines rc=0 fails=- | the tree is paused while a Round is over, so _process cannot show the refusal again, the handler hides the line itself, and _on_round_started clears the time before the next Round: the clear in _on_round_over is redundant
+KILLED  refusal_text_changed                             mines rc=1 fails=mines_data,rock_is_refused_and_the_probe_must_reach_it
+KILLED  r_keeps_the_mines                                mines rc=1 fails=restart_removes_every_mine
+KILLED  mines_not_cleared_in_the_group                   mines rc=1 fails=restart_removes_every_mine
+KILLED  runner_leaves_the_mine_counts_in                 camera_views rc=0 output differs from the baseline
+KILLED  runner_leaves_the_notice_labels_in_for_every_scenario camera_views rc=0 output differs from the baseline
+KILLED  drop_point_not_checked                           mines rc=1 fails=bad_data_refused
+KILLED  open_ground_mask_not_checked                     mines rc=1 fails=bad_data_refused
+KILLED  mine_layer_runs_while_paused                     mines rc=1 fails=lay_on_the_loss_frame
+WINDOWED   mine_interpolation_not_reset_at_the_lay      mines rc=0 fails=- | killed by the windowed lay probe (measurements/windowed-lay-probe-runs.txt): a Mine laid a tick or two after it entered the tree was drawn 25.9 to 47.1 m off its place on its first frame without the reset (0.000 with it); a Mine added and laid in one tick, the game's own path, is drawn in place either way, so no headless output can tell
+KILLED  runner_frees_the_notice_for_mines                mines_showcase rc=1 fails=premise
+-- 54 mutants: 54 killed, equivalent or killed by the windowed probe, 0 survived, 0 broken or not applied
+-- the 3 scratch copies equal the repo (apart from .godot, production, design, docs)

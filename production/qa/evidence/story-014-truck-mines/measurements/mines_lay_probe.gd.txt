@@ -1,0 +1,82 @@
+extends RefCounted
+## Scratch probe (never in the repo): is a fresh Mine drawn at its place on its first frame, or does it slide in from
+## where it entered the tree? A Truck lays a Mine with its real key, and on the first process frame after the lay and
+## the five after it, for each of four lays, the place World draws the disc at (the interpolated pose) is read against the disc's own place.
+## Windowed, on the 120 Hz display, where a process frame falls between two physics ticks. Run in a scratch copy only.
+
+const Quick: GDScript = preload("res://tools/evidence/split_screen/quick_fix_kit.gd")
+const Kit14: GDScript = preload("res://tools/evidence/split_screen/mines_kit.gd")
+
+const OWN_CHOICE: bool = true
+const OWN_BASE_SWAP: bool = true
+const SHIPPED_CAMERA: bool = true
+const BASE_DEFENCES: bool = true
+const MINES: bool = true
+const STOCK_COUNTS: Dictionary = {&"motorbike": 30, &"buggy": 30, &"truck": 30, &"gyrocopter": 30}
+const WATCHDOG_SECONDS: float = 100.0
+## The first drop point: the lanes of no_cap_on_the_mines (open flat ground, x -46 and on, z -17).
+const SPOT: Vector3 = Vector3(-46.0, 0.0, -17.0)
+const FRAMES: int = 6
+## Four lays 6 m apart, each a tick later in its wait than the one before, so the first frames fall at both phases.
+const LAYS: int = 4
+const LAY_STEP: float = 6.0
+## Two Mines added by the tool and laid one and two ticks later (not the game's path: the contract of lay()).
+const LATE: int = 2
+
+
+func run(harness: Node) -> void:
+	var k: Kit14 = Kit14.new(harness)
+	var q: Object = k.w.s.q
+	await k.w.s.both_play()
+	await k.put(0, Quick.TRUCK, SPOT + Vector3(3.4, 0.0, 0.0), Vector3.RIGHT)
+	var settle: int = 0
+	while Engine.get_frames_per_second() < 100.0 and settle < 1200:
+		await harness.get_tree().process_frame
+		settle += 1
+	var worst: float = 0.0
+	var worst_late: float = 0.0
+	var lines: PackedStringArray = []
+	for lay_index: int in LAYS:
+		k.w.s.flags.teleport(0, SPOT + Vector3(3.4 + LAY_STEP * lay_index, 0.0, 0.0), Vector3.RIGHT)
+		await q.kit.advance(30 + lay_index)
+		var before: int = k.laid.size()
+		harness.set_key(KEY_E, true)
+		var waited: int = 0
+		while k.laid.size() == before and waited < 240:
+			await harness.get_tree().process_frame
+			waited += 1
+		harness.set_key(KEY_E, false)
+		if k.laid.size() == before:
+			lines.append("lay %d: none" % lay_index)
+			continue
+		var record: Dictionary = k.laid[before]
+		var mine: Mine = record["mine"] as Mine
+		var rows: PackedStringArray = []
+		for index: int in FRAMES:
+			var drawn: Vector3 = mine.body.get_global_transform_interpolated().origin
+			var gap: float = drawn.distance_to(mine.body.global_position)
+			worst = maxf(worst, gap)
+			rows.append("%d:%.3f@%.2f+%d" % [index, gap, Engine.get_physics_interpolation_fraction(), Engine.get_physics_frames() - int(record["frame"])])
+			await harness.get_tree().process_frame
+		lines.append("lay %d at %s: %s" % [lay_index, mine.global_position, " ".join(rows)])
+	for late_index: int in LATE:
+		var at: Vector3 = SPOT + Vector3(0.0, 0.0, 6.0 + LAY_STEP * late_index)
+		var late: Mine = k.layers[0].mine_scene.instantiate() as Mine
+		q.units.units[0].get_parent().add_child(late)
+		await q.kit.advance(1 + late_index)
+		late.lay(at, 0, q.units.units[0].team_material)
+		var marks: PackedStringArray = []
+		var lay_frame: int = Engine.get_physics_frames()
+		await harness.get_tree().process_frame
+		for index: int in FRAMES:
+			var gap: float = late.body.get_global_transform_interpolated().origin.distance_to(late.body.global_position)
+			worst_late = maxf(worst_late, gap)
+			marks.append("%d:%.3f@%.2f+%d" % [index, gap, Engine.get_physics_interpolation_fraction(), Engine.get_physics_frames() - lay_frame])
+			await harness.get_tree().process_frame
+		lines.append("late lay %d (lay() %d ticks after the Mine entered the tree) at %s: %s" % [late_index, 1 + late_index, late.global_position, " ".join(marks)])
+	print("SPLIT lay_probe interpolation_setting=%s fps=%.1f settle_frames=%d" % [ProjectSettings.get_setting("physics/common/physics_interpolation"), Engine.get_frames_per_second(), settle])
+	for line: String in lines:
+		print("SPLIT lay_probe %s" % line)
+	print("SPLIT lay_probe worst=%.4f worst_late=%.4f" % [worst, worst_late])
+	k.close()
+	harness.finish("lay_worst=%.4f late_worst=%.4f" % [worst, worst_late])

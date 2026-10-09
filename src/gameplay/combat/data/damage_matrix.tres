@@ -10,6 +10,7 @@ multipliers = Dictionary[StringName, float]({
 &"buggy>truck": 1.5,
 &"gyrocopter>buggy": 1.5,
 &"gyrocopter>truck": 0.5,
+&"motorbike>flag_wall": 0.0,
 &"truck>buggy": 0.5,
 &"truck>gyrocopter": 1.5
 })

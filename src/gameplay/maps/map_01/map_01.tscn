@@ -61,9 +61,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, 0)
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -120, 0, 0)
 color_material = ExtResource("8_team_orange_material")
 
-[node name="Base2" parent="." instance=ExtResource("7_compound_base")]
+[node name="Base2" parent="." node_paths=PackedStringArray("spawn_point", "spare_spawn_points") instance=ExtResource("7_compound_base")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 120, 0, 0)
 color_material = ExtResource("9_team_teal_material")
+spawn_point = NodePath("SpareSpawnRight")
+spare_spawn_points = [NodePath("SpareSpawnLeft")]
 
 [node name="Cover" parent="." instance=ExtResource("10_cover")]
 

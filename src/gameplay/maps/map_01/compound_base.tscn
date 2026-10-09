@@ -6,6 +6,8 @@
 [ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/tower.tres" id="4_tower"]
 [ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/garage_floor.tres" id="5_garage_floor"]
 [ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/marking.tres" id="6_marking"]
+[ext_resource type="PackedScene" path="res://src/gameplay/defences/flag_wall.tscn" id="7_flag_wall"]
+[ext_resource type="PackedScene" path="res://src/gameplay/defences/turret.tscn" id="8_turret"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_pad"]
 material = ExtResource("5_garage_floor")
@@ -107,16 +109,17 @@ size = Vector3(0.6, 8, 0.6)
 [sub_resource type="BoxShape3D" id="BoxShape3D_leg"]
 size = Vector3(0.6, 8, 0.6)
 
-[node name="Base" type="Node3D" node_paths=PackedStringArray("spawn_point", "spare_spawn_points", "zone", "pad", "beacon", "flag", "flag_seat", "color_meshes")]
+[node name="Base" type="Node3D" node_paths=PackedStringArray("spawn_point", "spare_spawn_points", "zone", "pad", "beacon", "flag", "flag_seat", "color_meshes", "structures")]
 script = ExtResource("1_base")
-spawn_point = NodePath("SpawnPoint")
-spare_spawn_points = [NodePath("SpareSpawnLeft"), NodePath("SpareSpawnRight")]
+spawn_point = NodePath("SpareSpawnLeft")
+spare_spawn_points = [NodePath("SpareSpawnRight")]
 zone = NodePath("Zone")
 pad = NodePath("Pad")
 beacon = NodePath("WaterTower/Tank")
 flag = NodePath("Flag")
 flag_seat = NodePath("FlagSeat")
-color_meshes = [NodePath("Walls/TowerGateLeft/Mesh"), NodePath("Walls/TowerGateRight/Mesh"), NodePath("Walls/TowerBackLeft/Mesh"), NodePath("Walls/TowerBackRight/Mesh"), NodePath("Garage/Marking/Dash01"), NodePath("Garage/Marking/Dash02"), NodePath("Garage/Marking/Dash03"), NodePath("Garage/Marking/Dash04"), NodePath("Garage/Marking/Dash05"), NodePath("Garage/Marking/Dash06"), NodePath("Garage/Marking/Dash07"), NodePath("Garage/Marking/Dash08"), NodePath("Garage/Marking/Dash09"), NodePath("Garage/Marking/Dash10"), NodePath("Garage/Marking/Dash11"), NodePath("Garage/Marking/Dash12"), NodePath("Garage/Marking/Dash13"), NodePath("Garage/Marking/Dash14"), NodePath("WaterTower/Roof")]
+color_meshes = [NodePath("Walls/TowerGateLeft/Mesh"), NodePath("Walls/TowerGateRight/Mesh"), NodePath("Walls/TowerBackLeft/Mesh"), NodePath("Walls/TowerBackRight/Mesh"), NodePath("Garage/Marking/Dash01"), NodePath("Garage/Marking/Dash02"), NodePath("Garage/Marking/Dash03"), NodePath("Garage/Marking/Dash04"), NodePath("Garage/Marking/Dash05"), NodePath("Garage/Marking/Dash06"), NodePath("Garage/Marking/Dash07"), NodePath("Garage/Marking/Dash08"), NodePath("Garage/Marking/Dash09"), NodePath("Garage/Marking/Dash10"), NodePath("Garage/Marking/Dash11"), NodePath("Garage/Marking/Dash12"), NodePath("Garage/Marking/Dash13"), NodePath("Garage/Marking/Dash14"), NodePath("WaterTower/Roof"), NodePath("Turrets/TurretLeft/Look/Head/Band"), NodePath("Turrets/TurretRight/Look/Head/Band")]
+structures = [NodePath("Defences/FlagWallGate"), NodePath("Defences/FlagWallGarage"), NodePath("Defences/FlagWallLeft"), NodePath("Defences/FlagWallRight"), NodePath("Turrets/TurretLeft"), NodePath("Turrets/TurretRight")]
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
@@ -453,3 +456,25 @@ mesh = SubResource("BoxMesh_brace")
 transform = Transform3D(0, 0, -1, -0.6, 0.8, 0, 0.8, 0.6, 0, 2, 4.9, -7)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_brace")
+
+[node name="Defences" type="Node3D" parent="."]
+
+[node name="FlagWallGate" parent="Defences" instance=ExtResource("7_flag_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -8.8)
+
+[node name="FlagWallGarage" parent="Defences" instance=ExtResource("7_flag_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5.2)
+
+[node name="FlagWallLeft" parent="Defences" instance=ExtResource("7_flag_wall")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -1.8, 0, -7)
+
+[node name="FlagWallRight" parent="Defences" instance=ExtResource("7_flag_wall")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 1.8, 0, -7)
+
+[node name="Turrets" type="Node3D" parent="."]
+
+[node name="TurretLeft" parent="Turrets" instance=ExtResource("8_turret")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -19)
+
+[node name="TurretRight" parent="Turrets" instance=ExtResource("8_turret")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -19)

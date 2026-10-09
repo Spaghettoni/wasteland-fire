@@ -1,0 +1,24 @@
+{
+ "token_ui": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:779)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:852)"
+  ]
+ ],
+ "tokens_data": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:779)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:852)"
+  ],
+  [
+   "destroy (res://src/gameplay/units/unit.gd:497)",
+   "destroy (res://src/gameplay/units/unit.gd:503)"
+  ]
+ ],
+ "unit_swap": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:779)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:852)"
+  ]
+ ]
+}

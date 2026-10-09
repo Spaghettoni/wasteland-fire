@@ -27,6 +27,9 @@ extends Node3D
 ## the dashed rectangle in front of the Garage and on the water tower's roof, its walls dark and its
 ## Garage rust: color_meshes)
 ## and AC-12 (the water tower's tank is the beacon, in place of story 003's pillar);
+## production/epics/wasteland-fire/story-012-flag-walls.md AC-1, AC-5 and AC-6 (the four Flag Walls
+## of a compound's box around its Flag are listed in structures, and its first spawn spot and its
+## spare are the Garage's two side spots);
 ## design/rules.md "Teams and visual style". Vocabulary: CONTEXT.md (Player, Unit, Base, Map,
 ## Garage, Flag, Team colour: a Base holds that Player's Flag at the start of a Round).
 ##
@@ -45,7 +48,9 @@ extends Node3D
 ## local -Z:
 ##   Base (this Node3D): its transform places and turns the whole Base, the gate to the centre
 ##     SpawnPoint, SpareSpawnLeft, SpareSpawnRight (Marker3D): on the Garage floor, 5 m behind
-##       the Base origin (local +Z) and 4 m apart, facing local -Z, out of the Garage to the gate
+##       the Base origin (local +Z) and 4 m apart, facing local -Z, out of the Garage to the gate;
+##       since Story 012 the first spot is SpareSpawnLeft and the spare SpareSpawnRight (the middle
+##       SpawnPoint stays unused: the Flag Walls close its straight lane to the gate)
 ##     Pad (MeshInstance3D): hidden, the Garage floor's 12 x 10 m footprint (first_spawn_problem()
 ##       measures the spawn points against it)
 ##     Zone (Area3D): a 29.4 x 4 x 27.5 m box over the inside of the walls
@@ -58,6 +63,8 @@ extends Node3D
 ##     WaterTower: four legs (StaticBody3D), the Tank (MeshInstance3D), the beacon, its lowest
 ##       point 8 m or more up, above where the chase camera rides, its Roof (one of color_meshes)
 ##       and a steel platform, band and braces, all with no collision
+##     Defences: the four Flag Walls (Story 012), one in each gap between the water tower's legs, a
+##       closed box around the Flag's seat, each a Structure listed in structures
 ## The script checks that the references are wired, paints the pad, the beacon, each mesh of
 ## color_meshes and the Flag's body in _ready(), and says whether its spawn points lie on its
 ## pad (first_spawn_problem()); a Base has no behaviour of its own. The Map places it, the
@@ -74,7 +81,10 @@ extends Node3D
 ## and the water tower's legs are StaticBody3D on physics layer 1 (the Map's) and stop every Unit,
 ## the Gyrocopter included, and every shot (Story 007 AC-6), so a Unit comes and goes through the
 ## gate; the pad, the tank, the Marking and the Garage floor have no shape, and the tank stands
-## higher than the chase camera rides, so it never comes between a Player and their own Unit.
+## higher than the chase camera rides, so it never comes between a Player and their own Unit. The
+## Flag Walls under Defences are StaticBody3D on physics layer 7 ("cover", value 64), not on the
+## Map's: every ground Unit and every shot stops at one, the Gyrocopter flies over it like the
+## Map's cover, and nothing that watches Units sees it (the zone, the Flag's touch, the spawn test).
 ##
 ## Spawn points. A Unit is put down at spawn_point, or, when another Unit stands on spawn_point on
 ## the tick the respawn falls due, at the first free spare spawn point, on that same tick
@@ -84,10 +94,12 @@ extends Node3D
 ## never a silent drift: GreyboxField points spawn_point at a loose marker, for a reason its
 ## comment gives, and nothing else ties the two. It is the start of the Round that asks, not
 ## _ready(): a tool that moves that loose marker before the field enters the tree (the Story 001
-## drive harness does) must not raise an error in a scene that has no Round. In both scenes the two
-## spares stand 4 m left and right of the spawn point, 8 m apart, so no Unit (the largest, the
-## Truck, is 2.4 x 4.4 m) can stand on both of them and a Round of two Players always has a free
-## spot.
+## drive harness does) must not raise an error in a scene that has no Round. In base.tscn the two
+## spares stand 4 m left and right of the spawn point, 8 m apart. In compound_base.tscn (Story 012)
+## the first spot is the left of the two side spots and the spare the right one, 8 m apart, and the
+## middle SpawnPoint is unused: the box of Flag Walls closes its straight lane to the gate. Either
+## way no Unit (the largest, the Truck, is 2.4 x 4.4 m) can stand on both spots, and a Round of two
+## Players always has a free one.
 ##
 ## Player colour. The mesh resources are shared by every instance of a scene, so a material on the
 ## mesh would paint every Base alike. color_material is applied instead as a material_override on
@@ -98,21 +110,21 @@ extends Node3D
 ## Base B). Because the override is per instance, compound_base.tscn's corner towers wear the Team
 ## colour while the walls, which share their material, stay dark.
 ##
-## Zone. An Area3D on physics layer 3 ("zones", project.godot) that watches layer 2 ("units") and, in
-## Map 01's compound, layer 5 ("gyrocopters") too (mask 18: a Gyrocopter swaps at home like every
+## Zone. An Area3D on physics layer 3 ("zones", project.godot) that watches layer 2 ("units") and,
+## in Map 01's compound, layer 5 ("gyrocopters") too (mask 18: a Gyrocopter swaps at home like every
 ## type, so the zone must see its layer; base.tscn keeps mask 2 and its scenarios run with the swap
-## off). It reports Units entering and leaving and never touches them: no Unit's collision mask includes
-## layer 3, so the zone neither blocks nor slows one. Story 004 consumes it (the MatchController
-## polls zone.overlaps_body() once per physics tick for a Unit delivering a Flag to the
-## own Base, or bringing its own home) and Story 011 (the Unit swap at the own Base: when a Player
-## presses Self-destruct, MatchController.can_swap() asks whether the zone reports that Player's Unit,
-## and begin() refuses a Round, with the swap on, whose zone does not watch a Unit type's layer).
-## What the zone watches is a Unit's collision layer, which Unit.destroy() zeroes and Unit.spawn()
-## restores, so a Unit destroyed inside the zone leaves it and one spawned inside it enters it: a
-## respawn at the own Base is an enter, and so is the first spawn of a Round. The physics server
-## reports both on its own schedule: a tick after a layer change, about two after a Unit drives or
-## is put in or out (measured on Godot 4.7.2 with Jolt; the Story 004 evidence doc keeps the runs),
-## so a consumer polls and never counts on the same tick.
+## off). It reports Units entering and leaving and never touches them: no Unit's collision mask
+## includes layer 3, so the zone neither blocks nor slows one. Story 004 consumes it (the
+## MatchController polls zone.overlaps_body() once per physics tick for a Unit delivering a Flag to
+## the own Base, or bringing its own home) and Story 011 (the Unit swap at the own Base: when a
+## Player presses Self-destruct, MatchController.can_swap() asks whether the zone reports that
+## Player's Unit, and begin() refuses a Round, with the swap on, whose zone does not watch a Unit
+## type's layer). What the zone watches is a Unit's collision layer, which Unit.destroy() zeroes and
+## Unit.spawn() restores, so a Unit destroyed inside the zone leaves it and one spawned inside it
+## enters it: a respawn at the own Base is an enter, and so is the first spawn of a Round. The
+## physics server reports both on its own schedule: a tick after a layer change, about two after a
+## Unit drives or is put in or out (measured on Godot 4.7.2 with Jolt; the Story 004 evidence doc
+## keeps the runs), so a consumer polls and never counts on the same tick.
 ##
 ## Flag (built in Story 004 as the Water Canister, renamed in Story 008). Each Base holds its
 ## Player's Flag: the Flag child, an instance of flag.tscn, stands on FlagSeat at the start of the
@@ -128,10 +140,12 @@ extends Node3D
 
 ## Where a Unit is put when it starts the Round or respawns at this Base: its global transform is
 ## the Unit's position and heading, the Unit facing the marker's local -Z as every Unit faces its
-## own. Both scenes set it to the SpawnPoint child (at the Base origin in base.tscn, on the Garage
-## floor in compound_base.tscn); a Map may point it at another Marker3D instead (GreyboxField
-## does), and the SpawnPoint child then stays unused. It must lie on the pad (first_spawn_problem()
-## reports it when it does not). The MatchController reads it.
+## own. base.tscn sets it to the SpawnPoint child at the Base origin; compound_base.tscn sets it
+## to SpareSpawnLeft, one of the Garage's two side spots (Story 012: the Flag Walls close the
+## middle spot's lane to the gate), and Map 01's second Base overrides it with SpareSpawnRight, so
+## the two first spots mirror each other across the Map's x = 0. A Map may point it at another
+## Marker3D instead (GreyboxField does), and the SpawnPoint child then stays unused. It must lie
+## on the pad (first_spawn_problem() reports it when it does not). The MatchController reads it.
 @export var spawn_point: Marker3D
 
 ## Where a Unit is put when it respawns while another Unit stands on spawn_point: the
@@ -139,13 +153,14 @@ extends Node3D
 ## free one, so a parked Unit cannot hold a respawn up (Story 003 AC-3 and AC-4). Each is a
 ## Marker3D whose global transform is the Unit's position and heading, like spawn_point, and each
 ## must lie on the pad. Optional, but a Base without one keeps a blocked Player waiting until the
-## spawn point frees, and _ready() warns. Keep them clear of each other for the largest Unit (both
-## scenes put two, 4 m left and right of the spawn point: class doc).
+## spawn point frees, and _ready() warns. Keep them clear of each other for the largest Unit
+## (base.tscn puts two, 4 m left and right of the spawn point; compound_base.tscn one, the side
+## spot its spawn_point is not: class doc).
 @export var spare_spawn_points: Array[Marker3D] = []
 
 ## The zone over the pad that reports Units entering and leaving this Base. The MatchController
-## polls it once per physics tick for a delivery (Story 004) and asks it for the Unit swap (Story 011).
-## Its layer (3, "zones") and mask (2, "units" in base.tscn; 18, units and gyrocopters, in
+## polls it once per physics tick for a delivery (Story 004) and asks it for the Unit swap (Story
+## 011). Its layer (3, "zones") and mask (2, "units" in base.tscn; 18, units and gyrocopters, in
 ## compound_base.tscn) are set in the scene.
 @export var zone: Area3D
 
@@ -186,6 +201,13 @@ extends Node3D
 ## An entry that is not assigned is skipped with a warning.
 @export var color_meshes: Array[MeshInstance3D] = []
 
+## The damageable pieces this Base owns (Story 012): compound_base.tscn lists its four Flag Walls,
+## the Structures under its Defences node. SplitScreen, the composition root, sets each one's
+## player_index to this Base's Player before the Round begins and restores each one when a Round
+## starts again, from this list and with no search of the tree. Optional and empty by default:
+## base.tscn lists none. An entry that is not assigned is skipped with a warning.
+@export var structures: Array[Structure] = []
+
 
 func _ready() -> void:
 	var missing: String = _first_unassigned()
@@ -194,6 +216,7 @@ func _ready() -> void:
 		return
 	if spare_spawn_points.is_empty():
 		push_warning("Base '%s': spare_spawn_points is empty, so a Player whose respawn is blocked by a Unit standing on the spawn point waits until the spawn point frees." % name)
+	_warn_unassigned_structures()
 	if color_material == null:
 		push_warning("Base '%s': color_material is not assigned, so the pad and the beacon keep their default look and this Base cannot be told from the other one." % name)
 		return
@@ -245,6 +268,13 @@ func _first_unassigned() -> String:
 	if beacon == null:
 		return "beacon"
 	return ""
+
+
+## Warns once for each entry of structures that is not assigned; SplitScreen skips such an entry.
+func _warn_unassigned_structures() -> void:
+	for index: int in structures.size():
+		if structures[index] == null:
+			push_warning("Base '%s': structures entry %d is not assigned, so that piece is skipped." % [name, index])
 
 
 ## Puts color_material on each mesh of color_meshes as a material_override, on this instance only,

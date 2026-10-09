@@ -25,7 +25,7 @@ extends Control
 ##   - The raw physical keys the window receives, from _input (OS.get_keycode_string of each event's
 ##     physical_keycode), and the most held at once. This is the keyboard's own report, before the
 ##     Input Map, so a phantom key or a swallowed key shows up here.
-##   - A checklist of the six combinations both Players actually use (COMBINATIONS, below), each
+##   - A checklist of the combinations both Players actually use (COMBINATIONS, below), each
 ##     turning green the first time all four of its keys are held at the same moment.
 ##
 ## Reading the result. A combination that never turns green while you hold its four keys has lost a
@@ -109,8 +109,13 @@ const PLAYER_COLUMNS: Array[Dictionary] = [
 ## The combinations both Players actually use while driving, one line each on the checklist. name
 ## is what the line and the summary's missing list call it. actions are the Input Map actions that
 ## must all be held at the same moment: the two of Player 1, then the two of Player 2, four keys in
-## all. The six are both Players on throttle steering the same way (two lines), both on throttle
-## steering opposite ways (two lines), and both reversing while steering opposite ways (two lines).
+## all. The first six are both Players on throttle steering the same way (two lines), both on
+## throttle steering opposite ways (two lines), and both reversing while steering opposite ways (two
+## lines). The fire key (Story 005) adds a line a Player (throttle, left, right and fire); the camera
+## key (Story 010) one a Player and one for both Players' throttle and camera keys; the lay key
+## (Story 014) one a Player with throttle, left and right, one a Player that holds throttle, one
+## steer key, fire and lay (W, D, Space, E and Up, Left, Period, Comma: neighbouring keys of a hand)
+## and one for both Players' throttle and lay keys. 16 in all.
 ## Add a line to check another pairing: the checklist and the summary follow this data.
 const COMBINATIONS: Array[Dictionary] = [
 	{
@@ -156,6 +161,26 @@ const COMBINATIONS: Array[Dictionary] = [
 	{
 		"name": "P1 throttle+camera / P2 throttle+camera",
 		"actions": [&"p1_throttle", &"p1_camera", &"p2_throttle", &"p2_camera"],
+	},
+	{
+		"name": "P1 throttle+left+right+lay_mine",
+		"actions": [&"p1_throttle", &"p1_steer_left", &"p1_steer_right", &"p1_lay_mine"],
+	},
+	{
+		"name": "P2 throttle+left+right+lay_mine",
+		"actions": [&"p2_throttle", &"p2_steer_left", &"p2_steer_right", &"p2_lay_mine"],
+	},
+	{
+		"name": "P1 throttle+right+fire+lay_mine",
+		"actions": [&"p1_throttle", &"p1_steer_right", &"p1_fire", &"p1_lay_mine"],
+	},
+	{
+		"name": "P2 throttle+left+fire+lay_mine",
+		"actions": [&"p2_throttle", &"p2_steer_left", &"p2_fire", &"p2_lay_mine"],
+	},
+	{
+		"name": "P1 throttle+lay_mine / P2 throttle+lay_mine",
+		"actions": [&"p1_throttle", &"p1_lay_mine", &"p2_throttle", &"p2_lay_mine"],
 	},
 ]
 

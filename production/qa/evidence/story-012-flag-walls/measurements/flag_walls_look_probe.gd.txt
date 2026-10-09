@@ -1,0 +1,74 @@
+extends RefCounted
+## Scratch look probe for Story 012 AC-9 (never in the repo): Base B's box seen by Player 1 and Base
+## A's box seen by Player 2, their Flag Walls set to different looks, in the view from above and then
+## in the chase view. One SPLIT line per moment with frame=, the number of the PNG that shows it in a
+## --write-movie recording. Register it in a scratch copy's runner only (SCENARIOS):
+##     &"flag_walls_look_probe": preload("res://tools/evidence/split_screen/flag_walls_look_probe.gd"),
+## Run (render.sh does it): godot --path COPY --windowed --resolution 1280x720 --write-movie
+##     OUT/probe.png res://tools/evidence/split_screen_harness.tscn -- --scenario=flag_walls_look_probe
+
+## The Story 009 helpers (quick_fix_kit.gd): the type indices.
+const Quick: GDScript = preload("res://tools/evidence/split_screen/quick_fix_kit.gd")
+## The Story 012 helpers (flag_walls_kit.gd).
+const Walls: GDScript = preload("res://tools/evidence/split_screen/flag_walls_kit.gd")
+
+const OWN_CHOICE: bool = true
+const OWN_BASE_SWAP: bool = true
+const SHIPPED_CAMERA: bool = true
+const BASE_DEFENCES: bool = true
+const USE_MAP_STOCK: bool = true
+## Main-loop iterations from a moment's line back to the PNG that shows it (tokens_showcase_kit.gd).
+const MOMENT_FRAME_LAG: int = 1
+## Ticks a moment holds before its line, so the camera has settled after the Units were put down.
+const HOLD_TICKS: int = 75
+## Hit points taken off a Flag Wall for each look: none for the whole look, 10 leaves 30 of 40 (75%,
+## the first damaged look), 30 leaves 10 (25%, the second); a look of -1 makes it fall.
+const DAMAGE_FOR_LOOK: Array[float] = [0.0, 10.0, 30.0]
+
+var _w: Walls
+var _count: int = 0
+
+
+## The moments, in the view from above, then in the chase view (Q for Player 1, Slash for Player 2).
+## Looks per side in SIDE_NAMES order (Gate, Garage, Left, Right): 0 whole, 1 and 2 damaged, -1 fallen.
+func run(harness: Node) -> void:
+	_w = Walls.new(harness)
+	await _w.s.play(0, Quick.TRUCK)
+	await _w.s.play(1, Quick.TRUCK)
+	await _moment("above_all_looks_from_gate", [0, -1, 1, 2], [2, 1, -1, 0], Walls.GATE, 9.0)
+	await _moment("above_all_looks_from_side", [0, -1, 1, 2], [2, 1, -1, 0], Walls.LEFT, 9.0)
+	await _moment("above_near_first_look", [1, 0, 0, 0], [1, 0, 0, 0], Walls.GATE, 7.0)
+	await _moment("above_near_second_look", [2, 0, 0, 0], [2, 0, 0, 0], Walls.GATE, 7.0)
+	await _w.s.q.kit.press([KEY_Q, KEY_SLASH])
+	await _moment("chase_near_whole", [0, 0, 0, 0], [0, 0, 0, 0], Walls.GATE, 9.0)
+	await _moment("chase_near_first_look", [1, 0, 0, 0], [1, 0, 0, 0], Walls.GATE, 9.0)
+	await _moment("chase_near_second_look", [2, 0, 0, 0], [2, 0, 0, 0], Walls.GATE, 9.0)
+	await _moment("chase_near_fallen", [-1, 0, 0, 0], [-1, 0, 0, 0], Walls.GATE, 9.0)
+	_w.close()
+	harness.finish("moments=%d" % _count)
+
+
+## Brings every Flag Wall back whole, sets Base B's and Base A's walls to the looks given, puts each
+## Player's Truck `distance` out of the seat of the other Player's box on `side`, facing it, holds,
+## then prints the moment's line.
+func _moment(moment: String, looks_b: Array, looks_a: Array, side: int, distance: float) -> void:
+	await _w.restore_all()
+	for index: int in Walls.SIDE_NAMES.size():
+		_set_look(_w.wall(1, index), int(looks_b[index]))
+		_set_look(_w.wall(0, index), int(looks_a[index]))
+	var at_b: Array[Vector3] = _w.pose(1, side, distance)
+	var at_a: Array[Vector3] = _w.pose(0, side, distance)
+	_w.s.q.units.retype(0, Quick.TRUCK, at_b[0], at_b[1])
+	_w.s.q.units.retype(1, Quick.TRUCK, at_a[0], at_a[1])
+	await _w.s.q.kit.advance(HOLD_TICKS)
+	_count += 1
+	print("SPLIT %s t=%.3f frame=%d moment=%s base_b=%s base_a=%s hp_b=%s" % [_w.s.q.harness.scenario,
+		_w.s.q.harness.time(), Engine.get_process_frames() - MOMENT_FRAME_LAG, moment, looks_b, looks_a,
+		_w.all().slice(4).map(func(wall: Structure) -> float: return wall.hit_points)])
+
+
+func _set_look(wall: Structure, look: int) -> void:
+	if look < 0:
+		wall.destroy()
+	elif look > 0:
+		wall.apply_damage(DAMAGE_FOR_LOOK[look])

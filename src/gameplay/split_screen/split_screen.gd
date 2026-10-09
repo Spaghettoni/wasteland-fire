@@ -24,7 +24,8 @@ extends Control
 ##   SplitScreen (this Control, filling the window)
 ##     World (Node3D): the Map first (map_01.tscn: its ground, its two Bases and its Fuel Cans),
 ##       then both Units, both PlayerDriveInputs, both PlayerMatchInputs, both Weapons with their
-##       PlayerFireInputs, both PlayerChoiceInputs and both PlayerCameraInputs
+##       PlayerFireInputs, both MineLayers with their PlayerMineInputs, both PlayerChoiceInputs and
+##       both PlayerCameraInputs
 ##     Views (HBoxContainer): a SubViewportContainer per Player, each holding a SubViewport that
 ##       holds that Player's ChaseCamera, respawn countdown, HUD, Unit choice panel and Round-over
 ##       screen
@@ -94,6 +95,35 @@ extends Control
 ## emits round_started: no shot of the Round before flies on into the next one and hits a Unit
 ## just chosen on its Base.
 ##
+## Players and Structures (Story 012). Before the Round begins this scene sets each Unit's
+## player_index (0 for Player 1, 1 for Player 2) and, for each Base in Player order, the
+## player_index of every Structure in the Base's structures list: the one place that knows which
+## Player owns what, so a Shot can leave a Player's own pieces alone. When a Round starts again
+## it calls restore() on every Structure of both Bases, from those lists and with no search of
+## the tree (design/rules.md, Technology and conventions). The controller's restart() seats every
+## Flag and benches both Units before it emits round_started, so no Unit or Flag is inside a
+## piece when it comes back (production/epics/wasteland-fire/story-012-flag-walls.md AC-5). The
+## handler is connected after begin(), so it runs at every restart and not at the first Round's
+## start, whose standing pieces come from each Structure's own _ready().
+##
+## Turrets (Story 013). A Turret is a Structure, so it is listed in its Base's structures, gets its
+## Player index and is restored at every restart like a Flag Wall. Before the Round begins this
+## scene also arms each one of them with arm(): the other Player's Unit, the node the Shots are
+## added under (World, the parent of the Units, where the Weapons put theirs) and the Round's
+## MatchRules, found from the Bases' lists with no search of the tree. A Turret of a Map that has
+## none is simply not there; one never armed stays idle. Its Shots belong to the shots group, so
+## _free_shots() frees them at every restart
+## (production/epics/wasteland-fire/story-013-turrets.md AC-7).
+##
+## Mines (Story 014). Each Player's MineLayer lays that Player's Mines under World, and every Mine
+## belongs to the node group MINE_GROUP (mine.tscn stores it). A MineLayer must know where a Mine
+## may not be laid, so before the Round begins this scene hands each one the two Bases, from the
+## field and with no search of the tree. A Round that starts again frees the whole group, the way
+## it frees the Shots: the MatchController benches both Units before round_started, so no Truck
+## holds a Mine count and no Mine of the Round before is left on the Map
+## (production/epics/wasteland-fire/story-014-truck-mines.md AC-7). The handler is connected after
+## begin(), so it runs at every restart and not at the first Round's start, when no Mine exists.
+##
 ## Fuel Cans (Story 006). The Map brings its own Fuel Cans at fixed spots (Map 01's are in
 ## production/epics/wasteland-fire/story-007-the-map.md; Story 006 kept five greybox Cans in this
 ## scene until Map 01 replaced them). Each Can polls its own zone, refills the Unit that touches it
@@ -106,6 +136,9 @@ extends Control
 
 ## The node group every Shot in flight belongs to; _free_shots() frees it at every Round start.
 const SHOT_GROUP: StringName = &"shots"
+
+## The node group every Mine belongs to; _free_mines() frees it at every restart.
+const MINE_GROUP: StringName = &"mines"
 
 ## The node group every Fuel Can belongs to; _restock_fuel_cans() brings the whole group back
 ## whenever a Round starts again.
@@ -129,6 +162,12 @@ const FUEL_CAN_GROUP: StringName = &"fuel_cans"
 ## The camera that chases Player 2's Unit. It sits in the SubViewport of Player 2's view.
 @export var player_2_camera: ChaseCamera
 
+## The MineLayer of Player 1's Unit (Story 014). It sits under World, beside the Weapons.
+@export var player_1_mine_layer: MineLayer
+
+## The MineLayer of Player 2's Unit. It sits under World, beside the Weapons.
+@export var player_2_mine_layer: MineLayer
+
 ## The node that owns the Round's state: who is alive, the respawn timers and the Flags.
 ## _ready() hands it the Units, the Bases and the cameras. It sits after the views in this scene's
 ## root, with RoundRestartInput after it, and what the screen shows about the Round (the respawn
@@ -145,14 +184,19 @@ func _ready() -> void:
 	var units: Array[Unit] = [player_1_unit, player_2_unit]
 	var bases: Array[Base] = [field.player_1_base, field.player_2_base]
 	var cameras: Array[ChaseCamera] = [player_1_camera, player_2_camera]
+	_assign_players(units, bases)
+	_arm_turrets(units, bases)
+	_hand_bases_to_mine_layers(bases)
 	_warm_up_models()
 	match_controller.begin(units, bases, cameras, field.token_stock)
 	match_controller.round_started.connect(_free_shots)
 	match_controller.round_started.connect(_restock_fuel_cans)
+	match_controller.round_started.connect(_restore_structures)
+	match_controller.round_started.connect(_free_mines)
 
 
 ## The name of the first required reference that is not assigned, or an empty string when all
-## eight are: the six exports and the field's two Bases.
+## ten are: the eight exports and the field's two Bases.
 func _first_unassigned() -> String:
 	if field == null:
 		return "field"
@@ -170,7 +214,39 @@ func _first_unassigned() -> String:
 		return "player_2_camera"
 	if match_controller == null:
 		return "match_controller"
+	if player_1_mine_layer == null:
+		return "player_1_mine_layer"
+	if player_2_mine_layer == null:
+		return "player_2_mine_layer"
 	return ""
+
+
+## Sets the Player of each Unit and of each Structure in its Base's list, in Player order: index 0
+## is Player 1, 1 is Player 2. An entry of a list that is not assigned is skipped (Base warns).
+func _assign_players(units: Array[Unit], bases: Array[Base]) -> void:
+	for player: int in units.size():
+		units[player].player_index = player
+		for structure: Structure in bases[player].structures:
+			if structure != null:
+				structure.player_index = player
+
+
+## Arms every Turret in each Base's structures list (Story 013): the target is the other Player's
+## Unit, so a Turret of Player N's Base fires at Player N + 1's, wrapping round; the Shots go under
+## the node the Units are under. A Structure that is not a Turret is left alone.
+func _arm_turrets(units: Array[Unit], bases: Array[Base]) -> void:
+	for player: int in bases.size():
+		for structure: Structure in bases[player].structures:
+			var turret: Turret = structure as Turret
+			if turret != null:
+				turret.arm(units[(player + 1) % units.size()], units[player].get_parent(), match_controller.rules)
+
+
+## Hands both MineLayers the two Bases, in Player order, before the Round begins (Story 014): the
+## MineLayer refuses a lay in or near either of them.
+func _hand_bases_to_mine_layers(bases: Array[Base]) -> void:
+	for layer: MineLayer in [player_1_mine_layer, player_2_mine_layer]:
+		layer.bases = bases
 
 
 ## Instances each of the match's Unit types' model scenes once and frees it at once, before the
@@ -196,6 +272,25 @@ func _free_shots() -> void:
 	for shot: Node in get_tree().get_nodes_in_group(SHOT_GROUP):
 		shot.set_physics_process(false)
 		shot.queue_free()
+
+
+## Frees every Mine on the Map (the MINE_GROUP nodes) when a Round starts again (Story 014 AC-7):
+## armed, live or flashing alike. Each Mine stops its tick first, so one queued to be freed cannot
+## still go off on the tick of the restart.
+func _free_mines() -> void:
+	for mine: Node in get_tree().get_nodes_in_group(MINE_GROUP):
+		mine.set_physics_process(false)
+		mine.queue_free()
+
+
+## Brings every Structure of both Bases back whole when a Round starts again (Story 012 AC-5): the
+## controller has seated every Flag and benched both Units by then, so nothing stands where a
+## piece returns. A piece that is standing is refilled, a fallen one stands again.
+func _restore_structures() -> void:
+	for base: Base in [field.player_1_base, field.player_2_base]:
+		for structure: Structure in base.structures:
+			if structure != null:
+				structure.restore()
 
 
 ## Brings every Fuel Can (the FUEL_CAN_GROUP nodes) back at its spot when a Round starts again
