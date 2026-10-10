@@ -1,0 +1,18 @@
+#!/bin/sh
+# usage: frames2.sh ROOT SCENARIO OUT_DIR   frames.sh for any project root: records one evidence
+# scenario windowed at 1280x720 with Movie Maker (frames go under OUT_DIR), keeps only the frames
+# its SPLIT lines name (frame=N) in OUT_DIR/kept, deletes the rest, saves the log as OUT_DIR/run.txt.
+R="$1"; SC="$2"; OUT="$3"
+mkdir -p "$OUT/all" "$OUT/kept"
+cd "$R" || exit 9
+godot --path . --windowed --resolution 1280x720 --write-movie "$OUT/all/f.png" \
+  res://tools/evidence/split_screen_harness.tscn -- --scenario="$SC" > "$OUT/run.txt" 2>&1
+echo "$SC rc $?"
+grep -E "ERROR|WARNING" "$OUT/run.txt" | head -5
+grep -E "^RESULT" "$OUT/run.txt" | head -3
+grep -o "frame=[0-9]*" "$OUT/run.txt" | sort -u | while read -r f; do
+  n=${f#frame=}; src=$(printf "%s/all/f%08d.png" "$OUT" "$n")
+  [ -f "$src" ] && cp "$src" "$OUT/kept/"
+done
+find "$OUT/all" -name '*.png' -delete
+echo "$SC kept $(find "$OUT/kept" -name '*.png' | wc -l) frames"

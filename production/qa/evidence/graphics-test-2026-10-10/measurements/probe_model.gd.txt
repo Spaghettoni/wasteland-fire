@@ -1,0 +1,35 @@
+extends SceneTree
+## Probe: loads the Truck's mesh model and prints each child's AABB, surfaces, material flags and
+## a few vertex colours, so orientation, size and colour encoding can be checked.
+
+func _initialize() -> void:
+	print("PROBE START")
+	var scene: PackedScene = load("res://src/gameplay/units/models/truck_mesh_model.tscn")
+	var model: Node3D = scene.instantiate()
+	root.add_child(model)
+	await process_frame
+	for child: Node in model.get_children():
+		var mi: MeshInstance3D = child as MeshInstance3D
+		var mesh: Mesh = mi.mesh
+		var aabb: AABB = mesh.get_aabb()
+		print("CHILD %s groups=%s surfaces=%d aabb_pos=%s aabb_end=%s" % [mi.name, mi.get_groups(), mesh.get_surface_count(), aabb.position, aabb.end])
+		var arrays: Array = mesh.surface_get_arrays(0)
+		var verts: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+		var colours: Variant = arrays[Mesh.ARRAY_COLOR]
+		var uvs: Variant = arrays[Mesh.ARRAY_TEX_UV]
+		print("  verts=%d has_colour=%s has_uv=%s" % [verts.size(), colours != null, uvs != null])
+		if colours != null:
+			var c: PackedColorArray = colours
+			var lo: float = 9.0
+			var hi: float = -9.0
+			var seen: Dictionary = {}
+			for col: Color in c:
+				lo = minf(lo, col.r)
+				hi = maxf(hi, col.r)
+				seen["%.2f,%.2f,%.2f" % [col.r, col.g, col.b]] = true
+			print("  red_min=%.3f red_max=%.3f distinct=%d sample=%s" % [lo, hi, seen.size(), seen.keys().slice(0, 6)])
+		var mat: Material = mi.material_override
+		if mat is StandardMaterial3D:
+			var sm: StandardMaterial3D = mat
+			print("  override albedo=%s vc=%s srgb=%s rough=%.2f metal=%.2f emission=%s" % [sm.albedo_color, sm.vertex_color_use_as_albedo, sm.vertex_color_is_srgb, sm.roughness, sm.metallic, sm.emission_enabled])
+	quit()

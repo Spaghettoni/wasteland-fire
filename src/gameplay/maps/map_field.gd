@@ -25,7 +25,7 @@ extends Node3D
 ## src/gameplay/split_screen/data/team_orange_material.tres as color_material and its
 ## player_2_base team_teal_material.tres, the Teams split_screen.tscn gives Player 1 and Player 2.
 ## And its cliffs on the cliffs_water layer are drawn colliders (CSG shapes with use_collision),
-## while its water on that layer is a bare StaticBody3D under a drawn surface: KitUnitModel lifts
+## while its water on that layer is a bare StaticBody3D under a drawn surface: UnitModel lifts
 ## the Gyrocopter's model only over a collider that is drawn geometry, so a cliff built as a
 ## StaticBody3D with a mesh child (as terrain_stand_ins.tscn's is) would hide the Gyrocopter
 ## inside it, and water built as a CSG shape would lift it over the water.

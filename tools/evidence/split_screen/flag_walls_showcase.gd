@@ -175,7 +175,7 @@ func _gyro_over() -> void:
 	var wall: Structure = _w.wall(1, Walls.GATE)
 	var mesh: MeshInstance3D = wall.get_node("Mesh") as MeshInstance3D
 	var top: AABB = mesh.global_transform * mesh.get_aabb()
-	var clearance: float = (q.units.units[0].get_node(NodePath(String(Unit.MODEL_NODE_NAME))) as KitUnitModel).rise_clearance
+	var clearance: float = (q.units.units[0].get_node(NodePath(String(Unit.MODEL_NODE_NAME))) as UnitModel).rise_clearance
 	var over: bool = false
 	for _tick: int in CROSS_LIMIT_TICKS:
 		q.harness.drive(0, 1, 0)

@@ -1,0 +1,16 @@
+#!/bin/sh
+# usage: fps.sh   Runs map_fps windowed with vsync off on the working tree (new lighting), then on the
+# HEAD versions of the two lighting files (old lighting), then puts the working-tree files back and
+# checks them byte for byte. Godot reads the files at launch, so nothing else may run meanwhile.
+W=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/298d4507-ee5d-4984-a655-a1e248417884/scratchpad/fps
+R=/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire
+cd $R || exit 9
+M=src/gameplay/maps/map_01/map_01.tscn; S=src/gameplay/split_screen/split_screen.tscn
+cp $M $W/map_01.new; cp $S $W/split_screen.new
+run() { godot --path . --windowed --resolution 1280x720 --disable-vsync res://tools/evidence/split_screen_harness.tscn -- --scenario=map_fps > "$W/$1.txt" 2>&1; echo "$1 rc $?"; grep -E "^RESULT" "$W/$1.txt" | cut -c1-300; }
+run new-1
+git show HEAD:$M > $M; git show HEAD:$S > $S
+run old-1
+cp $W/map_01.new $M; cp $W/split_screen.new $S
+cmp $M $W/map_01.new && cmp $S $W/split_screen.new && echo "working tree restored"
+run new-2

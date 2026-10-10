@@ -50,3 +50,21 @@ concept render, too many draw calls for a game unit. If this becomes the real
 Gyrocopter model, bake the frame into one mesh, keep the rotor and propeller
 as separate meshes for animation, or replace it with a kit model and keep only
 the silhouette and palette.
+
+## Blender model (2026-10-10)
+
+`wasteland_gyrocopter.glb` is the Gyrocopter Unit rebuilt in Blender by
+`tools/blender/build_gyrocopter.py` (how to rebuild it: `tools/blender/readme.md`):
+the same gyrocopter in the game's one-Team-colour rules, with the dark tube
+frame of the concept sheet, sized to the Gyrocopter's collider, two meshes (Team
+accent, neutral parts; it has no lamps) with ambient occlusion baked into the
+vertex colours. The rotor and the propeller stand still in the kit model's pose
+(rotor yawed 25° and tilted back 6°). The script is the source; never edit the
+`.glb` by hand. `renders/wasteland_gyrocopter_blender_*.png` are its four
+preview renders, the Team accent painted orange.
+
+`src/gameplay/units/data/gyrocopter_stats.tres` points at
+`gyrocopter_mesh_model.tscn`, which draws this file 0.78 m above the floor and
+lifts it over cliffs and cover as the kit model was; pointing it back at
+`gyrocopter_kit_model.tscn` returns the game to the kit model above. The
+comparison in the game: `production/qa/evidence/blender-units-2026-10-10-evidence.md`.

@@ -1,0 +1,33 @@
+#!/bin/sh
+# usage: compose_all.sh OUT_DIR   Builds the before/after comparison images of the Blender Units from
+# the kept Movie Maker frames: before = kit models (frames/final2 for camera_showcase and
+# map_showcase, frames/before3 for the rest), after = Blender models (frames/final3).
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/298d4507-ee5d-4984-a655-a1e248417884/scratchpad
+OUT="$1"; T="$S/frames/cmp-final"; mkdir -p "$OUT" "$T"
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+C="godot --headless --path . -s $S/compose.gd --"
+F() { printf "%s/frames/%s/%s/kept/f%08d.png" "$S" "$1" "$2" "$3"; }
+crop() { $C crop "$1" "$2" $3 $4 $5 $6 $7 > /dev/null 2>&1 || echo "crop failed: $1"; }
+# crop4 NAME BEFORE_SET AFTER_SET SCENARIO FRAME_BEFORE FRAME_AFTER X Y W H SCALE  -> T/NAME_b.png, T/NAME_a.png
+crop2() { crop "$T/$1_b.png" "$(F $2 $4 $5)" $7 $8 $9 ${10} ${11}; crop "$T/$1_a.png" "$(F $3 $4 $6)" $7 $8 $9 ${10} ${11}; }
+crop2 m453p1 final2 final3 camera_showcase 453 453 260 380 120 110 4
+crop2 m453p2 final2 final3 camera_showcase 453 453 900 380 120 110 4
+$C row "$OUT/motorbike-01-carrying-the-flag-from-above-zoomed-4x.png" 440 $T/m453p1_b.png $T/m453p1_a.png $T/m453p2_b.png $T/m453p2_a.png > /dev/null 2>&1
+crop2 fw_moto before3 final3 flag_walls_showcase 907 908 898 382 120 100 4
+crop2 us_buggy before3 final3 unit_swap_showcase 117 117 258 382 120 100 4
+$C row "$OUT/units-01-motorbike-and-buggy-from-above-zoomed-4x.png" 400 $T/fw_moto_b.png $T/fw_moto_a.png $T/us_buggy_b.png $T/us_buggy_a.png > /dev/null 2>&1
+crop2 fw_gyro before3 final3 flag_walls_showcase 907 908 230 355 180 120 3
+crop2 mn_gyro before3 final3 mines_showcase 1284 1284 868 370 180 120 3
+$C row "$OUT/gyrocopter-01-from-above-zoomed-3x.png" 360 $T/fw_gyro_b.png $T/fw_gyro_a.png $T/mn_gyro_b.png $T/mn_gyro_a.png > /dev/null 2>&1
+crop2 m123p1 final2 final3 map_showcase 123 123 260 315 120 120 3
+crop2 m123p2 final2 final3 map_showcase 123 123 880 315 160 120 3
+$C row "$OUT/chase-01-garages-motorbike-and-buggy-zoomed-3x.png" 360 $T/m123p1_b.png $T/m123p1_a.png $T/m123p2_b.png $T/m123p2_a.png > /dev/null 2>&1
+crop2 m717p1 final2 final3 map_showcase 717 717 240 315 160 120 3
+crop2 m717p2 final2 final3 map_showcase 717 717 900 320 120 110 3
+$C row "$OUT/chase-02-ford-buggy-and-motorbike-zoomed-3x.png" 360 $T/m717p1_b.png $T/m717p1_a.png $T/m717p2_b.png $T/m717p2_a.png > /dev/null 2>&1
+crop2 m1461p1 final2 final3 map_showcase 1461 1461 200 260 240 160 2.5
+crop2 m1461p2 final2 final3 map_showcase 1461 1461 840 260 240 160 2.5
+$C row "$OUT/chase-03-gyrocopters-zoomed-2_5x.png" 400 $T/m1461p1_b.png $T/m1461p1_a.png $T/m1461p2_b.png $T/m1461p2_a.png > /dev/null 2>&1
+$C pair "$OUT/full-01-gyrocopters-chase-view-before-and-after.png" "$(F final2 map_showcase 1461)" "$(F final3 map_showcase 1461)" > /dev/null 2>&1
+$C pair "$OUT/full-02-buggy-in-its-garage-from-above-before-and-after.png" "$(F before3 unit_swap_showcase 117)" "$(F final3 unit_swap_showcase 117)" > /dev/null 2>&1
+ls -1 "$OUT"

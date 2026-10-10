@@ -188,6 +188,7 @@ size_flags_vertical = 3
 stretch = true
 
 [node name="SubViewport" type="SubViewport" parent="Views/Player1View" unique_id=9000031]
+msaa_3d = 2
 
 [node name="Player1Camera" type="Camera3D" parent="Views/Player1View/SubViewport" unique_id=9000041 node_paths=PackedStringArray("target")]
 unique_name_in_owner = true
@@ -237,6 +238,7 @@ size_flags_vertical = 3
 stretch = true
 
 [node name="SubViewport" type="SubViewport" parent="Views/Player2View" unique_id=9000032]
+msaa_3d = 2
 
 [node name="Player2Camera" type="Camera3D" parent="Views/Player2View/SubViewport" unique_id=9000042 node_paths=PackedStringArray("target")]
 unique_name_in_owner = true

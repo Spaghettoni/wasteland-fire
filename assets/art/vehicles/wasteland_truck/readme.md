@@ -46,3 +46,19 @@ About 170 `MeshInstance3D` nodes sharing the palette's materials. Fine for a
 concept render, too many draw calls for a game vehicle. If it is ever used in
 play, bake it into one mesh or replace it with a kit model and keep only the
 silhouette and palette.
+
+## Blender model (2026-10-10)
+
+`wasteland_truck.glb` is the Truck Unit rebuilt in Blender by
+`tools/blender/build_truck.py` (how to rebuild it: `tools/blender/readme.md`):
+the same pickup in the game's one-Team-colour rules, sized to the Truck's
+collider, three meshes (Team accent, neutral parts, lamps) with ambient
+occlusion baked into the vertex colours. The script is the source; never edit
+the `.glb` by hand. `renders/wasteland_truck_blender_*.png` are its four
+preview renders, the Team accent painted orange.
+
+Made as a test, judged in the game and kept by the developer the same day; the
+other three Units followed. `src/gameplay/units/data/truck_stats.tres` points at
+`truck_mesh_model.tscn`, which draws this file; pointing it back at
+`truck_kit_model.tscn` returns the game to the kit model above. The comparison
+in the game: `production/qa/evidence/graphics-test-2026-10-10-evidence.md`.

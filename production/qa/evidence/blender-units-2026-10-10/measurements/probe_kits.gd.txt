@@ -1,0 +1,37 @@
+extends SceneTree
+## Probe: instances each type's kit model scene and its mesh model scene directly, waits a frame
+## so _ready() has built them, and prints surfaces, triangles, the drawn box in the Unit's frame
+## (scaled and placed as the game places it) and the rise hull, for the comparison table.
+
+const TYPES: Array[String] = ["motorbike", "buggy", "truck", "gyrocopter"]
+
+
+func _initialize() -> void:
+	for type_id: String in TYPES:
+		for kind: String in ["kit", "mesh"]:
+			var scene: PackedScene = load("res://src/gameplay/units/models/%s_%s_model.tscn" % [type_id, kind])
+			var model: UnitModel = scene.instantiate() as UnitModel
+			root.add_child(model)
+			await process_frame
+			var surfaces: int = 0
+			var tris: int = 0
+			var box: AABB = AABB()
+			var first: bool = true
+			for child: Node in model.get_children():
+				var mi: MeshInstance3D = child as MeshInstance3D
+				if mi == null:
+					continue
+				surfaces += mi.mesh.get_surface_count()
+				for s: int in mi.mesh.get_surface_count():
+					tris += (mi.mesh.surface_get_arrays(s)[Mesh.ARRAY_INDEX] as PackedInt32Array).size() / 3
+				var part: AABB = model.transform * (mi.transform * mi.mesh.get_aabb())
+				box = part if first else box.merge(part)
+				first = false
+			var hull: AABB = model._hull
+			var low: Vector3 = hull.position * model.model_scale + model.offset
+			var high: Vector3 = hull.end * model.model_scale + model.offset
+			print("%-10s %-4s surfaces=%d tris=%d size x=%.2f y=%.2f z=%.2f (z %.2f..%.2f) hull x %.2f..%.2f z %.2f..%.2f lowest=%.3f" % [
+					type_id, kind, surfaces, tris, box.size.x, box.size.y, box.size.z, box.position.z, box.end.z,
+					low.x, high.x, low.z, high.z, model.hover_height + low.y])
+			model.free()
+	quit()

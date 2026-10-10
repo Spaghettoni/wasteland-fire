@@ -1,0 +1,14 @@
+#!/bin/sh
+# usage: fps2.sh   Runs map_fps windowed with vsync off, alternating the repository (the Blender
+# models) and the scratch copy with the kit models wired (frames/kitcopy), twice each, then prints
+# map_fps's own steady average and lowest frame rate, draw calls and primitives for each run.
+# Nothing else may run meanwhile.
+W=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/298d4507-ee5d-4984-a655-a1e248417884/scratchpad
+run() { cd "$2" || exit 9; godot --path . --windowed --resolution 1280x720 --disable-vsync res://tools/evidence/split_screen_harness.tscn -- --scenario=map_fps > "$W/fps2/$1.txt" 2>&1; echo "$1 rc $?"; }
+run blender-1 /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire
+run kit-1 $W/kitcopy
+run blender-2 /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire
+run kit-2 $W/kitcopy
+for f in blender-1 kit-1 blender-2 kit-2; do
+  echo "$f: $(grep -h '^RESULT' "$W/fps2/$f.txt" | grep -oE 'fps_avg_steady=[0-9.]+|fps_min_steady=[0-9.]+|draw_calls_max=[0-9]+|primitives_max=[0-9]+' | tr '\n' ' ')"
+done

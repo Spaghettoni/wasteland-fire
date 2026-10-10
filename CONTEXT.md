@@ -7,7 +7,7 @@ A two-player split-screen 3D vehicle game in the style of Return Fire, set in a 
 ### Effort scope
 
 **First Playable**:
-The first version worth sitting a friend down for; the rules source calls it version 0.1. Two Players, split screen, Map 01, four Units, Tokens, Fuel, the Flag, win by delivery or the opponent losing their last Motorbike, and a coherent low-poly look built from Godot's built-in meshes.
+The first version worth sitting a friend down for; the rules source calls it version 0.1. Two Players, split screen, Map 01, four Units, Tokens, Fuel, the Flag, win by delivery or the opponent losing their last Motorbike, and a coherent low-poly look built from Godot's built-in meshes (the Units' models built in Blender by the repository's scripts since 2026-10-10).
 _Avoid_: MVP, vertical slice, prototype, demo
 
 **Game-Night Build**:

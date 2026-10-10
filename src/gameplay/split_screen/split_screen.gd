@@ -250,11 +250,12 @@ func _hand_bases_to_mine_layers(bases: Array[Base]) -> void:
 
 
 ## Instances each of the match's Unit types' model scenes once and frees it at once, before the
-## Round begins (Story 007 AC-14): a model built from the author's concept kit (KitUnitModel) builds
-## its meshes the first time its kit enters the tree, at a cost a spawn would show, and caches them
-## (measured on 4.7.2; the Story 007 evidence doc keeps the run), so the builds fall here, hidden by
-## the Round's start, and never at a spawn in the Round. Each model is under this scene for its
-## build only: it is never drawn and prints nothing.
+## Round begins (Story 007 AC-14): a model makes its meshes the first time one of its type enters
+## the tree, at a cost a spawn would show, and caches them (a MeshUnitModel reads its mesh file and
+## the box of its vertices; a KitUnitModel builds them from the author's concept kit: measured on
+## 4.7.2, the Story 007 evidence doc keeps the run), so that cost falls here, hidden by the Round's
+## start, and never at a spawn in the Round. Each model is under this scene for that only: it is
+## never drawn and prints nothing.
 func _warm_up_models() -> void:
 	for stats: UnitStats in match_controller.unit_types():
 		if stats == null or stats.model == null:

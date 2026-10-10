@@ -46,3 +46,20 @@ About 130 `MeshInstance3D` nodes sharing the palette's materials. Fine for a
 concept render, too many draw calls for a game unit. If this becomes the real
 Motorbike model, bake it into one mesh or replace it with a kit model and keep
 only the silhouette and palette.
+
+## Blender model (2026-10-10)
+
+`wasteland_motorbike.glb` is the Motorbike Unit rebuilt in Blender by
+`tools/blender/build_motorbike.py` (how to rebuild it: `tools/blender/readme.md`):
+the same dirt bike in the game's one-Team-colour rules, sized to the
+Motorbike's collider, three meshes (Team accent, neutral parts, lamps) with
+ambient occlusion baked into the vertex colours. The cream plate on the tank
+top is a lamp part: the heading cue that shows the Motorbike's front from the
+camera above, as the kit model's remapped tank-top plate did. The script is the
+source; never edit the `.glb` by hand. `renders/wasteland_motorbike_blender_*.png`
+are its four preview renders, the Team accent painted orange.
+
+`src/gameplay/units/data/motorbike_stats.tres` points at
+`motorbike_mesh_model.tscn`, which draws this file; pointing it back at
+`motorbike_kit_model.tscn` returns the game to the kit model above. The
+comparison in the game: `production/qa/evidence/blender-units-2026-10-10-evidence.md`.

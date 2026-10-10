@@ -343,7 +343,7 @@ class Built:
 	## The neutral parts: the vertex-coloured fold and one surface per APART_KEYS key the kit uses.
 	var neutral: ArrayMesh
 	## The box of the vertices up to HULL_TOP in the kit's frame, unscaled: the body without the
-	## rotor and the mast (KitUnitModel's rise over cliffs reads its footprint and lowest point).
+	## rotor and the mast (UnitModel's rise over cliffs reads its footprint and lowest point).
 	var hull: AABB
 
 

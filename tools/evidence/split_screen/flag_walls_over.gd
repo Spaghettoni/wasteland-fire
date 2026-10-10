@@ -85,7 +85,7 @@ func _gyro_over() -> void:
 		await q.kit.tick()
 	q.kit.on_tick = Callable()
 	q.harness.release_all()
-	var clearance: float = (q.units.units[0].get_node(NodePath(String(Unit.MODEL_NODE_NAME))) as KitUnitModel).rise_clearance
+	var clearance: float = (q.units.units[0].get_node(NodePath(String(Unit.MODEL_NODE_NAME))) as UnitModel).rise_clearance
 	var notes: PackedStringArray = []
 	for player: int in Kit.PLAYERS:
 		var past: float = _w.bases[1 - player].to_local(q.units.units[player].global_position).z - (Walls.SEAT.z + Walls.FACE)

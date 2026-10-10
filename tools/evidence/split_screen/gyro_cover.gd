@@ -156,7 +156,7 @@ func _check_data() -> void:
 			_q.kit.need(problems, (body as CollisionObject3D).collision_layer == MAP_LAYER, "%s/%s is on layer %d" % [base, body.name, (body as CollisionObject3D).collision_layer])
 	await _q.put(Harness.PLAYER_1, _q.units.stats(Quick.GYROCOPTER), Quick.LANE_SPOT, Vector3.RIGHT)
 	await _q.kit.advance(RISE_WAIT_TICKS)
-	var model: KitUnitModel = _q.units.units[0].get_node_or_null(NodePath(String(Unit.MODEL_NODE_NAME))) as KitUnitModel
+	var model: UnitModel = _q.units.units[0].get_node_or_null(NodePath(String(Unit.MODEL_NODE_NAME))) as UnitModel
 	_hover = Quick.model_bottom(_q.units.units[0]) - _q.units.units[0].global_position.y
 	var rises: bool = model != null and model.rise_over_cliffs and model.rise_body_mask == COVER_LAYER
 	_q.kit.need(problems, rises, "the Gyrocopter's model does not rise over the cover layer")
@@ -229,7 +229,7 @@ func _judge_cross(path: String, axis: Vector2, lane: int, gyro: UnitStats, probl
 	var settled: float = _bottoms[lane][-1] - (last.y + _hover)
 	var judged: bool = _stop_is_clear(unit)
 	var label: String = "p%d gyrocopter over %s" % [lane + 1, piece.name]
-	var rise_clearance: float = (unit.get_node(NodePath(String(Unit.MODEL_NODE_NAME))) as KitUnitModel).rise_clearance
+	var rise_clearance: float = (unit.get_node(NodePath(String(Unit.MODEL_NODE_NAME))) as UnitModel).rise_clearance
 	_q.kit.need(problems, _q.map.contacts[lane] == 0, "%s touched a wall %d times" % [label, _q.map.contacts[lane]])
 	_q.kit.need(problems, slowest >= SPEED_SHARE * gyro.max_speed, "%s slowed to %.2f m/s over it" % [label, slowest])
 	_q.kit.need(problems, past > 0.0, "%s ended %.2f m short of clearing it" % [label, -past])
@@ -273,18 +273,18 @@ static func _model_footprint(unit: Unit) -> PackedVector2Array:
 ## model's footprint widened by its rise_margin on every side, from the floor to high above: the
 ## model's own query, with no lead (the Unit stands), so its target there is its hover.
 func _stop_is_clear(unit: Unit) -> bool:
-	var model: KitUnitModel = unit.get_node_or_null(NodePath(String(Unit.MODEL_NODE_NAME))) as KitUnitModel
+	var model: UnitModel = unit.get_node_or_null(NodePath(String(Unit.MODEL_NODE_NAME))) as UnitModel
 	if model == null:
 		return false
 	var shape: BoxShape3D = BoxShape3D.new()
 	var reach: float = 0.0
 	for point: Vector2 in _model_footprint(unit):
 		reach = maxf(reach, point.distance_to(Quick.ground(unit)))
-	shape.size = Vector3(2.0 * (reach + model.rise_margin), KitUnitModel.RISE_BOX_HEIGHT, 2.0 * (reach + model.rise_margin))
+	shape.size = Vector3(2.0 * (reach + model.rise_margin), UnitModel.RISE_BOX_HEIGHT, 2.0 * (reach + model.rise_margin))
 	var query: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
 	query.shape = shape
 	query.collision_mask = model.rise_mask | model.rise_body_mask
-	query.transform = Transform3D(Basis.IDENTITY, unit.global_position + Vector3.UP * KitUnitModel.RISE_BOX_HEIGHT / 2.0)
+	query.transform = Transform3D(Basis.IDENTITY, unit.global_position + Vector3.UP * UnitModel.RISE_BOX_HEIGHT / 2.0)
 	return unit.get_world_3d().direct_space_state.intersect_shape(query, 1).is_empty()
 
 

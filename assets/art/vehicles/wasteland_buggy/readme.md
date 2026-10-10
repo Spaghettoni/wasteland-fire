@@ -51,3 +51,19 @@ A couple of hundred `MeshInstance3D` nodes sharing the palette's materials.
 Fine for a concept render, too many draw calls for a game unit. If this
 becomes the real Buggy model, bake it into one mesh or replace it with a kit
 model and keep only the silhouette and palette.
+
+## Blender model (2026-10-10)
+
+`wasteland_buggy.glb` is the Buggy Unit rebuilt in Blender by
+`tools/blender/build_buggy.py` (how to rebuild it: `tools/blender/readme.md`):
+the same dune buggy in the game's one-Team-colour rules (the pennant in the Team
+accent, as the kit model's flag remap made it), sized to the Buggy's collider,
+three meshes (Team accent, neutral parts, lamps) with ambient occlusion baked
+into the vertex colours. The script is the source; never edit the `.glb` by
+hand. `renders/wasteland_buggy_blender_*.png` are its four preview renders, the
+Team accent painted orange.
+
+`src/gameplay/units/data/buggy_stats.tres` points at `buggy_mesh_model.tscn`,
+which draws this file; pointing it back at `buggy_kit_model.tscn` returns the
+game to the kit model above. The comparison in the game:
+`production/qa/evidence/blender-units-2026-10-10-evidence.md`.

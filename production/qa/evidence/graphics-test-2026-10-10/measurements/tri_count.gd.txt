@@ -1,0 +1,24 @@
+extends SceneTree
+## Probe: triangles and surfaces of the Truck's kit model and of its mesh model, each built under
+## the root as the game builds it.
+
+func _initialize() -> void:
+	for path: String in ["res://src/gameplay/units/models/truck_kit_model.tscn", "res://src/gameplay/units/models/truck_mesh_model.tscn"]:
+		var model: Node3D = (load(path) as PackedScene).instantiate()
+		root.add_child(model)
+		await process_frame
+		var tris: int = 0
+		var surfaces: int = 0
+		for child: Node in model.get_children():
+			var mi: MeshInstance3D = child as MeshInstance3D
+			if mi == null or mi.mesh == null:
+				continue
+			for s: int in mi.mesh.get_surface_count():
+				surfaces += 1
+				var arrays: Array = mi.mesh.surface_get_arrays(s)
+				var idx: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+				var verts: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+				tris += (idx.size() if idx.size() > 0 else verts.size()) / 3
+		print("COUNT %s surfaces=%d triangles=%d" % [path.get_file(), surfaces, tris])
+		model.queue_free()
+	quit()

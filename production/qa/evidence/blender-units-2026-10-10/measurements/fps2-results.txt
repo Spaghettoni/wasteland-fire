@@ -1,0 +1,4 @@
+blender-1: RESULT map_fps ok checks=0 failed=0 t=17.500 fps_avg=614.5 fps_avg_steady=650.7 fps_min=36.0 fps_min_steady=499.0 refresh_hz=120.0 draw_calls_max=226 primitives_max=136364 samples=17 legs=flat_and_road:ok,into_bases:ok display=macOS
+kit-1: RESULT map_fps ok checks=0 failed=0 t=17.500 fps_avg=439.3 fps_avg_steady=465.9 fps_min=14.0 fps_min_steady=361.0 refresh_hz=120.0 draw_calls_max=237 primitives_max=127996 samples=17 legs=flat_and_road:ok,into_bases:ok display=macOS
+blender-2: RESULT map_fps ok checks=0 failed=0 t=17.500 fps_avg=359.9 fps_avg_steady=380.1 fps_min=38.0 fps_min_steady=226.0 refresh_hz=120.0 draw_calls_max=226 primitives_max=136364 samples=17 legs=flat_and_road:ok,into_bases:ok display=macOS
+kit-2: RESULT map_fps ok checks=0 failed=0 t=17.500 fps_avg=581.5 fps_avg_steady=617.1 fps_min=12.0 fps_min_steady=389.0 refresh_hz=120.0 draw_calls_max=238 primitives_max=128060 samples=17 legs=flat_and_road:ok,into_bases:ok display=macOS

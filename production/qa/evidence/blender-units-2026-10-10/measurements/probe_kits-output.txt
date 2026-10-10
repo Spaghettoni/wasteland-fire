@@ -1,0 +1,9 @@
+
+motorbike  kit  surfaces=4 tris=8208 size x=0.72 y=1.21 z=2.60 (z -1.24..1.36) hull x -0.36..0.36 z -1.24..1.36 lowest=-0.054
+motorbike  mesh surfaces=3 tris=9578 size x=0.76 y=1.24 z=2.34 (z -1.17..1.17) hull x -0.38..0.38 z -1.17..1.17 lowest=-0.000
+buggy      kit  surfaces=4 tris=10324 size x=1.80 y=2.02 z=2.99 (z -1.49..1.50) hull x -0.90..0.90 z -1.49..1.50 lowest=-0.043
+buggy      mesh surfaces=3 tris=10508 size x=1.86 y=2.00 z=2.97 (z -1.51..1.46) hull x -0.93..0.93 z -1.51..1.46 lowest=0.002
+truck      kit  surfaces=4 tris=9896 size x=1.84 y=2.39 z=4.40 (z -2.20..2.20) hull x -0.92..0.92 z -2.20..2.20 lowest=-0.044
+truck      mesh surfaces=3 tris=12174 size x=2.16 y=2.70 z=4.57 (z -2.24..2.33) hull x -1.08..1.08 z -2.24..2.33 lowest=0.004
+gyrocopter kit  surfaces=4 tris=4120 size x=4.44 y=1.82 z=2.63 (z -1.43..1.21) hull x -0.70..0.70 z -1.19..1.21 lowest=0.780
+gyrocopter mesh surfaces=2 tris=7402 size x=4.23 y=1.80 z=2.42 (z -1.16..1.26) hull x -0.69..0.69 z -1.16..1.26 lowest=0.780

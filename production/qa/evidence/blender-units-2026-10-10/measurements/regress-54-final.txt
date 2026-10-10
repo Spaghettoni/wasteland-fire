@@ -1,0 +1,61 @@
+STRICT     drive coast                  rc=0
+STRICT     drive showcase               rc=0
+STRICT     drive soak                   rc=0
+STRICT     drive walls                  rc=0
+STRICT     split bases                  rc=0
+STRICT     split camera_showcase        rc=0
+STRICT     split camera_views           rc=0
+STRICT     split choice                 rc=0
+STRICT     split countdown              rc=0
+STRICT     split depot_tanks            rc=0
+STRICT     split destruction            rc=0
+STRICT     split flag_run               rc=0
+STRICT     split flag_showcase          rc=0
+DIFF       split flag_walls             rc 0->0, lines 62->62, first difference at line 7
+    base: CHECK flag_walls gyro_over PASS p1: model >= 0.250 m over the 2 m top for 27 ticks, never under 16.4 m/s, out over the Garage side | p2: model >= 0.250 m over the 2 m top for 27 ticks, never under 16.4 m/s, out over the Garage sid
+    new : CHECK flag_walls gyro_over PASS p1: model >= 0.250 m over the 2 m top for 26 ticks, never under 16.4 m/s, out over the Garage side | p2: model >= 0.250 m over the 2 m top for 26 ticks, never under 16.4 m/s, out over the Garage sid
+DIFF       split flag_walls_showcase    rc 0->0, lines 13->13, first difference at line 11
+    base: SPLIT flag_walls_showcase t=15.133 frame=907 moment=gyro_over over=true model_bottom=2.25 wall_top=2.00 look=2
+    new : SPLIT flag_walls_showcase t=15.150 frame=908 moment=gyro_over over=true model_bottom=2.25 wall_top=2.00 look=2
+STRICT     split fuel                   rc=0
+STRICT     split fuel_cans              rc=0
+STRICT     split fuel_hint              rc=0
+STRICT     split fuel_showcase          rc=0
+STRICT     split gyro                   rc=0
+DIFF       split gyro_cover             rc 0->0, lines 29->29, first difference at line 6
+    base: SPLIT gyro_cover t=9.417 cross=WreckWestMiddleNorth lane=1 slowest=16.40 model_over_top_min=0.550 over_ticks=20 past=6.15 settled=1.470 judged=false contacts=0
+    new : SPLIT gyro_cover t=9.417 cross=WreckWestMiddleNorth lane=1 slowest=16.40 model_over_top_min=0.650 over_ticks=20 past=6.15 settled=1.470 judged=false contacts=0
+STRICT     split hud                    rc=0
+STRICT     split idle_burn              rc=0
+STRICT     split isolation              rc=0
+STRICT     split layout                 rc=0
+STRICT     split loss                   rc=0
+STRICT     split map_bases              rc=0
+STRICT     split map_cover              rc=0
+STRICT     split map_edges              rc=0
+STRICT     split map_ford               rc=0
+STRICT     split map_layout             rc=0
+STRICT     split map_legibility         rc=0
+STRICT     split map_showcase           rc=0
+STRICT     split mines                  rc=0
+STRICT     split mines_showcase         rc=0
+STRICT     split quick_fixes_showcase   rc=0
+STRICT     split respawn_showcase       rc=0
+STRICT     split round_over             rc=0
+STRICT     split showcase               rc=0
+STRICT     split simultaneous           rc=0
+STRICT     split spot_turn              rc=0
+STRICT     split token_choice           rc=0
+STRICT     split token_layout           rc=0
+STRICT     split token_ui               rc=0
+STRICT     split tokens                 rc=0
+STRICT     split tokens_data            rc=0
+STRICT     split tokens_showcase        rc=0
+STRICT     split turrets                rc=0
+STRICT     split turrets_showcase       rc=0
+STRICT     split unit_swap              rc=0
+STRICT     split unit_swap_showcase     rc=0
+STRICT     split units                  rc=0
+STRICT     split units_showcase         rc=0
+STRICT     split weapons                rc=0
+-- 51 strict, 0 normalized, 3 bad of 54 compared

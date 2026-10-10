@@ -42,7 +42,7 @@ and the author's board, archived under design/source/).
 ## Out of scope — not building this
 - No online play, no AI bots or drones: no Unit is driven by the computer. Turrets and Mines are no longer excluded (decided 2026-10-07): each Base's two Turrets fire on their own and the Truck lays Mines, so the other Player is no longer the only threat (see the paragraph after the Build order).
 - No second Map, no map editor, and no destructible buildings beyond the Turrets and the Flag Walls: the Base walls, the towers and the cover stand all Round.
-- No downloaded asset kits or meshes: Godot's built-in meshes and code-generated textures instead.
+- No downloaded asset kits or meshes: Godot's built-in meshes and code-generated textures instead, and since 2026-10-10 the Units' models built in Blender by the repository's own scripts (decided by the developer; `design/rules.md`, Teams and visual style).
 - No Unit swap at the own Base in the First Playable: a Unit type changes only through a destruction. After the first playtest the swap is back (decided 2026-10-03): a story after the playtest fixes (`design/rules.md`, Destruction and respawn).
 - No camera or control-mode test in v0.1: the turning chase camera and the vehicle-relative keys of items 1 and 2 stay; the test, and the arrow or north-up minimap it may call for, come after v0.1.
 - No water boost and no key repair: the source's backlog, not v0.1.
@@ -67,6 +67,6 @@ After the First Playable (2026-10-07) the developer asked for Turrets, walls aro
 ---
 **Who it's for / what they feel:** Two friends on one couch who want a ten-minute rivalry: the panic of being chased with the Flag and the grin of stealing it back.
 
-**Art & audio direction:** Low-poly built from Godot's built-in meshes with code-generated textures in one flat-shaded palette; the Team colours Orange and Teal on everything a Player owns, never mixed within a model; the concept art in Discord #wasteland-fire is the reference; no downloaded kits; no audio in the First Playable.
+**Art & audio direction:** Low-poly built from Godot's built-in meshes with code-generated textures in one flat-shaded palette, the Units' models built in Blender by the repository's scripts in the same palette (since 2026-10-10); the Team colours Orange and Teal on everything a Player owns, never mixed within a model; the concept art in Discord #wasteland-fire is the reference; no downloaded kits; no audio in the First Playable.
 
 **Reference game:** Return Fire (1995): its two-player split-screen flag run with vehicle counters; the MVP keeps the flag run and the counters, now four vehicles (Buggy beats Truck, Truck beats Gyrocopter, Gyrocopter beats Buggy, the Motorbike apart for the Flag), and drops the flag towers, the hidden-flag hunt and the classical soundtrack. Its turrets and mines came back after the First Playable (2026-10-07) in this game's own form: two Turrets per Base and the Truck's Mines.

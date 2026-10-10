@@ -1,0 +1,29 @@
+#!/bin/sh
+# usage: regress.sh TAG   Captures the 54 retained outputs (3 at a time) into rg/TAG, drops the Jolt
+# job-system load warning (two lines; it appears under parallel load and is not a behaviour change)
+# from both sides, and compares byte for byte with base-a.
+W=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/298d4507-ee5d-4984-a655-a1e248417884/scratchpad/rg
+TAG="$1"
+mkdir -p $W/$TAG
+sh $W/capture.sh $W/$TAG $W/jobs.txt 3
+python3 - "$W/base-a" "$W/$TAG" "$W/f-base" "$W/f-$TAG" <<'PY'
+import shutil, sys
+from pathlib import Path
+for src, dst in ((sys.argv[1], sys.argv[3]), (sys.argv[2], sys.argv[4])):
+    d = Path(dst); d.mkdir(exist_ok=True)
+    for f in Path(src).iterdir():
+        if f.suffix == ".rc":
+            shutil.copy(f, d / f.name); continue
+        lines = f.read_bytes().split(b"\n"); out = []; skip = False
+        for line in lines:
+            if skip:
+                skip = False
+                if line.lstrip().startswith(b"at: CreateJob"):
+                    continue
+            if line.startswith(b"WARNING: Jolt Physics job system exceeded"):
+                skip = True; continue
+            out.append(line)
+        (d / f.name).write_bytes(b"\n".join(out))
+PY
+python3 $W/compare.py $W/f-base $W/f-$TAG > $W/$TAG.txt
+echo "compare exit $?"; grep -v "^STRICT" $W/$TAG.txt

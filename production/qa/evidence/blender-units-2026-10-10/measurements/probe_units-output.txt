@@ -1,0 +1,24 @@
+
+TYPE motorbike model=motorbike_mesh_model.tscn class=MeshUnitModel scale=1.000 pos=(0.0, 0.0, 0.0) tris=9578
+  Accent team=true surfaces=1 tris=1608 override=true
+  Neutral team=false surfaces=1 tris=7874 override=true
+  Lamp team=false surfaces=1 tris=96 override=true
+  box x -0.38..0.38 y -0.00..1.24 z -1.17..1.17 | collider x +-0.70 y 0.00..1.00 z +-1.30
+  hull x -0.380..0.380 y -0.000..1.239 z -1.170..1.170 rise=false hover=0.000 lowest_over_floor=-0.000
+TYPE buggy model=buggy_mesh_model.tscn class=MeshUnitModel scale=1.000 pos=(0.0, 0.0, 0.0) tris=10508
+  Accent team=true surfaces=1 tris=2616 override=true
+  Neutral team=false surfaces=1 tris=7616 override=true
+  Lamp team=false surfaces=1 tris=276 override=true
+  box x -0.93..0.93 y 0.00..2.00 z -1.51..1.46 | collider x +-0.90 y 0.00..1.10 z +-1.50
+  hull x -0.930..0.930 y 0.002..2.000 z -1.506..1.460 rise=false hover=0.000 lowest_over_floor=0.002
+TYPE truck model=truck_mesh_model.tscn class=MeshUnitModel scale=1.000 pos=(0.0, 0.0, 0.0) tris=12174
+  Accent team=true surfaces=1 tris=2248 override=true
+  Neutral team=false surfaces=1 tris=9710 override=true
+  Lamp team=false surfaces=1 tris=216 override=true
+  box x -1.08..1.08 y 0.00..2.70 z -2.24..2.33 | collider x +-1.20 y 0.00..1.60 z +-2.20
+  hull x -1.080..1.080 y 0.004..2.702 z -2.240..2.330 rise=false hover=0.000 lowest_over_floor=0.004
+TYPE gyrocopter model=gyrocopter_mesh_model.tscn class=MeshUnitModel scale=1.000 pos=(0.0, 0.78, 0.0) tris=7402
+  Accent team=true surfaces=1 tris=1296 override=true
+  Neutral team=false surfaces=1 tris=6106 override=true
+  box x -2.12..2.12 y -0.00..1.80 z -1.16..1.26 | collider x +-0.80 y 0.00..1.00 z +-1.20
+  hull x -0.690..0.690 y -0.000..1.389 z -1.160..1.259 rise=true hover=0.780 lowest_over_floor=0.780

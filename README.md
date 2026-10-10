@@ -69,9 +69,12 @@ The rules of record are in `design/rules.md`, the one-page brief in
 | 014 | The Truck's Mines: five per Truck, laid with E or Comma, live after 3 s, destroying any ground Unit that drives onto them; never laid in or near a Base | Done |
 
 Map 01 and the four Units have their low-poly look: the Map is built from
-Godot's built-in meshes with textures generated in code, and the Units are the
-concept models under `assets/art/`, merged into a few surfaces each when the
-game loads. The older evidence scenarios still run on the greybox field.
+Godot's built-in meshes with textures generated in code, lit by a low warm sun
+under a desert sky with ambient occlusion and anti-aliasing, and the Units are
+models built in Blender from the concept sheet by the scripts in
+`tools/blender/` (since 2026-10-10; the concept kit under `assets/art/` they
+replaced stays as a fallback). The older evidence scenarios still run on the
+greybox field.
 
 ## Controls
 
@@ -158,7 +161,10 @@ godot --headless -s -d --remote-debug tcp://127.0.0.1:0 res://addons/gdUnit4/bin
 - `production/` holds the epic, the stories and the retained QA evidence, one
   folder of screenshots per story.
 - `assets/art/` holds the vehicle concept models, a shared palette and a
-  showcase scene that renders them.
+  showcase scene that renders them, and the Units' Blender models (`.glb`)
+  with their preview renders.
+- `tools/blender/` holds the Python scripts that build the Units' models in
+  Blender; `tools/evidence/` the evidence harness.
 - `docs/` holds engine reference notes pinned to Godot 4.7.2 and the
   framework's workflow guide.
 - `.claude/` holds the agents, skills and hooks of the development framework
@@ -176,6 +182,17 @@ procedural rust and paint-chip textures, rendered by the engine itself.
 | Gyrocopter | Truck |
 |---|---|
 | ![Gyrocopter](assets/art/vehicles/wasteland_gyrocopter/renders/wasteland_gyrocopter_front.png) | ![Truck](assets/art/vehicles/wasteland_truck/renders/wasteland_truck_front.png) |
+
+The models in the game, built in Blender from the same sheet in one Team colour
+(here Player 1's orange), by the scripts in `tools/blender/`:
+
+| Motorbike | Buggy |
+|---|---|
+| ![Motorbike](assets/art/vehicles/wasteland_motorbike/renders/wasteland_motorbike_blender_front_three_quarter.png) | ![Buggy](assets/art/vehicles/wasteland_buggy/renders/wasteland_buggy_blender_front_three_quarter.png) |
+
+| Gyrocopter | Truck |
+|---|---|
+| ![Gyrocopter](assets/art/vehicles/wasteland_gyrocopter/renders/wasteland_gyrocopter_blender_front_three_quarter.png) | ![Truck](assets/art/vehicles/wasteland_truck/renders/wasteland_truck_blender_front_three_quarter.png) |
 
 ## How it is made
 
