@@ -1,0 +1,11 @@
+Wasteland Fire — the author's comments after playing the build with the Flag Walls, the Turrets and the Truck's Mines (stories 012 to 014, commit 8067cba), pasted in conversation by the developer on 2026-10-10; the Slovak exactly as typed (without diacritics), one comment per line. The author's board has no cards for these features (the developer, 2026-10-10).
+
+Velmi dobre su tie vezicky vyladene. Presnost, sila. Ked tak sa este pohrame s tymi hp. Urcite by bolo fajn, aby bolo na nich zretelne ze sa nicia - podobne ako mury.
+myslim ze by to mohlo byt zretelne aj na vozidlach - resp. By mohli mat state, ked maju napr 20% ze sa z nich dymi a idu pomalsie. O polovicu napr.
+tie mury su dobre, len teda nahradme vsetky mury na mape tymto typom
+tiez by som spravil, ako sme sa bavili, ze existuju 2 vyskove urovne - v 1. su vozidla, mury, balvany, ... - v 2. lieta gyro a su napr hlavy veziciek. Mozno niektore budovy budu aj v tej vyske. - zaroven hitboxy su vzdy v oboch - cez celu vysku.
+a teda gyrokoptera sa pohybuje len v tej 2. urovni. vobec neklesa do prvej.
+bolo by fajn aby znicene vozidlo vybuchlo. ci uz je znicene, samoznicene, alebo gyrokoptera narazi do vysokej prekazky
+pridal  by som teda aj ammo okrem fuelu.
+zaroven aj ammo aj fuel by sa doplnali len pri budovach na to urcenych - rovno pred ammuniton/fuel budovov bude zona kde ked stoji, sa Ti doplnaju zasoby.
+zacinas s full zasobami fuelu aj ammo
