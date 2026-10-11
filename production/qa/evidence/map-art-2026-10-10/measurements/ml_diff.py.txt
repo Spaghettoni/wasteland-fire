@@ -1,0 +1,13 @@
+"""usage: ml_diff.py BASE NEW   Prints the script lists of map_layout's two outputs and whether the two
+outputs are identical once each line's 'scripts ...' field is taken out."""
+import re
+import sys
+
+field = re.compile(r"scripts [^|]*")
+base, new = (open(p).read().splitlines() for p in sys.argv[1:3])
+for name, lines in (("base", base), ("new", new)):
+    for line in lines:
+        for found in field.findall(line):
+            print(f"{name}: {found.strip()}")
+stripped = [[field.sub("", line) for line in lines] for lines in (base, new)]
+print("identical without the script lists" if stripped[0] == stripped[1] else "OTHER DIFFERENCES")

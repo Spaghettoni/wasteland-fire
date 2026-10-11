@@ -1,0 +1,23 @@
+#!/bin/sh
+# usage: compose_map_art.sh OUT_DIR   The before/after images of the map art: before = the
+# recordings at 73de824 (frames/final3 from the Units session, wt/before-turrets), after = the
+# worktree's (wt/after-*). Each pair shows before above after.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/298d4507-ee5d-4984-a655-a1e248417884/scratchpad
+W=$S/wt
+OUT="$1"
+mkdir -p "$OUT"
+C="sh $W/compose.sh"
+b() { printf "%s/frames/final3/%s/kept/f%08d.png" "$S" "$1" "$2"; }
+a() { printf "%s/%s/f%08d.png" "$W" "$1" "$2"; }
+$C pair "$OUT/map-art-01-garages-from-above.png" "$(b camera_showcase 102)" "$(a after-camera 102)"
+$C pair "$OUT/map-art-02-salt-flat-and-cover-from-above.png" "$(b camera_showcase 183)" "$(a after-camera 183)"
+$C pair "$OUT/map-art-03-base-and-water-tower-from-above.png" "$(b camera_showcase 279)" "$(a after-camera 279)"
+$C pair "$OUT/map-art-04-canyon-from-above.png" "$(b camera_showcase 549)" "$(a after-camera 549)"
+$C pair "$OUT/map-art-05-depot-from-above.png" "$(b camera_showcase 645)" "$(a after-camera 645)"
+[ -f "$(a after-map 717)" ] && $C pair "$OUT/map-art-06-fords-chase-view.png" "$(b map_showcase 717)" "$(a after-map 717)"
+[ -f "$(a after-map 1067)" ] && $C pair "$OUT/map-art-07-canyon-road-chase-view.png" "$(b map_showcase 1067)" "$(a after-map 1067)"
+[ -f "$(a after-map 1553)" ] && $C pair "$OUT/map-art-08-gyrocopters-over-the-rock-chase-view.png" "$(b map_showcase 1553)" "$(a after-map 1553)"
+[ -f "$(a after-walls 821)" ] && $C pair "$OUT/map-art-09-flag-walls-damaged-from-above.png" "$(b flag_walls_showcase 821)" "$(a after-walls 821)"
+[ -f "$(a after-turrets 64)" ] && $C pair "$OUT/map-art-10-turrets-from-above.png" "$W/before-turrets/f00000064.png" "$(a after-turrets 64)"
+[ -f "$(a after-mines 531)" ] && $C pair "$OUT/map-art-11-canyon-road-from-above.png" "$(b mines_showcase 531)" "$(a after-mines 531)"
+ls "$OUT"

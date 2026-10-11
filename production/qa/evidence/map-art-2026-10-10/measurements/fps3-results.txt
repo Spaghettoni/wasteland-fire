@@ -1,0 +1,9 @@
+after-1 rc 0
+before-1 rc 0
+after-2 rc 0
+before-2 rc 0
+after-1: fps_avg_steady=120.0 fps_min_steady=120.0 draw_calls_max=258 primitives_max=401074 
+before-1: fps_avg_steady=120.0 fps_min_steady=120.0 draw_calls_max=225 primitives_max=136180 
+after-2: fps_avg_steady=120.0 fps_min_steady=120.0 draw_calls_max=258 primitives_max=401062 
+before-2: fps_avg_steady=120.0 fps_min_steady=120.0 draw_calls_max=225 primitives_max=136192 
+fps3 done

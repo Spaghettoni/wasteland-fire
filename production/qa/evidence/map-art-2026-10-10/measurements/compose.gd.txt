@@ -1,0 +1,58 @@
+extends SceneTree
+## Image helper for the graphics comparisons, run headless with arguments after "--":
+##   pair OUT A B [LABEL_A LABEL_B]     A above B (each scaled to 960 wide), for a before/after
+##   crop OUT IN X Y W H SCALE          a region of IN, scaled by SCALE (nearest-free bilinear)
+##   row OUT H IN...                    the inputs side by side, each scaled to height H
+
+func _initialize() -> void:
+	var args: PackedStringArray = OS.get_cmdline_user_args()
+	match args[0]:
+		"pair":
+			var a: Image = _load(args[2])
+			var b: Image = _load(args[3])
+			a.resize(960, int(a.get_height() * 960.0 / a.get_width()), Image.INTERPOLATE_LANCZOS)
+			b.resize(960, int(b.get_height() * 960.0 / b.get_width()), Image.INTERPOLATE_LANCZOS)
+			var out: Image = Image.create_empty(960, a.get_height() + b.get_height() + 8, false, Image.FORMAT_RGB8)
+			out.fill(Color(0.1, 0.1, 0.1))
+			out.blit_rect(a, Rect2i(Vector2i.ZERO, a.get_size()), Vector2i(0, 0))
+			out.blit_rect(b, Rect2i(Vector2i.ZERO, b.get_size()), Vector2i(0, a.get_height() + 8))
+			out.save_png(args[1])
+		"crop":
+			var src: Image = _load(args[2])
+			var region: Image = src.get_region(Rect2i(int(args[3]), int(args[4]), int(args[5]), int(args[6])))
+			var s: float = float(args[7])
+			region.resize(int(region.get_width() * s), int(region.get_height() * s), Image.INTERPOLATE_LANCZOS)
+			region.save_png(args[1])
+		"sample":
+			var img: Image = _load(args[1])
+			var r: Rect2i = Rect2i(int(args[2]), int(args[3]), int(args[4]), int(args[5]))
+			var sum: Color = Color(0, 0, 0)
+			for y: int in range(r.position.y, r.end.y):
+				for x: int in range(r.position.x, r.end.x):
+					sum += img.get_pixel(x, y)
+			var n: float = r.get_area()
+			var c: Color = Color(sum.r / n, sum.g / n, sum.b / n)
+			print("SAMPLE %s rgb=%d,%d,%d hue=%.1f sat=%.2f val=%.2f" % [args[1].get_file(), c.r8, c.g8, c.b8, c.h * 360.0, c.s, c.v])
+		"row":
+			var h: int = int(args[2])
+			var images: Array[Image] = []
+			var width: int = 0
+			for i: int in range(3, args.size()):
+				var img: Image = _load(args[i])
+				img.resize(int(img.get_width() * float(h) / img.get_height()), h, Image.INTERPOLATE_LANCZOS)
+				images.append(img)
+				width += img.get_width() + 8
+			var row: Image = Image.create_empty(width - 8, h, false, Image.FORMAT_RGB8)
+			row.fill(Color(0.1, 0.1, 0.1))
+			var x: int = 0
+			for img: Image in images:
+				row.blit_rect(img, Rect2i(Vector2i.ZERO, img.get_size()), Vector2i(x, 0))
+				x += img.get_width() + 8
+			row.save_png(args[1])
+	quit()
+
+
+func _load(path: String) -> Image:
+	var img: Image = Image.load_from_file(path)
+	img.convert(Image.FORMAT_RGB8)
+	return img

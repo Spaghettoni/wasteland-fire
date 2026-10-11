@@ -1,0 +1,81 @@
+extends SceneTree
+## Scratch tool, not evidence code: runs the split screen harness (its scenario from the command
+## line, as the harness reads it) and measures the GPU's and the CPU's render time of every viewport
+## per frame (RenderingServer.viewport_set_measure_render_time), so a run capped by the display still
+## shows what a frame costs. Prints one line per second and a summary at exit; the first SKIP_SECONDS
+## (window, shader compilation) are left out of the summary.
+## Run: godot --path <project> --windowed --resolution 1280x720 -s <this file> -- --scenario=map_fps
+
+const HARNESS: String = "res://tools/evidence/split_screen_harness.tscn"
+const SKIP_SECONDS: float = 2.0
+
+var _rids: Array[RID] = []
+var _clock: float = 0.0
+var _second_gpu: float = 0.0
+var _second_cpu: float = 0.0
+var _second_frames: int = 0
+var _next_print: float = 1.0
+var _gpu_samples: PackedFloat64Array = PackedFloat64Array()
+var _cpu_samples: PackedFloat64Array = PackedFloat64Array()
+
+
+func _initialize() -> void:
+	change_scene_to_file(HARNESS)
+
+
+func _process(delta: float) -> bool:
+	_clock += delta
+	if _clock < SKIP_SECONDS or _clock >= _next_print:
+		_watch_viewports()
+	var gpu: float = 0.0
+	var cpu: float = 0.0
+	for rid: RID in _rids:
+		gpu += RenderingServer.viewport_get_measured_render_time_gpu(rid)
+		cpu += RenderingServer.viewport_get_measured_render_time_cpu(rid)
+	if _rids.size() > 1 and gpu > 0.0:
+		_second_gpu += gpu
+		_second_cpu += cpu
+		_second_frames += 1
+		if _clock >= SKIP_SECONDS:
+			_gpu_samples.append(gpu)
+			_cpu_samples.append(cpu)
+	if _clock >= _next_print:
+		_next_print += 1.0
+		print("GPUTIME_RAW t=%.0f viewports=%d gpu_ms=%.4f cpu_ms=%.4f frame_cpu_ms=%.4f" % [_clock,
+				_rids.size(), gpu, cpu, RenderingServer.get_frame_setup_time_cpu()])
+		if _second_frames > 0:
+			print("GPUTIME t=%.0f viewports=%d frames=%d gpu_ms=%.3f cpu_ms=%.3f" % [_clock, _rids.size(),
+					_second_frames, _second_gpu / _second_frames, _second_cpu / _second_frames])
+		_second_gpu = 0.0
+		_second_cpu = 0.0
+		_second_frames = 0
+	return false
+
+
+func _finalize() -> void:
+	if _gpu_samples.is_empty():
+		print("GPUTIME_SUMMARY no samples")
+		return
+	var gpu: Array = Array(_gpu_samples)
+	gpu.sort()
+	var total_gpu: float = 0.0
+	for value: float in gpu:
+		total_gpu += value
+	var total_cpu: float = 0.0
+	for value: float in _cpu_samples:
+		total_cpu += value
+	print("GPUTIME_SUMMARY frames=%d gpu_avg_ms=%.3f gpu_median_ms=%.3f gpu_p95_ms=%.3f gpu_max_ms=%.3f cpu_avg_ms=%.3f" % [
+			gpu.size(), total_gpu / gpu.size(), gpu[gpu.size() / 2], gpu[int(gpu.size() * 0.95)],
+			gpu[gpu.size() - 1], total_cpu / _cpu_samples.size()])
+
+
+## Turns the measurement on for the root viewport and every SubViewport as they appear.
+func _watch_viewports() -> void:
+	var viewports: Array[Viewport] = [root]
+	for node: Node in root.find_children("*", "SubViewport", true, false):
+		viewports.append(node as Viewport)
+	for viewport: Viewport in viewports:
+		var rid: RID = viewport.get_viewport_rid()
+		if not _rids.has(rid):
+			RenderingServer.viewport_set_measure_render_time(rid, true)
+			_rids.append(rid)

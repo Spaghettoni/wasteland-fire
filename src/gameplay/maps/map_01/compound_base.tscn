@@ -8,6 +8,9 @@
 [ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/marking.tres" id="6_marking"]
 [ext_resource type="PackedScene" path="res://src/gameplay/defences/flag_wall.tscn" id="7_flag_wall"]
 [ext_resource type="PackedScene" path="res://src/gameplay/defences/turret.tscn" id="8_turret"]
+[ext_resource type="Script" path="res://src/gameplay/props/prop_mesh.gd" id="9_prop_mesh"]
+[ext_resource type="PackedScene" path="res://assets/art/map_01/base/map_01_base.glb" id="10_base_trim"]
+[ext_resource type="Material" path="res://src/gameplay/props/materials/prop_neutral.tres" id="11_prop_neutral"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_pad"]
 material = ExtResource("5_garage_floor")
@@ -162,6 +165,12 @@ mesh = SubResource("BoxMesh_wall_back")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/WallBack"]
 shape = SubResource("BoxShape3D_wall_back")
 
+[node name="Trim" type="MeshInstance3D" parent="Walls/WallBack"]
+material_override = ExtResource("11_prop_neutral")
+script = ExtResource("9_prop_mesh")
+mesh_file = ExtResource("10_base_trim")
+mesh_name = &"WallBackTrim"
+
 [node name="WallLeft" type="StaticBody3D" parent="Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.35, 1.6, 0)
 collision_mask = 0
@@ -171,6 +180,12 @@ mesh = SubResource("BoxMesh_wall_side")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/WallLeft"]
 shape = SubResource("BoxShape3D_wall_side")
+
+[node name="Trim" type="MeshInstance3D" parent="Walls/WallLeft"]
+material_override = ExtResource("11_prop_neutral")
+script = ExtResource("9_prop_mesh")
+mesh_file = ExtResource("10_base_trim")
+mesh_name = &"WallSideTrim"
 
 [node name="WallRight" type="StaticBody3D" parent="Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.35, 1.6, 0)
@@ -182,6 +197,12 @@ mesh = SubResource("BoxMesh_wall_side")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/WallRight"]
 shape = SubResource("BoxShape3D_wall_side")
 
+[node name="Trim" type="MeshInstance3D" parent="Walls/WallRight"]
+material_override = ExtResource("11_prop_neutral")
+script = ExtResource("9_prop_mesh")
+mesh_file = ExtResource("10_base_trim")
+mesh_name = &"WallSideTrim"
+
 [node name="GateWallLeft" type="StaticBody3D" parent="Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.75, 1.6, -14.35)
 collision_mask = 0
@@ -191,6 +212,12 @@ mesh = SubResource("BoxMesh_wall_gate")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/GateWallLeft"]
 shape = SubResource("BoxShape3D_wall_gate")
+
+[node name="Trim" type="MeshInstance3D" parent="Walls/GateWallLeft"]
+material_override = ExtResource("11_prop_neutral")
+script = ExtResource("9_prop_mesh")
+mesh_file = ExtResource("10_base_trim")
+mesh_name = &"WallGateTrim"
 
 [node name="GateWallRight" type="StaticBody3D" parent="Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.75, 1.6, -14.35)
@@ -202,6 +229,12 @@ mesh = SubResource("BoxMesh_wall_gate")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/GateWallRight"]
 shape = SubResource("BoxShape3D_wall_gate")
 
+[node name="Trim" type="MeshInstance3D" parent="Walls/GateWallRight"]
+material_override = ExtResource("11_prop_neutral")
+script = ExtResource("9_prop_mesh")
+mesh_file = ExtResource("10_base_trim")
+mesh_name = &"WallGateTrim"
+
 [node name="TowerGateLeft" type="StaticBody3D" parent="Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 3, -15)
 collision_mask = 0
@@ -211,6 +244,12 @@ mesh = SubResource("BoxMesh_corner_tower")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/TowerGateLeft"]
 shape = SubResource("BoxShape3D_corner_tower")
+
+[node name="Trim" type="MeshInstance3D" parent="Walls/TowerGateLeft"]
+material_override = ExtResource("11_prop_neutral")
+script = ExtResource("9_prop_mesh")
+mesh_file = ExtResource("10_base_trim")
+mesh_name = &"TowerTrim"
 
 [node name="TowerGateRight" type="StaticBody3D" parent="Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 3, -15)
@@ -222,6 +261,12 @@ mesh = SubResource("BoxMesh_corner_tower")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/TowerGateRight"]
 shape = SubResource("BoxShape3D_corner_tower")
 
+[node name="Trim" type="MeshInstance3D" parent="Walls/TowerGateRight"]
+material_override = ExtResource("11_prop_neutral")
+script = ExtResource("9_prop_mesh")
+mesh_file = ExtResource("10_base_trim")
+mesh_name = &"TowerTrim"
+
 [node name="TowerBackLeft" type="StaticBody3D" parent="Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 3, 15)
 collision_mask = 0
@@ -232,6 +277,12 @@ mesh = SubResource("BoxMesh_corner_tower")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/TowerBackLeft"]
 shape = SubResource("BoxShape3D_corner_tower")
 
+[node name="Trim" type="MeshInstance3D" parent="Walls/TowerBackLeft"]
+material_override = ExtResource("11_prop_neutral")
+script = ExtResource("9_prop_mesh")
+mesh_file = ExtResource("10_base_trim")
+mesh_name = &"TowerTrim"
+
 [node name="TowerBackRight" type="StaticBody3D" parent="Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 3, 15)
 collision_mask = 0
@@ -241,6 +292,12 @@ mesh = SubResource("BoxMesh_corner_tower")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/TowerBackRight"]
 shape = SubResource("BoxShape3D_corner_tower")
+
+[node name="Trim" type="MeshInstance3D" parent="Walls/TowerBackRight"]
+material_override = ExtResource("11_prop_neutral")
+script = ExtResource("9_prop_mesh")
+mesh_file = ExtResource("10_base_trim")
+mesh_name = &"TowerTrim"
 
 [node name="Garage" type="Node3D" parent="."]
 
@@ -259,6 +316,12 @@ mesh = SubResource("BoxMesh_garage_back")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Garage/GarageBack"]
 shape = SubResource("BoxShape3D_garage_back")
 
+[node name="Trim" type="MeshInstance3D" parent="Garage/GarageBack"]
+material_override = ExtResource("11_prop_neutral")
+script = ExtResource("9_prop_mesh")
+mesh_file = ExtResource("10_base_trim")
+mesh_name = &"GarageBackTrim"
+
 [node name="GarageSideLeft" type="StaticBody3D" parent="Garage"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.5, 1.25, 7)
 collision_mask = 0
@@ -269,6 +332,12 @@ mesh = SubResource("BoxMesh_garage_side")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Garage/GarageSideLeft"]
 shape = SubResource("BoxShape3D_garage_side")
 
+[node name="Trim" type="MeshInstance3D" parent="Garage/GarageSideLeft"]
+material_override = ExtResource("11_prop_neutral")
+script = ExtResource("9_prop_mesh")
+mesh_file = ExtResource("10_base_trim")
+mesh_name = &"GarageSideTrim"
+
 [node name="GarageSideRight" type="StaticBody3D" parent="Garage"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 1.25, 7)
 collision_mask = 0
@@ -278,6 +347,12 @@ mesh = SubResource("BoxMesh_garage_side")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Garage/GarageSideRight"]
 shape = SubResource("BoxShape3D_garage_side")
+
+[node name="Trim" type="MeshInstance3D" parent="Garage/GarageSideRight"]
+material_override = ExtResource("11_prop_neutral")
+script = ExtResource("9_prop_mesh")
+mesh_file = ExtResource("10_base_trim")
+mesh_name = &"GarageSideTrim"
 
 [node name="Marking" type="Node3D" parent="Garage"]
 
@@ -394,6 +469,13 @@ mesh = SubResource("BoxMesh_leg")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="WaterTower/LegGateRight"]
 shape = SubResource("BoxShape3D_leg")
+
+[node name="Ladder" type="MeshInstance3D" parent="WaterTower"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 2, 0, -9.36)
+material_override = ExtResource("11_prop_neutral")
+script = ExtResource("9_prop_mesh")
+mesh_file = ExtResource("10_base_trim")
+mesh_name = &"WaterTowerLadder"
 
 [node name="LegGarageLeft" type="StaticBody3D" parent="WaterTower"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 4, -5)

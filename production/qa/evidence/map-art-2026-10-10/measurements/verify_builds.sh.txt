@@ -1,0 +1,24 @@
+#!/bin/sh
+# Rebuilds every generated file of the map art into a scratch folder and compares it byte for byte
+# with the worktree's copy: the scripts are the source, so each must rebuild its file unchanged.
+W=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/298d4507-ee5d-4984-a655-a1e248417884/scratchpad/wt/rebuild
+R=/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire/.claude/worktrees/map-art
+mkdir -p "$W/tex"
+cd "$R" || exit 9
+for pair in "build_rocks.py:assets/art/map_01/rocks/map_01_rocks.glb" \
+            "build_props.py:assets/art/map_01/props/map_01_props.glb" \
+            "build_base.py:assets/art/map_01/base/map_01_base.glb" \
+            "build_truck.py:assets/art/vehicles/wasteland_truck/wasteland_truck.glb" \
+            "build_motorbike.py:assets/art/vehicles/wasteland_motorbike/wasteland_motorbike.glb" \
+            "build_buggy.py:assets/art/vehicles/wasteland_buggy/wasteland_buggy.glb" \
+            "build_gyrocopter.py:assets/art/vehicles/wasteland_gyrocopter/wasteland_gyrocopter.glb"; do
+  script=${pair%%:*}; target=${pair#*:}
+  blender --background --factory-startup --python "tools/blender/$script" -- --out "$W/$(basename "$target")" > "$W/$script.log" 2>&1
+  if cmp -s "$W/$(basename "$target")" "$target"; then echo "same      $target"; else echo "DIFFERENT $target"; fi
+done
+for script in build_ground_textures.py build_wall_textures.py; do
+  blender --background --factory-startup --python "tools/blender/$script" -- --out "$W/tex" > "$W/$script.log" 2>&1
+done
+for f in "$W"/tex/*.png; do
+  if cmp -s "$f" "src/gameplay/maps/map_01/textures/$(basename "$f")"; then echo "same      $(basename "$f")"; else echo "DIFFERENT $(basename "$f")"; fi
+done

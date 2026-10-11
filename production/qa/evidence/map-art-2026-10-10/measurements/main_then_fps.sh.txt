@@ -1,0 +1,11 @@
+#!/bin/sh
+# usage: main_then_fps.sh   Launches the worktree's main scene windowed for 600 frames (its output in
+# wt/main_scene.txt), then runs fps3.sh (its output in wt/fps3.log). Nothing else may run meanwhile.
+W=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/298d4507-ee5d-4984-a655-a1e248417884/scratchpad/wt
+R=/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire/.claude/worktrees/map-art
+cd "$R" || exit 9
+godot --path . --windowed --resolution 1280x720 --quit-after 600 > "$W/main_scene.txt" 2>&1
+echo "main scene rc $?" >> "$W/main_scene.txt"
+grep -c -E "ERROR|WARNING" "$W/main_scene.txt"
+sh "$W/fps3.sh" > "$W/fps3.log" 2>&1
+cat "$W/fps3.log"

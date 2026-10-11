@@ -2,11 +2,15 @@
 
 [ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/rock.tres" id="1_rock"]
 [ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/ridge.tres" id="2_ridge"]
+[ext_resource type="Script" path="res://src/gameplay/props/prop_mesh.gd" id="3_prop_mesh"]
+[ext_resource type="PackedScene" path="res://assets/art/map_01/rocks/map_01_rocks.glb" id="4_rocks"]
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/rock_face.tres" id="5_rock_face"]
 
 [node name="Cliffs" type="Node3D"]
 
 [node name="RockCanyonNorth" type="CSGPolygon3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.5, 0)
+layers = 0
 use_collision = true
 collision_layer = 32
 collision_mask = 0
@@ -16,6 +20,7 @@ material = ExtResource("1_rock")
 
 [node name="RockCanyonSouth" type="CSGPolygon3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.5, 0)
+layers = 0
 use_collision = true
 collision_layer = 32
 collision_mask = 0
@@ -25,6 +30,7 @@ material = ExtResource("1_rock")
 
 [node name="RidgeWest" type="CSGPolygon3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.5, 0)
+layers = 0
 use_collision = true
 collision_layer = 32
 collision_mask = 0
@@ -34,6 +40,7 @@ material = ExtResource("2_ridge")
 
 [node name="RidgeCentre" type="CSGPolygon3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.5, 0)
+layers = 0
 use_collision = true
 collision_layer = 32
 collision_mask = 0
@@ -43,9 +50,42 @@ material = ExtResource("2_ridge")
 
 [node name="RidgeEast" type="CSGPolygon3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.5, 0)
+layers = 0
 use_collision = true
 collision_layer = 32
 collision_mask = 0
 polygon = PackedVector2Array(93.8885, 48, 46, 48, 46, 22, 95, 22, 100, 32)
 depth = 2.5
 material = ExtResource("2_ridge")
+
+[node name="RockLooks" type="Node3D" parent="."]
+
+[node name="RockCanyonNorth" type="MeshInstance3D" parent="RockLooks"]
+material_override = ExtResource("5_rock_face")
+script = ExtResource("3_prop_mesh")
+mesh_file = ExtResource("4_rocks")
+mesh_name = &"RockCanyonNorth"
+
+[node name="RockCanyonSouth" type="MeshInstance3D" parent="RockLooks"]
+material_override = ExtResource("5_rock_face")
+script = ExtResource("3_prop_mesh")
+mesh_file = ExtResource("4_rocks")
+mesh_name = &"RockCanyonSouth"
+
+[node name="RidgeWest" type="MeshInstance3D" parent="RockLooks"]
+material_override = ExtResource("5_rock_face")
+script = ExtResource("3_prop_mesh")
+mesh_file = ExtResource("4_rocks")
+mesh_name = &"RidgeWest"
+
+[node name="RidgeCentre" type="MeshInstance3D" parent="RockLooks"]
+material_override = ExtResource("5_rock_face")
+script = ExtResource("3_prop_mesh")
+mesh_file = ExtResource("4_rocks")
+mesh_name = &"RidgeCentre"
+
+[node name="RidgeEast" type="MeshInstance3D" parent="RockLooks"]
+material_override = ExtResource("5_rock_face")
+script = ExtResource("3_prop_mesh")
+mesh_file = ExtResource("4_rocks")
+mesh_name = &"RidgeEast"

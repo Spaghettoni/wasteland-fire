@@ -1,0 +1,14 @@
+same      assets/art/map_01/rocks/map_01_rocks.glb
+same      assets/art/map_01/props/map_01_props.glb
+same      assets/art/map_01/base/map_01_base.glb
+same      assets/art/vehicles/wasteland_truck/wasteland_truck.glb
+same      assets/art/vehicles/wasteland_motorbike/wasteland_motorbike.glb
+same      assets/art/vehicles/wasteland_buggy/wasteland_buggy.glb
+same      assets/art/vehicles/wasteland_gyrocopter/wasteland_gyrocopter.glb
+same      ground_cells.png
+same      ground_cracks_normal.png
+same      ground_soft_normal.png
+same      ground_soft.png
+same      ground_stones_normal.png
+same      wall_plates_normal.png
+same      wall_plates.png

@@ -1,8 +1,51 @@
-[gd_resource type="StandardMaterial3D" format=3]
+[gd_resource type="ShaderMaterial" format=3]
 
-[ext_resource type="Texture2D" path="res://src/gameplay/maps/map_01/textures/salt_span.tres" id="1_salt_span_texture"]
+[ext_resource type="Shader" path="res://src/gameplay/maps/spatial_env_ground.gdshader" id="1_shader"]
+[ext_resource type="Texture2D" path="res://src/gameplay/maps/map_01/textures/ground_soft.png" id="2_soft"]
+[ext_resource type="Texture2D" path="res://src/gameplay/maps/map_01/textures/ground_soft_normal.png" id="3_soft_relief"]
+[ext_resource type="Texture2D" path="res://src/gameplay/maps/map_01/textures/ground_cells.png" id="4_cells"]
+[ext_resource type="Texture2D" path="res://src/gameplay/maps/map_01/textures/ground_stones_normal.png" id="5_stone_relief"]
+[ext_resource type="Texture2D" path="res://src/gameplay/maps/map_01/textures/ground_cracks_normal.png" id="6_crack_relief"]
 
 [resource]
-albedo_texture = ExtResource("1_salt_span_texture")
-roughness = 1.0
-texture_filter = 5
+shader = ExtResource("1_shader")
+shader_parameter/soft_noise = ExtResource("2_soft")
+shader_parameter/soft_relief = ExtResource("3_soft_relief")
+shader_parameter/cell_noise = ExtResource("4_cells")
+shader_parameter/stone_relief_map = ExtResource("5_stone_relief")
+shader_parameter/crack_relief_map = ExtResource("6_crack_relief")
+shader_parameter/tone_dark = Color(0.7, 0.66, 0.58, 1)
+shader_parameter/tone_mid = Color(0.77, 0.75, 0.69, 1)
+shader_parameter/tone_light = Color(0.82, 0.81, 0.77, 1)
+shader_parameter/stone_colour = Color(0.55, 0.5, 0.42, 1)
+shader_parameter/crack_colour = Color(0.71, 0.66, 0.57, 1)
+shader_parameter/side_colour = Color(0.6, 0.55, 0.46, 1)
+shader_parameter/edge_tone_dark = Color(0.58, 0.45, 0.29, 1)
+shader_parameter/edge_tone_mid = Color(0.671, 0.535, 0.348, 1)
+shader_parameter/edge_tone_light = Color(0.75, 0.62, 0.42, 1)
+shader_parameter/macro_size = 260.0
+shader_parameter/mottle_size = 36.0
+shader_parameter/streak_size = 60.0
+shader_parameter/grain_size = 5.0
+shader_parameter/stone_size = 14.0
+shader_parameter/crack_size = 48.0
+shader_parameter/fine_crack_size = 16.0
+shader_parameter/edge_width = 3.0
+shader_parameter/mesh_size = Vector2(190, 36)
+shader_parameter/macro_amount = 0.5
+shader_parameter/mottle_amount = 0.3
+shader_parameter/streak_amount = 0.04
+shader_parameter/grain_amount = 0.04
+shader_parameter/stone_amount = 0.06
+shader_parameter/stone_radius = 0.22
+shader_parameter/stone_patchiness = 0.6
+shader_parameter/crack_amount = 1.0
+shader_parameter/crack_width = 0.045
+shader_parameter/plate_amount = 0.06
+shader_parameter/fine_crack_amount = 0.25
+shader_parameter/fine_crack_width = 0.03
+shader_parameter/swell_relief = 0.15
+shader_parameter/stone_relief = 0.6
+shader_parameter/crack_relief = 0.18
+shader_parameter/roughness_base = 0.88
+shader_parameter/specular_base = 0.35

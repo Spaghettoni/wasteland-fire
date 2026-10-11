@@ -68,12 +68,15 @@ The rules of record are in `design/rules.md`, the one-page brief in
 | 013 | Turrets: two per Base outside the Gate that shoot at the other Player's Unit; no Flag can be taken while one of its Base's Turrets stands | Done |
 | 014 | The Truck's Mines: five per Truck, laid with E or Comma, live after 3 s, destroying any ground Unit that drives onto them; never laid in or near a Base | Done |
 
-Map 01 and the four Units have their low-poly look: the Map is built from
-Godot's built-in meshes with textures generated in code, lit by a low warm sun
-under a desert sky with ambient occlusion and anti-aliasing, and the Units are
-models built in Blender from the concept sheet by the scripts in
-`tools/blender/` (since 2026-10-10; the concept kit under `assets/art/` they
-replaced stays as a fallback). The older evidence scenarios still run on the
+Map 01 and the four Units have their low-poly look, lit by a low warm sun
+under a desert sky with ambient occlusion and anti-aliasing. The ground is a
+shader over noise textures generated in code: sand with patches of gravel, the
+salt flat's cracked crust, the canyon road's packed dirt. The rocks, the
+wrecks, containers and scrap walls, the Bases' steel trim, the fuel tanks and
+the Turrets' detail are models built in Blender by the scripts in
+`tools/blender/`, and so are the Units, from the concept sheet (since
+2026-10-10; the concept kit under `assets/art/` they replaced stays as a
+fallback). Every collider stays a Godot primitive. The older evidence scenarios still run on the
 greybox field.
 
 ## Controls

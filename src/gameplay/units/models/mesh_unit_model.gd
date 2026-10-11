@@ -22,8 +22,9 @@ extends UnitModel
 ## script writes them so), read with vertex_color_is_srgb as the kit folds' are. The hull the rise
 ## reads is the box of the file's vertices up to hull_top (the Gyrocopter's rotor left out).
 ##
-## The meshes and the hull are read from the file once per file and shared by every model of it
-## after (_cache, _hulls): SplitScreen instances each type's model once before the Round begins.
+## The meshes are read from the file once per file and shared by every model of it after
+## (MeshFile, which the Map's PropMesh reads through too), and so is the hull (_hulls): SplitScreen
+## instances each type's model once before the Round begins.
 
 ## Name of the mesh, and of the child, that carries the lamp lenses.
 const LAMP_NODE_NAME: StringName = &"Lamp"
@@ -42,8 +43,6 @@ const Palette := preload("res://assets/art/shared/wasteland_palette.gd")
 ## Optional: INF, the default, takes every vertex (a model that does not rise never reads it).
 @export var hull_top: float = INF
 
-## The meshes of every file read so far, by its path: mesh name -> Mesh.
-static var _cache: Dictionary[String, Dictionary] = {}
 ## The hull of every file and hull_top read so far, by the file's path and the height.
 static var _hulls: Dictionary[String, AABB] = {}
 ## The materials, made on first use and shared by every model.
@@ -59,7 +58,7 @@ func _build_meshes() -> bool:
 	if mesh_scene == null:
 		push_error("MeshUnitModel '%s': no mesh_scene, so the model is empty." % name)
 		return false
-	var meshes: Dictionary = meshes_of(mesh_scene)
+	var meshes: Dictionary = MeshFile.meshes_of(mesh_scene)
 	if not meshes.has(ACCENT_NODE_NAME) or not meshes.has(NEUTRAL_NODE_NAME):
 		push_error("MeshUnitModel '%s': the mesh file '%s' has no %s or no %s mesh, so the model is empty." % [
 				name, mesh_scene.resource_path, ACCENT_NODE_NAME, NEUTRAL_NODE_NAME])
@@ -77,36 +76,16 @@ func _build_meshes() -> bool:
 	return true
 
 
-## The meshes of a mesh file by name (each MeshInstance3D of the file's scene under the name of
-## its node), read the first time the file is asked for and cached: the scene is instanced, read
-## and freed once.
-static func meshes_of(file: PackedScene) -> Dictionary:
-	if _cache.has(file.resource_path):
-		return _cache[file.resource_path]
-	var meshes: Dictionary = {}
-	var root: Node = file.instantiate()
-	var pending: Array[Node] = [root]
-	while not pending.is_empty():
-		var node: Node = pending.pop_back()
-		pending.append_array(node.get_children())
-		var instance: MeshInstance3D = node as MeshInstance3D
-		if instance != null and instance.mesh != null:
-			meshes[StringName(instance.name)] = instance.mesh
-	root.free()
-	_cache[file.resource_path] = meshes
-	return meshes
-
-
-## The box of every vertex of a mesh file's meshes (meshes_of()) at or below top, in the file's
-## frame, read the first time the file and the height are asked for and cached; a box with no
-## volume when no vertex qualifies.
+## The box of every vertex of a mesh file's meshes (MeshFile.meshes_of()) at or below top, in
+## the file's frame, read the first time the file and the height are asked for and cached; a box
+## with no volume when no vertex qualifies.
 static func hull_of(file: PackedScene, top: float) -> AABB:
 	var key: String = "%s|%s" % [file.resource_path, top]
 	if _hulls.has(key):
 		return _hulls[key]
 	var low: Vector3 = Vector3.INF
 	var high: Vector3 = -Vector3.INF
-	var meshes: Dictionary = meshes_of(file)
+	var meshes: Dictionary = MeshFile.meshes_of(file)
 	for mesh_name: StringName in meshes:
 		var mesh: Mesh = meshes[mesh_name]
 		for surface: int in mesh.get_surface_count():

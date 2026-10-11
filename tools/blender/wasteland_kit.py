@@ -51,6 +51,12 @@ PALETTE = {
     # The saddles and seats: the palette's LEATHER (0.42, 0.22, 0.13) darkened, which beside a Team
     # colour read as orange, as "rust" does.
     "leather": (0.26, 0.17, 0.12),
+    # The Map's props: faded paint, a container's grey and concrete, none near a Team colour or the
+    # Fuel Can's red.
+    "paint_khaki": (0.55, 0.5, 0.38),
+    "paint_white": (0.68, 0.66, 0.6),
+    "container_grey": (0.47, 0.45, 0.41),
+    "concrete": (0.6, 0.58, 0.54),
 }
 # The tone of the vertex colour under the Team material, as KitMerge.DARK_TONE gives the kit's dark
 # Team paints: 0.68 under ORANGE or TEAL comes within 0.02 a channel of ORANGE_DARK and TEAL_DARK.
@@ -316,6 +322,24 @@ def rotate_parts(parts, pivot, rotation_deg):
         obj.data.transform(turn)
 
 
+def fit_to_box(parts, low, high):
+    """Scales and moves parts already built so that their combined bounds are exactly the box from
+    low to high (each (x, y, z), metres): a prop of the Map then draws the same box as its collider,
+    to the float, whatever its bevels and tilts added or took away."""
+    lows = [float("inf")] * 3
+    highs = [float("-inf")] * 3
+    for obj in parts:
+        for vertex in obj.data.vertices:
+            for axis in range(3):
+                lows[axis] = min(lows[axis], vertex.co[axis])
+                highs[axis] = max(highs[axis], vertex.co[axis])
+    scale = [(high[a] - low[a]) / (highs[a] - lows[a]) for a in range(3)]
+    fit = Matrix.Diagonal((scale[0], scale[1], scale[2], 1.0))
+    fit.translation = Vector([low[a] - lows[a] * scale[a] for a in range(3)])
+    for obj in parts:
+        obj.data.transform(fit)
+
+
 def arch(name, center_yz, radius, x_min, x_max, key, start_deg=10.0, end_deg=170.0, steps=6,
         thickness=0.07):
     """A faceted fender arch over a wheel: a band following the circle of radius around center_yz
@@ -359,6 +383,18 @@ def _fill(obj, name, colour):
     for datum in attr.data:
         datum.color = colour
     return attr
+
+
+def face_colours(obj, colour_of_face):
+    """Gives each face of a part one colour, colour_of_face(centre, normal) -> (r, g, b) in sRGB
+    numbers, as the part's "base" colour (finish() then takes it instead of the key's colour): the
+    crisp bands of a low-poly rock."""
+    mesh = obj.data
+    attr = mesh.color_attributes.new("base", "FLOAT_COLOR", "CORNER")
+    for polygon in mesh.polygons:
+        r, g, b = colour_of_face(polygon.center, polygon.normal)
+        for loop_index in polygon.loop_indices:
+            attr.data[loop_index].color = (r, g, b, 1.0)
 
 
 def _join(objs, name):
@@ -459,9 +495,10 @@ def _preview_material(name, tint=None):
     return mat
 
 
-def _render_previews(objs, directory, views):
+def _render_previews(objs, directory, views, ground_size=40.0):
     """Renders the model with EEVEE from each view: name -> (camera location, look-at point,
-    orthographic scale or None for a 40 mm perspective)."""
+    orthographic scale or None for a 40 mm perspective), on a sand plane ground_size metres
+    across."""
     scene = bpy.context.scene
     scene.render.engine = "BLENDER_EEVEE"
     scene.render.resolution_x, scene.render.resolution_y = 960, 640
@@ -471,7 +508,7 @@ def _render_previews(objs, directory, views):
     world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.55, 0.62, 0.72, 1.0)
     world.node_tree.nodes["Background"].inputs["Strength"].default_value = 0.6
-    bpy.ops.mesh.primitive_plane_add(size=40.0, location=(0.0, 0.0, 0.0))
+    bpy.ops.mesh.primitive_plane_add(size=ground_size, location=(0.0, 0.0, 0.0))
     ground = bpy.context.active_object
     sand = bpy.data.materials.new("preview_sand")
     sand.use_nodes = True
@@ -490,7 +527,8 @@ def _render_previews(objs, directory, views):
         if obj.name == "Lamp":
             obj.data.materials.append(_material("preview_lamp", False, PREVIEW_LAMP))
         else:
-            obj.data.materials.append(_preview_material("preview_" + obj.name, tints[obj.name]))
+            obj.data.materials.append(_preview_material("preview_" + obj.name,
+                    tints.get(obj.name)))
     bpy.ops.object.camera_add()
     cam = bpy.context.active_object
     scene.camera = cam
@@ -514,16 +552,28 @@ def _render_previews(objs, directory, views):
         bpy.data.objects.remove(extra, do_unlink=True)
 
 
-def finish(out_path, previews_dir, views, ground_size=12.0, ao_distance=AO_DISTANCE):
+def finish(out_path, previews_dir, views, ground_size=12.0, ao_distance=AO_DISTANCE, groups=None,
+        preview_ground=40.0, origins=None):
     """Colours, joins, bakes and exports every part in the scene; renders the views first when
     previews_dir is given. Prints one line per object with its triangle count. ao_distance is how
     far the occlusion bake looks: about a wheel's radius; ground_size the ground plane the bake
-    takes as an occluder, 0 for none (a model drawn in the air)."""
+    takes as an occluder, 0 for none (a model drawn in the air).
+
+    A part's colour is its key's, unless the part already holds a "base" colour of its own
+    (face_colours()). By default the parts join into the three objects the Units' models hold
+    (Accent, Neutral, Lamp, by key); groups, object name -> its parts, joins them into named objects
+    instead (one mesh per rock of the Map, each drawn with one material); preview_ground is the
+    preview's sand plane size. origins, object name -> a point, moves each named object by minus
+    its point after the bake and the previews: props built apart, each on the ground at its own
+    spot so none darkens another, are exported each about its own origin."""
     parts = [obj for obj in bpy.context.scene.objects if obj.type == "MESH" and "key" in obj]
-    groups = {"Accent": [], "Neutral": [], "Lamp": []}
     for obj in parts:
-        _fill(obj, "base", _colour_of(obj["key"]))
-        groups[_group_of(obj["key"])].append(obj)
+        if "base" not in obj.data.color_attributes:
+            _fill(obj, "base", _colour_of(obj["key"]))
+    if groups is None:
+        groups = {"Accent": [], "Neutral": [], "Lamp": []}
+        for obj in parts:
+            groups[_group_of(obj["key"])].append(obj)
     joined = [_join(objs, name) for name, objs in groups.items() if objs]
     for obj in joined:
         _box_uvs(obj)
@@ -544,7 +594,10 @@ def finish(out_path, previews_dir, views, ground_size=12.0, ao_distance=AO_DISTA
         tris = sum(len(p.vertices) - 2 for p in obj.data.polygons)
         print("OBJECT %s triangles=%d" % (obj.name, tris))
     if previews_dir:
-        _render_previews(joined, previews_dir, views)
+        _render_previews(joined, previews_dir, views, preview_ground)
+    for obj in joined:
+        if origins and obj.name in origins:
+            obj.data.transform(Matrix.Translation(-Vector(origins[obj.name])))
     if out_path:
         Path(out_path).parent.mkdir(parents=True, exist_ok=True)
         bpy.ops.object.select_all(action="DESELECT")

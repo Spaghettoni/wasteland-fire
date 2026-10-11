@@ -1,0 +1,34 @@
+"""usage: unused_materials.py [FOLDER]   Lists the .tres files of FOLDER (default Map 01's
+materials, relative to the worktree) that no scene, resource, script or evidence file of the
+worktree names any more (each file's res:// path, and its uid when it has one)."""
+import re
+import sys
+from pathlib import Path
+
+ROOT = Path("/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire/.claude/worktrees/map-art")
+MATERIALS = ROOT / (sys.argv[1] if len(sys.argv) > 1 else "src/gameplay/maps/map_01/materials")
+SUFFIXES = {".tscn", ".tres", ".gd", ".gdshader", ".cfg", ".godot", ".md", ".py", ".txt"}
+
+texts = {}
+for path in ROOT.rglob("*"):
+    if ".godot" in path.parts or ".git" in path.parts or not path.is_file():
+        continue
+    if path.suffix in SUFFIXES:
+        try:
+            texts[path] = path.read_text()
+        except UnicodeDecodeError:
+            pass
+
+for material in sorted(MATERIALS.glob("*.tres")):
+    res = "res://" + str(material.relative_to(ROOT))
+    head = material.read_text().split("\n", 1)[0]
+    uid = re.search(r'uid="([^"]+)"', head)
+    users = []
+    for path, text in texts.items():
+        if path == material:
+            continue
+        if res in text or (uid and uid.group(1) in text):
+            users.append(str(path.relative_to(ROOT)))
+    code_users = [u for u in users if not u.endswith(".md")]
+    print(f"{material.name:28s} {'UNUSED' if not code_users else len(code_users)}"
+          f"{'  (docs: ' + ', '.join(u for u in users if u.endswith('.md')) + ')' if not code_users and users else ''}")

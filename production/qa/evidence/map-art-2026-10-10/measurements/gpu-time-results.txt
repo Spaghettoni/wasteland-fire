@@ -1,0 +1,32 @@
+after-1 rc 0
+before-1 rc 0
+after-2 rc 0
+before-2 rc 0
+after-1: GPUTIME_SUMMARY frames=1897 gpu_avg_ms=2.083 gpu_median_ms=2.049 gpu_p95_ms=2.325 gpu_max_ms=3.375 cpu_avg_ms=0.329
+after-1: fps_avg_steady=120.0 draw_calls_max=258 primitives_max=401182 
+before-1: GPUTIME_SUMMARY frames=1897 gpu_avg_ms=2.015 gpu_median_ms=1.857 gpu_p95_ms=2.875 gpu_max_ms=4.093 cpu_avg_ms=0.323
+before-1: fps_avg_steady=120.0 draw_calls_max=225 primitives_max=136180 
+after-2: GPUTIME_SUMMARY frames=1897 gpu_avg_ms=3.776 gpu_median_ms=3.791 gpu_p95_ms=4.683 gpu_max_ms=6.277 cpu_avg_ms=0.314
+after-2: fps_avg_steady=120.0 draw_calls_max=258 primitives_max=401086 
+before-2: GPUTIME_SUMMARY frames=1897 gpu_avg_ms=1.622 gpu_median_ms=1.626 gpu_p95_ms=1.774 gpu_max_ms=3.726 cpu_avg_ms=0.327
+before-2: fps_avg_steady=120.0 draw_calls_max=225 primitives_max=136300 
+gpu3 done
+before-3 rc 0
+after-3 rc 0
+before-4 rc 0
+after-4 rc 0
+before-5 rc 0
+after-5 rc 0
+before-3: GPUTIME_SUMMARY frames=1897 gpu_avg_ms=2.097 gpu_median_ms=2.001 gpu_p95_ms=2.926 gpu_max_ms=5.044 cpu_avg_ms=0.320
+before-3: fps_avg_steady=120.0 draw_calls_max=225 primitives_max=136300 
+after-3: GPUTIME_SUMMARY frames=1897 gpu_avg_ms=2.064 gpu_median_ms=2.045 gpu_p95_ms=2.230 gpu_max_ms=4.171 cpu_avg_ms=0.336
+after-3: fps_avg_steady=120.0 draw_calls_max=258 primitives_max=401086 
+before-4: GPUTIME_SUMMARY frames=1897 gpu_avg_ms=1.816 gpu_median_ms=1.699 gpu_p95_ms=2.625 gpu_max_ms=3.987 cpu_avg_ms=0.324
+before-4: fps_avg_steady=120.0 draw_calls_max=225 primitives_max=136180 
+after-4: GPUTIME_SUMMARY frames=1897 gpu_avg_ms=2.049 gpu_median_ms=2.034 gpu_p95_ms=2.222 gpu_max_ms=3.041 cpu_avg_ms=0.342
+after-4: fps_avg_steady=120.0 draw_calls_max=258 primitives_max=401062 
+before-5: GPUTIME_SUMMARY frames=1897 gpu_avg_ms=1.631 gpu_median_ms=1.631 gpu_p95_ms=1.797 gpu_max_ms=3.961 cpu_avg_ms=0.324
+before-5: fps_avg_steady=120.0 draw_calls_max=225 primitives_max=136180 
+after-5: GPUTIME_SUMMARY frames=1897 gpu_avg_ms=2.065 gpu_median_ms=2.046 gpu_p95_ms=2.241 gpu_max_ms=4.515 cpu_avg_ms=0.342
+after-5: fps_avg_steady=120.0 draw_calls_max=258 primitives_max=401062 
+gpu4 done

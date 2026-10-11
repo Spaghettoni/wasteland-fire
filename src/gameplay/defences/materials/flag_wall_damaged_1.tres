@@ -1,6 +1,6 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
-[ext_resource type="Texture2D" path="res://src/gameplay/maps/map_01/textures/scrap.tres" id="1_scrap_texture"]
+[ext_resource type="Texture2D" path="res://src/gameplay/maps/map_01/textures/wall_plates.png" id="1_scrap_texture"]
 [ext_resource type="Texture2D" path="res://src/gameplay/defences/textures/flag_wall_cracks_1.tres" id="2_cracks_texture"]
 [ext_resource type="Texture2D" path="res://src/gameplay/defences/textures/flag_wall_scar.tres" id="3_scar_texture"]
 

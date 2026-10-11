@@ -1,0 +1,27 @@
+assets/art/map_01/rocks/map_01_rocks.glb: 5 meshes, 21730 triangles
+  RidgeCentre                  3231
+  RidgeEast                    2594
+  RidgeWest                    2574
+  RockCanyonNorth              7110
+  RockCanyonSouth              6221
+assets/art/map_01/props/map_01_props.glb: 10 meshes, 11216 triangles
+  Boulder                      80
+  Container                    1344
+  DressingContainer7           900
+  DressingContainer8           996
+  FuelTankTrim                 1320
+  Post                         436
+  ScrapWall                    3680
+  Tyre                         512
+  WreckFlipped                 884
+  WreckPickup                  1064
+assets/art/map_01/base/map_01_base.glb: 9 meshes, 11528 triangles
+  GarageBackTrim               968
+  GarageSideTrim               616
+  TowerTrim                    808
+  TurretHeadTrim               196
+  TurretPedestalTrim           192
+  WallBackTrim                 3520
+  WallGateTrim                 1416
+  WallSideTrim                 3424
+  WaterTowerLadder             388

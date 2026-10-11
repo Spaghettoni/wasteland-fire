@@ -1,0 +1,3 @@
+base: scripts map_field.gd, ford.gd, base.gd, flag.gd, fuel_can.gd
+new: scripts map_field.gd, prop_mesh.gd, ford.gd, base.gd, flag.gd, fuel_can.gd, prop_multi_mesh.gd
+identical without the script lists

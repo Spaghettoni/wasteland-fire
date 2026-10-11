@@ -5,6 +5,9 @@
 [ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/wall.tres" id="3_wall"]
 [ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/tower.tres" id="4_tower"]
 [ext_resource type="PackedScene" path="res://src/gameplay/combat/shot.tscn" id="5_shot"]
+[ext_resource type="Script" path="res://src/gameplay/props/prop_mesh.gd" id="20_prop_mesh"]
+[ext_resource type="PackedScene" path="res://assets/art/map_01/base/map_01_base.glb" id="21_base_trim"]
+[ext_resource type="Material" path="res://src/gameplay/props/materials/prop_neutral.tres" id="22_prop_neutral"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_turret"]
 height = 1.8
@@ -56,6 +59,12 @@ shape = SubResource("CylinderShape3D_turret")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("CylinderMesh_pedestal")
 
+[node name="Trim" type="MeshInstance3D" parent="Look/Pedestal"]
+material_override = ExtResource("22_prop_neutral")
+script = ExtResource("20_prop_mesh")
+mesh_file = ExtResource("21_base_trim")
+mesh_name = &"TurretPedestalTrim"
+
 [node name="Head" type="Node3D" parent="Look"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 
@@ -70,6 +79,12 @@ mesh = SubResource("CylinderMesh_band")
 [node name="Barrel" type="MeshInstance3D" parent="Look/Head"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, -1.1)
 mesh = SubResource("BoxMesh_barrel")
+
+[node name="Trim" type="MeshInstance3D" parent="Look/Head"]
+material_override = ExtResource("22_prop_neutral")
+script = ExtResource("20_prop_mesh")
+mesh_file = ExtResource("21_base_trim")
+mesh_name = &"TurretHeadTrim"
 
 [node name="Rubble" type="Node3D" parent="."]
 visible = false

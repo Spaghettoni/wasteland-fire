@@ -1,11 +1,14 @@
 # Blender models
 
-The four Units' models, built in Blender from Python with no clicking: each script builds a model
-from code, bakes its shading, renders preview images and exports a `.glb` that Godot imports.
-The script is the source of truth. Edit it and run it again; never edit the `.glb` by hand.
+The four Units' models and Map 01's rocks, props and Base trim, built in Blender from Python with no
+clicking: each script builds its models from code, bakes their shading, renders preview images and
+exports a `.glb` that Godot imports; two more scripts write the ground's and the walls' textures.
+The scripts are the source of truth. Edit one and run it again; never edit a `.glb` or a texture
+by hand.
 
 Started 2026-10-10 as a test: the Truck, judged in the game beside the kit model it replaced. The
-developer kept it the same day and asked for the other three the same way.
+developer kept it the same day, asked for the other three Units the same way, then for the Map's
+rocks, walls and other objects and more thorough ground textures.
 Blender 5.2.2 LTS (Homebrew: `brew install --cask blender`, which puts `blender` on the PATH).
 
 ## Files
@@ -17,6 +20,11 @@ Blender 5.2.2 LTS (Homebrew: `brew install --cask blender`, which puts `blender`
 | `build_buggy.py` | The Buggy. Writes `assets/art/vehicles/wasteland_buggy/wasteland_buggy.glb`. |
 | `build_truck.py` | The Truck. Writes `assets/art/vehicles/wasteland_truck/wasteland_truck.glb`. |
 | `build_gyrocopter.py` | The Gyrocopter. Writes `assets/art/vehicles/wasteland_gyrocopter/wasteland_gyrocopter.glb`. |
+| `build_rocks.py` | Map 01's rocks, read from the cliff colliders of `map_01_cliffs.tscn` (rerun it after changing them). Writes `assets/art/map_01/rocks/map_01_rocks.glb`, one mesh per cliff. |
+| `build_props.py` | Map 01's props, each built to the box of the primitive it replaces: wrecks, containers, scrap walls, the dressing's containers, tyres, boulders and posts, the fuel tanks' trim. Writes `assets/art/map_01/props/map_01_props.glb`. |
+| `build_base.py` | The Bases' trim, laid on their wall, tower and Garage boxes; the water tower's ladder; the Turrets' trim. Writes `assets/art/map_01/base/map_01_base.glb`. |
+| `build_ground_textures.py` | The ground's seamless noise textures (`src/gameplay/maps/map_01/textures/ground_*.png`), read by `src/gameplay/maps/spatial_env_ground.gdshader` and the rocks' `spatial_env_rock.gdshader`. |
+| `build_wall_textures.py` | The Bases' welded steel plates (`src/gameplay/maps/map_01/textures/wall_plates*.png`), read by `wall.tres` and the Flag Walls' damaged looks. |
 
 ## Rebuilding a model
 
@@ -69,6 +77,26 @@ The Gyrocopter is built standing on its wheels. Its scene (`gyrocopter_mesh_mode
 and cover with the kit scene's values; the rise reads the box of the file's vertices up to
 `hull_top` (1.4 m), which leaves out the rotor. Its occlusion bake has no ground plane, since it is
 drawn in the air.
+
+## Map 01's pieces
+
+The Map's pieces follow the same scheme with one mesh per piece (`finish(groups=...)`), each drawn
+by a `PropMesh` (`src/gameplay/props/prop_mesh.gd`: it takes the mesh named `mesh_name` from
+`mesh_file`; the scene sets its `material_override`) or, for many copies, a `PropMultiMesh`. Rules
+the evidence holds them to:
+
+- What collides stays the scene's own collider. A piece that replaces a primitive is built to that
+  primitive's box exactly (`fit_to_box`), so the box drawn and the box measured are the same: the
+  cover's evidence measures runs against the drawn box.
+- The rocks never rise above the cliff colliders' top (2.0 m), which stay as invisible colliders
+  (`layers = 0`): the Gyrocopter's model rises over the collider's top as before.
+- Where a test reads a primitive (the Flag Walls' and Base walls' shared `wall.tres`, a fuel tank's
+  cylinders, a Turret's drum and band, the water tower's four top pieces on render layer 2), the
+  primitive stays and the detail is a second mesh laid on it (the Trim nodes).
+- A new script a Map node carries must be added to `tools/evidence/split_screen/map_layout.gd`'s
+  `SCRIPTS`; `PropMesh` and `PropMultiMesh` are there.
+- The generated textures import lossless, with mipmaps and with the 3D detection off (their
+  `.import` files): the shaders read them as numbers.
 
 ## Wiring a model into the game
 

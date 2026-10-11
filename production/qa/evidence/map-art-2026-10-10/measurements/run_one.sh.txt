@@ -1,0 +1,8 @@
+#!/bin/sh
+# usage: run_one.sh OUTDIR KIND NAME   (KIND: drive | split). Runs one retained scenario headless in the
+# map-art worktree, stdout+stderr in one file.
+OUT="$1"; KIND="$2"; NAME="$3"
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire/.claude/worktrees/map-art || exit 9
+if [ "$KIND" = "drive" ]; then SCENE=res://tools/evidence/drive_harness.tscn; else SCENE=res://tools/evidence/split_screen_harness.tscn; fi
+godot --headless --fixed-fps 60 --path . "$SCENE" -- --scenario="$NAME" > "$OUT/$KIND-$NAME.txt" 2>&1
+echo $? > "$OUT/$KIND-$NAME.rc"
