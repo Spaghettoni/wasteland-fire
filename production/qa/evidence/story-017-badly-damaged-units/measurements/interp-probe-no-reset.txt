@@ -1,0 +1,3 @@
+SPLIT interp_probe fps=120.0
+SPLIT interp_probe worst_new_puff_gap_m=1.672 worst_any_puff_gap_m=28.082 samples=199 first=0.01 1.66 0.67 0.02 0.01 1.51 0.64 0.02 0.01 1.67 0.66 0.02
+RESULT badly_damaged_interp_probe ok checks=0 failed=0 t=0.600 worst_new_puff_gap=1.672

@@ -32,7 +32,12 @@ friends at home.
   they cannot be built or taken. While either Turret of a Base stands the other
   Player cannot take that Base's Flag: their view says "Destroy the turrets
   first" while their Motorbike touches it. A broken Turret stays down until the
-  Round is played again.
+  Round is played again. A Turret stands about 3 m tall, and a hit one shows it
+  as a wall does: its drum darker and cracked with chunks at its foot and its
+  head a darker steel, worse below about a third of its strength, its band
+  keeping its Player's colour and its head still turning and firing; in the
+  chase view a Unit that drives out right behind one is hidden by it for a few
+  metres.
 - The Truck lays Mines, five a Truck: one press of its lay key drops one just
   behind its tail. A new Mine blinks in its owner's Team colour for 3 seconds
   and is harmless; then it shines steadily and is live, and destroys any ground
@@ -43,6 +48,27 @@ friends at home.
   the cover, a tank, a cliff, water): the Player's view says why for a moment.
   A Mine stays when its Truck is destroyed, and a Round played again starts
   with none.
+- A destroyed Unit explodes: a flash, a fireball, a few dark chunks and some
+  grey smoke for about 2 seconds, where the Unit was seen (a Gyrocopter's in the
+  air), in both views, bigger for a Truck than for a Motorbike. Every
+  destruction that counts plays one (the other Player's Shots, a Turret, a Mine,
+  a Self-destruct, a Gyrocopter's empty tank); a Swap inside your own Base and
+  the start of a Round never do. It is only a picture: it hurts nothing, pushes
+  nothing, stops no Shot and leaves no wreck, so a Flag dropped where a Carrier
+  died can still be picked up in it, and a Mine's kill shows the Mine's own
+  flash with it. The explosion that ends a Round keeps playing behind the
+  Round-over screen, and R clears any that is left.
+- A Unit that is nearly destroyed shows it. At or below a fifth of its hit
+  points (8 of a Motorbike's 40, 20 of a Buggy's 100, 44 of a Truck's 220, 14 of
+  a Gyrocopter's 70, the edge included) it is badly damaged: thin dark grey
+  smoke rises from the top of its body, a column while it stands and a short
+  trail behind it while it moves, in both views, and its top speed drops to half,
+  forward and in reverse, reached at the Unit's own acceleration in about 0.6 s.
+  Turning, the weapon, the Fuel burn per second and the HUD stay as they were,
+  and in a ford the lower of the two limits holds. It lasts until the Unit is
+  destroyed or put away (a Swap, R): the Unit that comes next is whole. A Mine, a
+  Self-destruct or an empty Gyrocopter tank destroys at once and never passes
+  through it, and a Turret can bring a Unit into it as a Shot can.
 - Win by delivering the opponent's Flag to your own Base. Lose by losing your
   last Motorbike, because without one you can never carry a Flag.
 
@@ -67,6 +93,9 @@ The rules of record are in `design/rules.md`, the one-page brief in
 | 012 | Flag Walls: a box of four breakable walls around each Flag, which look damaged as they take hits; new Units appear on the Garage's side spots | Done |
 | 013 | Turrets: two per Base outside the Gate that shoot at the other Player's Unit; no Flag can be taken while one of its Base's Turrets stands | Done |
 | 014 | The Truck's Mines: five per Truck, laid with E or Comma, live after 3 s, destroying any ground Unit that drives onto them; never laid in or near a Base | Done |
+| 015 | Turrets show their damage: a darker, cracked drum with chunks at its foot and a darker head below 80% of their hit points, worse below 35%, and they stand about 3 m tall | Done |
+| 016 | A destroyed Unit explodes: a flash, a fireball, six dark chunks and grey smoke for about 2 s at every destruction, in both views; a Swap and the start of a Round never do | Done |
+| 017 | Badly damaged Units smoke and slow down: at or below a fifth of its hit points a Unit smokes (thin dark grey, a column standing and a trail moving, in both views) and drives at half speed until it is destroyed or put away | Done |
 
 Map 01 and the four Units have their low-poly look, lit by a low warm sun
 under a desert sky with ambient occlusion and anti-aliasing. The ground is a

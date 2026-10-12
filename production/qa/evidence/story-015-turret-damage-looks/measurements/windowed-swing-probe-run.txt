@@ -1,0 +1,8 @@
+== the final build (head.reset_physics_interpolation() in Turret.restore(), after the rotation), a Turret in its second look
+SPLIT swing_probe interpolation_setting=true look=2 head_yaw_before=1.021 fps=8.0
+SPLIT swing_probe worst=0.0000 look_after=0 steel_after=<Object#null> frames=0:0.000 1:0.000 2:0.000 3:0.000 4:0.000 5:0.000 6:0.000 7:0.000 8:0.000 9:0.000 10:0.000 11:0.000
+RESULT turret_looks_swing_probe ok checks=0 failed=0 t=0.783 swing_worst=0.0000
+== the same build with that one line removed (a scratch copy)
+SPLIT swing_probe interpolation_setting=true look=2 head_yaw_before=1.021 fps=13.0
+SPLIT swing_probe worst=0.7929 look_after=0 steel_after=<Object#null> frames=0:0.793 1:0.677 2:0.570 3:0.471 4:0.358 5:0.259 6:0.151 7:0.044 8:0.000 9:0.000 10:0.000 11:0.000
+RESULT turret_looks_swing_probe ok checks=0 failed=0 t=0.783 swing_worst=0.7929

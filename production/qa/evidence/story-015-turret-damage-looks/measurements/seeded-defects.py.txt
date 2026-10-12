@@ -1,0 +1,182 @@
+#!/usr/bin/env python3
+"""Seeded defects for Story 015 (Turret damage looks): each one exact text replacement in a scratch copy of the
+repo, run against the scenario that guards it. KILLED when the scenario fails (rc != 0 or a FAIL CHECK) or, for the
+regression kind, when an older scenario's output differs from its baseline. A mutant whose run prints no RESULT
+line for its scenario is BROKEN (the replacement made the script unusable, not a verdict) and is counted apart.
+One worker per scratch copy, so no two mutants ever share a file (story 011's lesson).
+
+usage: seeded-defects.py.txt BASELINE_DIR WORK_DIR [--dry] [--only name,name]
+  BASELINE_DIR holds the baselines of the older scenarios as split-NAME.txt (the regression kind)
+  WORK_DIR gets copy0..copy2 (scratch copies of the repo; they are diffed against the repo at the end)
+  --dry only checks that every replacement text occurs exactly once in its file
+"""
+import os
+import re
+import subprocess
+import sys
+from concurrent.futures import ThreadPoolExecutor
+
+REPO = "/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire"
+BASE = sys.argv[1]
+WORK = sys.argv[2]
+DRY = "--dry" in sys.argv
+WORKERS = 3
+COPIES = [os.path.join(WORK, "copy%d" % i) for i in range(WORKERS)]
+
+STRUCT = "src/gameplay/defences/structure.gd"
+TURRET = "src/gameplay/defences/turret.gd"
+STATS = "src/gameplay/defences/data/turret_stats.tres"
+SCENE = "src/gameplay/defences/turret.tscn"
+STEEL1 = "src/gameplay/defences/materials/turret_head_damaged_1.tres"
+STEEL2 = "src/gameplay/defences/materials/turret_head_damaged_2.tres"
+RUNNER = "tools/evidence/split_screen_harness.gd"
+GROWTH = "tools/evidence/split_screen/turret_looks_growth.gd"
+
+CHUNK1 = '[node name="Chunk1" type="MeshInstance3D" parent="Look/PedestalDamaged1"]\ntransform = Transform3D(0.258819, 0, 0.9659258, 0, 1, 0, -0.9659258, 0, 0.258819, 1.2688309, -0.97, 0.5916656)\n'
+
+L = "turret_looks"
+M = [
+ # name, file, old, new, scenario, kind
+ # Structure: which look shows
+ ("damaged_looks_never_shown", STRUCT, "		look.visible = _standing and stage == index + 1", "		look.visible = false", L, "check"),
+ ("stage_off_by_one", STRUCT, "		look.visible = _standing and stage == index + 1", "		look.visible = _standing and stage == index", L, "check"),
+ ("below_made_inclusive", STRUCT, "		if _hit_points < fraction * stats.max_hit_points:", "		if _hit_points <= fraction * stats.max_hit_points:", L, "check"),
+ ("whole_drum_kept_beside_a_damaged_one", STRUCT, "		intact.visible = _standing and stage == 0", "		intact.visible = _standing", L, "check"),
+ ("check_of_the_looks_list_removed", STRUCT, "	_looks_usable = looks_problem.is_empty()", "	_looks_usable = true", L, "check"),
+ ("hook_not_called", STRUCT, "		wreck.visible = not _standing\n	_look_shown(stage)\n", "		wreck.visible = not _standing\n", L, "check"),
+ ("hook_does_something_for_a_flag_wall", STRUCT, "func _look_shown(_stage: int) -> void:\n	pass", "func _look_shown(_stage: int) -> void:\n	if wreck != null:\n		wreck.visible = true", "flag_walls", "regress"),
+ # Turret: the head and its steel
+ ("head_hidden_in_a_damaged_look", TURRET, "		head.visible = is_standing", "		head.visible = is_standing and stage == 0", L, "check"),
+ ("head_left_standing_on_the_rubble", TURRET, "		head.visible = is_standing", "		head.visible = true", L, "check"),
+ ("head_steel_kept_after_restore", TURRET, "		if part != null:\n			part.material_override = steel", "		if part != null and steel != null:\n			part.material_override = steel", L, "check"),
+ ("check_of_the_worn_steel_removed", TURRET, '	if worn_steel.size() != stats.damaged_below.size():\n		return "%d worn steels for %d damaged_below fractions" % [worn_steel.size(), stats.damaged_below.size()]', '	if false:\n		return ""', L, "check"),
+ ("shots_origin_raised_with_the_head", TURRET, "	var muzzle: Vector3 = global_position + facing * _data.muzzle_forward + Vector3.UP * _rules.shooting_height\n	_shots_parent.add_child(shot)", "	var muzzle: Vector3 = global_position + facing * _data.muzzle_forward + Vector3.UP * (_rules.shooting_height + 2.15)\n	_shots_parent.add_child(shot)", L, "check"),
+ ("sight_ray_raised_with_the_head", TURRET, "	return global_position + toward * _data.muzzle_forward + Vector3.UP * _rules.shooting_height", "	return global_position + toward * _data.muzzle_forward + Vector3.UP * (_rules.shooting_height + 2.15)", L, "check"),
+ # data and materials
+ ("fractions_changed_in_the_data", STATS, "damaged_below = Array[float]([0.8, 0.35])", "damaged_below = Array[float]([0.7, 0.35])", L, "check"),
+ ("first_steel_not_darker_than_the_whole_head", STEEL1, "albedo_color = Color(0.17, 0.175, 0.185, 1)", "albedo_color = Color(0.31, 0.32, 0.34, 1)", L, "check"),
+ ("second_steel_not_darker_than_the_first", STEEL2, "albedo_color = Color(0.09, 0.095, 0.1, 1)", "albedo_color = Color(0.2, 0.2, 0.2, 1)", L, "check"),
+ # the scene
+ ("two_looks_swapped_in_the_scene", SCENE, 'damaged_looks = [NodePath("Look/PedestalDamaged1"), NodePath("Look/PedestalDamaged2")]', 'damaged_looks = [NodePath("Look/PedestalDamaged2"), NodePath("Look/PedestalDamaged1")]', L, "check"),
+ ("steels_swapped_in_the_scene", SCENE, 'worn_steel = Array[Material]([ExtResource("9_steel_1"), ExtResource("10_steel_2")])', 'worn_steel = Array[Material]([ExtResource("10_steel_2"), ExtResource("9_steel_1")])', L, "check"),
+ ("band_made_a_worn_part", SCENE, 'worn_parts = [NodePath("Look/Head/Dome"), NodePath("Look/Head/Barrel")]', 'worn_parts = [NodePath("Look/Head/Dome"), NodePath("Look/Head/Barrel"), NodePath("Look/Head/Band")]', L, "check"),
+ ("first_look_wears_the_second_material", SCENE, 'material_override = ExtResource("6_damaged_1")', 'material_override = ExtResource("7_damaged_2")', L, "check"),
+ ("chunk_given_a_body", SCENE, '[node name="Chunk2" type="MeshInstance3D" parent="Look/PedestalDamaged1"]', '[node name="Body" type="StaticBody3D" parent="Look/PedestalDamaged1/Chunk1"]\n\n[node name="Chunk2" type="MeshInstance3D" parent="Look/PedestalDamaged1"]', L, "check"),
+ ("chunk_casting_a_shadow", SCENE, CHUNK1 + "cast_shadow = 0\n", CHUNK1, L, "check"),
+ ("chunk_inside_the_drum", SCENE, CHUNK1, CHUNK1.replace("1.2688309, -0.97, 0.5916656", "0.3, -0.97, 0.2"), L, "check"),
+ ("chunk_off_the_ground", SCENE, CHUNK1, CHUNK1.replace("1.2688309, -0.97, 0.5916656", "1.2688309, -0.5, 0.5916656"), L, "check"),
+ ("collider_not_grown", SCENE, "height = 3\nradius = 1.0", "height = 1.8\nradius = 1.0", L, "check"),
+ ("collider_grown_wider", SCENE, "height = 3\nradius = 1.0", "height = 3\nradius = 1.1", L, "check"),
+ ("drum_not_grown", SCENE, 'material = ExtResource("3_wall")\ntop_radius = 1.0\nbottom_radius = 1.0\nheight = 2.2', 'material = ExtResource("3_wall")\ntop_radius = 1.0\nbottom_radius = 1.0\nheight = 1.0', L, "check"),
+ ("head_left_under_the_band", SCENE, '[node name="Head" type="Node3D" parent="Look"]\ntransform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0)', '[node name="Head" type="Node3D" parent="Look"]\ntransform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0)', L, "check"),
+ # the evidence's measure
+ ("band_measured_with_the_thin_antenna_counted", GROWTH, "	&\"truck\": [AABB(Vector3(-0.82, 1.5, 0.2), Vector3(0.14, 1.25, 0.25))],", "	&\"truck\": [],", L, "check"),
+ # the runner's strips (R18): the older scenarios keep their outputs
+ ("runner_leaves_the_fractions_on", RUNNER, "	if _keeps_turret_looks(script):\n		return\n	var stats: TurretStats = load(TURRET_STATS_PATH) as TurretStats", "	if true:\n		return\n	var stats: TurretStats = load(TURRET_STATS_PATH) as TurretStats", L, "check"),
+ ("runner_leaves_the_fractions_on_turrets", RUNNER, "	if _keeps_turret_looks(script):\n		return\n	var stats: TurretStats = load(TURRET_STATS_PATH) as TurretStats", "	if true:\n		return\n	var stats: TurretStats = load(TURRET_STATS_PATH) as TurretStats", "turrets", "regress"),
+ ("swap_leaves_the_band_entries_on_the_freed_turrets", RUNNER, "					meshes.append(fresh.get_node_or_null(turret.get_path_to(mesh)) as MeshInstance3D)", "					meshes.append(mesh)", L, "check"),
+ ("swap_leaves_the_band_entries_on_the_freed_turrets_turrets", RUNNER, "					meshes.append(fresh.get_node_or_null(turret.get_path_to(mesh)) as MeshInstance3D)", "					meshes.append(mesh)", "turrets", "regress"),
+ ("runner_leaves_the_grown_turret_on", RUNNER, "	if _keeps_turret_looks(script) or root.field == null:\n		return", "	if true:\n		return", L, "check"),
+]
+
+
+# Mutants no output can tell from the build: reported apart, with the reason, when they survive.
+EQUIVALENT = {}
+
+# Mutants only a window that renders between two physics ticks can tell from the build: none new in this story
+# (the head's interpolation reset at R is story 013's line, its windowed probe is re-run on the grown Turret).
+WINDOWED = {}
+
+
+def prepare(i):
+    d = COPIES[i]
+    os.makedirs(WORK, exist_ok=True)
+    if os.path.exists(d):
+        subprocess.run(["find", d, "-delete"], check=True)
+    subprocess.run(["rsync", "-a", "--exclude", ".git", "--exclude", "production", "--exclude", "design", "--exclude", "docs", REPO + "/", d + "/"], check=True)
+    return d
+
+
+def run(copy, scn):
+    p = subprocess.run(["godot", "--headless", "--fixed-fps", "60", "--path", copy, "res://tools/evidence/split_screen_harness.tscn", "--", "--scenario=" + scn],
+                       capture_output=True, text=True, timeout=900)
+    return p.returncode, p.stdout + p.stderr
+
+
+def one(copy, mutant):
+    name, rel, old, new, scn, kind = mutant
+    path = os.path.join(copy, rel)
+    orig = open(path).read()          # this worker is the only one that touches this copy
+    if orig.count(old) != 1:
+        return name, None, "NOT APPLIED (text found %d times)" % orig.count(old)
+    open(path, "w").write(orig.replace(old, new))
+    try:
+        rc, out = run(copy, scn)
+    finally:
+        open(path, "w").write(orig)
+    if not re.search(r"^RESULT %s " % scn, out, re.M):
+        return name, None, "BROKEN: no RESULT line (rc=%d)" % rc
+    if kind == "check":
+        fails = re.findall(r"^CHECK \S+ (\S+) FAIL", out, re.M)
+        dead = rc != 0 or bool(fails)
+        detail = "%s rc=%d fails=%s" % (scn, rc, ",".join(fails) or "-")
+    else:
+        base = open(os.path.join(BASE, "split-%s.txt" % scn)).read()
+        keep = lambda t: [l for l in t.splitlines() if l.startswith(("SPLIT ", "CHECK ", "RESULT ", "SCRIPT ERROR", "ERROR:", "WARNING:"))]
+        dead = keep(out) != keep(base) or rc != 0
+        detail = "%s rc=%d output %s the baseline" % (scn, rc, "differs from" if dead else "equals")
+    return name, dead, detail
+
+
+def worker(i, jobs):
+    return [one(COPIES[i], m) for m in jobs[i::WORKERS]]
+
+
+def main():
+    if DRY:
+        bad = 0
+        for name, rel, old, new, scn, kind in M:
+            n = open(os.path.join(REPO, rel)).read().count(old)
+            if n != 1:
+                bad += 1
+                print("DRY  %-48s text found %d times in %s" % (name, n, rel))
+        print("DRY: %d mutants, %d with a replacement text that is not found exactly once" % (len(M), bad))
+        return 1 if bad else 0
+    jobs = M
+    if "--only" in sys.argv:
+        wanted = sys.argv[sys.argv.index("--only") + 1].split(",")
+        jobs = [m for m in M if m[0] in wanted]
+    for i in range(WORKERS):
+        prepare(i)
+    with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+        results = [r for part in pool.map(lambda i: worker(i, jobs), range(WORKERS)) for r in part]
+    order = {m[0]: k for k, m in enumerate(M)}
+    results.sort(key=lambda r: order[r[0]])
+    killed = survived = broken = 0
+    for name, dead, detail in results:
+        if dead is False and name in WINDOWED:
+            print("WINDOWED   %-48s %s | %s" % (name, detail, WINDOWED[name]))
+            killed += 1
+            continue
+        if dead is False and name in EQUIVALENT:
+            print("EQUIVALENT %-48s %s | %s" % (name, detail, EQUIVALENT[name]))
+            killed += 1
+            continue
+        status = "BROKEN " if dead is None else ("KILLED " if dead else "SURVIVED")
+        killed += dead is True
+        survived += dead is False
+        broken += dead is None
+        print("%s %-52s %s" % (status, name, detail))
+    print("-- %d mutants: %d killed, equivalent or killed by the windowed probe, %d survived, %d broken or not applied" % (len(jobs), killed, survived, broken))
+    clean = True
+    for i in range(WORKERS):
+        d = subprocess.run(["diff", "-rq", "--exclude=.godot", "--exclude=production", "--exclude=.git", "--exclude=design", "--exclude=docs", REPO, COPIES[i]], capture_output=True, text=True)
+        if d.stdout.strip():
+            clean = False
+            print("COPY %d DIFFERS FROM THE REPO:\n%s" % (i, d.stdout[:600]))
+    print("-- the %d scratch copies %s the repo (apart from .godot, production, design, docs)" % (WORKERS, "equal" if clean else "DIFFER FROM"))
+    return 0 if survived == 0 and broken == 0 and clean else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

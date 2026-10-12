@@ -51,6 +51,14 @@ extends Resource
 ## Truck alone lays them by data and nothing in code asks what type a Unit is. A type whose .tres
 ## has no line carries none.
 ##
+## Story 017 (production/epics/wasteland-fire/story-017-badly-damaged-units.md AC-1, AC-2 and
+## AC-7; design/rules.md "Units", the Badly damaged bullet) adds the Badly damaged group: the
+## share of max_hit_points at or below which a Unit of this type is badly damaged
+## (badly_damaged_fraction) and the share of its top speed it keeps while it is
+## (badly_damaged_speed_share), so the state is data per type and nothing in code asks what type
+## a Unit is. A type whose .tres has no line has no such state. The four .tres hold starting
+## values, to tune by playing: 0.2 and 0.5.
+##
 ## Data only. A Unit reads these numbers and never writes them. One .tres is shared by every
 ## Unit that references it, so treat it as read-only at runtime (duplicate() it for a private
 ## copy).
@@ -305,6 +313,25 @@ extends Resource
 ## 0.8 m trigger 0.4 m clear of it.
 @export var mine_drop_offset: Vector3 = Vector3.ZERO
 
+@export_group("Badly damaged")
+
+## The share of max_hit_points at or below which a Unit of this type is badly damaged (Story 017
+## AC-1; design/rules.md "Units": the author's "for example" 20%, so a Motorbike of 40 hit points is
+## badly damaged at 8, a Buggy of 100 at 20, a Truck of 220 at 44 and a Gyrocopter of 70 at 14):
+## smoke rises from it and its top speed is badly_damaged_speed_share of its own until it is
+## destroyed or put away. The edge belongs to the state: a Unit left on exactly this share is badly
+## damaged. Zero by default (class doc), and zero means the type has no such state: a type whose
+## .tres has no line is never badly damaged, the way fuel_capacity zero means no Fuel system (never
+## a type check). first_problem() refuses a value outside 0 to under 1, a NaN included.
+@export_range(0.0, 0.99, 0.01) var badly_damaged_fraction: float = 0.0
+
+## The share of its top speed a badly damaged Unit of this type keeps (Story 017 AC-2; the author's
+## "for example" half), forward and in reverse alike: a Motorbike's 24 m/s becomes 12, its 9 m/s in
+## reverse 4.5. Read only while badly_damaged_fraction is above zero, and then it must be above zero
+## and at most 1 (first_problem()). Zero by default (class doc). Turning, braking, the weapon and
+## the Fuel burn do not read it.
+@export_range(0.0, 1.0, 0.01) var badly_damaged_speed_share: float = 0.0
+
 
 ## The reason these stats cannot drive a Unit, or an empty String when they can: max_speed,
 ## ground_snap_length and max_hit_points must each be above zero (the rule Unit._ready() applies;
@@ -312,7 +339,10 @@ extends Resource
 ## mine_drop_offset would lay every Mine under the Unit's own origin, where it destroys the Unit
 ## once it is live (Story 014). MatchController asks it of every entry of MatchRules.unit_types
 ## before a Round begins, and Unit.spawn() of the type it is handed, so a bad .tres is one named
-## error and never a Unit that spawns already destroyed.
+## error and never a Unit that spawns already destroyed. A type with a badly damaged state must
+## keep a share of its speed above zero (Story 017): a fraction outside 0 to under 1 is refused,
+## and so is a share outside above 0 to 1 while the fraction is above 0; both are tested so that
+## a NaN fails them.
 func first_problem() -> String:
 	if max_speed <= 0.0:
 		return "max_speed is not above zero"
@@ -322,4 +352,9 @@ func first_problem() -> String:
 		return "max_hit_points is not above zero"
 	if mine_capacity > 0 and mine_drop_offset.is_zero_approx():
 		return "mine_drop_offset is zero while mine_capacity is above zero"
+	if not (badly_damaged_fraction >= 0.0 and badly_damaged_fraction < 1.0):
+		return "badly_damaged_fraction is not from 0 to under 1"
+	var share_usable: bool = badly_damaged_speed_share > 0.0 and badly_damaged_speed_share <= 1.0
+	if badly_damaged_fraction > 0.0 and not share_usable:
+		return "badly_damaged_speed_share is not above 0 and at most 1 while badly_damaged_fraction is above 0"
 	return ""

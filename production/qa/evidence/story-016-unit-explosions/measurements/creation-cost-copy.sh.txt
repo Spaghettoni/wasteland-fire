@@ -1,0 +1,47 @@
+#!/bin/sh
+# usage: mk-lazy-copy.sh TAG LAZY(0|1)   scratch copy with an FPS_MODE switch in explosions_fps (tool|both|destroy), optional lazy piece creation
+R=/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire
+D=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/011fac19-3980-4a60-9260-2bb6291e87b1/scratchpad/probe16
+C=$D/copy-$1
+mkdir -p $C
+rsync -a --delete --exclude .git --exclude production --exclude design --exclude docs $R/ $C/
+python3 -I - $C $2 <<'PY'
+import sys
+from pathlib import Path
+c = Path(sys.argv[1]); lazy = sys.argv[2] == "1"
+q = c / "tools/evidence/split_screen/explosions_fps.gd"
+t = q.read_text()
+old = t[t.index("func _explode() -> void:"):t.index("## The frame intervals in milliseconds")]
+new = '''func _explode() -> void:
+	var mode: String = OS.get_environment("FPS_MODE")
+	var units: Array[Unit] = _k.q.units.units
+	var stats: UnitStats = _k.q.units.stats(Quick.TRUCK)
+	if mode != "tool":
+		for unit: Unit in units:
+			unit.destroy()
+	if mode != "destroy":
+		var places: Array[Vector2] = [THIRD_AT] if mode == "both" or mode == "" else [Vector2(-TRUCK_X, 0.0), Vector2(TRUCK_X, 0.0), THIRD_AT]
+		for place: Vector2 in places:
+			var blast: Explosion = (_harness.split.explosion_scene.instantiate()) as Explosion
+			units[0].get_parent().add_child(blast)
+			blast.blast(Vector3(place.x, stats.collision_center.y, place.y), maxf(stats.collision_size.x, stats.collision_size.z), 0.0)
+
+
+'''
+q.write_text(t.replace(old, new))
+if lazy:
+    p = c / "src/gameplay/effects/explosion.gd"
+    s = p.read_text()
+    s = s.replace("	_chunks = _copies_of(chunk_template, settings.chunk_directions.size())\n	_puffs = _copies_of(puff_template, settings.smoke_offsets.size())\n", "")
+    old = "func _pose(tick: int) -> void:\n"
+    s = s.replace(old, old + '''	if tick >= 1 and _chunks.is_empty():
+		_chunks = _copies_of(chunk_template, settings.chunk_directions.size())
+	while _puffs.size() < settings.smoke_offsets.size() and tick >= _smoke_start_ticks + _puffs.size() * _stagger_ticks:
+		var copy: MeshInstance3D = puff_template.duplicate() as MeshInstance3D
+		copy.name = "Puff%d" % _puffs.size()
+		puff_template.get_parent().add_child(copy)
+		_puffs.append(copy)
+''')
+    p.write_text(s)
+PY
+godot --headless --path $C --import > /dev/null 2>&1

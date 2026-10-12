@@ -34,3 +34,5 @@ fuel_use = 2.5
 fuel_use_idle = 0.625
 spawn_fuel_fraction = 0.5
 empty_turn_rate = 1.15
+badly_damaged_fraction = 0.2
+badly_damaged_speed_share = 0.5

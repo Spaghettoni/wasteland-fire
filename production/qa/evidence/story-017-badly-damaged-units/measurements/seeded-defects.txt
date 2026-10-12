@@ -1,0 +1,43 @@
+KILLED  strictly_below_in_place_of_at_or_below                   badly_damaged[edges] rc=1 fails=edge_by_real_shots,turret_shot_begins_it
+KILLED  spawn_keeps_the_hit_points_of_a_badly_damaged_unit       badly_damaged[edges] rc=1 fails=edge_by_real_shots
+KILLED  leave_play_does_not_end_the_state                        badly_damaged[ends] rc=1 fails=swap_puts_a_badly_damaged_unit_away_clean
+KILLED  destroy_does_not_end_the_state                           badly_damaged[ends] rc=1 fails=state_and_smoke_end_in_the_frame_of_the_destruction
+KILLED  state_ended_after_destroyed                              badly_damaged[ends] rc=1 fails=state_and_smoke_end_in_the_frame_of_the_destruction
+KILLED  spawn_does_not_end_the_state                             badly_damaged[ends] rc=1 fails=spawn_in_place_ends_the_state
+KILLED  state_read_without_the_unit_being_alive                  badly_damaged[ends] rc=1 fails=no_smoke_node_before_a_state,state_and_smoke_end_in_the_frame_of_the_destruction
+KILLED  state_signalled_on_every_hit_in_it                       badly_damaged[ends] rc=1 fails=state_and_smoke_end_in_the_frame_of_the_destruction
+KILLED  lethal_hit_signals_a_state_it_never_had                  badly_damaged[ends] rc=1 fails=whole_unit_destroyed_at_once_passes_no_state
+KILLED  share_on_forward_speed_only                              badly_damaged[speed] rc=1 fails=ease_reverse
+KILLED  share_in_the_turn_denominator                            badly_damaged[speed] rc=1 fails=turn_rates
+KILLED  cap_clamped_in_one_tick                                  badly_damaged[speed] rc=1 fails=ease_forward,ease_reverse
+KILLED  fords_clamp_skipped_while_badly_damaged                  badly_damaged[ford] rc=1 fails=ford_lower_cap_wins
+KILLED  share_never_applied_to_a_flying_unit                     badly_damaged[speed] rc=1 fails=ease_forward,ease_reverse,rates_unchanged,turn_rates
+KILLED  acceleration_scaled_by_the_share                         badly_damaged[speed] rc=1 fails=ease_forward,ease_reverse,rates_unchanged
+KILLED  fuel_burn_scaled_by_the_share                            badly_damaged[burn] rc=1 fails=burn_per_second
+KILLED  smoke_at_the_models_origin                               badly_damaged[smoke] rc=1 fails=smoke_begins_at_the_hit_from_the_drawn_body,gyrocopter_smoke_over_cliff_and_cover
+KILLED  smoke_on_the_unit_body                                   badly_damaged[smoke] rc=1 fails=gyrocopter_smoke_over_cliff_and_cover,no_engine_noise
+KILLED  smoke_instanced_with_the_model                           badly_damaged[data] rc=1 fails=no_smoke_node_before_a_state
+KILLED  smoke_not_hidden_at_the_end_of_the_state                 badly_damaged[ends] rc=1 fails=state_and_smoke_end_in_the_frame_of_the_destruction,spawn_in_place_ends_the_state,swap_puts_a_badly_damaged_unit_away_clean
+KILLED  smoke_in_the_team_colour                                 badly_damaged[smoke] rc=1 fails=smoke_begins_at_the_hit_from_the_drawn_body
+KILLED  model_listens_to_destroyed_too                           badly_damaged[data] rc=1 fails=destroyed_links_unchanged
+KILLED  model_listens_to_destroyed_too_tokens_data               tokens_data rc=0 output differs from the baseline
+KILLED  first_puff_not_born_with_the_state                       badly_damaged[smoke] rc=1 fails=smoke_begins_at_the_hit_from_the_drawn_body,smoke_in_both_views_on_both_units,gyrocopter_smoke_over_cliff_and_cover
+KILLED  puffs_left_showing_when_it_ends                          badly_damaged[ends] rc=1 fails=state_and_smoke_end_in_the_frame_of_the_destruction,spawn_in_place_ends_the_state
+KILLED  puffs_never_rise                                         badly_damaged[smoke] rc=1 fails=smoke_is_a_column_standing_and_a_trail_moving
+KILLED  puffs_never_fade                                         badly_damaged[smoke] rc=1 fails=smoke_is_a_column_standing_and_a_trail_moving
+KILLED  puffs_never_grow                                         badly_damaged[smoke] rc=1 fails=smoke_is_a_column_standing_and_a_trail_moving
+KILLED  puffs_follow_the_unit                                    badly_damaged[smoke] rc=1 fails=smoke_is_a_column_standing_and_a_trail_moving
+KILLED  amount_a_constant_in_code                                badly_damaged[data] rc=1 fails=no_numbers_in_code
+KILLED  casting_a_shadow                                         badly_damaged[smoke] rc=1 fails=smoke_begins_at_the_hit_from_the_drawn_body
+KILLED  on_render_layer_2                                        badly_damaged[smoke] rc=1 fails=smoke_begins_at_the_hit_from_the_drawn_body,smoke_in_both_views_on_both_units
+WINDOWED   not_top_level                                        badly_damaged[smoke] rc=0 fails=- | the smoke sets every puff's global place each tick, so no headless run tells a puff that is not top_level from one that is; the windowed probe at 120 fps (measurements/interp-probe-not-top-level.txt) does: the drawn place of a puff leaves where it was put by up to 0.183 m, against 0.021 m with top_level (measurements/interp-probe-with-reset.txt)
+KILLED  no_radius_in_the_scene                                   badly_damaged[smoke] rc=1 fails=gyrocopter_smoke_over_cliff_and_cover,no_engine_noise
+KILLED  share_of_zero_accepted                                   badly_damaged[data] rc=1 fails=bad_data_refused,no_engine_noise
+KILLED  fraction_of_one_accepted                                 badly_damaged[data] rc=1 fails=bad_data_refused
+KILLED  nan_fraction_accepted                                    badly_damaged[data] rc=1 fails=bad_data_refused
+KILLED  motorbike_fraction_a_quarter                             badly_damaged[data] rc=1 fails=data_read_back
+KILLED  gyrocopter_share_changed                                 badly_damaged[data] rc=1 fails=data_read_back
+KILLED  runner_leaves_the_state_on                               badly_damaged_off rc=1 fails=badly_damaged_stripped
+KILLED  runner_leaves_the_state_on_turrets                       turrets rc=0 output differs from the baseline
+-- 41 mutants: 41 killed, equivalent or killed by the windowed probe, 0 survived, 0 broken or not applied
+-- the 3 scratch copies equal the repo (apart from .godot, production, design, docs)

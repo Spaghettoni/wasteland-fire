@@ -98,7 +98,7 @@ func _refusals() -> void:
 	var q: Quick = _k.w.s.q
 	var errors: Array[String] = q.tokens.engine_log.errors
 	var world: Node = q.units.units[0].get_parent()
-	var scene: PackedScene = load(Kit13.SCENE_PATH) as PackedScene
+	var scene: PackedScene = q.harness.turret_scene
 	var bare: MatchRules = q.controller.rules.duplicate() as MatchRules
 	bare.damage_matrix = null
 	var first: Turret = scene.instantiate() as Turret

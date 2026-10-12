@@ -1,0 +1,35 @@
+KILLED  hook_on_each_units_destroyed                         explosions rc=1 fails=refused_note_plays_none,shipped_scene,shots_explode,turret_shots_explode,mines_explode,mine_takes_two_plays_two,self_destruct_explodes,fuel_crash_explodes,direct_destroy_explodes,size_follows_the_type,over_cliff,over_cover,hovering_is_drawn_height,picture_only,lifetime
+KILLED  hook_also_on_unit_swapped                            explosions rc=1 fails=swap_plays_none
+KILLED  hook_also_on_every_restart_bench                     explosions rc=1 fails=restart_benches_play_none,bad_scene_plays_nothing,double_loss_under_the_pause,r_removes_them
+KILLED  free_explosions_not_connected                        explosions rc=1 fails=shipped_scene,r_removes_them
+KILLED  warm_up_without_a_scene_check                        tokens rc=0 output differs from the baseline
+EQUIVALENT explode_without_a_scene_check                    explosions_off rc=0 fails=- | the strip sets no scene before _ready(), so the handler is never connected and the guard is never reached; a scene cleared later is not a state any scenario reaches
+KILLED  explosion_added_under_the_unit                       explosions rc=1 fails=stays_where_it_began
+KILLED  centre_at_the_bodys_origin                           explosions rc=1 fails=shots_explode,turret_shots_explode,self_destruct_explodes,fuel_crash_explodes,direct_destroy_explodes,over_cliff,over_cover,hovering_is_drawn_height
+KILLED  centre_without_the_boxs_middle                       explosions rc=1 fails=shots_explode,turret_shots_explode,mines_explode,mine_takes_two_plays_two,self_destruct_explodes,fuel_crash_explodes,direct_destroy_explodes,over_cliff,over_cover,hovering_is_drawn_height,pieces_by_tick
+KILLED  size_from_a_fixed_number                             explosions rc=1 fails=size_follows_the_type,pieces_by_tick
+KILLED  team_material_on_the_fireball                        explosions rc=1 fails=look_is_data,pieces_by_tick
+KILLED  pausable_process_mode                                explosions rc=1 fails=picture_only,loss_under_the_pause,double_loss_under_the_pause
+KILLED  explosion_never_frees_itself                         explosions rc=1 fails=structures_play_none,picture_only,lifetime,drives_through,loss_under_the_pause
+KILLED  explosion_frees_a_tick_early                         explosions rc=1 fails=lifetime,loss_under_the_pause,no_engine_noise
+KILLED  random_chunk_direction                               explosions rc=1 fails=explosions_lint,pieces_by_tick
+KILLED  duration_as_a_constant_in_code                       explosions rc=1 fails=explosions_lint
+KILLED  chunks_never_land                                    explosions rc=1 fails=pieces_by_tick
+KILLED  smoke_never_fades                                    explosions rc=1 fails=pieces_by_tick
+KILLED  puffs_begin_together                                 explosions rc=1 fails=pieces_by_tick
+KILLED  fireball_never_darkens                               explosions rc=1 fails=pieces_by_tick
+KILLED  templates_left_referenced                            explosions rc=1 fails=look_is_data
+KILLED  fireball_posed_after_it_ends                         explosions rc=1 fails=pieces_by_tick
+EQUIVALENT no_physics_interpolation_reset                   explosions rc=0 fails=- | measured windowed at 120 fps (measurements/explosions_interp_probe*.txt): an Explosion placed and posed in the tick it enters the tree is drawn in place on its first frames with or without the reset (the largest gap from its centre is 0.91 m with it and 0.88 m without, the chunks' own flight, against the 6 m a streak from the origin would show); a headless or Movie Maker run cannot see a drawn frame at all
+KILLED  flash_never_ends                                     explosions rc=1 fails=pieces_by_tick
+KILLED  chunk_given_a_body                                   explosions rc=1 fails=picture_only
+KILLED  chunk_casting_a_shadow                               explosions rc=1 fails=look_is_data
+KILLED  smoke_lit_by_the_scene                               explosions rc=1 fails=look_is_data
+KILLED  fireball_shared_between_explosions                   explosions rc=1 fails=look_is_data
+KILLED  mines_flash_hidden                                   explosions rc=1 fails=mines_explode
+KILLED  runner_leaves_the_explosions_on                      explosions_off rc=1 fails=explosions_stripped
+EQUIVALENT runner_leaves_the_explosions_on_loss             loss rc=0 output equals the baseline | story 016's measure-first: an Explosion is invisible to a headless scenario that reads no node count and no group, so the regression cannot tell the strip from its absence; explosions_off (runner_leaves_the_explosions_on) proves the strip
+EQUIVALENT runner_leaves_the_explosions_on_destruction      destruction rc=0 output equals the baseline | as runner_leaves_the_explosions_on_loss
+EQUIVALENT runner_leaves_the_explosions_on_mines            mines rc=0 output equals the baseline | as runner_leaves_the_explosions_on_loss
+-- 33 mutants: 33 killed, equivalent or killed by the windowed probe, 0 survived, 0 broken or not applied
+-- the 3 scratch copies equal the repo (apart from .godot, production, design, docs)

@@ -1,0 +1,38 @@
+{
+ "flag_walls": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1063)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1093)"
+  ]
+ ],
+ "token_ui": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1063)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1093)"
+  ]
+ ],
+ "tokens_data": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1063)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1093)"
+  ]
+ ],
+ "turret_looks": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1063)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1093)"
+  ]
+ ],
+ "turrets": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1063)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1093)"
+  ]
+ ],
+ "unit_swap": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1063)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1093)"
+  ]
+ ]
+}

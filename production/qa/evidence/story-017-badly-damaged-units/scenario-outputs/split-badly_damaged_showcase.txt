@@ -1,0 +1,12 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+SPLIT badly_damaged_showcase t=3.517 frame=210 moment=column_motorbike_buggy smoking=true,true puffs=15,15 views=["above_camera_settings.tres", "chase_camera_settings.tres"]
+SPLIT badly_damaged_showcase t=5.917 frame=354 moment=column_truck_gyrocopter smoking=true,true puffs=15,15 views=["above_camera_settings.tres", "chase_camera_settings.tres"]
+SPLIT badly_damaged_showcase t=8.133 frame=487 moment=moving_trails smoking=true,true puffs=15,15 views=["above_camera_settings.tres", "chase_camera_settings.tres"] speeds=12.0,9.8
+SPLIT badly_damaged_showcase t=11.533 frame=691 moment=in_the_ford smoking=true,true puffs=15,14 views=["above_camera_settings.tres", "chase_camera_settings.tres"] speed=9.80 x=-39.9
+SPLIT badly_damaged_showcase t=14.583 frame=874 moment=gyro_over_cliff smoking=false,true puffs=0,15 views=["above_camera_settings.tres", "chase_camera_settings.tres"] model_bottom=2.25 piece_top=2.00
+SPLIT badly_damaged_showcase t=17.633 frame=1057 moment=gyro_over_cover smoking=false,true puffs=0,15 views=["above_camera_settings.tres", "chase_camera_settings.tres"] model_bottom=2.25 piece_top=2.00
+SPLIT badly_damaged_showcase t=20.267 frame=1215 moment=destroyed_flash explosions=1 own_smoke_puffs=0 views=["above_camera_settings.tres", "chase_camera_settings.tres"]
+SPLIT badly_damaged_showcase t=20.833 frame=1249 moment=destroyed_smoke explosions=1 own_smoke_puffs=0 views=["above_camera_settings.tres", "chase_camera_settings.tres"]
+SPLIT badly_damaged_showcase t=24.683 frame=1480 moment=respawned_clean smoking=true,false puffs=15,-1 views=["above_camera_settings.tres", "chase_camera_settings.tres"]
+RESULT badly_damaged_showcase ok checks=0 failed=0 t=24.683 moments=9 changes=21

@@ -1,0 +1,20 @@
+#!/bin/sh
+# usage: look-run.sh TAG   scratch copy of the repo with the look driver registered; records it with Movie Maker
+R=/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire
+D=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/011fac19-3980-4a60-9260-2bb6291e87b1/scratchpad
+C=$D/probe16/copy-$1
+mkdir -p $C
+rsync -a --delete --exclude .git --exclude production --exclude design --exclude docs $R/ $C/
+cp $D/probe16/explosions_look.gd $C/tools/evidence/split_screen/
+python3 -I - "$C" <<'PY'
+import sys
+c = sys.argv[1]
+p = c + "/tools/evidence/split_screen_harness.gd"
+s = open(p).read()
+old = '	&"turret_looks_fps": preload("res://tools/evidence/split_screen/turret_looks_fps.gd"),\n'
+assert s.count(old) == 1
+open(p, "w").write(s.replace(old, old + '	&"explosions_look": preload("res://tools/evidence/split_screen/explosions_look.gd"),\n'))
+PY
+godot --headless --path $C --import > /dev/null 2>&1
+rm -rf $D/probe16/look-$1
+sh $D/frames_story.sh $C explosions_look $D/probe16/look-$1

@@ -1,0 +1,7 @@
+The four CHECK lines of story 013's turrets_clear.gd as the retained baseline output (rg/base-a/split-turrets.txt, the 1.8 m drum)
+against the same module run by turret_looks on the grown Turret (every detail text after PASS compared, character by character):
+
+exits: IDENTICAL (243 characters)
+turns: IDENTICAL (607 characters)
+inbound: IDENTICAL (294 characters)
+solid: IDENTICAL (646 characters)

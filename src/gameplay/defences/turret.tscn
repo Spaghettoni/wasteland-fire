@@ -5,19 +5,24 @@
 [ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/wall.tres" id="3_wall"]
 [ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/tower.tres" id="4_tower"]
 [ext_resource type="PackedScene" path="res://src/gameplay/combat/shot.tscn" id="5_shot"]
+[ext_resource type="Material" path="res://src/gameplay/defences/materials/flag_wall_damaged_1.tres" id="6_damaged_1"]
+[ext_resource type="Material" path="res://src/gameplay/defences/materials/flag_wall_damaged_2.tres" id="7_damaged_2"]
+[ext_resource type="Material" path="res://src/gameplay/defences/materials/flag_wall_chips.tres" id="8_chips"]
+[ext_resource type="Material" path="res://src/gameplay/defences/materials/turret_head_damaged_1.tres" id="9_steel_1"]
+[ext_resource type="Material" path="res://src/gameplay/defences/materials/turret_head_damaged_2.tres" id="10_steel_2"]
 [ext_resource type="Script" path="res://src/gameplay/props/prop_mesh.gd" id="20_prop_mesh"]
 [ext_resource type="PackedScene" path="res://assets/art/map_01/base/map_01_base.glb" id="21_base_trim"]
 [ext_resource type="Material" path="res://src/gameplay/props/materials/prop_neutral.tres" id="22_prop_neutral"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_turret"]
-height = 1.8
+height = 3
 radius = 1.0
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_pedestal"]
 material = ExtResource("3_wall")
 top_radius = 1.0
 bottom_radius = 1.0
-height = 1.0
+height = 2.2
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_dome"]
 material = ExtResource("4_tower")
@@ -39,34 +44,129 @@ size = Vector3(0.24, 0.24, 1.2)
 material = ExtResource("3_wall")
 size = Vector3(0.9, 0.3, 0.7)
 
-[node name="Turret" type="StaticBody3D" node_paths=PackedStringArray("intact", "wreck", "head")]
+[sub_resource type="BoxMesh" id="BoxMesh_chip"]
+material = ExtResource("8_chips")
+size = Vector3(0.6, 0.26, 0.44)
+
+[sub_resource type="BoxMesh" id="BoxMesh_chip_large"]
+material = ExtResource("8_chips")
+size = Vector3(0.7, 0.26, 0.5)
+
+[node name="Turret" type="StaticBody3D" node_paths=PackedStringArray("intact", "wreck", "damaged_looks", "head", "worn_parts")]
 collision_layer = 1
 collision_mask = 0
 script = ExtResource("1_turret")
 stats = ExtResource("2_stats")
-intact = NodePath("Look")
+intact = NodePath("Look/Pedestal")
 wreck = NodePath("Rubble")
+damaged_looks = [NodePath("Look/PedestalDamaged1"), NodePath("Look/PedestalDamaged2")]
 head = NodePath("Look/Head")
 shot_scene = ExtResource("5_shot")
+worn_parts = [NodePath("Look/Head/Dome"), NodePath("Look/Head/Barrel")]
+worn_steel = Array[Material]([ExtResource("9_steel_1"), ExtResource("10_steel_2")])
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 shape = SubResource("CylinderShape3D_turret")
 
 [node name="Look" type="Node3D" parent="."]
 
 [node name="Pedestal" type="MeshInstance3D" parent="Look"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
 mesh = SubResource("CylinderMesh_pedestal")
 
 [node name="Trim" type="MeshInstance3D" parent="Look/Pedestal"]
 material_override = ExtResource("22_prop_neutral")
 script = ExtResource("20_prop_mesh")
 mesh_file = ExtResource("21_base_trim")
-mesh_name = &"TurretPedestalTrim"
+mesh_name = &"TurretPedestalTrimTall"
+
+[node name="PedestalDamaged1" type="MeshInstance3D" parent="Look"]
+visible = false
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+material_override = ExtResource("6_damaged_1")
+mesh = SubResource("CylinderMesh_pedestal")
+
+[node name="Trim" type="MeshInstance3D" parent="Look/PedestalDamaged1"]
+material_override = ExtResource("22_prop_neutral")
+script = ExtResource("20_prop_mesh")
+mesh_file = ExtResource("21_base_trim")
+mesh_name = &"TurretPedestalTrimTall"
+
+[node name="Chunk1" type="MeshInstance3D" parent="Look/PedestalDamaged1"]
+transform = Transform3D(0.258819, 0, 0.9659258, 0, 1, 0, -0.9659258, 0, 0.258819, 1.2688309, -0.97, 0.5916656)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_chip")
+
+[node name="Chunk2" type="MeshInstance3D" parent="Look/PedestalDamaged1"]
+transform = Transform3D(0.7986355, 0, -0.601815, 0, 1, 0, 0.601815, 0, 0.7986355, -0.6001179, -0.97, 1.2869571)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_chip")
+
+[node name="Chunk3" type="MeshInstance3D" parent="Look/PedestalDamaged1"]
+transform = Transform3D(-0.2923717, 0, -0.9563048, 0, 1, 0, 0.9563048, 0, -0.2923717, -1.2688309, -0.97, -0.5916656)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_chip")
+
+[node name="Chunk4" type="MeshInstance3D" parent="Look/PedestalDamaged1"]
+transform = Transform3D(-0.8290376, 0, 0.5591929, 0, 1, 0, -0.5591929, 0, -0.8290376, 0.6043441, -0.97, -1.2960201)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_chip")
+
+[node name="PedestalDamaged2" type="MeshInstance3D" parent="Look"]
+visible = false
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+material_override = ExtResource("7_damaged_2")
+mesh = SubResource("CylinderMesh_pedestal")
+
+[node name="Trim" type="MeshInstance3D" parent="Look/PedestalDamaged2"]
+material_override = ExtResource("22_prop_neutral")
+script = ExtResource("20_prop_mesh")
+mesh_file = ExtResource("21_base_trim")
+mesh_name = &"TurretPedestalTrimTall"
+
+[node name="Chunk1" type="MeshInstance3D" parent="Look/PedestalDamaged2"]
+transform = Transform3D(0.258819, 0, 0.9659258, 0, 1, 0, -0.9659258, 0, 0.258819, 1.2688309, -0.97, 0.5916656)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_chip")
+
+[node name="Chunk2" type="MeshInstance3D" parent="Look/PedestalDamaged2"]
+transform = Transform3D(0.7986355, 0, -0.601815, 0, 1, 0, 0.601815, 0, 0.7986355, -0.6001179, -0.97, 1.2869571)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_chip")
+
+[node name="Chunk3" type="MeshInstance3D" parent="Look/PedestalDamaged2"]
+transform = Transform3D(-0.2923717, 0, -0.9563048, 0, 1, 0, 0.9563048, 0, -0.2923717, -1.2688309, -0.97, -0.5916656)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_chip")
+
+[node name="Chunk4" type="MeshInstance3D" parent="Look/PedestalDamaged2"]
+transform = Transform3D(-0.8290376, 0, 0.5591929, 0, 1, 0, -0.5591929, 0, -0.8290376, 0.6043441, -0.97, -1.2960201)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_chip")
+
+[node name="Chunk5" type="MeshInstance3D" parent="Look/PedestalDamaged2"]
+transform = Transform3D(0.8290376, 0.0971028, 0.5506975, 0, 0.9848078, -0.1736482, -0.5591929, 0.1439609, 0.8164426, 0.5198706, -0.92, 1.4283328)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_chip_large")
+
+[node name="Chunk6" type="MeshInstance3D" parent="Look/PedestalDamaged2"]
+transform = Transform3D(0.1736482, 0.1540579, -0.9726831, 0, 0.9876883, 0.1564345, 0.9848078, -0.0271646, 0.1715103, -1.4095389, -0.91, 0.5130302)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_chip_large")
+
+[node name="Chunk7" type="MeshInstance3D" parent="Look/PedestalDamaged2"]
+transform = Transform3D(-0.8480481, -0.1011134, -0.5201832, 0, 0.9816272, -0.190809, 0.5299193, -0.1618152, -0.8324671, -0.526711, -0.92, -1.4471266)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_chip_large")
+
+[node name="Chunk8" type="MeshInstance3D" parent="Look/PedestalDamaged2"]
+transform = Transform3D(-0.1045285, -0.1726969, 0.9794129, 0, 0.9848078, 0.1736482, -0.9945219, 0.0181512, -0.1029404, 1.4095389, -0.91, -0.5130302)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_chip_large")
 
 [node name="Head" type="Node3D" parent="Look"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0)
 
 [node name="Dome" type="MeshInstance3D" parent="Look/Head"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)

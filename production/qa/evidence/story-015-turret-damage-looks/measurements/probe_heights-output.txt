@@ -1,0 +1,45 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+TYPE motorbike file=wasteland_motorbike.glb scale=1.000 offset_y=0.000 hover=0.000
+  every part: y -0.000..1.239  x -0.380..0.380  z -1.170..1.170  (file frame, origin on the ground at the collider's middle)
+    highest vertex of the body 1: mesh=Neutral y=1.239 x=-0.080 z=-0.691
+    highest vertex of the body 2: mesh=Neutral y=1.239 x=0.080 z=-0.691
+    highest vertex of the body 3: mesh=Neutral y=1.239 x=0.080 z=-0.691
+    highest vertex of the body 4: mesh=Neutral y=1.239 x=0.080 z=-0.691
+    highest vertex of the body 5: mesh=Neutral y=1.239 x=-0.080 z=-0.691
+    highest vertex of the body 6: mesh=Neutral y=1.239 x=0.080 z=-0.691
+TYPE buggy file=wasteland_buggy.glb scale=1.000 offset_y=0.000 hover=0.000
+  every part: y 0.002..2.000  x -0.930..0.930  z -1.506..1.460  (file frame, origin on the ground at the collider's middle)
+    highest vertex of the body 1: mesh=Accent  y=1.448 x=0.092 z=-0.237
+    highest vertex of the body 2: mesh=Accent  y=1.448 x=0.108 z=-0.203
+    highest vertex of the body 3: mesh=Accent  y=1.448 x=0.092 z=-0.203
+    highest vertex of the body 4: mesh=Accent  y=1.448 x=0.108 z=-0.237
+    highest vertex of the body 5: mesh=Accent  y=1.448 x=0.092 z=-0.203
+    highest vertex of the body 6: mesh=Accent  y=1.448 x=-0.308 z=-0.203
+    thin part 'whip and pennant' reaches y=2.000
+TYPE truck file=wasteland_truck.glb scale=1.000 offset_y=0.000 hover=0.000
+  every part: y 0.004..2.702  x -1.080..1.080  z -2.240..2.330  (file frame, origin on the ground at the collider's middle)
+    highest vertex of the body 1: mesh=Neutral y=2.204 x=0.130 z=-0.432
+    highest vertex of the body 2: mesh=Neutral y=2.204 x=-0.130 z=-0.432
+    highest vertex of the body 3: mesh=Neutral y=2.204 x=-0.130 z=-0.432
+    highest vertex of the body 4: mesh=Neutral y=2.204 x=0.130 z=-0.432
+    highest vertex of the body 5: mesh=Neutral y=2.204 x=0.130 z=-0.432
+    highest vertex of the body 6: mesh=Neutral y=2.204 x=-0.130 z=-0.432
+    thin part 'whip antenna' reaches y=2.702
+TYPE gyrocopter file=wasteland_gyrocopter.glb scale=1.000 offset_y=0.000 hover=0.780
+  every part: y -0.000..1.802  x -2.116..2.116  z -1.160..1.259  (file frame, origin on the ground at the collider's middle)
+    highest vertex of the body 1: mesh=Accent  y=1.802 x=2.043 z=-0.922
+    highest vertex of the body 2: mesh=Accent  y=1.802 x=2.043 z=-0.922
+    highest vertex of the body 3: mesh=Accent  y=1.802 x=2.043 z=-0.922
+    highest vertex of the body 4: mesh=Accent  y=1.802 x=2.043 z=-0.922
+    highest vertex of the body 5: mesh=Accent  y=1.796 x=2.041 z=-0.929
+    highest vertex of the body 6: mesh=Accent  y=1.796 x=2.041 z=-0.929
+
+DRAWN TOPS (metres over the Unit's floor, as the game draws them)
+  motorbike  top with every part 1.239, top of the body without its thin parts 1.239
+  buggy      top with every part 2.000, top of the body without its thin parts 1.448 (thin parts 0.552 above it)
+  truck      top with every part 2.702, top of the body without its thin parts 2.204 (thin parts 0.497 above it)
+  gyrocopter top with every part 2.582, top of the body without its thin parts 2.582
+
+FLYING HEIGHT: tallest drawn ground body 2.204 (a Wall Panel is 2.0) + the Gyrocopter's rise_clearance 0.25 = 2.454
+BAND the Gyrocopter's model flies in with its lowest drawn point (file y -0.000) at the flying height: 2.454 .. 4.256 (drawn extent 1.802; today it hovers at 0.78, so 0.780 .. 2.582)

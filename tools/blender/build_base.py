@@ -24,6 +24,9 @@ mesh is centred as the box it lies on (the ladder at its foot), in the box's own
     GarageSideTrim  on a 1 x 2.5 x 10 m wall along Z
     WaterTowerLadder  up the water tower's 8.3 m to its platform
     TurretPedestalTrim  on a Turret's drum (1 m radius, 1 m tall): a bolt ring, ribs, a hatch
+    TurretPedestalTrimTall  on the grown Turret's drum (1 m radius, 2.2 m tall, Story 015): a bolt
+                        ring, a collar, taller ribs and a hatch; the 1 m drum's trim above stays
+                        for the evidence's frozen Turret (tools/evidence/frozen/)
     TurretHeadTrim      on its turning head: vents, a sight, an aerial, a muzzle brake and a
                         sleeve on the barrel (src/gameplay/defences/turret.tscn keeps the drum, the
                         dome, the Team band and the barrel)
@@ -57,9 +60,12 @@ FOOT_OUT = 0.04
 WIRE_HEIGHT = 0.3
 WIRE_STEP = 0.5
 AO_DISTANCE = 0.6
+# The grown Turret's drum (src/gameplay/defences/turret.tscn, Story 015): 1 m radius, this tall.
+TURRET_DRUM_HEIGHT = 2.2
 GROUND_SIZE = 500.0
 NAMES = ["WallBackTrim", "WallSideTrim", "WallGateTrim", "TowerTrim", "GarageBackTrim",
-        "GarageSideTrim", "WaterTowerLadder", "TurretPedestalTrim", "TurretHeadTrim"]
+        "GarageSideTrim", "WaterTowerLadder", "TurretPedestalTrim", "TurretHeadTrim",
+        "TurretPedestalTrimTall"]
 VIEWS = {}
 for _index, _name in enumerate(NAMES):
     VIEWS[_name] = ((_index * SPACING + 9.0, -14.0, 9.0), (_index * SPACING, 0.0, 1.8), None)
@@ -175,6 +181,23 @@ def turret_pedestal_trim(x0, y0):
     return p
 
 
+def turret_pedestal_trim_tall(x0, y0, height):
+    """On the grown Turret's drum (1 m radius, `height` tall, standing on the ground): a bolt ring
+    at its foot, a collar round its top, six ribs between them and a hatch."""
+    p = [kit.cylinder("bolt_ring", 1.07, 0.07, (x0, y0, 0.035), "Z", "gunmetal", segments=20),
+            kit.cylinder("collar", 1.05, 0.1, (x0, y0, height - 0.05), "Z", "gunmetal",
+                    segments=20)]
+    rib = height - 0.4
+    for k in range(6):
+        a = 2.0 * math.pi * k / 6 + 0.26
+        p.append(kit.box("rib", (0.05, 0.09, rib), (x0 + math.cos(a) * 1.01,
+                y0 + math.sin(a) * 1.01, height / 2.0), "gunmetal",
+                rotation=(0.0, 0.0, math.degrees(a))))
+    p.append(kit.box("hatch", (0.03, 0.5, 0.9), (x0 + 1.005, y0, 0.6), "steel_dark",
+            bevel=0.005))
+    return p
+
+
 def turret_head_trim(x0, y0):
     """On a Turret's turning head (its frame's origin on the drum's top; the barrel forward
     along +Y here, Godot's -Z): louvres on the back of the dome, a sight box and an aerial on top, a
@@ -225,6 +248,10 @@ def main():
     stand_in((1.7, 1.7, 0.8), (x0, y0, 0.4))
     groups["TurretHeadTrim"] = turret_head_trim(x0, y0)
     origins["TurretHeadTrim"] = (x0, y0, 0.0)
+    x0, y0 = spot(9)
+    stand_in((2.0, 2.0, TURRET_DRUM_HEIGHT), (x0, y0, TURRET_DRUM_HEIGHT / 2.0))
+    groups["TurretPedestalTrimTall"] = turret_pedestal_trim_tall(x0, y0, TURRET_DRUM_HEIGHT)
+    origins["TurretPedestalTrimTall"] = (x0, y0, TURRET_DRUM_HEIGHT / 2.0)
     x0, y0 = spot(6)
     groups["WaterTowerLadder"] = water_tower_ladder(x0, y0, 8.3)
     origins["WaterTowerLadder"] = (x0, y0, 0.0)

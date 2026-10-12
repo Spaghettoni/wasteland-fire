@@ -1,0 +1,25 @@
+#!/bin/sh
+# usage: interp-run.sh TAG [mutate]   scratch copy with the probe registered; windowed run; mutate removes the reset in blast()
+R=/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire
+D=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/011fac19-3980-4a60-9260-2bb6291e87b1/scratchpad/probe16
+C=$D/copy-$1
+mkdir -p $C
+rsync -a --delete --exclude .git --exclude production --exclude design --exclude docs $R/ $C/
+cp $D/explosions_interp_probe.gd $C/tools/evidence/split_screen/
+python3 -I - "$C" "$2" <<'PY'
+import sys
+c, mutate = sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else ""
+p = c + "/tools/evidence/split_screen_harness.gd"
+s = open(p).read()
+old = '	&"explosions_fps": preload("res://tools/evidence/split_screen/explosions_fps.gd"),\n'
+assert s.count(old) == 1
+open(p, "w").write(s.replace(old, old + '	&"explosions_interp_probe": preload("res://tools/evidence/split_screen/explosions_interp_probe.gd"),\n'))
+if mutate:
+    t = c + "/src/gameplay/effects/explosion.gd"
+    u = open(t).read()
+    old = "	reset_physics_interpolation()\n	set_physics_process(true)\n"
+    assert u.count(old) == 1
+    open(t, "w").write(u.replace(old, "	set_physics_process(true)\n"))
+PY
+godot --headless --path $C --import > /dev/null 2>&1
+cd $C && godot --path . --windowed --resolution 1280x720 res://tools/evidence/split_screen_harness.tscn -- --scenario=explosions_interp_probe 2>&1 | grep -E "^SPLIT interp|^RESULT|SCRIPT ERROR|ERROR"

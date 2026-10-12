@@ -1,0 +1,36 @@
+KILLED  damaged_looks_never_shown                            turret_looks rc=1 fails=stages,still_fights
+KILLED  stage_off_by_one                                     turret_looks rc=1 fails=looks_data,stages,kept,still_fights,bad_looks
+KILLED  below_made_inclusive                                 turret_looks rc=1 fails=stages
+KILLED  whole_drum_kept_beside_a_damaged_one                 turret_looks rc=1 fails=stages,still_fights
+KILLED  check_of_the_looks_list_removed                      turret_looks rc=1 fails=bad_looks,no_engine_noise
+KILLED  hook_not_called                                      turret_looks rc=1 fails=stages,still_fights,bad_looks
+KILLED  hook_does_something_for_a_flag_wall                  flag_walls rc=1 output differs from the baseline
+KILLED  head_hidden_in_a_damaged_look                        turret_looks rc=1 fails=stages
+KILLED  head_left_standing_on_the_rubble                     turret_looks rc=1 fails=stages,still_fights,bad_looks
+KILLED  head_steel_kept_after_restore                        turret_looks rc=1 fails=stages,kept
+KILLED  check_of_the_worn_steel_removed                      turret_looks rc=1 fails=bad_looks,no_engine_noise
+KILLED  shots_origin_raised_with_the_head                    turret_looks rc=1 fails=still_fights,growth,targets,reach,path
+KILLED  sight_ray_raised_with_the_head                       turret_looks rc=1 fails=targets
+KILLED  fractions_changed_in_the_data                        turret_looks rc=1 fails=looks_data,stages,still_fights
+KILLED  first_steel_not_darker_than_the_whole_head           turret_looks rc=1 fails=looks_data
+KILLED  second_steel_not_darker_than_the_first               turret_looks rc=1 fails=looks_data
+KILLED  two_looks_swapped_in_the_scene                       turret_looks rc=1 fails=looks_data,stages,still_fights
+KILLED  steels_swapped_in_the_scene                          turret_looks rc=1 fails=looks_data
+KILLED  band_made_a_worn_part                                turret_looks rc=1 fails=looks_data,stages,kept
+KILLED  first_look_wears_the_second_material                 turret_looks rc=1 fails=looks_data
+KILLED  chunk_given_a_body                                   turret_looks rc=1 fails=looks_data
+KILLED  chunk_casting_a_shadow                               turret_looks rc=1 fails=looks_data
+KILLED  chunk_inside_the_drum                                turret_looks rc=1 fails=looks_data
+KILLED  chunk_off_the_ground                                 turret_looks rc=1 fails=looks_data
+KILLED  collider_not_grown                                   turret_looks rc=1 fails=stages,growth,solid,sight
+KILLED  collider_grown_wider                                 turret_looks rc=1 fails=stages,growth,solid
+KILLED  drum_not_grown                                       turret_looks rc=1 fails=growth
+KILLED  head_left_under_the_band                             turret_looks rc=1 fails=growth
+KILLED  band_measured_with_the_thin_antenna_counted          turret_looks rc=1 fails=growth
+KILLED  runner_leaves_the_fractions_on                       turret_looks rc=1 fails=older_turrets
+KILLED  runner_leaves_the_fractions_on_turrets               turrets rc=1 output differs from the baseline
+KILLED  swap_leaves_the_band_entries_on_the_freed_turrets    turret_looks rc=1 fails=older_turrets,no_engine_noise
+KILLED  swap_leaves_the_band_entries_on_the_freed_turrets_turrets turrets rc=1 output differs from the baseline
+KILLED  runner_leaves_the_grown_turret_on                    turret_looks rc=1 fails=older_turrets
+-- 34 mutants: 34 killed, equivalent or killed by the windowed probe, 0 survived, 0 broken or not applied
+-- the 3 scratch copies equal the repo (apart from .godot, production, design, docs)

@@ -1,0 +1,58 @@
+# Story 016: what an explosion costs the frame it is made in (AC-8; measure-first items 5 and 6)
+# Windowed on the 120 Hz built-in display, 1280 x 720, Metal, Forward+, Godot 4.7.2, 2026-10-11. Every frame number is the interval
+# in milliseconds between the process frame before the physics tick the explosions were made in and the process frame after it
+# (explosions_fps.gd; its windows 2 to 8 destroy both Trucks and add a third explosion by the tool in the same tick; window 1 is the
+# control: nothing destroyed, nothing made). A plain frame on this display is 4 to 12 ms (vsync alternates 6 and 10 ms).
+
+## 1. First finding: the shader churn (every material local to the scene, nothing kept alive)
+SplitScreen._explode() timed in a scratch copy (instantiate / add_child / blast, microseconds, in the order the explosions came: the first
+Explosion of each window, then the second): the first of a window took 4 to 10 ms and the second 0.25 to 0.56 ms. A BaseMaterial3D frees
+its shader with the last material that uses it and makes it again for the next one, and with every material local to the scene each
+explosion's died with it. Frame intervals of the explosions' tick, windows 2 to 4: [16.2, 16.1, 28.0]
+  instantiate_us=4710 add_child_us=437 blast_us=20 total_us=5167
+  instantiate_us=234 add_child_us=244 blast_us=12 total_us=490
+  instantiate_us=3919 add_child_us=465 blast_us=22 total_us=4406
+  instantiate_us=261 add_child_us=292 blast_us=15 total_us=568
+  instantiate_us=10041 add_child_us=1328 blast_us=66 total_us=11435
+  instantiate_us=556 add_child_us=656 blast_us=30 total_us=1242
+
+## 2. The fix: the flash, chunk and puff materials are shared sub-resources (the PackedScene holds them, so their shader lives on)
+Making three explosions by the tool alone (no destruction, no UI), windows 2 to 8, two runs each:
+  materials local to the scene: run 1 [14.3, 16.6, 14.7, 14.0, 17.1, 13.2, 13.3], run 2 [14.1, 15.5, 15.8, 9.8, 15.0, 9.6, 14.9]
+  materials shared (the build):  run 1 [14.0, 9.7, 14.1, 12.3, 14.0, 13.3, 14.1], run 2 [14.2, 10.5, 14.7, 10.1, 13.4, 10.6, 14.4]
+
+## 3. Second finding: the very first Explosion of a run costs about 12 to 16 ms to instantiate, once (what it does then is not itemized)
+A scratch copy with the Round's first destruction as the first explosion and no warm-up (nowarm2) against the build (warmfinal: SplitScreen
+instances the scene once, adds it and frees it before the Round begins). Instantiate / add_child / blast in microseconds, the first four
+explosions of each run:
+  no warm-up:
+    instantiate_us=16398 add_child_us=1084 blast_us=58 total_us=17540
+    instantiate_us=221 add_child_us=499 blast_us=28 total_us=748
+    instantiate_us=444 add_child_us=1102 blast_us=57 total_us=1603
+    instantiate_us=345 add_child_us=790 blast_us=39 total_us=1174
+  the build:
+    instantiate_us=395 add_child_us=884 blast_us=50 total_us=1329
+    instantiate_us=247 add_child_us=599 blast_us=31 total_us=877
+    instantiate_us=435 add_child_us=743 blast_us=49 total_us=1227
+    instantiate_us=388 add_child_us=753 blast_us=53 total_us=1194
+Frame interval of the explosions' tick, windows 2 to 8 (the first number is the Round's first explosions):
+  no warm-up: [35.8, 18.0, 21.2, 11.7, 17.3, 10.6, 20.4]
+  the build:  [17.4, 18.2, 18.4, 16.7, 20.3, 16.5, 20.7]
+
+## 4. The destruction's own frame, with the explosion hook off (the Round, the HUD, the choice panel and the countdown only)
+run 1 [16.3, 10.7, 15.9, 14.7, 14.6, 13.8, 14.4]
+run 2 [17.0, 9.9, 15.9, 11.1, 14.9, 11.3, 13.8]
+
+## 5. The build as retained (windowed-explosions_fps-run1.txt and -run2.txt: both Trucks destroyed, two explosions through the hook, and a third added by the tool in the same tick)
+run 1 [19.1, 18.7, 18.0, 16.2, 12.2, 19.8, 10.4]
+run 2 [20.1, 12.3, 17.0, 18.2, 17.9, 19.4, 16.1]
+(the control window, nothing made: 8.8 and 9.6 ms)
+
+## Reading
+The destruction itself costs a frame of 10 to 17 ms (median about 14.5) with no explosion at all: the controller's bookkeeping, the HUD,
+the choice panel and the respawn countdown in both views; nothing here itemizes it. The explosions add about 1.5 ms for each one made
+in that tick: three at once measure 10 to 20 ms in the retained runs (median about 18; 22 in an earlier run), the Round's first
+explosions 19.1 and 20.1 ms. The Round's first explosion measured 35.8 ms before the warm-up (the first instantiate of a run costs
+12 to 16 ms) and 17.4 ms with it. Steady frames are 4 to 12 ms at 118 to 120 fps with at most 275 draw calls (265 with no Unit in play, 274
+in the control window with both Trucks standing). The bar of the story (a frame of at most 16.6 ms) is met by every frame but the one a
+destruction is made in, which it misses by up to about 4 ms with three explosions in it, the larger part of it the destruction's own work.

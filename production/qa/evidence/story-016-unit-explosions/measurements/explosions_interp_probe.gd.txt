@@ -1,0 +1,49 @@
+extends RefCounted
+## Scratch probe (never in the repo): are the pieces of a real Explosion drawn in place on its first frames, in a window that
+## renders between two physics ticks, with and without the reset_physics_interpolation() of blast()? Player 2's Truck
+## self-destructs with its real key (inside PlayerMatchInput's tick, as every real destruction is); on each of the next
+## FRAMES process frames the largest distance from a visible piece's drawn origin to the Explosion's centre is read. A
+## piece drawn streaking from the world origin would be about the Explosion's own distance from it (6 m) away.
+
+const Quick: GDScript = preload("res://tools/evidence/split_screen/quick_fix_kit.gd")
+const Swap: GDScript = preload("res://tools/evidence/split_screen/unit_swap_kit.gd")
+const OWN_CHOICE: bool = true
+const SHIPPED_CAMERA: bool = true
+const EXPLOSIONS: bool = true
+const STOCK_COUNTS: Dictionary = {&"motorbike": 30, &"buggy": 30, &"truck": 30, &"gyrocopter": 30}
+const WATCHDOG_SECONDS: float = 200.0
+const FRAMES: int = 24
+
+func run(harness: Node) -> void:
+	var s: Swap = Swap.new(harness)
+	var tree: SceneTree = harness.get_tree()
+	await s.both_play()
+	var good: int = 0
+	for _i: int in 1200:
+		await tree.process_frame
+		good = good + 1 if Engine.get_frames_per_second() >= 100.0 else 0
+		if good >= 40:
+			break
+	print("SPLIT interp_probe fps=%.1f" % Engine.get_frames_per_second())
+	s.q.units.retype(0, Quick.MOTORBIKE, Vector3(-6.0, 0.0, 0.0), Vector3.RIGHT)
+	s.q.units.retype(1, Quick.TRUCK, Vector3(6.0, 0.0, 0.0), Vector3.LEFT)
+	await s.q.kit.advance(30)
+	var found: Array[Explosion] = []
+	tree.node_added.connect(func(node: Node) -> void: if node is Explosion: found.append(node as Explosion))
+	s.q.kit.press([KEY_ENTER] as Array[Key])
+	var rows: PackedStringArray = []
+	var worst: float = 0.0
+	for index: int in FRAMES:
+		await tree.process_frame
+		if found.is_empty() or not is_instance_valid(found[0]):
+			continue
+		var blast: Explosion = found[0]
+		var gap: float = 0.0
+		for piece: Node in blast.find_children("*", "MeshInstance3D", true, false):
+			var mesh: MeshInstance3D = piece as MeshInstance3D
+			if mesh.visible:
+				gap = maxf(gap, mesh.get_global_transform_interpolated().origin.distance_to(blast.global_position))
+		worst = maxf(worst, gap)
+		rows.append("%.2f" % gap)
+	print("SPLIT interp_probe worst_gap_m=%.2f frames=%s" % [worst, " ".join(rows)])
+	harness.finish("worst_gap=%.2f" % worst)

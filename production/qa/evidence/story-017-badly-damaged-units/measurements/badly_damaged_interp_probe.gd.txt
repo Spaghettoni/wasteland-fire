@@ -1,0 +1,60 @@
+extends RefCounted
+## Scratch probe (retained as text in the evidence, never in the repo): are the puffs of a badly damaged Unit's smoke drawn in place on their first
+## frames, in a window that renders between two physics ticks (120 fps against 60 ticks), with and without the reset_physics_interpolation() of the
+## smoke's _emit()? Player 1's Motorbike is brought to its edge and driven east at its half speed for 4 s, so that the pool of puffs wraps and a
+## reborn puff's last place is up to 14 m behind where it is born. On every process frame from the 2nd second the distance from each puff born in the
+## last two ticks to the place it was born at (its _origins entry plus the rise of its age) is read from get_global_transform_interpolated(): a puff drawn
+## streaking from where it died would be metres away.
+
+const Quick: GDScript = preload("res://tools/evidence/split_screen/quick_fix_kit.gd")
+const Swap: GDScript = preload("res://tools/evidence/split_screen/unit_swap_kit.gd")
+const OWN_CHOICE: bool = true
+const SHIPPED_CAMERA: bool = true
+const BADLY_DAMAGED: bool = true
+const STOCK_COUNTS: Dictionary = {&"motorbike": 30, &"buggy": 30, &"truck": 30, &"gyrocopter": 30}
+const WATCHDOG_SECONDS: float = 200.0
+const FRAMES: int = 1300
+const FROM_FRAME: int = 800
+
+func run(harness: Node) -> void:
+	var s: Swap = Swap.new(harness)
+	var tree: SceneTree = harness.get_tree()
+	await s.both_play()
+	var good: int = 0
+	for _i: int in 1200:
+		await tree.process_frame
+		good = good + 1 if Engine.get_frames_per_second() >= 100.0 else 0
+		if good >= 40:
+			break
+	print("SPLIT interp_probe fps=%.1f" % Engine.get_frames_per_second())
+	var unit: Unit = s.q.units.units[0]
+	s.q.units.retype(0, Quick.MOTORBIKE, Vector3(-30.0, 0.0, -6.0), Vector3.RIGHT)
+	await s.q.kit.advance(10)
+	unit.apply_damage(unit.hit_points - unit.stats.max_hit_points * unit.stats.badly_damaged_fraction)
+	harness.drive(0, 1, 0)
+	var smoke: BadlyDamagedSmoke = unit.get_node("Model/Smoke") as BadlyDamagedSmoke
+	var worst: float = 0.0
+	var worst_all: float = 0.0
+	var samples: int = 0
+	var rows: PackedStringArray = []
+	for frame: int in FRAMES:
+		await tree.process_frame
+		var born: PackedInt32Array = smoke.get(&"_born")
+		var origins: PackedVector3Array = smoke.get(&"_origins")
+		var ticks: int = smoke.get(&"_ticks")
+		for index: int in smoke.puffs().size():
+			if born[index] < 0:
+				continue
+			var age: int = ticks - born[index]
+			var puff: MeshInstance3D = smoke.puffs()[index]
+			var expected: Vector3 = origins[index] + Vector3.UP * smoke.rise_speed * float(age) / 60.0
+			var gap: float = puff.get_global_transform_interpolated().origin.distance_to(expected)
+			worst_all = maxf(worst_all, gap)
+			if age <= 1 and frame >= FROM_FRAME:
+				worst = maxf(worst, gap)
+				samples += 1
+				if rows.size() < 12:
+					rows.append("%.2f" % gap)
+	harness.release_all()
+	print("SPLIT interp_probe worst_new_puff_gap_m=%.3f worst_any_puff_gap_m=%.3f samples=%d first=%s" % [worst, worst_all, samples, " ".join(rows)])
+	harness.finish("worst_new_puff_gap=%.3f" % worst)

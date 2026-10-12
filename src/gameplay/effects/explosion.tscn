@@ -1,0 +1,64 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/effects/explosion.gd" id="1_explosion"]
+[ext_resource type="Resource" path="res://src/gameplay/effects/data/explosion_settings.tres" id="2_exset"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_unit"]
+radius = 1.0
+height = 2.0
+radial_segments = 24
+rings = 12
+
+[sub_resource type="BoxMesh" id="BoxMesh_unit"]
+size = Vector3(1, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_flash"]
+shading_mode = 0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fireball"]
+resource_local_to_scene = true
+shading_mode = 0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_chunk"]
+shading_mode = 0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_smoke"]
+transparency = 1
+shading_mode = 0
+
+[node name="Explosion" type="Node3D" node_paths=PackedStringArray("flash", "fireball", "chunk_template", "puff_template") groups=["explosions"]]
+process_mode = 3
+script = ExtResource("1_explosion")
+settings = ExtResource("2_exset")
+flash = NodePath("Flash")
+fireball = NodePath("Fireball")
+chunk_template = NodePath("Debris/Chunk")
+puff_template = NodePath("Smoke/Puff")
+
+[node name="Flash" type="MeshInstance3D" parent="."]
+visible = false
+cast_shadow = 0
+mesh = SubResource("SphereMesh_unit")
+material_override = SubResource("StandardMaterial3D_flash")
+
+[node name="Fireball" type="MeshInstance3D" parent="."]
+visible = false
+cast_shadow = 0
+mesh = SubResource("SphereMesh_unit")
+material_override = SubResource("StandardMaterial3D_fireball")
+
+[node name="Debris" type="Node3D" parent="."]
+
+[node name="Chunk" type="MeshInstance3D" parent="Debris"]
+visible = false
+cast_shadow = 0
+mesh = SubResource("BoxMesh_unit")
+material_override = SubResource("StandardMaterial3D_chunk")
+
+[node name="Smoke" type="Node3D" parent="."]
+
+[node name="Puff" type="MeshInstance3D" parent="Smoke"]
+visible = false
+cast_shadow = 0
+mesh = SubResource("SphereMesh_unit")
+material_override = SubResource("StandardMaterial3D_smoke")

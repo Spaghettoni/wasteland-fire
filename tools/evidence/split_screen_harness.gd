@@ -17,8 +17,10 @@ extends Node
 ## (windowed), and map_fps now runs on the shipped camera; since Story 011, unit_swap and
 ## unit_swap_showcase (windowed); since Story 012, flag_walls and flag_walls_showcase (windowed); since
 ## Story 013, turrets, turrets_showcase and turrets_fps (windowed); since Story 014, mines and
-## mines_showcase (windowed).
-## Each is a script under tools/evidence/split_screen/,
+## mines_showcase (windowed); since Story 015, turret_looks, turret_looks_showcase and
+## turret_looks_fps (windowed); since Story 016, explosions, explosions_off, explosions_showcase and
+## explosions_fps (windowed); since Story 017, badly_damaged, badly_damaged_off, badly_damaged_showcase and
+## badly_damaged_fps (windowed). Each is a script under tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
 ## line there. A scenario reaches this script, DriveStep, UnitTrack and check_kit.gd through preload
@@ -162,6 +164,42 @@ extends Node
 ## scenario of Story 014 that needs the Turrets declares TURRETS as well. Each opt-in keeps only
 ## its own pieces.
 ##
+## The Turret's looks (Story 015). The shipped Turret now grows to about 3 m and shows two damaged
+## looks below the fractions of turret_stats.tres (damaged_below). The scenarios that keep the
+## Turrets (turrets, turrets_showcase, turrets_fps and mines) were measured on the Turret of Story
+## 013, 1.8 m tall with no damaged look, so for every scenario that does not declare
+## const TURRET_LOOKS: bool = true the runner takes both away: damaged_below is emptied on the shared
+## turret_stats.tres before the scene is instanced (_apply_turret_looks_data_off()), and each Turret
+## under a Map Base's Turrets node is replaced, before the scene enters the tree, by an instance of
+## the frozen scene of Story 013 (tools/evidence/frozen/turret_story_013.tscn) under the same name,
+## child index and transform, the Base's structures and color_meshes entries pointed at it
+## (_apply_turret_looks_off()). turret_scene is the scene a kit instances for a Turret of its own:
+## the frozen one, or the shipped one for a scenario that declares TURRET_LOOKS, which declares
+## TURRETS as well (that keeps the Turrets and the notice line). Each opt-in keeps only its own
+## pieces.
+##
+## The explosions (Story 016). A Unit the Round counts as destroyed now plays an Explosion, which
+## SplitScreen adds under World when the MatchController announces the destruction (unit_destroyed)
+## and frees at every restart. It is a picture only and changes nothing the Round does, but it adds a
+## node, a node group and a listener to the Round that no older scenario was measured with, so the
+## runner takes it away from the freshly instanced launch scene before it enters the tree
+## (_apply_explosions_off()) unless the scenario script declares const EXPLOSIONS: bool = true: it sets
+## explosion_scene to null, so SplitScreen connects nothing for it and no Explosion is ever added. A
+## scenario of Story 016 declares it, with the opt-ins of the pieces it needs; any other scenario, now
+## and later, runs without explosions. The explosion puts nothing on the notice line, so the notice
+## keep rule (TURRETS or MINES) does not read it.
+##
+## The badly damaged state (Story 017). A Unit at or below a fifth of its hit points now smokes and
+## drives at half its top speed (UnitStats.badly_damaged_fraction and badly_damaged_speed_share, 0.2
+## and 0.5 in the four shipped files). The older scenarios were measured with none of that, and
+## several of them bring a Unit down to a few hit points and then drive it or aim at it, so the
+## runner takes the state away before the scene is instanced unless the scenario script declares
+## const BADLY_DAMAGED: bool = true (_apply_badly_damaged_off()): badly_damaged_fraction is 0 on
+## every UnitStats of match_rules.tres's unit_types, the shared resources the Units spawn with, so
+## no top speed changes, badly_damaged_changed is never emitted and no smoke node is ever instanced.
+## The state puts nothing on the notice line, so the notice keep rule (TURRETS or MINES) does not
+## read it. A scenario of Story 017 declares it, with the opt-ins of the pieces it needs.
+##
 ## Output: SPLIT <scenario> t=<seconds> key=value ... (progress), CHECK <scenario> <check name> PASS|FAIL
 ## <detail> and exactly one last RESULT <scenario> ok|fail checks=<n> failed=<n> key=value ...; then quit with
 ## exit code 0 when every check passed, 1 when one failed, 2 for a missing or unknown scenario. TD-003
@@ -230,6 +268,17 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"turrets_fps": preload("res://tools/evidence/split_screen/turrets_fps.gd"),
 	&"mines": preload("res://tools/evidence/split_screen/mines.gd"),
 	&"mines_showcase": preload("res://tools/evidence/split_screen/mines_showcase.gd"),
+	&"turret_looks": preload("res://tools/evidence/split_screen/turret_looks.gd"),
+	&"turret_looks_showcase": preload("res://tools/evidence/split_screen/turret_looks_showcase.gd"),
+	&"turret_looks_fps": preload("res://tools/evidence/split_screen/turret_looks_fps.gd"),
+	&"explosions": preload("res://tools/evidence/split_screen/explosions.gd"),
+	&"explosions_off": preload("res://tools/evidence/split_screen/explosions_off.gd"),
+	&"explosions_showcase": preload("res://tools/evidence/split_screen/explosions_showcase.gd"),
+	&"explosions_fps": preload("res://tools/evidence/split_screen/explosions_fps.gd"),
+	&"badly_damaged": preload("res://tools/evidence/split_screen/badly_damaged.gd"),
+	&"badly_damaged_off": preload("res://tools/evidence/split_screen/badly_damaged_off.gd"),
+	&"badly_damaged_showcase": preload("res://tools/evidence/split_screen/badly_damaged_showcase.gd"),
+	&"badly_damaged_fps": preload("res://tools/evidence/split_screen/badly_damaged_fps.gd"),
 }
 
 ## The shared step class (drive_step.gd): keys held for a time.
@@ -330,6 +379,23 @@ const TURRETS_NODE_NAME: StringName = &"Turrets"
 ## have (the Truck's load, the two MineCount Labels, and the notice line for the refusals), instead of
 ## the scene without them (_apply_mines_off(), _apply_mine_counts_off()).
 const MINES_CONSTANT: StringName = &"MINES"
+## The constant a scenario script declares as true to run on the shipped Turret of Story 015 (its
+## damaged looks and its growth), instead of the Turret of Story 013 as it was measured
+## (_apply_turret_looks_data_off(), _apply_turret_looks_off()).
+const TURRET_LOOKS_CONSTANT: StringName = &"TURRET_LOOKS"
+## The constant a scenario script declares as true to keep the explosion a destroyed Unit plays (Story
+## 016), instead of the launch scene without it (_apply_explosions_off()).
+const EXPLOSIONS_CONSTANT: StringName = &"EXPLOSIONS"
+## The constant a scenario script declares as true to keep the badly damaged state the shipped data
+## gives every Unit type (Story 017), instead of the data without it (_apply_badly_damaged_off()).
+const BADLY_DAMAGED_CONSTANT: StringName = &"BADLY_DAMAGED"
+## The Turret of Story 013 as it was measured, kept as a byte copy (tools/evidence/frozen/): a drum
+## 1 m tall, a collider 1.8 m tall and no damaged look. Evidence-only: nothing under src/ uses it.
+const FROZEN_TURRET_SCENE: PackedScene = preload("res://tools/evidence/frozen/turret_story_013.tscn")
+## The shipped Turret, the one Map 01's Bases instance and the scenarios of Story 015 fixture.
+const SHIPPED_TURRET_SCENE: PackedScene = preload("res://src/gameplay/defences/turret.tscn")
+## The shared Turret stats, where the fractions of the damaged looks are data.
+const TURRET_STATS_PATH: String = "res://src/gameplay/defences/data/turret_stats.tres"
 ## The Story 007 spawn point of a compound Base and the two side spots that were its spares: the
 ## nodes _apply_defences_off() hands back to the Base.
 const STORY_007_SPAWN_POINT: NodePath = ^"SpawnPoint"
@@ -438,6 +504,9 @@ const FIELD_HALF_EXTENT: float = 40.0
 var scenario: StringName = &""
 ## The launch scene under test: the field, both Units and both cameras a scenario reads.
 var split: SplitScreen
+## The scene a kit instances for a Turret of its own (a fixture): the frozen Turret of Story 013,
+## or the shipped one for a scenario that declares TURRET_LOOKS (the class doc says why).
+var turret_scene: PackedScene = FROZEN_TURRET_SCENE
 ## One track per Player, in the order of PLAYER_1 and PLAYER_2, updated after every tick.
 var tracks: Array[UnitTrack] = []
 ## Name of the stretch running, printed in the SPLIT lines. apply() sets it from the step.
@@ -494,6 +563,9 @@ func _ready() -> void:
 		_apply_pre_009_data()
 	_apply_swap_off(SCENARIOS[scenario])
 	_apply_mines_off(SCENARIOS[scenario])
+	_apply_badly_damaged_off(SCENARIOS[scenario])
+	_apply_turret_looks_data_off(SCENARIOS[scenario])
+	turret_scene = SHIPPED_TURRET_SCENE if _keeps_turret_looks(SCENARIOS[scenario]) else FROZEN_TURRET_SCENE
 	split = SPLIT_SCENE.instantiate() as SplitScreen
 	_apply_chase_camera(split, SCENARIOS[scenario])
 	if GREYBOX_SCENARIOS.has(scenario):
@@ -502,7 +574,9 @@ func _ready() -> void:
 		_apply_pre_009_map(split)
 	_apply_defences_off(split, SCENARIOS[scenario])
 	_apply_turrets_off(split, SCENARIOS[scenario])
+	_apply_turret_looks_off(split, SCENARIOS[scenario])
 	_apply_mine_counts_off(split, SCENARIOS[scenario])
+	_apply_explosions_off(split, SCENARIOS[scenario])
 	_apply_token_stock(split, SCENARIOS[scenario])
 	if split.match_controller != null:
 		split.match_controller.unit_spawned.connect(_on_round_start_spawn)
@@ -740,6 +814,72 @@ func _apply_turrets_off(root: SplitScreen, script: GDScript) -> void:
 		turrets.free()
 
 
+## Whether the scenario script declares TURRET_LOOKS as true (the class doc says why).
+func _keeps_turret_looks(script: GDScript) -> bool:
+	return bool(script.get_script_constant_map().get(TURRET_LOOKS_CONSTANT, false))
+
+
+## Takes the damaged looks of Story 015 out of the data every scenario that does not declare
+## TURRET_LOOKS runs on: damaged_below emptied on the shared turret_stats.tres (one cached object,
+## the one every Turret scene references) before the launch scene is instanced, so the frozen
+## Turret, which has no damaged look, matches its fractions. Stats that fail to load are an error,
+## and nothing is applied.
+func _apply_turret_looks_data_off(script: GDScript) -> void:
+	if _keeps_turret_looks(script):
+		return
+	var stats: TurretStats = load(TURRET_STATS_PATH) as TurretStats
+	if stats == null:
+		push_error("split_screen_harness: %s did not load as TurretStats, so the Turret's damaged looks are not turned off." % TURRET_STATS_PATH)
+		return
+	var none: Array[float] = []
+	stats.damaged_below = none
+
+
+## Puts the Turret of Story 013 back on every Map Base of a freshly instanced launch scene, before
+## it enters the tree, unless the scenario script declares TURRET_LOOKS (the class doc says why):
+## each Turret under a Base's TURRETS_NODE_NAME node is removed and freed at once (remove_child() and
+## free(), as _apply_greybox_composition() frees the Map) and replaced by an instance of
+## FROZEN_TURRET_SCENE with its name, child index and transform, owned by the launch scene. The
+## Base's structures entry for it and its color_meshes entry under it (the band) are pointed at the
+## new Turret: a NodePath export is resolved to nodes when the scene is instanced, so an entry left
+## on the freed Turret would be walked, and Base._paint_color_meshes() would warn and leave a band
+## unpainted. A Base with no such node (the greybox composition, or Turrets that
+## _apply_turrets_off() stripped) is left alone.
+func _apply_turret_looks_off(root: SplitScreen, script: GDScript) -> void:
+	if _keeps_turret_looks(script) or root.field == null:
+		return
+	for base: Base in [root.field.player_1_base, root.field.player_2_base]:
+		var turrets: Node = null if base == null else base.get_node_or_null(NodePath(String(TURRETS_NODE_NAME)))
+		if turrets == null:
+			continue
+		for child: Node in turrets.get_children():
+			var turret: Turret = child as Turret
+			if turret == null:
+				continue
+			var fresh: Turret = FROZEN_TURRET_SCENE.instantiate() as Turret
+			var listed: Array[Structure] = []
+			for structure: Structure in base.structures:
+				listed.append(fresh if structure == turret else structure)
+			base.structures = listed
+			var meshes: Array[MeshInstance3D] = []
+			for mesh: MeshInstance3D in base.color_meshes:
+				if mesh != null and turret.is_ancestor_of(mesh):
+					meshes.append(fresh.get_node_or_null(turret.get_path_to(mesh)) as MeshInstance3D)
+				else:
+					meshes.append(mesh)
+			base.color_meshes = meshes
+			var index: int = turret.get_index()
+			var place: Transform3D = turret.transform
+			var turret_name: StringName = turret.name
+			turrets.remove_child(turret)
+			turret.free()
+			fresh.name = turret_name
+			turrets.add_child(fresh)
+			turrets.move_child(fresh, index)
+			fresh.transform = place
+			fresh.owner = root
+
+
 ## Takes the Mines out of the data every scenario that does not declare MINES runs on (Story 014),
 ## on the shared resources before the launch scene is instanced: mine_capacity 0 on every UnitStats
 ## of match_rules.tres's unit_types (one cached object per type, the one the Units spawn with), so no
@@ -757,6 +897,24 @@ func _apply_mines_off(script: GDScript) -> void:
 			stats.mine_capacity = 0
 
 
+## Takes the badly damaged state out of the data every scenario that does not declare BADLY_DAMAGED
+## runs on (Story 017), on the shared resources before the launch scene is instanced:
+## badly_damaged_fraction 0 on every UnitStats of match_rules.tres's unit_types (one cached object
+## per type, the one the Units spawn with), so no Unit is ever badly damaged, no top speed changes,
+## badly_damaged_changed is never emitted and no smoke node is ever instanced. Rules that fail to
+## load are an error, and nothing is applied.
+func _apply_badly_damaged_off(script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(BADLY_DAMAGED_CONSTANT, false)):
+		return
+	var rules: MatchRules = load(MATCH_RULES_PATH) as MatchRules
+	if rules == null:
+		push_error("split_screen_harness: %s did not load as MatchRules, so the badly damaged state is not turned off." % MATCH_RULES_PATH)
+		return
+	for stats: UnitStats in rules.unit_types:
+		if stats != null:
+			stats.badly_damaged_fraction = 0.0
+
+
 ## Frees both MineCount Labels of a freshly instanced launch scene, before it enters the tree, unless
 ## the scenario script declares MINES (Story 014: camera_views counts every Control in each view, and
 ## the older outputs were measured without the line).
@@ -766,6 +924,16 @@ func _apply_mine_counts_off(root: SplitScreen, script: GDScript) -> void:
 	for node: Node in root.find_children("*", "MineCount", true, false):
 		node.get_parent().remove_child(node)
 		node.free()
+
+
+## Takes the explosion of Story 016 off a freshly instanced launch scene, before it enters the tree,
+## unless the scenario script declares EXPLOSIONS (the class doc says why): explosion_scene is set to
+## null, so SplitScreen connects nothing to unit_destroyed or round_started for it and no Explosion is
+## ever added.
+func _apply_explosions_off(root: SplitScreen, script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(EXPLOSIONS_CONSTANT, false)):
+		return
+	root.explosion_scene = null
 
 
 ## Gives a compound Base its Story 007 spawn assignment back: SpawnPoint as spawn_point and the two

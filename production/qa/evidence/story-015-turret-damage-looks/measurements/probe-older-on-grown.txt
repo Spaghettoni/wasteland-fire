@@ -1,0 +1,16 @@
+STRICT     split mines                  rc=0
+STRICT     split mines_showcase         rc=0
+NORMALIZED split turrets                rc=0 rewrites=[1, 1]
+STRICT     split turrets_showcase       rc=0
+-- 3 strict, 1 normalized, 0 bad of 4 compared
+
+The probe (Measure first, 1): the four older scenarios that keep the Turrets (turrets, turrets_showcase,
+mines, mines_showcase) run headless on a scratch copy of the project in which the runner keeps the
+shipped Turret for every scenario (_keeps_turret_looks() returns true: no frozen scene, the fractions
+of turret_stats.tres left on, the kit's fixtures the shipped scene), compared with the baseline
+captured at the start of the story (rg/base-a) through this story's normalizers (the one rewrite
+that moves a printed script line). The outputs are in probe-older-on-grown/.
+Result: byte for byte equal. No line of split-turrets.txt, split-turrets_showcase.txt, split-mines.txt
+or split-mines_showcase.txt tells the grown Turret from story 013's (turrets_data prints the drum's
+radius and not its height), so no older output kills "the runner leaves the grown Turret on": the
+new scenario's older_turrets check does.

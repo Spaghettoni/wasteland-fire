@@ -1,0 +1,39 @@
+extends RefCounted
+## Scratch look driver (never in the repo): one Self-destruct per type, outside the Bases, frames at fixed ages.
+
+const Quick: GDScript = preload("res://tools/evidence/split_screen/quick_fix_kit.gd")
+const Swap: GDScript = preload("res://tools/evidence/split_screen/unit_swap_kit.gd")
+
+const OWN_CHOICE: bool = true
+const OWN_BASE_SWAP: bool = true
+const SHIPPED_CAMERA: bool = true
+const EXPLOSIONS: bool = true
+const STOCK_COUNTS: Dictionary = {&"motorbike": 30, &"buggy": 30, &"truck": 30, &"gyrocopter": 30}
+const WATCHDOG_SECONDS: float = 400.0
+const AGES: Array[int] = [1, 4, 8, 14, 24, 40, 70, 110]
+
+var _s: Swap
+
+
+func run(harness: Node) -> void:
+	_s = Swap.new(harness)
+	await _s.both_play()
+	for type_index: int in [Quick.MOTORBIKE, Quick.TRUCK, Quick.BUGGY, Quick.GYROCOPTER]:
+		await _show(type_index, type_index == Quick.TRUCK)
+	_s.close()
+	harness.finish("look=done")
+
+
+func _show(type_index: int, chase: bool) -> void:
+	var q: Quick = _s.q
+	q.units.retype(0, Quick.MOTORBIKE, Vector3(-7.0, 0.0, 6.0), Vector3.RIGHT)
+	q.units.retype(1, type_index, Vector3(0.0, 0.0, 0.0), Vector3.LEFT)
+	await q.kit.advance(40)
+	await q.tokens.destruct(1)
+	var age: int = 2
+	for target: int in AGES:
+		await q.kit.advance(target - age)
+		age = target
+		print("SPLIT look t=%.3f frame=%d moment=%s_age%03d" % [q.harness.time(), Engine.get_process_frames() - 1, q.units.stats(type_index).type_id, age])
+	await q.kit.advance(100)
+	await q.tokens.spawn(1, Quick.MOTORBIKE)

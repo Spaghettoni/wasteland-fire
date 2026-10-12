@@ -63,9 +63,9 @@ The author's nine comments after playing stories 012 to 014, pasted by the devel
 
 | # | Story | Type | Status | ADR |
 |---|-------|------|--------|-----|
-| 015 | Turrets show their damage: two damaged looks below 80% and 35% of their hit points, as the Flag Walls have, and the Turrets grow to about 3 m so that their heads reach the high Height, sized against the flying Gyrocopter's drawn band, which the story measures first | Visual/Feel | Ready | N/A (minimal) |
-| 016 | A destroyed Unit explodes: a flash, a fireball, debris and smoke for about 2 s at every destruction, the Self-destruct and the Gyrocopter's Fuel crash included, never at a Swap | Visual/Feel | Ready | N/A (minimal) |
-| 017 | Badly damaged Units smoke and slow down: at or below 20% of its hit points a Unit smokes and moves at half speed | Integration | Ready | N/A (minimal) |
+| 015 | Turrets show their damage: two damaged looks below 80% and 35% of their hit points, as the Flag Walls have, and the Turrets grow to about 3 m so that their heads reach the high Height, sized against the flying Gyrocopter's drawn band, which the story measures first | Visual/Feel | Complete | N/A (minimal) |
+| 016 | A destroyed Unit explodes: a flash, a fireball, debris and smoke for about 2 s at every destruction, the Self-destruct and the Gyrocopter's Fuel crash included, never at a Swap | Visual/Feel | Complete | N/A (minimal) |
+| 017 | Badly damaged Units smoke and slow down: at or below 20% of its hit points a Unit smokes and moves at half speed | Integration | Complete | N/A (minimal) |
 | 018 | The Base walls become Wall Panels: both Bases' back, side and Gate walls become 2 m panels of the Flag Walls' kind with 40 hit points; the corner towers stay | Integration | Ready | N/A (minimal) |
 | 019 | The Garage walls and the scrap walls become Wall Panels: both Garages' back and side walls and the two scrap walls in the field, which stop being Cover | Integration | Ready | N/A (minimal) |
 | 020 | Two Heights: the Gyrocopter flies high, at one constant height over every low piece, and never descends; every Tall piece stops it, and every hit volume spans both Heights | Integration | Ready | N/A (minimal) |

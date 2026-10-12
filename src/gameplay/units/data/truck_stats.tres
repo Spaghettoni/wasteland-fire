@@ -36,3 +36,5 @@ spawn_fuel_fraction = 0.5
 empty_turn_rate = 0.45
 mine_capacity = 5
 mine_drop_offset = Vector3(0, 0, 3.4)
+badly_damaged_fraction = 0.2
+badly_damaged_speed_share = 0.5

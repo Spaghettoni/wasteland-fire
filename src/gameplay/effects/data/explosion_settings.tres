@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="ExplosionSettings" format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/effects/explosion_settings.gd" id="1_exset"]
+
+[resource]
+script = ExtResource("1_exset")
+lifetime_seconds = 2.0
+flash_seconds = 0.1
+flash_radius_factor = 0.5
+flash_colour = Color(1, 0.95, 0.55, 1)
+fireball_seconds = 0.6
+fireball_radius_factor = 0.7
+fireball_swell_fraction = 0.333
+fireball_start_scale = 0.3
+fireball_end_scale = 0.5
+fireball_colour_start = Color(1, 0.85, 0.3, 1)
+fireball_colour_end = Color(0.4, 0.07, 0.03, 1)
+chunk_directions = PackedVector3Array(0.397, 0.906, 0.145, 0.100, 0.819, 0.565, -0.262, 0.940, 0.220, -0.498, 0.848, -0.181, -0.082, 0.883, -0.462, 0.472, 0.788, -0.396)
+chunk_speeds = PackedFloat32Array(4, 5.5, 3.2, 6, 4.5, 3.6)
+chunk_size_factors = PackedFloat32Array(0.06, 0.1, 0.115, 0.075, 0.09, 0.1)
+chunk_gravity = 9.8
+chunk_colour = Color(0.18, 0.18, 0.2, 1)
+smoke_offsets = PackedVector3Array(0, 0, 0, 0.12, 0, -0.08, -0.1, 0, 0.1)
+smoke_radius_factor = 0.3
+smoke_start_seconds = 0.2
+smoke_stagger_seconds = 0.15
+smoke_seconds = 1.8
+smoke_rise_speed = 1.0
+smoke_growth = 2.5
+smoke_colour = Color(0.22, 0.22, 0.22, 0.4)

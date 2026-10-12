@@ -1,0 +1,95 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK turret_looks looks_data PASS 4 Turrets with damaged_below [0.8, 0.35] (the Flag Walls' own), whole, the head shown in its own steel and the band in its Base's Team material; two damaged drums each, direct children of Look drawing the drum's mesh in its place and as it is drawn, hidden in the scene, wearing the Flag Wall's damaged materials (flag_wall_damaged_1.tres, flag_wall_damaged_2.tres) with [4, 8] chunks on the ground at the foot, outside the footprint, low, unshadowed, one mesh and one material shared by all four, no collider under a look; the dome and the barrel wear one untextured steel per fraction (drum 0.55, 0.34, 0.22, head 0.31, 0.17, 0.09) and the band none; a fresh instance of the scene hides both damaged drums and the rubble
+CHECK turret_looks stages PASS from behind the rock, by the real fire keys, each Player's four types brought the other Base's canyon-side Turret down and after every Shot the look shown was the data's prediction with the head and its steel and the band dressed to match (Shots that change the look [first, second, fall]: motorbike:5/14/20, buggy:2/6/9, truck:1/3/4, gyrocopter:2/5/7); all 144 hit_points_changed carried the look their hit points call for; at exactly 80%, just below, at exactly 35%, just below and restored by apply_damage(): looks [0, 1, 1, 2, 0]; own Shots: Player 1's 5 Motorbike Shots ended on its own hurt Turret, which kept 70 hit points and its first look; Player 2's 5 Motorbike Shots ended on its own hurt Turret, which kept 70 hit points and its first look
+CHECK turret_looks kept PASS Base A's Turrets fallen and Base B's at 30 hit points (the second look) kept their hit points, look, steel and head through each Player's destruction away from home, its respawn and 8 Swaps (a Swap to each type for each Player) and through the Round's end (Player 2 carried Base A's Flag home); R brought all four back whole, each head at its rest heading in its own steel
+CHECK turret_looks still_fights PASS in each look the head turned at the data's rate and the Shots came one cadence apart and all hit (look 0: a quarter turn at 1.5708 rad/s, first Shot after 60 ticks; 6 Shots 48 ticks apart, all 5 that had landed hit | look 1: a quarter turn at 1.5708 rad/s, first Shot after 60 ticks; 6 Shots 48 ticks apart, all 5 that had landed hit | look 2: a quarter turn at 1.5708 rad/s, first Shot after 60 ticks; 6 Shots 48 ticks apart, all 5 that had landed hit); at the fall the head went with the rest and a fallen Turret fired nothing in 120 ticks
+CHECK turret_looks growth PASS the drum's top 2.20 m, the dome's 3.00 m, the barrel drawn 2.53 to 2.77 m; the collider from the ground to 3.00 m on the drum's radius 1.0; the Gyrocopter's band, from the mesh files with the thin parts left out (the tallest ground body 2.204 m + the rise's clearance 0.25 m = the flying height): 2.454 to 4.256 m, so the barrel stands wholly inside it and the dome's top 0.55 m over its lowest point; a Shot leaves 1.60 m from the centre at 0.50 m, the one shooting height; the Mines' open-ground test refuses its place while it stands and reads its rubble open
+CHECK turret_looks exits PASS 16 runs, two at a time, from both spots of both Bases straight to Base-local z -30 on the throttle alone: no wall contact and the least gap to either Turret as the geometry says (motorbike 4.30 m, buggy 4.10 m, truck 3.80 m, gyrocopter 4.20 m)
+CHECK turret_looks turns PASS 32 runs, two at a time, a hard turn at full throttle from the tick the tail cleared the Gate wall's outer face (Base-local z -15): no Turret touched; toward its own side, the near Turret: motorbike 3.07, buggy 2.99, truck 3.57, gyrocopter 3.38 m (computed 2.99 to 3.57); across the Gate, the far Turret: motorbike 0.76 (computed 0.76), buggy 0.61 (computed 0.61), truck 3.72 (computed 3.72), gyrocopter 4.37 (computed 4.37) m; the wall met first after the turn across: motorbike TowerGateRight/TowerGateLeft, buggy TowerGateRight/TowerGateLeft, truck RockCanyonSouth, gyrocopter TowerGateRight/TowerGateLeft
+CHECK turret_looks inbound PASS 32 runs, two at a time, from 20 m out (on the lanes with the tail 20 m out): no Turret touched, the lanes without any wall contact; least gap on the lanes motorbike 4.30, buggy 4.10, truck 3.80, gyrocopter 4.20 m, on the 45-degree lines motorbike 2.54, buggy 2.34, truck 2.04, gyrocopter 2.44 m
+CHECK turret_looks solid PASS full throttle from 14 m out: p1 motorbike met it at 23.3 m/s, stopped in 1 ticks at 2.300 m | p2 motorbike met it at 23.3 m/s, stopped in 1 ticks at 2.300 m | p1 buggy met it at 19.6 m/s, stopped in 1 ticks at 2.500 m | p2 buggy met it at 19.6 m/s, stopped in 1 ticks at 2.500 m | p1 truck met it at 10.9 m/s, stopped in 1 ticks at 3.202 m | p2 truck met it at 10.9 m/s, stopped in 1 ticks at 3.202 m | p1 gyrocopter met it at 16.4 m/s, stopped in 1 ticks at 2.201 m | p2 gyrocopter met it at 16.4 m/s, stopped in 1 ticks at 2.201 m; a Shot fired pressed against the drum ended at the muzzle inside it and took nothing off the Player's own Turret
+CHECK turret_looks clearances PASS every least gap of exits, turns (near and across), the lanes and the 45-degree lines read the same as story 013's on the 1.8 m drum within 0.01 m (largest difference 0.000 m): ["exits=motorbike:4.30/buggy:4.10/truck:3.80/gyrocopter:4.20", "around=motorbike:3.07/buggy:2.99/truck:3.57/gyrocopter:3.38", "across=motorbike:0.76/buggy:0.61/truck:3.72/gyrocopter:4.37", "lanes=motorbike:4.30/buggy:4.10/truck:3.80/gyrocopter:4.20", "lines=motorbike:2.54/buggy:2.34/truck:2.04/gyrocopter:2.44"]
+CHECK turret_looks targets PASS both Bases' Turrets aimed at, fired on and hit the other Player's Unit of every type (1m, 1b, 1t, 1g, 2m, 2b, 2t, 2g) and no other Base's Turret stirred; neither Base's Turrets stirred, turned or fired at their own Player's Unit (Players 1, 2), nor with that Unit between them and the other Player's; none aimed at a benched or a destroyed Unit
+CHECK turret_looks reach PASS at 50 degrees off the rest heading toward the canyon, the canyon-side Turret broken first: 30.0 m (resting muzzle 30.60): 2 Shots, hit true; 34.5 m (resting muzzle 35.09): 3 Shots, hit true; 35.5 m (resting muzzle 36.09): 0 Shots, hit false; the range is 35 m from the aimed muzzle
+CHECK turret_looks sight PASS no Turret aimed at or fired on a Unit hidden by: a Base wall, a corner tower, the cover, a Gyrocopter over a wreck, a Flag Wall, the other Turret, a cliff (its Shots pass through it and hit the Turret: 55 of 100 hit points left)
+CHECK turret_looks path PASS a Motorbike driven south at up to 24 m/s: the probe's first Shot left (-99.42553, 0.5, 10.28467) along (0.984046, 0.0, 0.177917); with a Flag Wall panel 14 m out on that line the Turret saw the Motorbike, was on the aim and ready, and held fire for 7 ticks with the panel on its Shot's path, where the probe had fired at once (the panel kept 40 of 40 hit points, no Shot ended on it)
+ERROR: Structure 'Turret': 1 damaged looks for 2 damaged_below fractions, so it shows only its intact look until it falls.
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://src/gameplay/defences/structure.gd:150)
+       [1] _ready (res://src/gameplay/defences/turret.gd:146)
+       [2] _bad_looks (res://tools/evidence/split_screen/turret_looks.gd:147)
+       [3] run (res://tools/evidence/split_screen/turret_looks.gd:82)
+       [4] run (res://tools/evidence/split_screen/turrets_aim.gd:79)
+       [5] _path (res://tools/evidence/split_screen/turrets_aim.gd:260)
+       [6] _approach (res://tools/evidence/split_screen/turrets_aim.gd:308)
+       [7] restore_all (res://tools/evidence/split_screen/turrets_kit.gd:241)
+       [8] restore_all (res://tools/evidence/split_screen/flag_walls_kit.gd:160)
+       [9] advance (res://tools/evidence/split_screen/check_kit.gd:87)
+       [10] tick (res://tools/evidence/split_screen/check_kit.gd:80)
+       [11] advance_ticks (res://tools/evidence/split_screen_harness.gd:1063)
+ERROR: Structure 'Turret': damaged look 2 is not assigned, so it shows only its intact look until it falls.
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://src/gameplay/defences/structure.gd:150)
+       [1] _ready (res://src/gameplay/defences/turret.gd:146)
+       [2] _bad_looks (res://tools/evidence/split_screen/turret_looks.gd:147)
+       [3] run (res://tools/evidence/split_screen/turret_looks.gd:82)
+       [4] run (res://tools/evidence/split_screen/turrets_aim.gd:79)
+       [5] _path (res://tools/evidence/split_screen/turrets_aim.gd:260)
+       [6] _approach (res://tools/evidence/split_screen/turrets_aim.gd:308)
+       [7] restore_all (res://tools/evidence/split_screen/turrets_kit.gd:241)
+       [8] restore_all (res://tools/evidence/split_screen/flag_walls_kit.gd:160)
+       [9] advance (res://tools/evidence/split_screen/check_kit.gd:87)
+       [10] tick (res://tools/evidence/split_screen/check_kit.gd:80)
+       [11] advance_ticks (res://tools/evidence/split_screen_harness.gd:1063)
+ERROR: Structure 'Turret': 1 worn steels for 2 damaged_below fractions, so it shows only its intact look until it falls.
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://src/gameplay/defences/structure.gd:150)
+       [1] _ready (res://src/gameplay/defences/turret.gd:146)
+       [2] _bad_looks (res://tools/evidence/split_screen/turret_looks.gd:147)
+       [3] run (res://tools/evidence/split_screen/turret_looks.gd:82)
+       [4] run (res://tools/evidence/split_screen/turrets_aim.gd:79)
+       [5] _path (res://tools/evidence/split_screen/turrets_aim.gd:260)
+       [6] _approach (res://tools/evidence/split_screen/turrets_aim.gd:308)
+       [7] restore_all (res://tools/evidence/split_screen/turrets_kit.gd:241)
+       [8] restore_all (res://tools/evidence/split_screen/flag_walls_kit.gd:160)
+       [9] advance (res://tools/evidence/split_screen/check_kit.gd:87)
+       [10] tick (res://tools/evidence/split_screen/check_kit.gd:80)
+       [11] advance_ticks (res://tools/evidence/split_screen_harness.gd:1063)
+ERROR: Structure 'Turret': worn steel 2 is not assigned, so it shows only its intact look until it falls.
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://src/gameplay/defences/structure.gd:150)
+       [1] _ready (res://src/gameplay/defences/turret.gd:146)
+       [2] _bad_looks (res://tools/evidence/split_screen/turret_looks.gd:147)
+       [3] run (res://tools/evidence/split_screen/turret_looks.gd:82)
+       [4] run (res://tools/evidence/split_screen/turrets_aim.gd:79)
+       [5] _path (res://tools/evidence/split_screen/turrets_aim.gd:260)
+       [6] _approach (res://tools/evidence/split_screen/turrets_aim.gd:308)
+       [7] restore_all (res://tools/evidence/split_screen/turrets_kit.gd:241)
+       [8] restore_all (res://tools/evidence/split_screen/flag_walls_kit.gd:160)
+       [9] advance (res://tools/evidence/split_screen/check_kit.gd:87)
+       [10] tick (res://tools/evidence/split_screen/check_kit.gd:80)
+       [11] advance_ticks (res://tools/evidence/split_screen_harness.gd:1063)
+ERROR: Structure 'Turret': stats are refused: damaged_below is not fractions above 0 and below 1, highest first, so it stays plain solid geometry that nothing can damage.
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://src/gameplay/defences/structure.gd:142)
+       [1] _ready (res://src/gameplay/defences/turret.gd:146)
+       [2] _bad_looks (res://tools/evidence/split_screen/turret_looks.gd:163)
+       [3] run (res://tools/evidence/split_screen/turret_looks.gd:82)
+       [4] run (res://tools/evidence/split_screen/turrets_aim.gd:79)
+       [5] _path (res://tools/evidence/split_screen/turrets_aim.gd:260)
+       [6] _approach (res://tools/evidence/split_screen/turrets_aim.gd:308)
+       [7] restore_all (res://tools/evidence/split_screen/turrets_kit.gd:241)
+       [8] restore_all (res://tools/evidence/split_screen/flag_walls_kit.gd:160)
+       [9] advance (res://tools/evidence/split_screen/check_kit.gd:87)
+       [10] tick (res://tools/evidence/split_screen/check_kit.gd:80)
+       [11] advance_ticks (res://tools/evidence/split_screen_harness.gd:1063)
+CHECK turret_looks bad_looks PASS a Turret with a list of drums or of steels short or with an empty slot logged one error each and showed only its whole look (dome and barrel in their own steel) until it fell; stats with the fractions out of order were refused with one error and the piece showed its whole look
+CHECK turret_looks older_turrets PASS for an older scenario (turrets.gd) the strips left the shared damaged_below empty and the four Turrets of a freshly instanced launch scene instances of the frozen scene (a collider 1.8 m tall, no damaged look, no steel), listed in their Base's structures, their bands among its color_meshes and painted with its Team material, no entry on a freed node and no warning
+CHECK turret_looks no_engine_noise PASS errors=5 warnings=0 over every Round of the scenario, the 5 of them that bad_looks causes on purpose (a Turret built with a drum or a steel short or empty, and stats with the fractions out of order) accounted for
+RESULT turret_looks ok checks=17 failed=0 t=277.517 turret_looks=10 exits=motorbike:4.30/buggy:4.10/truck:3.80/gyrocopter:4.20 around=motorbike:3.07/buggy:2.99/truck:3.57/gyrocopter:3.38 across=motorbike:0.76/buggy:0.61/truck:3.72/gyrocopter:4.37 lanes=motorbike:4.30/buggy:4.10/truck:3.80/gyrocopter:4.20 lines=motorbike:2.54/buggy:2.34/truck:2.04/gyrocopter:2.44 stages_motorbike=20 Shots/20 Shots stages_buggy=9 Shots/9 Shots stages_truck=4 Shots/4 Shots stages_gyrocopter=7 Shots/7 Shots growth=drum:2.20/dome:3.00/band:2.454 reach=30.0 m (resting muzzle 30.60): 2 Shots, hit true|34.5 m (resting muzzle 35.09): 3 Shots, hit true|35.5 m (resting muzzle 36.09): 0 Shots, hit false path=held:7,panel_hp:40

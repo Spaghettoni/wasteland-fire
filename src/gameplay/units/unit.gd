@@ -38,8 +38,11 @@ extends CharacterBody3D
 ## fraction of its top speed through limit_speed(), movement model step 6);
 ## production/epics/wasteland-fire/story-009-playtest-quick-fixes.md AC-3 (every type turns on the
 ## spot at its spot_turn_rate, step 2), AC-4 (a standing Unit burns fuel_use_idle, step 5) and AC-5
-## (is_stranded, what the Self-destruct hint reads); design/rules.md "Units", "Destruction and
-## respawn" and "Resources". Vocabulary: CONTEXT.md.
+## (is_stranded, what the Self-destruct hint reads);
+## production/epics/wasteland-fire/story-017-badly-damaged-units.md AC-1 to AC-3 (the badly damaged
+## state: is_badly_damaged, badly_damaged_changed and the share of the top speed, step 1, which the
+## ford's cap, step 6, still clamps); design/rules.md "Units", "Destruction and respawn" and
+## "Resources". Vocabulary: CONTEXT.md.
 ##
 ## Driven by command, not by input: the Unit never reads a key or an Input action and keeps no
 ## singleton state. Whoever drives it (PlayerDriveInput for a Player, later a bot or a test)
@@ -49,7 +52,12 @@ extends CharacterBody3D
 ##   1. Speed is a signed scalar along the facing direction. It moves toward the throttle target
 ##      (max_speed forward, reverse_max_speed backward) at acceleration, at braking while the
 ##      throttle opposes the direction of travel, and toward zero at coast_deceleration when no
-##      throttle is held.
+##      throttle is held. While the Unit is badly damaged (Story 017) the throttle target is
+##      that top speed times stats.badly_damaged_speed_share, forward and backward alike:
+##      the throttle keeps its sign, so a faster Unit is taken down to the new target at the
+##      same rates, with no jolt (at acceleration while the throttle is held, at braking
+##      while it is reversed, at coast_deceleration with none), and a Unit that is not badly
+##      damaged computes what it did.
 ##   2. Steering turns the Unit about the up axis at steer * turn_rate * speed fraction, where
 ##      the speed fraction is |speed| / max_speed (0 to 1), and the turn reverses while rolling
 ##      backward. Below stats.spot_turn_rate that rate gives way to steer * spot_turn_rate,
@@ -87,7 +95,10 @@ extends CharacterBody3D
 ##      A Map's ford calls it each tick on every live Unit it lists (Ford), so a Unit entering at
 ##      top speed drops to the cap in one tick and, once out, accelerates back as usual. Step 2
 ##      keeps stats.max_speed as its denominator, so the turning radius, max_speed / turn_rate,
-##      is the same at any cap. Nothing names a type: the ford's collision mask picks the Units.
+##      is the same at any cap. Nothing names a type: the ford's collision mask picks the
+##      Units. In a ford the lower of two caps holds, whichever node ticks first (Story 017
+##      AC-3): the badly damaged share lowers the target in step 1 and the ford's fraction
+##      clamps the result here.
 ##
 ## Ground handling: the body stays in the default GROUNDED motion mode with every other
 ## CharacterBody3D setting at its default except floor_snap_length and wall_min_slide_angle,
@@ -124,6 +135,19 @@ extends CharacterBody3D
 ## refused to drive in _ready() is never alive: destroy() and apply_damage() ignore it and spawn()
 ## leaves it alone. destroy() and leave_play() empty the tank and spawn() gives the type's starting
 ## share of it (step 5), so dying is never a free refuel (Story 006 AC-5).
+##
+## Badly damaged (Story 017, design/rules.md "Units"): a live Unit whose hit points are at or
+## below stats.badly_damaged_fraction of stats.max_hit_points is badly damaged, the edge
+## included; a fraction of zero means the type has no such state. The state is read from the hit
+## points and never stored (is_badly_damaged): it begins on the tick of the hit that brings the
+## Unit there and ends only with the Unit, in destroy(), leave_play() and spawn(), because no hit
+## point comes back otherwise, so the Unit that comes next starts whole. badly_damaged_changed is
+## emitted once per change, for display (the Model shows its smoke from it). While the state
+## lasts the top speed of step 1 is stats.badly_damaged_speed_share of the type's own; turning
+## (step 2 keeps max_speed as its denominator, so the speed-scaled turn halves with the speed and
+## gives way to the spot turn rate), the weapon, the Fuel burn per second and the hit points are
+## what they were. A Mine, a Self-destruct and the Gyrocopter's Fuel crash destroy at once and
+## pass through no state.
 ##
 ## Carrying (Story 004): whether this Unit may pick up the Flag, and where it rides, is
 ## the Unit type's data (UnitStats.can_carry and carry_offset: true and a tail mount for the
@@ -208,6 +232,16 @@ signal hit_points_changed(hit_points: float, max_hit_points: float)
 ## whatever it held (both right after hit_points_changed, and before `destroyed`). Never for an
 ## ignored call. For display: a handler shows the numbers and does not act on the Unit.
 signal fuel_changed(fuel: float, capacity: float)
+
+## Emitted when the Unit enters or leaves the badly damaged state (Story 017 AC-1), with whether
+## it is badly damaged now: true in apply_damage(), right after hit_points_changed, on the hit
+## that brings a live Unit to stats.badly_damaged_fraction of its hit points or below; false,
+## only when the state was on, in leave_play() and spawn() right after hit_points_changed and
+## fuel_changed, and in destroy() right after them and before `destroyed`, so the smoke is off
+## before anything that answers a destruction runs. Once per change, never for an ignored call,
+## and never while the type's badly_damaged_fraction is zero. For display: a handler shows the
+## state and does not act on the Unit.
+signal badly_damaged_changed(is_badly_damaged: bool)
 
 ## Largest magnitude of a normalised drive axis (throttle or steer): commands are held to -1..1.
 const AXIS_LIMIT: float = 1.0
@@ -335,6 +369,16 @@ var is_stranded: bool:
 	set(_value):
 		push_error("Unit '%s': is_stranded is read-only. Add Fuel with refuel()." % name)
 
+## True while the Unit is badly damaged (Story 017 AC-1): alive, its type's
+## badly_damaged_fraction above zero and its hit points at or below that share of
+## stats.max_hit_points, the edge included. Computed from the hit points, never stored.
+## Read-only: assigning to it pushes an error and changes nothing.
+var is_badly_damaged: bool:
+	get:
+		return _is_badly_damaged()
+	set(_value):
+		push_error("Unit '%s': is_badly_damaged is read-only. It follows the hit points: apply_damage() begins it, destroy(), leave_play() and spawn() end it." % name)
+
 var _speed: float = 0.0
 var _throttle: float = 0.0
 var _steer: float = 0.0
@@ -445,8 +489,11 @@ func reset_motion() -> void:
 
 
 ## Takes hit points off a live Unit: subtracts amount, never below zero, and destroys the Unit
-## when none are left (Story 003 AC-2). A hit the Unit survives emits hit_points_changed once; the
-## lethal hit emits it once from destroy(), with zero. Ignored when amount is zero, negative or NaN
+## when none are left (Story 003 AC-2). A hit the Unit survives emits hit_points_changed once,
+## and badly_damaged_changed(true) right after it when the hit brings the Unit into the badly
+## damaged state (Story 017 AC-1: on the tick of the hit, a Turret's Shot included); the lethal
+## hit emits hit_points_changed once from destroy(), with zero, and passes through no state.
+## Ignored when amount is zero, negative or NaN
 ## and when the Unit is not alive (nothing is emitted), so a destroyed Unit cannot be destroyed
 ## twice. A Shot calls it from its own physics tick (see Shot), and the debug-damage key still does
 ## while match_rules.debug_damage is above zero. Call it from a physics tick or from _process,
@@ -457,11 +504,15 @@ func reset_motion() -> void:
 func apply_damage(amount: float) -> void:
 	if not _is_alive or not (amount > 0.0):
 		return
-	_hit_points = maxf(_hit_points - amount, 0.0)
-	if _hit_points <= 0.0:
+	var was_badly_damaged: bool = _is_badly_damaged()
+	var remaining: float = maxf(_hit_points - amount, 0.0)
+	if remaining <= 0.0:
 		destroy()
 		return
+	_hit_points = remaining
 	hit_points_changed.emit(_hit_points, stats.max_hit_points)
+	if not was_badly_damaged and _is_badly_damaged():
+		badly_damaged_changed.emit(true)
 
 
 ## Adds Fuel up to the type's fuel_capacity and returns the amount added, emitting fuel_changed once
@@ -485,11 +536,14 @@ func refuel(amount: float) -> float:
 ## at zero Fuel, Story 006 AC-8), the last hit of apply_damage() and the Fuel crash of a flying
 ## Unit, called from its own tick (Story 006 AC-4), take this same path. The Unit leaves play (see
 ## the class doc) with its hit points and Fuel at zero, then hit_points_changed and fuel_changed
-## are emitted once each, with zero, then `destroyed`, once. Does nothing when the Unit is not
-## alive. Call it from a tick, never from a physics signal handler (apply_damage()).
+## are emitted once each, with zero, then badly_damaged_changed(false) when the Unit was badly
+## damaged (Story 017 AC-1, AC-4: its smoke is off before anything that answers the destruction
+## runs), then `destroyed`, once. Does nothing when the Unit is not alive. Call it from a tick,
+## never from a physics signal handler (apply_damage()).
 func destroy() -> void:
 	if not _is_alive:
 		return
+	var was_badly_damaged: bool = _is_badly_damaged()
 	_is_alive = false
 	_hit_points = 0.0
 	_fuel = 0.0
@@ -500,6 +554,8 @@ func destroy() -> void:
 	reset_motion()
 	hit_points_changed.emit(_hit_points, stats.max_hit_points)
 	fuel_changed.emit(_fuel, stats.fuel_capacity)
+	if was_badly_damaged:
+		badly_damaged_changed.emit(false)
 	destroyed.emit()
 
 
@@ -507,13 +563,15 @@ func destroy() -> void:
 ## the start of a Round and at a restart, while each Player chooses the next type). Collision
 ## layer and mask are zeroed first, then the Unit is hidden, its physics tick turned off, its
 ## motion and held drive command zeroed and its hit points and Fuel set to zero;
-## hit_points_changed and then fuel_changed are emitted once each, with zero, and `destroyed`
+## hit_points_changed and then fuel_changed are emitted once each, with zero, then
+## badly_damaged_changed(false) when the Unit was badly damaged (Story 017), and `destroyed`
 ## never, so the Round sees no destruction and no respawn wait starts. Does nothing when the Unit
 ## is not alive (benched, destroyed or refused to drive). spawn() puts the Unit back. Call it from
 ## a tick or from a _ready(), never from a physics signal handler (apply_damage()).
 func leave_play() -> void:
 	if not _is_alive:
 		return
+	var was_badly_damaged: bool = _is_badly_damaged()
 	_is_alive = false
 	_hit_points = 0.0
 	_fuel = 0.0
@@ -524,6 +582,8 @@ func leave_play() -> void:
 	reset_motion()
 	hit_points_changed.emit(_hit_points, stats.max_hit_points)
 	fuel_changed.emit(_fuel, stats.fuel_capacity)
+	if was_badly_damaged:
+		badly_damaged_changed.emit(false)
 
 
 ## Puts the Unit in play at the given transform: the first spawn of a Round and every respawn use
@@ -544,7 +604,9 @@ func leave_play() -> void:
 ## overlaps a cliff pushes it under the floor; the Story 005 evidence doc keeps the run) and turns
 ## its physics tick on. It works on a destroyed Unit, on a benched one (leave_play()) and on one
 ## still alive, and emits hit_points_changed once, with the refill and the new maximum, then
-## fuel_changed once, with the starting tank and the capacity, and nothing else. Call it
+## fuel_changed once, with the starting tank and the capacity, and, when the Unit was badly
+## damaged, badly_damaged_changed(false) (Story 017: a Unit put in play whole is out of the
+## state), and nothing else. Call it
 ## inside a physics tick, in the same tick as ChaseCamera.snap_to_target(): from _process the
 ## frame of the teleport still draws the Unit at the wreck while the camera has already moved. A
 ## Unit that refused to drive in _ready() stays out of play: this pushes an error and changes
@@ -553,6 +615,7 @@ func spawn(at: Transform3D, new_stats: UnitStats = null) -> void:
 	if not _can_drive:
 		push_error("Unit '%s': spawn() ignored: the Unit refused to drive in _ready() (see that error), so it stays where it is and out of play." % name)
 		return
+	var was_badly_damaged: bool = _is_badly_damaged()
 	if new_stats != null:
 		var problem: String = new_stats.first_problem()
 		if not problem.is_empty():
@@ -572,6 +635,8 @@ func spawn(at: Transform3D, new_stats: UnitStats = null) -> void:
 	set_physics_process(true)
 	hit_points_changed.emit(_hit_points, stats.max_hit_points)
 	fuel_changed.emit(_fuel, stats.fuel_capacity)
+	if was_badly_damaged:
+		badly_damaged_changed.emit(false)
 
 
 ## True when another Unit stands where this one would overlap it if spawn(at, for_stats) were
@@ -625,7 +690,8 @@ func _next_speed(delta: float) -> float:
 
 
 ## The speed steps 4 and 1 of the movement model give for this tick, before step 6: step 4 first
-## (a blocked Unit throttled the other way starts from zero), then step 1. Every rule reads the
+## (a blocked Unit throttled the other way starts from zero), then step 1, whose top speed is the
+## type's share of its own while the Unit is badly damaged (Story 017 AC-2). Every rule reads the
 ## effective throttle: the held one, or zero while the tank of a ground Unit is empty (step 5).
 func _approach_speed(delta: float) -> float:
 	var throttle: float = 0.0 if _is_stranded() else _throttle
@@ -635,6 +701,8 @@ func _approach_speed(delta: float) -> float:
 	if is_zero_approx(throttle):
 		return move_toward(speed, 0.0, stats.coast_deceleration * delta)
 	var top_speed: float = stats.max_speed if throttle > 0.0 else stats.reverse_max_speed
+	if _is_badly_damaged():
+		top_speed *= stats.badly_damaged_speed_share
 	var opposing: bool = signf(throttle) * signf(speed) < 0.0
 	var rate: float = stats.braking if opposing else stats.acceleration
 	return move_toward(speed, top_speed * throttle, rate * delta)
@@ -690,6 +758,15 @@ func _has_tank() -> bool:
 ## True while this ground Unit's tank is empty (Story 006 AC-3): no throttle, turns on the spot.
 func _is_stranded() -> bool:
 	return is_fuel_empty and not stats.can_fly
+
+
+## True while this Unit is badly damaged (Story 017 AC-1; is_badly_damaged): alive, the type has the
+## state (a fraction above zero, which also fails a NaN) and the hit points are at or below that
+## share of the maximum, the edge included.
+func _is_badly_damaged() -> bool:
+	if not _is_alive or not (stats.badly_damaged_fraction > 0.0):
+		return false
+	return _hit_points <= stats.max_hit_points * stats.badly_damaged_fraction
 
 
 ## Turns this body into the given type (Story 005 AC-1): the stats and the controller settings

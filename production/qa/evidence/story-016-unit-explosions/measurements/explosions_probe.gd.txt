@@ -1,0 +1,176 @@
+extends RefCounted
+## Scratch probe (never in the repo): the "Measure first" items 1 to 4 of Story 016 on Godot 4.7.2.
+## (1) a node added under World inside another node's tick and moved in the same tick is drawn in place on
+## its first frames, with and without reset_physics_interpolation(), and one moved a tick later streaks;
+## (2) the frame its own _physics_process first runs in; (3) a scale changed every tick is drawn smoothly;
+## (4) an ALWAYS node keeps ticking and is drawn interpolated under the pause, a pausable one stands.
+## Windowed on the 120 Hz display only: a headless run and Movie Maker never draw between two ticks.
+
+const OWN_CHOICE: bool = true
+const SHIPPED_CAMERA: bool = true
+const WATCHDOG_SECONDS: float = 300.0
+
+class Ticker extends Node:
+	var on_tick: Callable = Callable()
+	func _physics_process(_delta: float) -> void:
+		if on_tick.is_valid():
+			var once: Callable = on_tick
+			on_tick = Callable()
+			once.call()
+
+class Piece extends MeshInstance3D:
+	var added_frame: int = -1
+	var first_frame: int = -1
+	var calls: int = 0
+	var move_to: Vector3 = Vector3.INF
+	var grow_ticks: int = -1
+	var spin_ticks: int = -1
+	func _physics_process(_delta: float) -> void:
+		if first_frame < 0:
+			first_frame = Engine.get_physics_frames()
+		calls += 1
+		if move_to != Vector3.INF:
+			global_position = move_to
+			move_to = Vector3.INF
+		if grow_ticks >= 0:
+			grow_ticks += 1
+			scale = Vector3.ONE * (1.0 + float(grow_ticks) / 12.0)
+		if spin_ticks >= 0:
+			spin_ticks += 1
+			position = Vector3(float(spin_ticks) * 0.5, 2.0, 0.0)
+
+var _tree: SceneTree
+var _world: Node3D
+var _ticker: Ticker
+
+
+func run(harness: Node) -> void:
+	_tree = harness.get_tree()
+	_world = harness.split.player_1_unit.get_parent()
+	var fps: float = await _wait_rate()
+	print("SPLIT probe fps=%.1f interpolation_setting=%s world_mode=%d" % [fps, ProjectSettings.get_setting("physics/common/physics_interpolation"), _world.physics_interpolation_mode])
+	_ticker = Ticker.new()
+	_world.add_child(_ticker)
+	await _tree.physics_frame
+	await _same_tick_variants()
+	await _scale_variant()
+	await _pause_variant()
+	harness.finish("probe=done")
+
+
+func _wait_rate() -> float:
+	var good: int = 0
+	for _i: int in 1200:
+		await _tree.process_frame
+		good = good + 1 if Engine.get_frames_per_second() >= 100.0 else 0
+		if good >= 40:
+			break
+	return Engine.get_frames_per_second()
+
+
+func _piece() -> Piece:
+	var piece: Piece = Piece.new()
+	var sphere: SphereMesh = SphereMesh.new()
+	piece.mesh = sphere
+	return piece
+
+
+## Runs `action` inside the Ticker's tick (a node ticking after the Units, as a Shot or a Mine does).
+func _in_tick(action: Callable) -> void:
+	_ticker.on_tick = action
+	await _tree.physics_frame
+	await _tree.physics_frame
+
+
+func _gap_rows(piece: Piece, target: Vector3, frames: int) -> PackedStringArray:
+	var rows: PackedStringArray = []
+	for _i: int in frames:
+		await _tree.process_frame
+		var drawn: Vector3 = piece.get_global_transform_interpolated().origin
+		rows.append("%.2f" % drawn.distance_to(target))
+	return rows
+
+
+func _same_tick_variants() -> void:
+	var far: Vector3 = Vector3(60.0, 5.0, 60.0)
+	# V1: added and moved in the same tick, no reset.
+	var v1: Piece = _piece()
+	await _in_tick(func() -> void:
+		_world.add_child(v1)
+		v1.added_frame = Engine.get_physics_frames()
+		v1.global_position = far)
+	print("SPLIT probe V1_same_tick_no_reset gaps=%s first_tick_frame_minus_added=%d" % [" ".join(await _gap_rows(v1, far, 8)), v1.first_frame - v1.added_frame])
+	v1.queue_free()
+	# V2: the same with the reset.
+	var v2: Piece = _piece()
+	await _in_tick(func() -> void:
+		_world.add_child(v2)
+		v2.added_frame = Engine.get_physics_frames()
+		v2.global_position = far
+		v2.reset_physics_interpolation())
+	print("SPLIT probe V2_same_tick_reset gaps=%s first_tick_frame_minus_added=%d" % [" ".join(await _gap_rows(v2, far, 8)), v2.first_frame - v2.added_frame])
+	v2.queue_free()
+	# V3: added in one tick at the origin, moved by its own first tick (a tick later), no reset.
+	var v3: Piece = _piece()
+	await _in_tick(func() -> void:
+		_world.add_child(v3)
+		v3.added_frame = Engine.get_physics_frames()
+		v3.move_to = far)
+	print("SPLIT probe V3_moved_a_tick_later_no_reset gaps=%s first_tick_frame_minus_added=%d" % [" ".join(await _gap_rows(v3, far, 10)), v3.first_frame - v3.added_frame])
+	v3.queue_free()
+	# V4: the same with a reset in the tick it was moved (its own tick, after the move).
+	var v4: Piece = _piece()
+	await _in_tick(func() -> void:
+		_world.add_child(v4)
+		v4.added_frame = Engine.get_physics_frames()
+		v4.move_to = far)
+	await _tree.physics_frame
+	v4.reset_physics_interpolation()
+	print("SPLIT probe V4_reset_after_late_move gaps=%s" % " ".join(await _gap_rows(v4, far, 6)))
+	v4.queue_free()
+	await _tree.physics_frame
+
+
+func _scale_variant() -> void:
+	var piece: Piece = _piece()
+	await _in_tick(func() -> void:
+		_world.add_child(piece)
+		piece.global_position = Vector3(0.0, 40.0, 0.0)
+		piece.reset_physics_interpolation()
+		piece.grow_ticks = 0)
+	var rows: PackedStringArray = []
+	var ticks: PackedStringArray = []
+	for _i: int in 36:
+		await _tree.process_frame
+		rows.append("%.3f" % piece.get_global_transform_interpolated().basis.get_scale().x)
+		ticks.append(str(piece.grow_ticks))
+	print("SPLIT probe V5_scale_per_tick drawn=%s own_ticks=%s" % [" ".join(rows), " ".join(ticks)])
+	piece.queue_free()
+	await _tree.physics_frame
+
+
+func _pause_variant() -> void:
+	var always: Piece = _piece()
+	var pausable: Piece = _piece()
+	always.process_mode = Node.PROCESS_MODE_ALWAYS
+	await _in_tick(func() -> void:
+		for piece: Piece in [always, pausable]:
+			_world.add_child(piece)
+			piece.global_position = Vector3(0.0, 40.0, 0.0)
+			piece.reset_physics_interpolation()
+			piece.spin_ticks = 0)
+	await _tree.physics_frame
+	_tree.paused = true
+	var frame_at_pause: int = Engine.get_physics_frames()
+	var calls_a: int = always.calls
+	var calls_p: int = pausable.calls
+	var rows: PackedStringArray = []
+	for _i: int in 30:
+		await _tree.process_frame
+		rows.append("%.2f/%.2f" % [always.get_global_transform_interpolated().origin.x, pausable.get_global_transform_interpolated().origin.x])
+	var frames_paused: int = Engine.get_physics_frames() - frame_at_pause
+	print("SPLIT probe V6_pause physics_frames_while_paused=%d always_ticks=%d pausable_ticks=%d drawn_x_always/pausable=%s" % [frames_paused, always.calls - calls_a, pausable.calls - calls_p, " ".join(rows)])
+	_tree.paused = false
+	always.queue_free()
+	pausable.queue_free()
+	await _tree.physics_frame

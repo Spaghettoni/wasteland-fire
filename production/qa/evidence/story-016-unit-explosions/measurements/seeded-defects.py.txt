@@ -1,0 +1,182 @@
+#!/usr/bin/env python3
+"""Seeded defects for Story 016 (A destroyed Unit explodes): each one exact text replacement in a scratch copy of the
+repo, run against the scenario that guards it. KILLED when the scenario fails (rc != 0 or a FAIL CHECK) or, for the
+regression kind, when an older scenario's output differs from its baseline. A mutant whose run prints no RESULT
+line for its scenario is BROKEN (the replacement made the script unusable, not a verdict) and is counted apart.
+One worker per scratch copy, so no two mutants ever share a file (story 011's lesson).
+
+usage: seeded-defects16.py BASELINE_DIR WORK_DIR [--dry] [--only name,name]
+  BASELINE_DIR holds the baselines of the older scenarios as split-NAME.txt (the regression kind)
+  WORK_DIR gets copy0..copy2 (scratch copies of the repo; they are diffed against the repo at the end)
+  --dry only checks that every replacement text occurs exactly once in its file
+"""
+import os
+import re
+import subprocess
+import sys
+from concurrent.futures import ThreadPoolExecutor
+
+REPO = "/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire"
+BASE = sys.argv[1]
+WORK = sys.argv[2]
+DRY = "--dry" in sys.argv
+WORKERS = 3
+COPIES = [os.path.join(WORK, "copy%d" % i) for i in range(WORKERS)]
+
+SPLIT = "src/gameplay/split_screen/split_screen.gd"
+EXPL = "src/gameplay/effects/explosion.gd"
+SCENE = "src/gameplay/effects/explosion.tscn"
+MINE = "src/gameplay/mines/mine.gd"
+RUNNER = "tools/evidence/split_screen_harness.gd"
+
+HOOK = "		match_controller.unit_destroyed.connect(_explode)\n"
+FREE = "		match_controller.round_started.connect(_free_explosions)\n"
+STRIP = "	root.explosion_scene = null\n"
+L = "explosions"
+
+M = [
+ # name, file, old, new, scenario, kind
+ # the hook: where it listens and what it adds
+ ("hook_on_each_units_destroyed", SPLIT, HOOK, "		player_1_unit.destroyed.connect(_explode.bind(0))\n		player_2_unit.destroyed.connect(_explode.bind(1))\n", L, "check"),
+ ("hook_also_on_unit_swapped", SPLIT, HOOK, HOOK + "		match_controller.unit_swapped.connect(_explode)\n", L, "check"),
+ ("hook_also_on_every_restart_bench", SPLIT, FREE, FREE + "		match_controller.round_started.connect(func() -> void: _explode(1))\n", L, "check"),
+ ("free_explosions_not_connected", SPLIT, FREE, "", L, "check"),
+ ("warm_up_without_a_scene_check", SPLIT, "func _warm_up_explosion() -> void:\n	if explosion_scene == null:\n		return\n", "func _warm_up_explosion() -> void:\n", "tokens", "regress"),
+ ("explode_without_a_scene_check", SPLIT, "func _explode(player_index: int) -> void:\n	if explosion_scene == null:\n		return\n", "func _explode(player_index: int) -> void:\n", "explosions_off", "check"),
+ ("explosion_added_under_the_unit", SPLIT, "	unit.get_parent().add_child(blast)\n", "	unit.add_child(blast)\n", L, "check"),
+ ("centre_at_the_bodys_origin", SPLIT, "	var origin: Vector3 = model.global_position if model != null else unit.global_position\n", "	var origin: Vector3 = unit.global_position\n", L, "check"),
+ ("centre_without_the_boxs_middle", SPLIT, "	var centre: Vector3 = origin + Vector3.UP * unit.stats.collision_center.y\n", "	var centre: Vector3 = origin\n", L, "check"),
+ ("size_from_a_fixed_number", SPLIT, "maxf(unit.stats.collision_size.x, unit.stats.collision_size.z), unit.global_position.y)", "2.6, unit.global_position.y)", L, "check"),
+ ("team_material_on_the_fireball", SPLIT, "	unit.get_parent().add_child(blast)\n", "	unit.get_parent().add_child(blast)\n	(blast.get_node(\"Fireball\") as MeshInstance3D).material_override = unit.team_material\n", L, "check"),
+ # the Explosion
+ ("pausable_process_mode", SCENE, "process_mode = 3\n", "", L, "check"),
+ ("explosion_never_frees_itself", EXPL, "	if _ticks >= _life_ticks:\n		queue_free()\n		return\n", "	if _ticks >= _life_ticks:\n		return\n", L, "check"),
+ ("explosion_frees_a_tick_early", EXPL, "	if _ticks >= _life_ticks:\n", "	if _ticks >= _life_ticks - 1:\n", L, "check"),
+ ("random_chunk_direction", EXPL, "settings.chunk_directions[index].normalized() * settings.chunk_speeds[index] * age", "Vector3(randf(), 1.0, randf()).normalized() * settings.chunk_speeds[index] * age", L, "check"),
+ ("duration_as_a_constant_in_code", EXPL, "	_flash_ticks = _in_ticks(settings.flash_seconds)\n", "	_flash_ticks = 6\n", L, "check"),
+ ("chunks_never_land", EXPL, "		chunk.visible = not (age > 0.0 and global_position.y + offset.y - edge / 2.0 <= _floor_y)\n", "		chunk.visible = true\n", L, "check"),
+ ("smoke_never_fades", EXPL, "		puff.transparency = progress\n", "		puff.transparency = 0.0\n", L, "check"),
+ ("puffs_begin_together", EXPL, "		var begin: int = _smoke_start_ticks + index * _stagger_ticks\n", "		var begin: int = _smoke_start_ticks\n", L, "check"),
+ ("fireball_never_darkens", EXPL, "	_fireball_material.albedo_color = settings.fireball_colour_start.lerp(settings.fireball_colour_end, shrink)\n", "	_fireball_material.albedo_color = settings.fireball_colour_start\n", L, "check"),
+ ("templates_left_referenced", EXPL, "	chunk_template = null\n	puff_template = null\n", "", L, "check"),
+ ("fireball_posed_after_it_ends", EXPL, "	fireball.visible = tick < _fireball_ticks\n	if not fireball.visible:\n		return\n", "	fireball.visible = tick < _fireball_ticks\n", L, "check"),
+ ("no_physics_interpolation_reset", EXPL, "	reset_physics_interpolation()\n	set_physics_process(true)\n", "	set_physics_process(true)\n", L, "check"),
+ ("flash_never_ends", EXPL, "	flash.visible = tick < _flash_ticks\n", "	flash.visible = true\n", L, "check"),
+ ("chunk_given_a_body", SCENE, "[node name=\"Smoke\" type=\"Node3D\" parent=\".\"]", "[node name=\"Body\" type=\"StaticBody3D\" parent=\"Debris/Chunk\"]\n\n[node name=\"Smoke\" type=\"Node3D\" parent=\".\"]", L, "check"),
+ ("chunk_casting_a_shadow", SCENE, "[node name=\"Chunk\" type=\"MeshInstance3D\" parent=\"Debris\"]\nvisible = false\ncast_shadow = 0\n", "[node name=\"Chunk\" type=\"MeshInstance3D\" parent=\"Debris\"]\nvisible = false\n", L, "check"),
+ ("smoke_lit_by_the_scene", SCENE, "[sub_resource type=\"StandardMaterial3D\" id=\"StandardMaterial3D_smoke\"]\ntransparency = 1\nshading_mode = 0\n", "[sub_resource type=\"StandardMaterial3D\" id=\"StandardMaterial3D_smoke\"]\ntransparency = 1\n", L, "check"),
+ ("fireball_shared_between_explosions", SCENE, "[sub_resource type=\"StandardMaterial3D\" id=\"StandardMaterial3D_fireball\"]\nresource_local_to_scene = true\n", "[sub_resource type=\"StandardMaterial3D\" id=\"StandardMaterial3D_fireball\"]\n", L, "check"),
+ # what the story leaves alone, broken on purpose: the Mine's flash is the check that proves AC-6 sees the Mine's own picture
+ ("mines_flash_hidden", MINE, "	body.visible = false\n	flash.visible = true\n", "	body.visible = false\n	flash.visible = false\n", L, "check"),
+ # the runner's strip: the older scenarios keep their outputs, explosions_off proves it
+ ("runner_leaves_the_explosions_on", RUNNER, STRIP, "	pass\n", "explosions_off", "check"),
+ ("runner_leaves_the_explosions_on_loss", RUNNER, STRIP, "	pass\n", "loss", "regress"),
+ ("runner_leaves_the_explosions_on_destruction", RUNNER, STRIP, "	pass\n", "destruction", "regress"),
+ ("runner_leaves_the_explosions_on_mines", RUNNER, STRIP, "	pass\n", "mines", "regress"),
+]
+
+# Mutants no output can tell from the build: reported apart, with the reason, when they survive.
+EQUIVALENT = {
+ "runner_leaves_the_explosions_on_loss": "story 016's measure-first: an Explosion is invisible to a headless scenario that reads no node count and no group, so the regression cannot tell the strip from its absence; explosions_off (runner_leaves_the_explosions_on) proves the strip",
+ "explode_without_a_scene_check": "the strip sets no scene before _ready(), so the handler is never connected and the guard is never reached; a scene cleared later is not a state any scenario reaches",
+ "no_physics_interpolation_reset": "measured windowed at 120 fps (measurements/explosions_interp_probe*.txt): an Explosion placed and posed in the tick it enters the tree is drawn in place on its first frames with or without the reset (the largest gap from its centre is 0.91 m with it and 0.88 m without, the chunks' own flight, against the 6 m a streak from the origin would show); a headless or Movie Maker run cannot see a drawn frame at all",
+ "runner_leaves_the_explosions_on_destruction": "as runner_leaves_the_explosions_on_loss",
+ "runner_leaves_the_explosions_on_mines": "as runner_leaves_the_explosions_on_loss",
+}
+
+# Mutants only a window that renders between two physics ticks can tell from the build.
+WINDOWED = {}
+
+
+def prepare(i):
+    d = COPIES[i]
+    os.makedirs(WORK, exist_ok=True)
+    if os.path.exists(d):
+        subprocess.run(["find", d, "-delete"], check=True)
+    subprocess.run(["rsync", "-a", "--exclude", ".git", "--exclude", "production", "--exclude", "design", "--exclude", "docs", REPO + "/", d + "/"], check=True)
+    return d
+
+
+def run(copy, scn):
+    p = subprocess.run(["godot", "--headless", "--fixed-fps", "60", "--path", copy, "res://tools/evidence/split_screen_harness.tscn", "--", "--scenario=" + scn],
+                       capture_output=True, text=True, timeout=1200)
+    return p.returncode, p.stdout + p.stderr
+
+
+def one(copy, mutant):
+    name, rel, old, new, scn, kind = mutant
+    path = os.path.join(copy, rel)
+    orig = open(path).read()          # this worker is the only one that touches this copy
+    if orig.count(old) != 1:
+        return name, None, "NOT APPLIED (text found %d times)" % orig.count(old)
+    open(path, "w").write(orig.replace(old, new))
+    try:
+        rc, out = run(copy, scn)
+    finally:
+        open(path, "w").write(orig)
+    if not re.search(r"^RESULT %s " % scn, out, re.M):
+        return name, None, "BROKEN: no RESULT line (rc=%d)" % rc
+    if kind == "check":
+        fails = re.findall(r"^CHECK \S+ (\S+) FAIL", out, re.M)
+        dead = rc != 0 or bool(fails)
+        detail = "%s rc=%d fails=%s" % (scn, rc, ",".join(fails) or "-")
+    else:
+        base = open(os.path.join(BASE, "split-%s.txt" % scn)).read()
+        keep = lambda t: [l for l in t.splitlines() if l.startswith(("SPLIT ", "CHECK ", "RESULT ", "SCRIPT ERROR", "ERROR:", "WARNING:"))]
+        dead = keep(out) != keep(base) or rc != 0
+        detail = "%s rc=%d output %s the baseline" % (scn, rc, "differs from" if dead else "equals")
+    return name, dead, detail
+
+
+def worker(i, jobs):
+    return [one(COPIES[i], m) for m in jobs[i::WORKERS]]
+
+
+def main():
+    if DRY:
+        bad = 0
+        for name, rel, old, new, scn, kind in M:
+            n = open(os.path.join(REPO, rel)).read().count(old)
+            if n != 1:
+                bad += 1
+                print("DRY  %-48s text found %d times in %s" % (name, n, rel))
+        print("DRY: %d mutants, %d with a replacement text that is not found exactly once" % (len(M), bad))
+        return 1 if bad else 0
+    jobs = M
+    if "--only" in sys.argv:
+        wanted = sys.argv[sys.argv.index("--only") + 1].split(",")
+        jobs = [m for m in M if m[0] in wanted]
+    for i in range(WORKERS):
+        prepare(i)
+    with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+        results = [r for part in pool.map(lambda i: worker(i, jobs), range(WORKERS)) for r in part]
+    order = {m[0]: k for k, m in enumerate(M)}
+    results.sort(key=lambda r: order[r[0]])
+    killed = survived = broken = 0
+    for name, dead, detail in results:
+        if dead is False and name in WINDOWED:
+            print("WINDOWED   %-48s %s | %s" % (name, detail, WINDOWED[name]))
+            killed += 1
+            continue
+        if dead is False and name in EQUIVALENT:
+            print("EQUIVALENT %-48s %s | %s" % (name, detail, EQUIVALENT[name]))
+            killed += 1
+            continue
+        status = "BROKEN " if dead is None else ("KILLED " if dead else "SURVIVED")
+        killed += dead is True
+        survived += dead is False
+        broken += dead is None
+        print("%s %-52s %s" % (status, name, detail))
+    print("-- %d mutants: %d killed, equivalent or killed by the windowed probe, %d survived, %d broken or not applied" % (len(jobs), killed, survived, broken))
+    clean = True
+    for i in range(WORKERS):
+        d = subprocess.run(["diff", "-rq", "--exclude=.godot", "--exclude=production", "--exclude=.git", "--exclude=design", "--exclude=docs", REPO, COPIES[i]], capture_output=True, text=True)
+        if d.stdout.strip():
+            clean = False
+            print("COPY %d DIFFERS FROM THE REPO:\n%s" % (i, d.stdout[:600]))
+    print("-- the %d scratch copies %s the repo (apart from .godot, production, design, docs)" % (WORKERS, "equal" if clean else "DIFFER FROM"))
+    return 0 if survived == 0 and broken == 0 and clean else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

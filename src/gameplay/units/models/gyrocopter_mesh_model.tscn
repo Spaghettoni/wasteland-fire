@@ -2,10 +2,12 @@
 
 [ext_resource type="Script" path="res://src/gameplay/units/models/mesh_unit_model.gd" id="1_model"]
 [ext_resource type="PackedScene" path="res://assets/art/vehicles/wasteland_gyrocopter/wasteland_gyrocopter.glb" id="2_mesh"]
+[ext_resource type="PackedScene" path="res://src/gameplay/effects/badly_damaged_smoke.tscn" id="3_smoke"]
 
 [node name="GyrocopterMeshModel" type="Node3D"]
 script = ExtResource("1_model")
 mesh_scene = ExtResource("2_mesh")
+smoke_scene = ExtResource("3_smoke")
 hull_top = 1.4
 hover_height = 0.78
 rise_over_cliffs = true

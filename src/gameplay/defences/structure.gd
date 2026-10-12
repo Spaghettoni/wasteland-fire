@@ -35,10 +35,10 @@ extends StaticBody3D
 ## lost: each of the stats' damaged_below fractions has a node in damaged_looks, and below a
 ## fraction of its hit points the piece shows that fraction's node in place of intact. Only the
 ## look changes: the collider, the physics layer and what a Shot or a Unit meets stay those of the
-## whole piece until it falls. The look follows each hit that changes the hit points; the fall
-## shows the wreck and restore() the intact look. A list of looks that does not match the
-## fractions is one error in _ready(), and the piece then shows only its intact look until it
-## falls.
+## whole piece until it falls. The look follows each hit that changes the hit points; the fall shows
+## the wreck and restore() the intact look. A subclass whose parts are not under those nodes follows
+## the look in _look_shown() (a Turret's head, Story 015). A list of looks that does not match the
+## fractions is one error in _ready(), and the piece then shows only its intact look until it falls.
 ##
 ## Stats that are missing or unusable (StructureStats.first_problem()) are one error in _ready().
 ## The piece then stays plain, solid geometry and logs nothing more: type_id is empty, is_standing
@@ -243,3 +243,12 @@ func _show_look() -> void:
 			look.visible = _standing and stage == index + 1
 	if wreck != null:
 		wreck.visible = not _standing
+	_look_shown(stage)
+
+
+## Called at the end of _show_look(), with the damage stage it showed (0 whole or fallen, 1 and up
+## the damaged looks), so a subclass can dress the parts that are not under intact, damaged_looks
+## or wreck: a Turret's turning head (Story 015). Empty here, so a Flag Wall does exactly what it
+## did. It runs in _ready(), on each hit survived, in destroy() and in restore().
+func _look_shown(_stage: int) -> void:
+	pass

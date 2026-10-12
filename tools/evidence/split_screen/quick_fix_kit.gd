@@ -102,6 +102,16 @@ static func ground(node: Node3D) -> Vector2:
 	return Vector2(node.global_position.x, node.global_position.z)
 
 
+## The meshes that draw a Unit's body: every MeshInstance3D under its Model but the puffs of the smoke a badly damaged
+## Unit gives off (Story 017), a picture of their own that is no part of the body.
+static func body_meshes(model: Node) -> Array[MeshInstance3D]:
+	var found: Array[MeshInstance3D] = []
+	for node: Node in model.find_children("*", "MeshInstance3D", true, false):
+		if not (node.get_parent() is BadlyDamagedSmoke):
+			found.append(node as MeshInstance3D)
+	return found
+
+
 ## The lowest point of a Unit's model in the world, metres: the least y of the world boxes of the
 ## model's meshes (its Accent and Neutral parts); INF when the Unit has no model.
 static func model_bottom(unit: Unit) -> float:
@@ -109,8 +119,7 @@ static func model_bottom(unit: Unit) -> float:
 	var lowest: float = INF
 	if model == null:
 		return lowest
-	for node: Node in model.find_children("*", "MeshInstance3D", true, false):
-		var mesh: MeshInstance3D = node as MeshInstance3D
+	for mesh: MeshInstance3D in body_meshes(model):
 		lowest = minf(lowest, (mesh.global_transform * mesh.get_aabb()).position.y)
 	return lowest
 
@@ -122,8 +131,7 @@ static func model_box(unit: Unit) -> AABB:
 	var first: bool = true
 	if model == null:
 		return box
-	for node: Node in model.find_children("*", "MeshInstance3D", true, false):
-		var mesh: MeshInstance3D = node as MeshInstance3D
+	for mesh: MeshInstance3D in body_meshes(model):
 		var part: AABB = mesh.global_transform * mesh.get_aabb()
 		box = part if first else box.merge(part)
 		first = false

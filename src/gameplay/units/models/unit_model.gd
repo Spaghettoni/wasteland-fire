@@ -11,8 +11,10 @@ extends Node3D
 ## Implements: production/epics/wasteland-fire/story-007-the-map.md AC-13 (the Gyrocopter stays
 ## visible over the canyon walls and the ridge: the story's open question 3, a visual offset only);
 ## production/epics/wasteland-fire/story-009-playtest-quick-fixes.md AC-2 (the Gyrocopter flies over
-## the Map's cover and its model rises over each piece, rise_body_mask); design/rules.md "Teams and
-## visual style" and "Units". Vocabulary: CONTEXT.md (Unit, Gyrocopter, Map, Cover).
+## the Map's cover and its model rises over each piece, rise_body_mask);
+## production/epics/wasteland-fire/story-017-badly-damaged-units.md AC-4 (a badly damaged Unit
+## smokes from its drawn body: smoke_scene); design/rules.md "Teams and visual style" and
+## "Units". Vocabulary: CONTEXT.md (Unit, Gyrocopter, Map, Cover).
 ##
 ## _ready() scales the model by model_scale, stands it at offset plus hover_height in the Unit's
 ## frame and calls _build_meshes(), which each kind implements: it adds the MeshInstance3D
@@ -46,11 +48,23 @@ extends Node3D
 ## the water is what it was before Story 009. The Flag Walls of Story 012 stand on the cover layer
 ## too, each drawn by a direct Mesh child, so the model rises over them as over a piece of cover; a
 ## Flag Wall that has fallen has no layer and is not found.
+##
+## Smoke (Story 017 AC-4, smoke_scene, set on the mesh models of the four types; the kit models and
+## the greybox models of the older scenarios leave it empty and show none): the model listens to
+## its parent Unit's badly_damaged_changed and, on the first tick of a state, instances the scene
+## as its last child at the top centre of its hull, so the smoke rises from what is drawn: a
+## Gyrocopter's hover and its rise over cliffs and cover carry it. The scene is instanced on that
+## first tick and never when the model is built, so a Round in which no Unit is badly damaged adds
+## no node. It is shown on every change and hidden on the tick the state ends (the Unit's
+## destroy(), leave_play() and spawn()); the node stays for the next state and goes with the model
+## at a retype.
 
 ## Name of the child that carries the Team accent, which the Unit paints.
 const ACCENT_NODE_NAME: StringName = &"Accent"
 ## Name of the child that carries the neutral parts.
 const NEUTRAL_NODE_NAME: StringName = &"Neutral"
+## Name of the child that carries the smoke of a badly damaged Unit (Story 017).
+const SMOKE_NODE_NAME: StringName = &"Smoke"
 ## Height of the rise query's box above the Unit's floor, metres: above any cliff a Map stands
 ## (Map 01's are 2.0 m tall), so the box always crosses a cliff's top face.
 const RISE_BOX_HEIGHT: float = 20.0
@@ -106,6 +120,11 @@ const COLLIDER_KEY: String = "collider"
 ## no default, when rise_over_cliffs is set.
 @export var rise_margin: float = 0.0
 
+@export_group("Smoke")
+## The smoke a badly damaged Unit gives off (badly_damaged_smoke.tscn, whose root is a
+## BadlyDamagedSmoke). Optional: null, the default, shows none.
+@export var smoke_scene: PackedScene
+
 ## The box of the model's body in its own frame, unscaled: its footprint and its lowest point are
 ## what the rise reads. Set by _build_meshes().
 var _hull: AABB = AABB()
@@ -119,6 +138,8 @@ var _has_last_origin: bool = false
 var _rise_box: BoxShape3D
 ## The rise query.
 var _rise_query: PhysicsShapeQueryParameters3D
+## The smoke, instanced on the first tick of the first badly damaged state and kept (hidden) after.
+var _smoke: BadlyDamagedSmoke
 
 
 func _ready() -> void:
@@ -127,6 +148,7 @@ func _ready() -> void:
 	set_physics_process(false)
 	if not _build_meshes():
 		return
+	_connect_smoke()
 	if rise_over_cliffs:
 		var unset: String = _first_unset_rise_export()
 		if not unset.is_empty():
@@ -223,6 +245,45 @@ func _first_unset_rise_export() -> String:
 	if rise_clearance < 0.0 or rise_margin < 0.0:
 		return "rise_clearance or rise_margin"
 	return ""
+
+
+## Listens to the parent Unit's badly_damaged_changed when the scene has smoke and the parent is
+## a Unit (a model instanced under another node, for a warm-up, has no state to show). The
+## connection goes with this model when the Unit retypes: the model is freed then.
+func _connect_smoke() -> void:
+	var unit: Unit = get_parent() as Unit
+	if smoke_scene == null or unit == null:
+		return
+	unit.badly_damaged_changed.connect(_on_badly_damaged_changed)
+
+
+## Shows the smoke from the tick the state begins, instancing it the first time, and ends it on the
+## tick the state ends.
+func _on_badly_damaged_changed(badly_damaged: bool) -> void:
+	if badly_damaged:
+		if _smoke == null:
+			_smoke = _instance_smoke()
+		if _smoke != null:
+			_smoke.start()
+	elif _smoke != null:
+		_smoke.stop()
+
+
+## The smoke scene as this model's last child at the top centre of the hull (in this model's own
+## frame, which model_scale scales), or null, after an error, when the scene's root is not a
+## BadlyDamagedSmoke.
+func _instance_smoke() -> BadlyDamagedSmoke:
+	var instance: Node = smoke_scene.instantiate()
+	var smoke: BadlyDamagedSmoke = instance as BadlyDamagedSmoke
+	if smoke == null:
+		push_error("%s '%s': the root of smoke_scene is not a BadlyDamagedSmoke, so the model shows no smoke." % [
+				(get_script() as Script).get_global_name(), name])
+		instance.free()
+		return null
+	smoke.name = SMOKE_NODE_NAME
+	smoke.position = Vector3(_hull.get_center().x, _hull.end.y, _hull.get_center().z)
+	add_child(smoke)
+	return smoke
 
 
 ## Where the model stands in the Unit's frame off the cliffs: offset, hover_height up.

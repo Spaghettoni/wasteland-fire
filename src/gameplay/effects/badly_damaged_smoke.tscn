@@ -1,0 +1,44 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/effects/badly_damaged_smoke.gd" id="1_smoke"]
+
+[sub_resource type="Gradient" id="Gradient_puff"]
+offsets = PackedFloat32Array(0, 0.55, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.7, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_puff"]
+gradient = SubResource("Gradient_puff")
+width = 64
+height = 64
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="QuadMesh" id="QuadMesh_puff"]
+size = Vector2(2, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_puff"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.17, 0.17, 0.17, 0.9)
+albedo_texture = SubResource("GradientTexture2D_puff")
+billboard_mode = 1
+billboard_keep_scale = true
+
+[node name="BadlyDamagedSmoke" type="Node3D" node_paths=PackedStringArray("puff_template")]
+script = ExtResource("1_smoke")
+puff_template = NodePath("Puff")
+puffs_per_second = 12.0
+puff_lifetime_seconds = 1.2
+rise_speed = 1.5
+puff_radius = 0.35
+puff_growth = 2.4
+fade_start_fraction = 0.0
+
+[node name="Puff" type="MeshInstance3D" parent="."]
+top_level = true
+visible = false
+cast_shadow = 0
+custom_aabb = AABB(-1, -1, -1, 2, 2, 2)
+mesh = SubResource("QuadMesh_puff")
+material_override = SubResource("StandardMaterial3D_puff")

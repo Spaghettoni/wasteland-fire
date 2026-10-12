@@ -34,3 +34,5 @@ fuel_capacity = 100.0
 fuel_use = 5.0
 fuel_use_idle = 1.25
 spawn_fuel_fraction = 0.5
+badly_damaged_fraction = 0.2
+badly_damaged_speed_share = 0.5

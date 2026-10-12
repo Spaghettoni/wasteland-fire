@@ -22,7 +22,7 @@ Blender 5.2.2 LTS (Homebrew: `brew install --cask blender`, which puts `blender`
 | `build_gyrocopter.py` | The Gyrocopter. Writes `assets/art/vehicles/wasteland_gyrocopter/wasteland_gyrocopter.glb`. |
 | `build_rocks.py` | Map 01's rocks, read from the cliff colliders of `map_01_cliffs.tscn` (rerun it after changing them). Writes `assets/art/map_01/rocks/map_01_rocks.glb`, one mesh per cliff. |
 | `build_props.py` | Map 01's props, each built to the box of the primitive it replaces: wrecks, containers, scrap walls, the dressing's containers, tyres, boulders and posts, the fuel tanks' trim. Writes `assets/art/map_01/props/map_01_props.glb`. |
-| `build_base.py` | The Bases' trim, laid on their wall, tower and Garage boxes; the water tower's ladder; the Turrets' trim. Writes `assets/art/map_01/base/map_01_base.glb`. |
+| `build_base.py` | The Bases' trim, laid on their wall, tower and Garage boxes; the water tower's ladder; the Turrets' trim (the head's, and the drum's twice: `TurretPedestalTrim` for the 1 m drum of Story 013, which only the evidence's frozen Turret still uses, and `TurretPedestalTrimTall` for the grown 2.2 m drum of Story 015). Writes `assets/art/map_01/base/map_01_base.glb`. |
 | `build_ground_textures.py` | The ground's seamless noise textures (`src/gameplay/maps/map_01/textures/ground_*.png`), read by `src/gameplay/maps/spatial_env_ground.gdshader` and the rocks' `spatial_env_rock.gdshader`. |
 | `build_wall_textures.py` | The Bases' welded steel plates (`src/gameplay/maps/map_01/textures/wall_plates*.png`), read by `wall.tres` and the Flag Walls' damaged looks. |
 

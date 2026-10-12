@@ -1,0 +1,17 @@
+SPLIT turret_looks_showcase t=1.133 frame=67 moment=looks_whole_above looks=[0, 0, 0, 0] views=above_camera_settings.tres, above_camera_settings.tres p1_hp=40 p2_hp=40
+SPLIT turret_looks_showcase t=2.167 frame=129 moment=looks_whole_chase looks=[0, 0, 0, 0] views=chase_camera_settings.tres, chase_camera_settings.tres p1_hp=40 p2_hp=40
+SPLIT turret_looks_showcase t=2.717 frame=162 moment=looks_first_chase looks=[1, 1, 1, 1] views=chase_camera_settings.tres, chase_camera_settings.tres p1_hp=40 p2_hp=40
+SPLIT turret_looks_showcase t=3.750 frame=224 moment=looks_first_above looks=[1, 1, 1, 1] views=above_camera_settings.tres, above_camera_settings.tres p1_hp=40 p2_hp=40
+SPLIT turret_looks_showcase t=4.300 frame=257 moment=looks_second_above looks=[2, 2, 2, 2] views=above_camera_settings.tres, above_camera_settings.tres p1_hp=40 p2_hp=40
+SPLIT turret_looks_showcase t=5.333 frame=319 moment=looks_second_chase looks=[2, 2, 2, 2] views=chase_camera_settings.tres, chase_camera_settings.tres p1_hp=40 p2_hp=40
+SPLIT turret_looks_showcase t=5.883 frame=352 moment=looks_rubble_chase looks=[-1, -1, -1, -1] views=chase_camera_settings.tres, chase_camera_settings.tres p1_hp=40 p2_hp=40
+SPLIT turret_looks_showcase t=6.917 frame=414 moment=looks_rubble_above looks=[-1, -1, -1, -1] views=above_camera_settings.tres, above_camera_settings.tres p1_hp=40 p2_hp=40
+SPLIT turret_looks_showcase t=8.617 frame=516 moment=head_turning_start yaw=0.079 look=2 views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT turret_looks_showcase t=9.400 frame=563 moment=head_turning_end yaw=1.309 look=2 state=AIMING
+SPLIT turret_looks_showcase t=11.083 frame=664 moment=firing_chase views=chase_camera_settings.tres, chase_camera_settings.tres p1_gap_m=2.15 p1_gap_px=49 p2_gap_m=2.15 p2_gap_px=49
+SPLIT turret_looks_showcase t=13.800 frame=827 moment=firing_above views=above_camera_settings.tres, above_camera_settings.tres p1_gap_m=2.15 p1_gap_px=17 p2_gap_m=2.15 p2_gap_px=17
+SPLIT turret_looks_showcase t=16.883 frame=1012 moment=unit_past views=chase_camera_settings.tres, chase_camera_settings.tres metres_past_the_axis=3.5, 6.5 hidden_up_to=5.33 turret_top=3.00
+SPLIT turret_looks_showcase t=18.850 frame=1130 moment=gyro_at_face stopped=true hover=under the head views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT turret_looks_showcase t=22.900 frame=1373 moment=round_over_looks_kept looks=[-1, -1, 2, 2]
+SPLIT turret_looks_showcase t=23.517 frame=1410 moment=after_r looks=[0, 0, 0, 0] views=chase_camera_settings.tres, chase_camera_settings.tres
+RESULT turret_looks_showcase ok checks=0 failed=0 t=23.517 moments=16 shots=18

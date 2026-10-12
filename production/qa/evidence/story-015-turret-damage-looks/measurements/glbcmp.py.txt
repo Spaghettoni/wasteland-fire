@@ -1,0 +1,58 @@
+"""Compares the named meshes of two .glb files byte for byte (each primitive's attributes and indices)."""
+import hashlib, json, struct, sys
+
+def load(path):
+    data = open(path, "rb").read()
+    magic, version, length = struct.unpack("<4sII", data[:12])
+    assert magic == b"glTF"
+    off = 12
+    js = None
+    binchunk = b""
+    while off < length:
+        clen, ctype = struct.unpack("<II", data[off:off + 8])
+        chunk = data[off + 8: off + 8 + clen]
+        if ctype == 0x4E4F534A:
+            js = json.loads(chunk)
+        elif ctype == 0x004E4942:
+            binchunk = chunk
+        off += 8 + clen
+    return js, binchunk
+
+def accessor_bytes(js, binchunk, index):
+    acc = js["accessors"][index]
+    view = js["bufferViews"][acc["bufferView"]]
+    start = view.get("byteOffset", 0) + acc.get("byteOffset", 0)
+    comp = {5120: 1, 5121: 1, 5122: 2, 5123: 2, 5125: 4, 5126: 4}[acc["componentType"]]
+    n = {"SCALAR": 1, "VEC2": 2, "VEC3": 3, "VEC4": 4, "MAT4": 16}[acc["type"]]
+    stride = view.get("byteStride", comp * n)
+    out = bytearray()
+    for i in range(acc["count"]):
+        out += binchunk[start + i * stride: start + i * stride + comp * n]
+    return bytes(out)
+
+def meshes(path):
+    js, binchunk = load(path)
+    result = {}
+    for mesh in js["meshes"]:
+        h = hashlib.sha256()
+        for prim in mesh["primitives"]:
+            for name in sorted(prim["attributes"]):
+                h.update(name.encode())
+                h.update(accessor_bytes(js, binchunk, prim["attributes"][name]))
+            if "indices" in prim:
+                h.update(accessor_bytes(js, binchunk, prim["indices"]))
+        result[mesh["name"]] = h.hexdigest()[:16]
+    nodes = {}
+    for node in js["nodes"]:
+        if "mesh" in node:
+            nodes[node["name"]] = (js["meshes"][node["mesh"]]["name"], node.get("translation"), node.get("rotation"), node.get("scale"))
+    return result, nodes
+
+a, an = meshes(sys.argv[1])
+b, bn = meshes(sys.argv[2])
+print("old meshes:", sorted(a))
+print("new meshes:", sorted(b))
+same = [n for n in a if n in b and a[n] == b[n]]
+diff = [n for n in a if n in b and a[n] != b[n]]
+print("identical:", len(same), "of", len(a), "| changed:", diff, "| only in new:", sorted(set(b) - set(a)), "| gone:", sorted(set(a) - set(b)))
+print("node placement identical for the old ones:", all(an[n] == bn.get(n) for n in an))

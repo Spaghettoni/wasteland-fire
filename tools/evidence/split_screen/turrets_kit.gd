@@ -29,9 +29,10 @@ const RADIUS: float = 1.0
 const SETTLE: int = 3
 ## A Shot's longest flight in ticks (35 m at 60 m/s is 35 ticks, and a few more to be safe).
 const IN_FLIGHT_TICKS: int = 45
-## The Turret's scene, and where the open ground of the arena lies: far from the Map in the shared
-## world, a flat floor on the map layer big enough for every run (ARENA_SIZE metres square).
-const SCENE_PATH: String = "res://src/gameplay/defences/turret.tscn"
+## Where the open ground of the arena lies: far from the Map in the shared world, a flat floor on
+## the map layer big enough for every run (ARENA_SIZE metres square). Its fixture Turret is
+## instanced from the runner's turret_scene: the frozen Turret of Story 013, or the shipped one for a
+## scenario that declares TURRET_LOOKS.
 const ARENA_CENTRE: Vector3 = Vector3(0.0, 0.0, 400.0)
 const ARENA_SIZE: float = 300.0
 
@@ -164,9 +165,9 @@ func stage(player: int, type_index: int, at: Vector3, facing: Vector3) -> void:
 
 
 ## Makes the arena: a flat floor on the map layer around ARENA_CENTRE and, at its centre, a fixture
-## Turret of the shipped scene and data that belongs to Player `owner` and is armed at the other
-## Player's Unit, added under World like the Map's. Open ground for the lead: nothing hides a target
-## from it. Returns the fixture. Free it with free_arena().
+## Turret of the runner's turret_scene and the shipped data that belongs to Player `owner` and is
+## armed at the other Player's Unit, added under World like the Map's. Open ground for the lead:
+## nothing hides a target from it. Returns the fixture. Free it with free_arena().
 func make_arena(owner_player: int) -> Turret:
 	var q: Object = w.s.q
 	var world: Node = q.units.units[0].get_parent()
@@ -180,7 +181,7 @@ func make_arena(owner_player: int) -> Turret:
 	floor_body.add_child(shape)
 	world.add_child(floor_body)
 	floor_body.global_position = ARENA_CENTRE + Vector3.DOWN * 0.5
-	fixture = (load(SCENE_PATH) as PackedScene).instantiate() as Turret
+	fixture = q.harness.turret_scene.instantiate() as Turret
 	fixture.player_index = owner_player
 	world.add_child(fixture)
 	fixture.global_position = ARENA_CENTRE

@@ -1,0 +1,36 @@
+{
+ "flag_walls": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:962)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1063)"
+  ]
+ ],
+ "token_ui": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:962)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1063)"
+  ]
+ ],
+ "tokens_data": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:962)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1063)"
+  ]
+ ],
+ "turrets": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:962)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1063)"
+  ],
+  [
+   "arm (res://src/gameplay/defences/turret.gd:171)",
+   "arm (res://src/gameplay/defences/turret.gd:192)"
+  ]
+ ],
+ "unit_swap": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:962)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1063)"
+  ]
+ ]
+}

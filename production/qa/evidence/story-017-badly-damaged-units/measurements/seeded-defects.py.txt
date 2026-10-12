@@ -1,0 +1,197 @@
+#!/usr/bin/env python3
+"""Seeded defects for Story 017 (Badly damaged Units smoke and slow down): each one exact text replacement in a scratch copy of
+the repo, run against the scenario that guards it (with BADLY_ONLY naming the module when the scenario has several, which keeps a
+mutant to the seconds its module takes). KILLED when the scenario fails (rc != 0 or a FAIL CHECK) or, for the regression kind,
+when an older scenario's output differs from its baseline. A mutant whose run prints no RESULT line for its scenario is BROKEN (the
+replacement made the script unusable, not a verdict) and is counted apart. One worker per scratch copy, so no two mutants ever
+share a file (story 011's lesson).
+
+usage: seeded-defects17.py BASELINE_DIR WORK_DIR [--dry] [--only name,name]
+  BASELINE_DIR holds the baselines of the older scenarios as split-NAME.txt (the regression kind)
+  WORK_DIR gets copy0..copy2 (scratch copies of the repo; they are diffed against the repo at the end)
+  --dry only checks that every replacement text occurs exactly once in its file
+"""
+import os
+import re
+import subprocess
+import sys
+from concurrent.futures import ThreadPoolExecutor
+
+REPO = "/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire"
+BASE = sys.argv[1]
+WORK = sys.argv[2]
+DRY = "--dry" in sys.argv
+WORKERS = 3
+import json
+RULES = json.load(open(os.environ["NORMALIZERS"])) if os.environ.get("NORMALIZERS") else {}
+COPIES = [os.path.join(WORK, "copy%d" % i) for i in range(WORKERS)]
+
+UNIT = "src/gameplay/units/unit.gd"
+STATS = "src/gameplay/units/unit_stats.gd"
+MODEL = "src/gameplay/units/models/unit_model.gd"
+SMOKE = "src/gameplay/effects/badly_damaged_smoke.gd"
+SCENE = "src/gameplay/effects/badly_damaged_smoke.tscn"
+RUNNER = "tools/evidence/split_screen_harness.gd"
+BIKE = "src/gameplay/units/data/motorbike_stats.tres"
+GYRO = "src/gameplay/units/data/gyrocopter_stats.tres"
+B = "badly_damaged"
+EMIT_OFF = "	if was_badly_damaged:\n		badly_damaged_changed.emit(false)\n"
+STRIP = "	if bool(script.get_script_constant_map().get(BADLY_DAMAGED_CONSTANT, false)):\n		return\n"
+
+M = [
+ # name, file, old, new, scenario, kind, module (BADLY_ONLY; "" for the whole scenario)
+ # the state (AC-1)
+ ("strictly_below_in_place_of_at_or_below", UNIT, "	return _hit_points <= stats.max_hit_points * stats.badly_damaged_fraction\n", "	return _hit_points < stats.max_hit_points * stats.badly_damaged_fraction\n", B, "check", "edges"),
+ ("spawn_keeps_the_hit_points_of_a_badly_damaged_unit", UNIT, "	_hit_points = stats.max_hit_points\n	_fuel = stats.fuel_capacity * clampf(", "	if not was_badly_damaged:\n		_hit_points = stats.max_hit_points\n	_fuel = stats.fuel_capacity * clampf(", B, "check", "edges"),
+ ("leave_play_does_not_end_the_state", UNIT, EMIT_OFF + "\n\n## Puts the Unit in play at the given transform", "\n\n## Puts the Unit in play at the given transform", B, "check", "ends"),
+ ("destroy_does_not_end_the_state", UNIT, EMIT_OFF + "	destroyed.emit()\n", "	destroyed.emit()\n", B, "check", "ends"),
+ ("state_ended_after_destroyed", UNIT, EMIT_OFF + "	destroyed.emit()\n", "	destroyed.emit()\n" + EMIT_OFF, B, "check", "ends"),
+ ("spawn_does_not_end_the_state", UNIT, EMIT_OFF + "\n\n## True when another Unit stands where", "\n\n## True when another Unit stands where", B, "check", "ends"),
+ ("state_read_without_the_unit_being_alive", UNIT, "	if not _is_alive or not (stats.badly_damaged_fraction > 0.0):\n", "	if not (stats.badly_damaged_fraction > 0.0):\n", B, "check", "ends"),
+ ("state_signalled_on_every_hit_in_it", UNIT, "	if not was_badly_damaged and _is_badly_damaged():\n", "	if _is_badly_damaged():\n", B, "check", "ends"),
+ ("lethal_hit_signals_a_state_it_never_had", UNIT, "	var remaining: float = maxf(_hit_points - amount, 0.0)\n	if remaining <= 0.0:\n		destroy()\n		return\n	_hit_points = remaining\n", "	_hit_points = maxf(_hit_points - amount, 0.0)\n	if _hit_points <= 0.0:\n		destroy()\n		return\n", B, "check", "ends"),
+ # the speed (AC-2, AC-3)
+ ("share_on_forward_speed_only", UNIT, "	if _is_badly_damaged():\n		top_speed *= stats.badly_damaged_speed_share\n", "	if _is_badly_damaged() and throttle > 0.0:\n		top_speed *= stats.badly_damaged_speed_share\n", B, "check", "speed"),
+ ("share_in_the_turn_denominator", UNIT, "	var speed_fraction: float = minf(absf(_speed) / stats.max_speed, 1.0)\n", "	var speed_fraction: float = minf(absf(_speed) / (stats.max_speed * (stats.badly_damaged_speed_share if _is_badly_damaged() else 1.0)), 1.0)\n", B, "check", "speed"),
+ ("cap_clamped_in_one_tick", UNIT, "	var speed: float = _approach_speed(delta)\n	if _is_speed_capped():\n", "	var speed: float = _approach_speed(delta)\n	if _is_badly_damaged():\n		speed = clampf(speed, -stats.reverse_max_speed * stats.badly_damaged_speed_share, stats.max_speed * stats.badly_damaged_speed_share)\n	if _is_speed_capped():\n", B, "check", "speed"),
+ ("fords_clamp_skipped_while_badly_damaged", UNIT, "	return _speed_cap_frame >= 0 and Engine.get_physics_frames() - _speed_cap_frame <= 1\n", "	return not _is_badly_damaged() and _speed_cap_frame >= 0 and Engine.get_physics_frames() - _speed_cap_frame <= 1\n", B, "check", "ford"),
+ ("share_never_applied_to_a_flying_unit", UNIT, "	if _is_badly_damaged():\n		top_speed *= stats.badly_damaged_speed_share\n", "	if _is_badly_damaged() and not stats.can_fly:\n		top_speed *= stats.badly_damaged_speed_share\n", B, "check", "speed"),
+ ("acceleration_scaled_by_the_share", UNIT, "	var rate: float = stats.braking if opposing else stats.acceleration\n", "	var rate: float = stats.braking if opposing else stats.acceleration * (stats.badly_damaged_speed_share if _is_badly_damaged() else 1.0)\n", B, "check", "speed"),
+ ("fuel_burn_scaled_by_the_share", UNIT, "	var rate: float = stats.fuel_use_idle if is_zero_approx(_speed) else stats.fuel_use\n", "	var rate: float = stats.fuel_use_idle if is_zero_approx(_speed) else stats.fuel_use * (stats.badly_damaged_speed_share if _is_badly_damaged() else 1.0)\n", B, "check", "burn"),
+ # the smoke (AC-4)
+ ("smoke_at_the_models_origin", MODEL, "	smoke.position = Vector3(_hull.get_center().x, _hull.end.y, _hull.get_center().z)\n", "	smoke.position = Vector3.ZERO\n", B, "check", "smoke"),
+ ("smoke_on_the_unit_body", MODEL, "	add_child(smoke)\n	return smoke\n", "	get_parent().add_child(smoke)\n	return smoke\n", B, "check", "smoke"),
+ ("smoke_instanced_with_the_model", MODEL, "	unit.badly_damaged_changed.connect(_on_badly_damaged_changed)\n", "	unit.badly_damaged_changed.connect(_on_badly_damaged_changed)\n	_smoke = _instance_smoke()\n", B, "check", "data"),
+ ("smoke_not_hidden_at_the_end_of_the_state", MODEL, "	elif _smoke != null:\n		_smoke.stop()\n", "	elif _smoke != null:\n		pass\n", B, "check", "ends"),
+ ("smoke_in_the_team_colour", MODEL, "	add_child(smoke)\n	return smoke\n", "	add_child(smoke)\n	for puff: MeshInstance3D in smoke.puffs():\n		puff.material_override = (get_parent() as Unit).team_material\n	return smoke\n", B, "check", "smoke"),
+ ("model_listens_to_destroyed_too", MODEL, "	unit.badly_damaged_changed.connect(_on_badly_damaged_changed)\n", "	unit.badly_damaged_changed.connect(_on_badly_damaged_changed)\n	unit.destroyed.connect(_on_badly_damaged_changed.bind(false))\n", B, "check", "data"),
+ ("model_listens_to_destroyed_too_tokens_data", MODEL, "	unit.badly_damaged_changed.connect(_on_badly_damaged_changed)\n", "	unit.badly_damaged_changed.connect(_on_badly_damaged_changed)\n	unit.destroyed.connect(_on_badly_damaged_changed.bind(false))\n", "tokens_data", "regress", ""),
+ ("first_puff_not_born_with_the_state", SMOKE, "	set_physics_process(true)\n	_emit()\n", "	set_physics_process(true)\n", B, "check", "smoke"),
+ ("puffs_left_showing_when_it_ends", SMOKE, "	_smoking = false\n	set_physics_process(false)\n	_clear()\n", "	_smoking = false\n	set_physics_process(false)\n", B, "check", "ends"),
+ ("puffs_never_rise", SMOKE, "		puff.global_position = _origins[index] + Vector3.UP * risen\n", "		puff.global_position = _origins[index]\n", B, "check", "smoke"),
+ ("puffs_never_fade", SMOKE, "		puff.transparency = clampf(faded, 0.0, 1.0)\n", "		puff.transparency = 0.0\n", B, "check", "smoke"),
+ ("puffs_never_grow", SMOKE, "		puff.scale = Vector3.ONE * puff_radius * lerpf(1.0, puff_growth, progress)\n", "		puff.scale = Vector3.ONE * puff_radius\n", B, "check", "smoke"),
+ ("puffs_follow_the_unit", SMOKE, "		puff.global_position = _origins[index] + Vector3.UP * risen\n", "		puff.position = Vector3.UP * risen\n", B, "check", "smoke"),
+ ("amount_a_constant_in_code", SMOKE, "	_interval_ticks = _in_ticks(1.0 / puffs_per_second)\n", "	_interval_ticks = 5\n", B, "check", "data"),
+ ("casting_a_shadow", SCENE, "top_level = true\nvisible = false\ncast_shadow = 0\n", "top_level = true\nvisible = false\n", B, "check", "smoke"),
+ ("on_render_layer_2", SCENE, "top_level = true\nvisible = false\n", "top_level = true\nvisible = false\nlayers = 2\n", B, "check", "smoke"),
+ ("not_top_level", SCENE, "top_level = true\nvisible = false\n", "visible = false\n", B, "check", "smoke"),
+ ("no_radius_in_the_scene", SCENE, "puff_radius = 0.35\n", "puff_radius = 0.0\n", B, "check", "smoke"),
+ # the data (AC-7)
+ ("share_of_zero_accepted", STATS, "	if badly_damaged_fraction > 0.0 and not share_usable:\n", "	if false:\n", B, "check", "data"),
+ ("fraction_of_one_accepted", STATS, "badly_damaged_fraction >= 0.0 and badly_damaged_fraction < 1.0", "badly_damaged_fraction >= 0.0 and badly_damaged_fraction <= 1.0", B, "check", "data"),
+ ("nan_fraction_accepted", STATS, "	if not (badly_damaged_fraction >= 0.0 and badly_damaged_fraction < 1.0):\n", "	if badly_damaged_fraction < 0.0 or badly_damaged_fraction >= 1.0:\n", B, "check", "data"),
+ ("motorbike_fraction_a_quarter", BIKE, "badly_damaged_fraction = 0.2\n", "badly_damaged_fraction = 0.25\n", B, "check", "data"),
+ ("gyrocopter_share_changed", GYRO, "badly_damaged_speed_share = 0.5\n", "badly_damaged_speed_share = 0.55\n", B, "check", "data"),
+ # the runner's strip: the older scenarios keep their outputs, badly_damaged_off proves it
+ ("runner_leaves_the_state_on", RUNNER, STRIP, "	return\n", "badly_damaged_off", "check", ""),
+]
+# the regression variants of the runner's strip are added from the probe (the older scenarios whose output changes with the strip off)
+for _name in [a for a in os.environ.get("STRIP_REGRESS", "").split(",") if a]:
+    M.append(("runner_leaves_the_state_on_" + _name, RUNNER, STRIP, "	return\n", _name, "regress", ""))
+
+# Mutants no output can tell from the build: reported apart, with the reason, when they survive.
+EQUIVALENT = {}
+
+# Mutants only a window that renders between two physics ticks can tell from the build.
+WINDOWED = {
+ "not_top_level": "the smoke sets every puff's global place each tick, so no headless run tells a puff that is not top_level from one that is; the windowed probe at 120 fps (measurements/interp-probe-not-top-level.txt) does: the drawn place of a puff leaves where it was put by up to 0.183 m, against 0.021 m with top_level (measurements/interp-probe-with-reset.txt)",
+}
+
+
+def prepare(i):
+    d = COPIES[i]
+    os.makedirs(WORK, exist_ok=True)
+    if os.path.exists(d):
+        subprocess.run(["find", d, "-delete"], check=True)
+    subprocess.run(["rsync", "-a", "--exclude", ".git", "--exclude", "production", "--exclude", "design", "--exclude", "docs", REPO + "/", d + "/"], check=True)
+    return d
+
+
+def run(copy, scn, module):
+    env = dict(os.environ)
+    env["BADLY_ONLY"] = module
+    p = subprocess.run(["godot", "--headless", "--fixed-fps", "60", "--path", copy, "res://tools/evidence/split_screen_harness.tscn", "--", "--scenario=" + scn],
+                       capture_output=True, text=True, timeout=1500, env=env)
+    return p.returncode, p.stdout + p.stderr
+
+
+def one(copy, mutant):
+    name, rel, old, new, scn, kind, module = mutant
+    path = os.path.join(copy, rel)
+    orig = open(path).read()          # this worker is the only one that touches this copy
+    if orig.count(old) != 1:
+        return name, None, "NOT APPLIED (text found %d times)" % orig.count(old)
+    open(path, "w").write(orig.replace(old, new))
+    try:
+        rc, out = run(copy, scn, module)
+    finally:
+        open(path, "w").write(orig)
+    if not re.search(r"^RESULT %s " % scn, out, re.M):
+        return name, None, "BROKEN: no RESULT line (rc=%d)" % rc
+    if kind == "check":
+        fails = re.findall(r"^CHECK \S+ (\S+) FAIL", out, re.M)
+        dead = rc != 0 or bool(fails)
+        detail = "%s%s rc=%d fails=%s" % (scn, "[" + module + "]" if module else "", rc, ",".join(fails) or "-")
+    else:
+        base = open(os.path.join(BASE, "split-%s.txt" % scn)).read()
+        for before, after in RULES.get(scn, []):
+            out = out.replace(after, before)
+        keep = lambda t: [l for l in t.splitlines() if l.startswith(("SPLIT ", "CHECK ", "RESULT ", "SCRIPT ERROR", "ERROR:", "WARNING:"))]
+        dead = keep(out) != keep(base) or rc != 0
+        detail = "%s rc=%d output %s the baseline" % (scn, rc, "differs from" if dead else "equals")
+    return name, dead, detail
+
+
+def worker(i, jobs):
+    return [one(COPIES[i], m) for m in jobs[i::WORKERS]]
+
+
+def main():
+    if DRY:
+        bad = 0
+        for name, rel, old, new, scn, kind, module in M:
+            n = open(os.path.join(REPO, rel)).read().count(old)
+            if n != 1:
+                bad += 1
+                print("DRY  %-52s text found %d times in %s" % (name, n, rel))
+        print("DRY: %d mutants, %d with a replacement text that is not found exactly once" % (len(M), bad))
+        return 1 if bad else 0
+    jobs = M
+    if "--only" in sys.argv:
+        wanted = sys.argv[sys.argv.index("--only") + 1].split(",")
+        jobs = [m for m in M if m[0] in wanted]
+    for i in range(WORKERS):
+        prepare(i)
+    with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+        results = [r for part in pool.map(lambda i: worker(i, jobs), range(WORKERS)) for r in part]
+    order = {m[0]: k for k, m in enumerate(M)}
+    results.sort(key=lambda r: order[r[0]])
+    killed = survived = broken = 0
+    for name, dead, detail in results:
+        if dead is False and name in WINDOWED:
+            print("WINDOWED   %-52s %s | %s" % (name, detail, WINDOWED[name]))
+            killed += 1
+            continue
+        if dead is False and name in EQUIVALENT:
+            print("EQUIVALENT %-52s %s | %s" % (name, detail, EQUIVALENT[name]))
+            killed += 1
+            continue
+        status = "BROKEN " if dead is None else ("KILLED " if dead else "SURVIVED")
+        killed += dead is True
+        survived += dead is False
+        broken += dead is None
+        print("%s %-56s %s" % (status, name, detail))
+    print("-- %d mutants: %d killed, equivalent or killed by the windowed probe, %d survived, %d broken or not applied" % (len(jobs), killed, survived, broken))
+    clean = True
+    for i in range(WORKERS):
+        d = subprocess.run(["diff", "-rq", "--exclude=.godot", "--exclude=production", "--exclude=.git", "--exclude=design", "--exclude=docs", REPO, COPIES[i]], capture_output=True, text=True)
+        if d.stdout.strip():
+            clean = False
+            print("COPY %d DIFFERS FROM THE REPO:\n%s" % (i, d.stdout[:600]))
+    print("-- the %d scratch copies %s the repo (apart from .godot, production, design, docs)" % (WORKERS, "equal" if clean else "DIFFER FROM"))
+    return 0 if survived == 0 and broken == 0 and clean else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

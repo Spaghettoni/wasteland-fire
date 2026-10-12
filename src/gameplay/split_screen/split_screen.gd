@@ -124,6 +124,27 @@ extends Control
 ## (production/epics/wasteland-fire/story-014-truck-mines.md AC-7). The handler is connected after
 ## begin(), so it runs at every restart and not at the first Round's start, when no Mine exists.
 ##
+## Explosions (Story 016). When the MatchController announces a destruction it counted (unit_destroyed:
+## the other Player's Shots, a Turret's Shot, a Mine, a Self-destruct, the Gyrocopter's Fuel crash, and
+## any later way of destroying a Unit that ends in Unit.destroy()), this scene instances explosion_scene
+## under World, where the Units are, and blasts it at the Unit as it was drawn: the Unit's child named
+## Model (Unit.MODEL_NODE_NAME) raised by the height of the type's collision_center, so a ground Unit's
+## explosion is at the middle of its box and a Gyrocopter's where it was seen in the air, and the Unit's
+## own origin in its place when it has no model. The size is the larger horizontal side of the type's
+## collision_size and the floor the chunks fall to is the height of the Unit's origin. One listener on
+## unit_destroyed is the whole rule: a Swap and every bench go through Unit.leave_play(), which never
+## emits `destroyed`, and a destruction the controller refuses (a Player who is not alive) goes out as
+## no signal, so none of them plays one; and it is a link on the Round's signal and never on
+## Unit.destroyed, which nothing new listens to. The handler runs inside the tick of whoever destroyed
+## the Unit (a Shot, a Mine, PlayerMatchInput, the Unit), as a Weapon adds its Shot there. The Explosion
+## is a picture only (it holds no body and nothing in the Round reads it), keeps playing under the
+## Round-over pause, and belongs to the node group EXPLOSION_GROUP, which a Round that starts again
+## frees, the way it frees the Mines. The scene is data of this scene: with no explosion_scene nothing
+## listens to the Round for it and no explosion is ever added (the evidence runner takes it away for
+## every scenario written before it: tools/evidence/split_screen_harness.gd), and one cleared later plays
+## nothing. One is instanced and freed before the Round begins (_warm_up_explosion()).
+## (production/epics/wasteland-fire/story-016-unit-explosions.md AC-1 to AC-4, AC-7)
+##
 ## Fuel Cans (Story 006). The Map brings its own Fuel Cans at fixed spots (Map 01's are in
 ## production/epics/wasteland-fire/story-007-the-map.md; Story 006 kept five greybox Cans in this
 ## scene until Map 01 replaced them). Each Can polls its own zone, refills the Unit that touches it
@@ -139,6 +160,9 @@ const SHOT_GROUP: StringName = &"shots"
 
 ## The node group every Mine belongs to; _free_mines() frees it at every restart.
 const MINE_GROUP: StringName = &"mines"
+
+## The node group every Explosion belongs to; _free_explosions() frees it at every restart.
+const EXPLOSION_GROUP: StringName = &"explosions"
 
 ## The node group every Fuel Can belongs to; _restock_fuel_cans() brings the whole group back
 ## whenever a Round starts again.
@@ -174,6 +198,9 @@ const FUEL_CAN_GROUP: StringName = &"fuel_cans"
 ## countdown, the HUD and the Round-over screen) listens to it.
 @export var match_controller: MatchController
 
+## The picture a destroyed Unit plays (Story 016): explosion.tscn, whose root is an Explosion. Optional: with
+## none nothing listens to the Round for it and no explosion is ever added.
+@export var explosion_scene: PackedScene
 
 func _ready() -> void:
 	var missing: String = _first_unassigned()
@@ -188,11 +215,15 @@ func _ready() -> void:
 	_arm_turrets(units, bases)
 	_hand_bases_to_mine_layers(bases)
 	_warm_up_models()
+	_warm_up_explosion()
 	match_controller.begin(units, bases, cameras, field.token_stock)
 	match_controller.round_started.connect(_free_shots)
 	match_controller.round_started.connect(_restock_fuel_cans)
 	match_controller.round_started.connect(_restore_structures)
 	match_controller.round_started.connect(_free_mines)
+	if explosion_scene != null:
+		match_controller.unit_destroyed.connect(_explode)
+		match_controller.round_started.connect(_free_explosions)
 
 
 ## The name of the first required reference that is not assigned, or an empty string when all
@@ -266,6 +297,20 @@ func _warm_up_models() -> void:
 		model.free()
 
 
+## Instances the explosion scene once, adds it and frees it at once, before the Round begins (Story 016), as
+## _warm_up_models() does the models: the first Explosion ever made takes 12 to 16 ms to instantiate and each one
+## after it 0.1 to 0.6 ms (measured windowed on 4.7.2; the Story 016 evidence doc keeps the runs), which would
+## land in the frame of the Round's first destruction, whose own work already takes 10 to 17 ms. Nothing is
+## drawn and nothing is printed. With no explosion_scene nothing is made.
+func _warm_up_explosion() -> void:
+	if explosion_scene == null:
+		return
+	var warm: Node = explosion_scene.instantiate()
+	add_child(warm)
+	remove_child(warm)
+	warm.free()
+
+
 ## Frees every Shot still in flight (the SHOT_GROUP nodes) when a Round starts or restarts, so the
 ## Round-over pause cannot carry a shot into the next Round. Each shot stops its tick first, so a
 ## shot queued to be freed cannot still hit something on the tick of the restart.
@@ -282,6 +327,37 @@ func _free_mines() -> void:
 	for mine: Node in get_tree().get_nodes_in_group(MINE_GROUP):
 		mine.set_physics_process(false)
 		mine.queue_free()
+
+
+## Frees every Explosion still playing (the EXPLOSION_GROUP nodes) when a Round starts again (Story 016
+## AC-3): one that plays on under the Round-over pause is gone with the restart. Each stops its tick
+## first, so one queued to be freed cannot still count a tick.
+func _free_explosions() -> void:
+	for blast: Node in get_tree().get_nodes_in_group(EXPLOSION_GROUP):
+		blast.set_physics_process(false)
+		blast.queue_free()
+
+
+## Plays the explosion of a destruction the Round counted (Story 016 AC-1, AC-4), for the Unit of
+## `player_index` (0 for Player 1): the scene is added under the Units' parent and blasted in this one
+## call, at the Unit's Model (the Unit's own origin when it has none) raised by the type's
+## collision_center height, with the larger horizontal side of the type's collision_size as its size and
+## the height of the Unit's origin as the floor.
+func _explode(player_index: int) -> void:
+	if explosion_scene == null:
+		return
+	var unit: Unit = player_1_unit if player_index == 0 else player_2_unit
+	var instance: Node = explosion_scene.instantiate()
+	var blast: Explosion = instance as Explosion
+	if blast == null:
+		push_error("SplitScreen '%s': the root of explosion_scene is not an Explosion, so a destroyed Unit explodes nowhere." % name)
+		instance.free()
+		return
+	var model: Node3D = unit.get_node_or_null(String(Unit.MODEL_NODE_NAME)) as Node3D
+	var origin: Vector3 = model.global_position if model != null else unit.global_position
+	var centre: Vector3 = origin + Vector3.UP * unit.stats.collision_center.y
+	unit.get_parent().add_child(blast)
+	blast.blast(centre, maxf(unit.stats.collision_size.x, unit.stats.collision_size.z), unit.global_position.y)
 
 
 ## Brings every Structure of both Bases back whole when a Round starts again (Story 012 AC-5): the

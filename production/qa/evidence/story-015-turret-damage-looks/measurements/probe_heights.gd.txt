@@ -1,0 +1,86 @@
+extends SceneTree
+## Probe for Story 015 AC-8 (Measure first): the drawn top of every Unit type, read from its mesh
+## file as the game draws it, the thin parts listed apart, and the band the Gyrocopter's model will
+## fly in. For each type the model scene named by its UnitStats.model gives the mesh file
+## (mesh_scene) and the placement (model_scale, offset, hover_height); MeshUnitModel.hull_of(file,
+## INF) boxes every vertex of the file's meshes. The thin parts were found by clustering the high
+## vertices of each file by their (x, z) cell (a whip and a pennant, an antenna): each is a box in
+## the file's frame below, and "the body without them" is the highest vertex outside those boxes.
+## The flying height is the tallest drawn body (the Truck's rocket pod, the Wall Panels being 2 m)
+## plus the clearance the Gyrocopter's rise keeps (its scene's rise_clearance).
+## Run: godot --headless --path . -s <this file>   (a copy with the extension .gd)
+
+const TYPES: Array[String] = ["motorbike", "buggy", "truck", "gyrocopter"]
+const TOP_LIST: int = 6
+## Wall Panels are 2 m (the decision A1 of 2026-10-10): the tallest drawn ground body must stand
+## above that for the flying height to be set by a Unit.
+const WALL_PANEL_HEIGHT: float = 2.0
+## The thin parts, by type: [name, box in the file's frame]. The Buggy's whip and pennant at its
+## rear right (x 0.41-0.43, z 1.0-1.5, y 1.73-2.0 over a body that tops out at 1.45); the Truck's
+## whip antenna (x -0.76..-0.70, z 0.24..0.40, y 1.6-2.7).
+const THIN: Dictionary = {
+	"buggy": [["whip and pennant", AABB(Vector3(0.38, 1.2, 0.95), Vector3(0.08, 0.85, 0.6))]],
+	"truck": [["whip antenna", AABB(Vector3(-0.82, 1.5, 0.2), Vector3(0.14, 1.25, 0.25))]],
+}
+
+
+func _initialize() -> void:
+	var drawn: Dictionary = {}
+	var gyro: MeshUnitModel = null
+	for type_id: String in TYPES:
+		var stats: UnitStats = load("res://src/gameplay/units/data/%s_stats.tres" % type_id)
+		var model: MeshUnitModel = stats.model.instantiate() as MeshUnitModel
+		var file: PackedScene = model.mesh_scene
+		var placed: float = model.hover_height + model.offset.y
+		var all: AABB = MeshUnitModel.hull_of(file, INF)
+		print("TYPE %s file=%s scale=%.3f offset_y=%.3f hover=%.3f" % [type_id, file.resource_path.get_file(), model.model_scale, model.offset.y, model.hover_height])
+		print("  every part: y %.3f..%.3f  x %.3f..%.3f  z %.3f..%.3f  (file frame, origin on the ground at the collider's middle)" % [
+				all.position.y, all.end.y, all.position.x, all.end.x, all.position.z, all.end.z])
+		var meshes: Dictionary = MeshFile.meshes_of(file)
+		var body_top: float = -INF
+		var thin_top: Dictionary = {}
+		var boxes: Array = THIN.get(type_id, [])
+		var rows: Array[Dictionary] = []
+		for mesh_name: StringName in meshes:
+			var mesh: Mesh = meshes[mesh_name]
+			for surface: int in mesh.get_surface_count():
+				for point: Vector3 in mesh.surface_get_arrays(surface)[Mesh.ARRAY_VERTEX]:
+					var in_thin: String = ""
+					for thin: Array in boxes:
+						if (thin[1] as AABB).has_point(point):
+							in_thin = thin[0]
+					if in_thin.is_empty():
+						body_top = maxf(body_top, point.y)
+						rows.append({"mesh": String(mesh_name), "p": point})
+					else:
+						thin_top[in_thin] = maxf(thin_top.get(in_thin, -INF), point.y)
+		rows.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["p"].y > b["p"].y)
+		for index: int in mini(TOP_LIST, rows.size()):
+			print("    highest vertex of the body %d: mesh=%-7s y=%.3f x=%.3f z=%.3f" % [index + 1, rows[index]["mesh"], rows[index]["p"].y, rows[index]["p"].x, rows[index]["p"].z])
+		for thin_name: String in thin_top:
+			print("    thin part '%s' reaches y=%.3f" % [thin_name, thin_top[thin_name]])
+		drawn[type_id] = {"all_top": all.end.y, "all_bottom": all.position.y, "body_top": body_top, "placed": placed}
+		if type_id == "gyrocopter":
+			gyro = model
+		else:
+			model.free()
+	print("")
+	print("DRAWN TOPS (metres over the Unit's floor, as the game draws them)")
+	var tallest: float = 0.0
+	for type_id: String in TYPES:
+		var d: Dictionary = drawn[type_id]
+		var with_all: float = d["placed"] + d["all_top"]
+		var body: float = d["placed"] + d["body_top"]
+		print("  %-10s top with every part %.3f, top of the body without its thin parts %.3f%s" % [type_id, with_all, body, "" if is_equal_approx(with_all, body) else " (thin parts %.3f above it)" % (with_all - body)])
+		if type_id != "gyrocopter":
+			tallest = maxf(tallest, body)
+	var clearance: float = gyro.rise_clearance
+	var flying: float = tallest + clearance
+	var extent: float = drawn["gyrocopter"]["all_top"] - drawn["gyrocopter"]["all_bottom"]
+	print("")
+	print("FLYING HEIGHT: tallest drawn ground body %.3f (a Wall Panel is %.1f) + the Gyrocopter's rise_clearance %.2f = %.3f" % [tallest, WALL_PANEL_HEIGHT, clearance, flying])
+	print("BAND the Gyrocopter's model flies in with its lowest drawn point (file y %.3f) at the flying height: %.3f .. %.3f (drawn extent %.3f; today it hovers at %.2f, so %.3f .. %.3f)" % [
+			drawn["gyrocopter"]["all_bottom"], flying, flying + extent, extent, gyro.hover_height,
+			gyro.hover_height + drawn["gyrocopter"]["all_bottom"], gyro.hover_height + drawn["gyrocopter"]["all_top"]])
+	gyro.free()
+	quit()

@@ -11,8 +11,9 @@ extends Structure
 ## at a set rate toward the point where its Shot will meet the target, and it fires only on that
 ## point, one Shot every interval), AC-4 (hit points, no friendly damage, the rubble), AC-6 (a kill
 ## is a destruction like any other: the Shot does it, nothing here), AC-7 (the restart) and AC-9
-## (every number is TurretStats); design/rules.md "Turrets, Flag Walls and Mines". Vocabulary:
-## CONTEXT.md (Turret, Player, Unit, Shot).
+## (every number is TurretStats); production/epics/wasteland-fire/story-015-turret-damage-looks.md
+## AC-1 to AC-3 (the damaged looks, and the growth to about 3 m); design/rules.md "Turrets, Flag
+## Walls and Mines". Vocabulary: CONTEXT.md (Turret, Player, Unit, Shot).
 ##
 ## Wired, not searched. SplitScreen hands each Turret, with arm(), the other Player's Unit (one node
 ## per Player for the whole Round, retyped in place), the node its Shots are added under (World,
@@ -67,6 +68,15 @@ extends Structure
 ## Gate, and resets its physics interpolation, because World draws physics transforms interpolated
 ## and the head would otherwise swing across one frame at the restart; it readies the cadence and
 ## returns to IDLE.
+##
+## Looking hurt (Story 015). A Turret shows how much of its hit points it has lost as a Flag Wall
+## does (Structure's class doc): intact is its drum, damaged_looks are two worn drums beside it, and
+## the head, which turns and so cannot be copied, stays one node. _look_shown() shows the head while
+## the Turret stands and hides it once it has fallen, and dresses its dome and barrel (worn_parts) in
+## the steel of the look shown (worn_steel, one per fraction): the band is never touched and keeps
+## its Base's Team colour. Only the look changes: the collider, aim, sight, Shots and cadence are
+## those of the whole Turret. A scene whose worn_steel does not match the fractions is one error in
+## _ready(), as a list of drums that does not, and shows only its whole look until it falls.
 
 ## The states of the class doc's table.
 enum State { IDLE, AIMING, FIRING, DESTROYED }
@@ -93,6 +103,17 @@ signal fired(shot: Shot)
 
 ## The Shot scene (combat/shot.tscn) this Turret instances for every Shot. Required.
 @export var shot_scene: PackedScene
+
+## The parts of the head that wear a darker steel as the Turret loses hit points: its dome and its
+## barrel, never its band. Optional; empty for a Turret whose head looks the same whatever its hit
+## points (the evidence's frozen Turret of Story 013).
+@export var worn_parts: Array[GeometryInstance3D] = []
+
+## The steel worn_parts wear below each of the stats' damaged_below fractions, one per fraction in
+## the same order: the first below the first fraction, the second below the second. While no damaged
+## look is due they wear their own meshes' material again. Untextured, so that nothing slides over a
+## head that turns. Optional; empty for stats with no fractions.
+@export var worn_steel: Array[Material] = []
 
 ## What it last aimed at, world space at the shooting height; Vector3.INF while it has no aim. For
 ## display and the evidence.
@@ -198,6 +219,32 @@ func restore() -> void:
 	aim_point = Vector3.INF
 	aim_error = INF
 	super.restore()
+
+
+## Structure's check of the drums, then of the steel: one worn_steel for each damaged_below fraction,
+## none left empty. An empty String when both match the stats.
+func _looks_problem() -> String:
+	var problem: String = super._looks_problem()
+	if not problem.is_empty():
+		return problem
+	if worn_steel.size() != stats.damaged_below.size():
+		return "%d worn steels for %d damaged_below fractions" % [worn_steel.size(), stats.damaged_below.size()]
+	for index: int in worn_steel.size():
+		if worn_steel[index] == null:
+			return "worn steel %d is not assigned" % (index + 1)
+	return ""
+
+
+## Structure's hook (class doc, Looking hurt): the head is shown while the Turret stands and hidden
+## once it has fallen, since it is not under intact, and the worn parts wear the steel of the stage
+## shown, their own meshes' material again at stage 0. The band is not a worn part.
+func _look_shown(stage: int) -> void:
+	if head != null:
+		head.visible = is_standing
+	var steel: Material = worn_steel[stage - 1] if stage > 0 and stage <= worn_steel.size() else null
+	for part: GeometryInstance3D in worn_parts:
+		if part != null:
+			part.material_override = steel
 
 
 ## The time in seconds a Shot that leaves `muzzle` metres from the Turret's centre at `speed` takes

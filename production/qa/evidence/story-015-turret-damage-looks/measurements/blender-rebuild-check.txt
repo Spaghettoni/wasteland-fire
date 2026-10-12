@@ -1,0 +1,8 @@
+== 1. build_base.py unchanged, rebuilt into a scratch folder, against the committed map_01_base.glb (cmp)
+IDENTICAL, byte for byte (1,048,108 bytes)
+
+== 2. build_base.py with TurretPedestalTrimTall added, the committed file (HEAD) against the rebuild, mesh by mesh (glbcmp.py.txt: each mesh's vertex, normal, colour and index bytes hashed)
+old meshes: ['GarageBackTrim', 'GarageSideTrim', 'TowerTrim', 'TurretHeadTrim', 'TurretPedestalTrim', 'WallBackTrim', 'WallGateTrim', 'WallSideTrim', 'WaterTowerLadder']
+new meshes: ['GarageBackTrim', 'GarageSideTrim', 'TowerTrim', 'TurretHeadTrim', 'TurretPedestalTrim', 'TurretPedestalTrimTall', 'WallBackTrim', 'WallGateTrim', 'WallSideTrim', 'WaterTowerLadder']
+identical: 9 of 9 | changed: [] | only in new: ['TurretPedestalTrimTall'] | gone: []
+node placement identical for the old ones: True

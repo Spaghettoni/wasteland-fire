@@ -1,0 +1,29 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+Movie Maker mode enabled, recording movie in 1280×720 @ 60 FPS...
+SPLIT explosions_showcase t=1.617 frame=96 moment=shot_flash type=motorbike age=4 explosions=1 views=["above_camera_settings.tres", "chase_camera_settings.tres"]
+SPLIT explosions_showcase t=1.783 frame=106 moment=shot_fireball type=motorbike age=14 explosions=1 views=["above_camera_settings.tres", "chase_camera_settings.tres"]
+SPLIT explosions_showcase t=5.083 frame=304 moment=turret_buggy type=buggy age=14 explosions=1 views=["above_camera_settings.tres", "chase_camera_settings.tres"]
+SPLIT explosions_showcase t=11.683 frame=700 moment=mine_truck_fireball type=truck age=14 explosions=1 views=["above_camera_settings.tres", "chase_camera_settings.tres"]
+SPLIT explosions_showcase t=18.183 frame=1090 moment=mine_motorbike_both type=motorbike age=8 explosions=1 views=["above_camera_settings.tres", "chase_camera_settings.tres"]
+SPLIT explosions_showcase t=21.633 frame=1297 moment=self_destruct_fireball type=truck age=14 explosions=1 views=["above_camera_settings.tres", "chase_camera_settings.tres"]
+SPLIT explosions_showcase t=22.233 frame=1333 moment=self_destruct_chunks type=truck age=50 explosions=1 views=["above_camera_settings.tres", "chase_camera_settings.tres"]
+SPLIT explosions_showcase t=23.150 frame=1388 moment=self_destruct_smoke_thin type=truck age=105 explosions=1 views=["above_camera_settings.tres", "chase_camera_settings.tres"]
+SPLIT explosions_showcase t=27.050 frame=1622 moment=gyro_dry type=gyrocopter age=14 explosions=1 views=["above_camera_settings.tres", "chase_camera_settings.tres"]
+SPLIT explosions_showcase t=31.650 frame=1898 moment=gyro_over_cover type=gyrocopter age=14 explosions=1 views=["above_camera_settings.tres", "chase_camera_settings.tres"]
+SPLIT explosions_showcase t=36.850 frame=2210 moment=carrier_wreck_fireball type=motorbike age=14 explosions=1 views=["above_camera_settings.tres", "chase_camera_settings.tres"]
+SPLIT explosions_showcase t=37.450 frame=2246 moment=carrier_wreck_smoke type=motorbike age=50 explosions=1 views=["above_camera_settings.tres", "chase_camera_settings.tres"]
+SPLIT explosions_showcase t=40.233 frame=2413 moment=three_at_once type=truck age=14 explosions=3 views=["above_camera_settings.tres", "chase_camera_settings.tres"]
+SPLIT explosions_showcase t=43.450 frame=2606 moment=swap_no_blast explosions=0 panels=[false, true]
+SPLIT explosions_showcase t=46.433 frame=2785 moment=round_over_a type=motorbike age=8 explosions=1 views=["above_camera_settings.tres", "chase_camera_settings.tres"]
+SPLIT explosions_showcase t=46.700 frame=2801 moment=round_over_b type=motorbike age=24 explosions=1 views=["above_camera_settings.tres", "chase_camera_settings.tres"]
+SPLIT explosions_showcase t=47.917 frame=2874 moment=after_r explosions=0 views=["above_camera_settings.tres", "chase_camera_settings.tres"]
+RESULT explosions_showcase ok checks=0 failed=0 t=47.917 moments=17 explosions=12
+--------------------------------------------------------------------------------
+Done recording movie at path: /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/011fac19-3980-4a60-9260-2bb6291e87b1/scratchpad/frames/final16/all/f.png
+2876 frames at 60 FPS (movie length: 00:00:47:56), recorded in 00:08:25 (9% of real-time speed).
+CPU render time: 0.04 seconds (average: 0.02 ms/frame)
+GPU render time: 0.00 seconds (average: 0.00 ms/frame)
+Encoding time: 476.83 seconds (average: 165.80 ms/frame)
+--------------------------------------------------------------------------------

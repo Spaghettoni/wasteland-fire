@@ -1,0 +1,4 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK explosions_off explosions_stripped PASS a Shot and a Self-destruct destroyed Player 2's Motorbike twice (the Round counted 2 destructions): explosion_scene is null, no Explosion was ever added, none stands in the node group, SplitScreen has no link on unit_destroyed or round_started for the explosions, no engine error
+RESULT explosions_off ok checks=1 failed=0 t=6.367 destroyed=2 explosions=0 errors=0 warnings=0

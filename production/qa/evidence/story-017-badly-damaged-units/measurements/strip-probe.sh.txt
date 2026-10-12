@@ -1,0 +1,16 @@
+#!/bin/sh
+# the strip off: a scratch copy whose runner never turns the badly damaged state off; every older scenario run there is compared with the baseline
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a697afdf-12e5-4fa4-bf14-518f3d5667d2/scratchpad
+C=$S/probe-strip/copy; OUT=$S/probe-strip/out
+mkdir -p $C $OUT
+rsync -a --delete --exclude .git --exclude production --exclude design --exclude docs /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire/ $C/
+python3 -I - $C <<'PY'
+import sys
+p = sys.argv[1] + "/tools/evidence/split_screen_harness.gd"
+s = open(p).read()
+old = "	if bool(script.get_script_constant_map().get(BADLY_DAMAGED_CONSTANT, false)):\n		return\n"
+assert s.count(old) == 1
+open(p, "w").write(s.replace(old, "	pass\n\treturn\n"))
+PY
+xargs -P 3 -L 1 sh -c 'sh '$S'/probe-strip/run_one_root.sh '$C' '$OUT' "$0" "$1"' < $S/rg17/jobs.txt
+echo PROBE_DONE

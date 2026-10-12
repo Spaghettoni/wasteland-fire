@@ -1,0 +1,72 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK explosions none_at_the_start PASS the Round began, both Players chose and their Units spawned (2 spawns): no destruction, no Explosion, none in the tree
+CHECK explosions swap_plays_none PASS Player 2's Self-destruct key inside its own Base (the zone reported the Unit 7 ticks after it was put there) made one Swap and no destruction: no Explosion came, none plays
+CHECK explosions second_hit_and_respawn_play_none PASS a destroyed Unit exploded once; a second destroy() and a lethal hit on it were ignored, and its respawn through a real choice (4 spawns so far) played no second one
+CHECK explosions structures_play_none PASS two Turrets and two Flag Walls fell (by destroy() and by a lethal hit) and no Explosion came
+WARNING: MatchController 'MatchController': the Unit of player_index 1 was destroyed while that Player was not ALIVE (State 2), so the destruction is ignored.
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] note_destroyed (res://src/gameplay/match/garage_queue.gd:288)
+         [1] _on_unit_destroyed (res://src/gameplay/match/match_controller.gd:724)
+         [2] destroy (res://src/gameplay/units/unit.gd:503)
+         [3] _refused_note (res://tools/evidence/split_screen/explosions_none.gd:117)
+         [4] advance (res://tools/evidence/split_screen/check_kit.gd:87)
+         [5] tick (res://tools/evidence/split_screen/check_kit.gd:80)
+         [6] advance_ticks (res://tools/evidence/split_screen_harness.gd:1093)
+CHECK explosions refused_note_plays_none PASS a Unit spawned by a tool while its Player waited to respawn and destroyed again was a destruction the controller refused (one warning, expected): no unit_destroyed, no Explosion
+CHECK explosions restart_benches_play_none PASS a Round ended by a delivery, R benched both Units and brought every Structure back: no destruction counted, no Explosion came
+CHECK explosions shipped_scene PASS split_screen.tscn sets explosion_scene (res://src/gameplay/effects/explosion.tscn); SplitScreen has one link on the Round's unit_destroyed and one on round_started for the explosions and none on any Unit's destroyed signal
+CHECK explosions settings_data PASS explosion_settings.tres reads back: 2.0 s in all, a 0.1 s flash in a Mine's pale yellow, a 0.6 s fireball of 0.7 of the type's side (swell 0.333 of its time) from (1.0, 0.85, 0.3, 1.0) to (0.4, 0.07, 0.03, 1.0), 6 chunks thrown up and out at 3 to 6 m/s under 9.8 m/s², 3 puffs of 1.8 s rising 1.0 m/s growing 2.5 times in (0.22, 0.22, 0.22, 0.4)
+CHECK explosions bad_settings_refused PASS first_problem() passes the shipped settings and names each of 12 broken copies (a zero lifetime, a flash longer than the life, a swell of 1, a zero start scale, no gravity, smoke past the lifetime, a stagger that begins a puff after the end, NaN, tables of unequal length, a direction pointing nowhere, an invisible colour)
+ERROR: Explosion 'Explosion': lifetime_seconds is not above zero, so it plays nothing.
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://src/gameplay/effects/explosion.gd:109)
+       [1] _bad_scene_plays_nothing (res://tools/evidence/split_screen/explosions_data.gd:138)
+       [2] run (res://tools/evidence/split_screen/explosions_data.gd:56)
+       [3] run (res://tools/evidence/split_screen/explosions.gd:62)
+       [4] clear_mines (res://tools/evidence/split_screen/explosions_kit.gd:190)
+       [5] advance (res://tools/evidence/split_screen/check_kit.gd:87)
+       [6] tick (res://tools/evidence/split_screen/check_kit.gd:80)
+       [7] advance_ticks (res://tools/evidence/split_screen_harness.gd:1093)
+ERROR: Explosion '@Node3D@10': blast() was given a size that is not above zero, so it plays nothing.
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] blast (res://src/gameplay/effects/explosion.gd:149)
+       [1] _bad_scene_plays_nothing (res://tools/evidence/split_screen/explosions_data.gd:143)
+       [2] run (res://tools/evidence/split_screen/explosions_data.gd:56)
+       [3] run (res://tools/evidence/split_screen/explosions.gd:62)
+       [4] clear_mines (res://tools/evidence/split_screen/explosions_kit.gd:190)
+       [5] advance (res://tools/evidence/split_screen/check_kit.gd:87)
+       [6] tick (res://tools/evidence/split_screen/check_kit.gd:80)
+       [7] advance_ticks (res://tools/evidence/split_screen_harness.gd:1093)
+CHECK explosions bad_scene_plays_nothing PASS an Explosion whose settings fail logged one named error in _ready() and freed itself when blasted, and one blasted with no size likewise: neither played a tick (two errors expected and accounted for)
+CHECK explosions explosions_lint PASS the 139 code lines of explosion.gd hold no number other than 0, 1, 0.0, 1.0 and 2.0 (a half), no Team colour and no Unit type, and the effects' scripts and SplitScreen's hook hold nothing random
+CHECK explosions shots_explode PASS Player 1's one real Shot killed Player 2's Unit (one hit point left) of each type, motorbike@694, buggy@901, truck@1108, gyrocopter@1316: one Explosion each, in the tick of the destruction, for Player 2, centred on the model raised by the box's middle and inside the model's drawn box
+CHECK explosions turret_shots_explode PASS Base A's right Turret killed Player 2's Unit (one hit point left) of each type, motorbike@1515, buggy@1710, truck@1905, gyrocopter@2101: one Explosion each, in the tick of the destruction
+CHECK explosions mines_explode PASS a live Mine under Player 2's motorbike@2476, buggy@2851, truck@3226 took it: one Explosion each, in the tick of the destruction, and in the following tick the Mine was spent with its own 0.3 s flash showing while the explosion played (AC-6)
+CHECK explosions mine_takes_two_plays_two PASS one live Mine took Player 1's and Player 2's Motorbikes standing either side of it in one tick (0 frames apart): two destructions, 2 Explosions, each at its own Unit
+CHECK explosions self_destruct_explodes PASS Player 2's real Self-destruct key, outside its Base, destroyed its motorbike@3805, buggy@4006, truck@4207, gyrocopter@4408: one Explosion each, in the tick of the destruction
+CHECK explosions fuel_crash_explodes PASS a Gyrocopter spawned with 0.5% of its tank ran dry over the middle of the Map and crashed (frame 4613): one Explosion, in the tick of the crash, at the model it was drawn with
+CHECK explosions direct_destroy_explodes PASS a tool's Unit.destroy() of Player 2's motorbike@4813, buggy@5013, truck@5213, gyrocopter@5413 in play: one Explosion each, in the tick of the destruction, with no cause named anywhere
+CHECK explosions size_follows_the_type PASS the fireball's first radius and the flash's radius are the data's factors of each type's larger box side (motorbike=0.546 buggy=0.630 truck=0.924 gyrocopter=0.504 fireball metres), a Truck's larger than a Buggy's, a Buggy's than a Motorbike's, a Motorbike's than a Gyrocopter's, no type named in code
+CHECK explosions mine_and_shot_one_tick_plays_one PASS a Mine (3 frames from the Unit put on it to its blast) and a Shot (8 frames from its node to the kill) aimed at the same frame, shifted by 0: Player 2's Motorbike was destroyed once, in frame 6400, by the Mine, and one Explosion came
+CHECK explosions over_cliff PASS a Gyrocopter risen over RockCanyonSouth (top 2.00 m, its model's lowest point 2.25 m) was destroyed: its Explosion stands at 2.75 m, 0.75 m above the piece and 2.75 m above the floor, inside the model's drawn box, where it was seen, not inside the piece
+CHECK explosions over_cover PASS a Gyrocopter risen over ContainerWest (top 2.00 m, its model's lowest point 2.25 m) was destroyed: its Explosion stands at 2.75 m, 0.75 m above the piece and 2.75 m above the floor, inside the model's drawn box, where it was seen, not inside the piece
+CHECK explosions hovering_is_drawn_height PASS a hovering Gyrocopter's Explosion stood 1.28 m above the floor (its model's hover and the box's middle), a Motorbike's 0.50 m (the box's middle)
+CHECK explosions stays_where_it_began PASS an Explosion followed for 100 ticks never moved (0.0000 m) while its Unit was put back at its Base's spawn point at tick 20, both Players' views stepped at tick 40 and the other Unit was moved at tick 60; it is a child of World, not of a Unit or a camera
+CHECK explosions picture_only PASS an instanced Explosion holds no CollisionObject3D (no body, no Area3D, no layer or mask), is in the group explosions with process mode ALWAYS, its scene holds one chunk and one puff as templates that _ready() copies 6 and 3 times and frees; the Truck's was added under World
+CHECK explosions look_is_data PASS the flash and the fireball are balls, the chunks cubes and the puffs balls (built-in shapes), each in an unshaded material of the data's colour (the fireball's changes every tick, one material of its own per Explosion), shadow off, render layer 1, none in a Team colour
+CHECK explosions pieces_by_tick PASS a Truck's Explosion read on each of its 120 ticks: the flash showed for 6 ticks, the fireball for 36 (peak 3.08 m on tick 12, then shrinking), the 3 puffs began on ticks 12, 21 and 30 and every one rose and faded to nothing by the last tick, the 6 chunks were hidden on ticks 54, 63, 46, 70, 57, 45 (the tick each arc reaches the floor) and never shown again
+CHECK explosions lifetime PASS the Truck's Explosion, made in a node's tick by a real Self-destruct, freed itself 120 ticks after it was added (it counted 120 of its own: its first runs in the next tick), before Player 2's Unit could respawn (still waiting when it left)
+CHECK explosions drives_through PASS Player 1's Motorbike put down inside a playing Truck's Explosion and driven at full throttle for 40 ticks (4.55 m, through the fireball, the chunks and the smoke) went exactly the path it goes with none there (largest difference 0.000000 m) and lost no hit point
+CHECK explosions shot_flies_through PASS a real Shot of Player 1 fired through a playing Truck's Explosion (centre x = 5, its centre was 8.4 m from the muzzle) ended on the target 8 m behind it at x = 12.00 and the target took [5.0] damage once
+CHECK explosions flag_picked_up_in_it PASS Player 2's Carrier was destroyed 3.8 m out of Base A's Gate and the Flag dropped at the wreck; Player 1's Motorbike drove 5.0 m through the playing Explosion and took it back in 38 ticks (the Flag seated)
+CHECK explosions carrier_wreck PASS Player 2's Carrier Self-destructed outside Base A: in that one physics frame its Motorbike Token was taken, Base A's Flag dropped at the wreck (within 0.5 m of the Explosion's centre) and one Explosion came; Player 2 chose at once and its Unit respawned exactly 180 ticks after the destruction, the Round's delay
+CHECK explosions round_ended_for_the_loss_rounds PASS Player 2 carried Base A's Flag home: the Round was over, so that R could start the loss Rounds
+CHECK explosions loss_under_the_pause PASS Player 2's last Motorbike's real Self-destruct ended the Round in its own frame (9133) with 'Player 1 wins!' in both views and the tree paused; its Explosion then counted a tick on every physics frame of the pause, changed its fireball, and freed itself 120 frames after it was added, still paused
+CHECK explosions double_loss_under_the_pause PASS both last Motorbikes' Self-destruct in frame [9286, 9286]: one Round end, 'Nobody wins!' in both views, the two Explosions (one per Unit) counted every one of the next 20 paused frames
+CHECK explosions r_removes_them PASS R pressed 20 paused frames after the double loss freed both playing Explosions at once (they had counted 22 ticks of 120) and no Explosion played in the new Round
+CHECK explosions no_engine_noise PASS unexpected errors=0 warnings=0 over every Round of the scenario (2 expected errors and 1 expected warnings accounted for), with 44 Explosions played
+RESULT explosions ok checks=37 failed=0 t=155.483 explosions=44 lint_lines=139 fireball_start_m=motorbike=0.546/buggy=0.630/truck=0.924/gyrocopter=0.504 mine_and_shot=Mine over_cliff_centre_above_top_m=0.75 over_cover_centre_above_top_m=0.75 hover_centre_m=1.28/0.50 chunk_landings=54/63/46/70/57/45 lifetime_ticks=120 drive_m=4.55 flag_back_ticks=38 respawn_ticks=180 paused_ticks=119

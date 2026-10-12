@@ -1,0 +1,4 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK badly_damaged_off badly_damaged_stripped PASS a Motorbike left at 5.0 of 40 hit points (the state would begin at 8) drove at its full 24.0 m/s: every type's fraction is [0.0, 0.0, 0.0, 0.0], badly_damaged_changed was never emitted, no smoke node was ever added
+RESULT badly_damaged_off ok checks=1 failed=0 t=2.133 changes=0 smoke_nodes=0 speed=24.0 errors=0 warnings=0

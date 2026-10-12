@@ -1,0 +1,10 @@
+Story 017 baseline: the 59 retained headless outputs (the regress-56 list of story 016 = the 54 of the regress-54 list plus turret_looks and
+turret_looks_showcase, and story 016's explosions, explosions_off and explosions_showcase; the list is regress-59-jobs.txt) captured twice from
+the tree as it stood at the start of the session (before the first edit of this story), three at a time, 2026-10-11 20:51 to 20:56:
+  base-a and base-b: 59 outputs each, every exit code 0, 59 strict, 0 normalized, 0 bad when compared byte for byte (the Jolt job-system load
+  warning, which the tool drops from both sides, appeared in neither capture).
+Compared with: python3 compare.py f-base-a f-base-b (strict). The captures are kept in the session scratchpad, not in the repo.
+Printed script lines found in the baseline before the first edit (grep -E '\.gd:[0-9]+'): unit.gd:503 (explosions, tokens_data: the destroyed.emit()
+frame), split_screen_harness.gd:1093 (34 outputs: advance_ticks), match_controller.gd:331, structure.gd:142/:150, turret.gd:146, and lines of scenario
+scripts and kits this story does not edit (check_kit, token_kit..., explosions*.gd). The two files this story edits that are printed are unit.gd (503 -> 559)
+and the runner (1093 -> 1130): their exact rewrites are in normalizers.json, generated from the source lines by mk_normalizers17.py.txt.
