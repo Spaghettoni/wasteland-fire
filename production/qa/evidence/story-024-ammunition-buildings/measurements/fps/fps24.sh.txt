@@ -1,0 +1,21 @@
+#!/bin/sh
+# usage: fps24.sh   Runs ammo_buildings_fps windowed three times, then the A/B copy's fuel_building_fps with and without the buildings.
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+SP=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/1fd5af27-c781-473f-9fcc-5a3e12baae8e/scratchpad
+date +%H:%M:%S > $SP/fps24.progress
+for n in 1 2 3; do
+  godot --path . --windowed --resolution 1280x720 res://tools/evidence/split_screen_harness.tscn -- --scenario=ammo_buildings_fps > $SP/fps24/ammo-$n.txt 2>&1
+  echo "ammo $n rc=$? $(date +%H:%M:%S)" >> $SP/fps24.progress
+done
+# the A/B: a copy of the tree whose fuel_building_fps declares the opt-in
+AB=$SP/fps24/copy
+mkdir -p $AB
+rsync -a --delete --exclude '.git' --exclude 'assets/art/svaty_jur' --exclude 'production' --exclude 'docs' ./ $AB/ > /dev/null 2>&1
+sed -i '' 's/^const FUEL_BUILDING: bool = true$/const FUEL_BUILDING: bool = true\nconst AMMO_BUILDINGS: bool = true/' $AB/tools/evidence/split_screen/fuel_building_fps.gd
+for n in 1 2 3; do
+  (cd $AB && godot --path . --windowed --resolution 1280x720 res://tools/evidence/split_screen_harness.tscn -- --scenario=fuel_building_fps > $SP/fps24/fuel-with-$n.txt 2>&1)
+  echo "fuel with $n rc=$? $(date +%H:%M:%S)" >> $SP/fps24.progress
+  godot --path . --windowed --resolution 1280x720 res://tools/evidence/split_screen_harness.tscn -- --scenario=fuel_building_fps > $SP/fps24/fuel-without-$n.txt 2>&1
+  echo "fuel without $n rc=$? $(date +%H:%M:%S)" >> $SP/fps24.progress
+done
+echo ALLDONE >> $SP/fps24.progress

@@ -1,0 +1,97 @@
+STRICT     drive coast                  rc=0
+STRICT     drive showcase               rc=0
+STRICT     drive soak                   rc=0
+STRICT     drive walls                  rc=0
+NORMALIZED split badly_damaged          rc=0 rewrites=[2, 1]
+STRICT     split badly_damaged_off      rc=0
+STRICT     split badly_damaged_showcase rc=0
+DIFF       split base_walls             rc 0->1, lines 23->37, first difference at line 7
+    base: CHECK base_walls stopped_by PASS flown at full throttle for 3 s, the Gyrocopter is still stopped by a corner tower, the Garage's back wall and a water tower leg, which stand on the Map layer: a corner tower: 128 contacts, stopped 
+    new : WARNING: MatchController 'MatchController': the Unit of player_index 0 was destroyed while that Player was not ALIVE (State 2), so the destruction is ignored.
+STRICT     split base_walls_showcase    rc=0
+STRICT     split bases                  rc=0
+STRICT     split camera_showcase        rc=0
+STRICT     split camera_views           rc=0
+STRICT     split choice                 rc=0
+STRICT     split countdown              rc=0
+DIFF       split depot_tanks            rc 0->1, lines 24->31, first difference at line 15
+    base: SPLIT depot_tanks t=20.967 run=p1_gyrocopter_at_FuelTankSouth hit=16.40 stop_ticks=1 from_axis=3.761 expected=3.760 end=0.00 shot_off=0.0000
+    new : WARNING: MatchController 'MatchController': the Unit of player_index 0 was destroyed while that Player was not ALIVE (State 2), so the destruction is ignored.
+STRICT     split destruction            rc=0
+NORMALIZED split explosions             rc=0 rewrites=[3, 1]
+STRICT     split explosions_off         rc=0
+STRICT     split explosions_showcase    rc=0
+STRICT     split flag_run               rc=0
+STRICT     split flag_showcase          rc=0
+NORMALIZED split flag_walls             rc=0 rewrites=[4]
+STRICT     split flag_walls_showcase    rc=0
+DIFF       split fuel                   rc 0->0, lines 49->49, first difference at line 21
+    base: SPLIT fuel t=18.000 phase=run_dry p1_x=-20.00 p1_z=37.80 p1_speed=7.50 p1_yaw=180.0 p2_x=20.00 p2_z=-38.80 p2_speed=12.50 p2_yaw=-180.0
+    new : SPLIT fuel t=18.000 phase=run_dry p1_x=-20.00 p1_z=37.80 p1_speed=7.50 p1_yaw=180.0 p2_x=20.00 p2_z=-38.80 p2_speed=0.00 p2_yaw=-180.0
+STRICT     split fuel_cans              rc=0
+STRICT     split fuel_hint              rc=0
+STRICT     split fuel_showcase          rc=0
+DIFF       split garage_scrap_walls     rc 0->1, lines 20->27, first difference at line 9
+    base: CHECK garage_scrap_walls stopped_by PASS flown at full throttle for 3 s, the Gyrocopter is still stopped by a corner tower and a water tower leg, which stand on the Map layer, while the Garage walls no longer stop it (gyro_over): 
+    new : WARNING: MatchController 'MatchController': the Unit of player_index 0 was destroyed while that Player was not ALIVE (State 2), so the destruction is ignored.
+STRICT     split garage_scrap_walls_showcase rc=0
+DIFF       split gyro                   rc 0->0, lines 6->13, first difference at line 3
+    base: CHECK gyro gyro_terrain PASS motorbike at the cliff (can_fly=false): drove 3.0 s from x=-18, farthest x=-25.70 (near face x=-27, far face x=-33, wall x=-40): crossed=false stopped_at_face=true stopped_at_wall=false on_wall=true | 
+    new : WARNING: MatchController 'MatchController': the Unit of player_index 0 was destroyed while that Player was not ALIVE (State 2), so the destruction is ignored.
+DIFF       split gyro_cover             rc 0->1, lines 29->29, first difference at line 27
+    base: CHECK gyro_cover fire_over_cover PASS Gyrocopter over ContainerWest (model 0.250 m over its top): its Shot ended 0.0000 m from its muzzle; the Motorbike's Shot at it ended 0.0000 m off the face; hit points 70 -> 70
+    new : CHECK gyro_cover fire_over_cover FAIL Gyrocopter over ContainerWest (model -2.000 m over its top): its Shot ended 67.0000 m from its muzzle; the Motorbike's Shot at it ended 0.0000 m off the face; hit points 70 -> 40 | PROBLEMS: t
+DIFF       split heights                rc 0->0, lines 192->192, first difference at line 181
+    base: CHECK heights air_stops PASS Player 1's Gyrocopter driven at full throttle at each Tall piece from 14 m is stopped by it (a wall contact) flush against its face and goes no further with the throttle held 12 more ticks, as it did b
+    new : CHECK heights air_stops PASS Player 1's Gyrocopter driven at full throttle at each Tall piece from 14 m is stopped by it (a wall contact) flush against its face and goes no further with the throttle held 12 more ticks, as it did b
+DIFF       split heights_showcase       rc 0->1, lines 42->127, first difference at line 14
+    base: SPLIT heights_showcase t=15.133 frame=907 moment=stop_leg_above both Gyrocopters stopped flush against the Tall piece (Base1/WaterTower/LegGateLeft) by their bodies, the models (2.50 to 4.30 m) beside its upper part views=above_ca
+    new : WARNING: MatchController 'MatchController': the Unit of player_index 0 was destroyed while that Player was not ALIVE (State 2), so the destruction is ignored.
+STRICT     split hud                    rc=0
+STRICT     split idle_burn              rc=0
+STRICT     split isolation              rc=0
+STRICT     split layout                 rc=0
+STRICT     split loss                   rc=0
+STRICT     split map_bases              rc=0
+DIFF       split map_cover              rc 0->1, lines 34->34, first difference at line 7
+    base: SPLIT map_cover t=5.700 run=WreckWestOuterSouth type=motorbike player=1 hit=24.00 contact_tick=72 stop_ticks=1 gap=1.300 half=1.300 end=0.00
+    new : SPLIT map_cover t=5.700 run=WreckWestOuterSouth type=motorbike player=1 hit=24.00 contact_tick=72 stop_ticks=1 gap=1.300 half=1.300 end=19.33
+STRICT     split map_edges              rc=0
+STRICT     split map_ford               rc=0
+STRICT     split map_layout             rc=0
+STRICT     split map_legibility         rc=0
+STRICT     split map_showcase           rc=0
+STRICT     split mines                  rc=0
+STRICT     split mines_showcase         rc=0
+STRICT     split quick_fixes_showcase   rc=0
+STRICT     split respawn_showcase       rc=0
+STRICT     split round_over             rc=0
+STRICT     split showcase               rc=0
+STRICT     split simultaneous           rc=0
+STRICT     split spot_turn              rc=0
+STRICT     split token_choice           rc=0
+STRICT     split token_layout           rc=0
+NORMALIZED split token_ui               rc=0 rewrites=[2]
+DIFF       split tokens                 rc 0->1, lines 12->12, first difference at line 8
+    base: CHECK tokens T08_fuel_crash PASS Fuel crash: p2 [5, 3, 1, 2] -> [5, 3, 1, 1] | throttle held 601 ticks (50.0 Fuel at 5.0/s = 600 ticks +-2), 0 Shots fired; the Round runs: round over false
+    new : CHECK tokens T08_fuel_crash FAIL Fuel crash: p2 [5, 3, 1, 2] -> [5, 3, 1, 1] | throttle held 252 ticks (50.0 Fuel at 5.0/s = 600 ticks +-2), 0 Shots fired; the Round runs: round over false | PROBLEMS: crash after 252 ticks (the da
+NORMALIZED split tokens_data            rc=0 rewrites=[18, 1]
+STRICT     split tokens_showcase        rc=0
+DIFF       split turret_looks           rc 0->1, lines 96->110, first difference at line 9
+    base: CHECK turret_looks turns PASS 32 runs, two at a time, a hard turn at full throttle from the tick the tail cleared the Gate wall's outer face (Base-local z -15): no Turret touched; toward its own side, the near Turret: motorbike 3.
+    new : WARNING: MatchController 'MatchController': the Unit of player_index 0 was destroyed while that Player was not ALIVE (State 2), so the destruction is ignored.
+DIFF       split turret_looks_showcase  rc 0->1, lines 20->21, first difference at line 16
+    base: SPLIT turret_looks_showcase t=18.850 frame=1130 moment=gyro_at_face stopped=true hover=under the head views=chase_camera_settings.tres, chase_camera_settings.tres
+    new : SPLIT turret_looks_showcase t=32.433 frame=1945 moment=gyro_at_face stopped=false hover=under the head views=chase_camera_settings.tres, chase_camera_settings.tres
+DIFF       split turrets                rc 0->1, lines 39->53, first difference at line 19
+    base: CHECK turrets turns PASS 32 runs, two at a time, a hard turn at full throttle from the tick the tail cleared the Gate wall's outer face (Base-local z -15): no Turret touched; toward its own side, the near Turret: motorbike 3.07, b
+    new : WARNING: MatchController 'MatchController': the Unit of player_index 0 was destroyed while that Player was not ALIVE (State 2), so the destruction is ignored.
+STRICT     split turrets_showcase       rc=0
+NORMALIZED split unit_swap              rc=0 rewrites=[1]
+STRICT     split unit_swap_showcase     rc=0
+STRICT     split units                  rc=0
+DIFF       split units_showcase         rc 0->1, lines 102->104, first difference at line 91
+    base: SPLIT units_showcase t=37.500 frame=2252 phase=crossing p1_type=gyrocopter p1_x=38.80 p1_z=0.00 p1_hp=70 p1_alive=true p2_type=truck p2_x=-6.66 p2_z=19.74 p2_hp=195 p2_alive=true round=RUNNING
+    new : SPLIT units_showcase t=37.183 frame=2233 phase=crossing p1_type=gyrocopter p1_x=38.80 p1_z=0.00 p1_hp=0 p1_alive=false p2_type=truck p2_x=-6.66 p2_z=19.74 p2_hp=195 p2_alive=true round=RUNNING event=p1_destroyed
+STRICT     split weapons                rc=0
+-- 48 strict, 6 normalized, 14 bad of 68 compared

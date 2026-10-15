@@ -1,0 +1,27 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ok: res://src/gameplay/maps/map_field.gd
+ok: res://src/gameplay/mines/mine_layer.gd
+ok: res://src/gameplay/mines/mine_settings.gd
+ok: res://src/gameplay/split_screen/split_screen.gd
+ok: res://src/gameplay/supply/supply_settings.gd
+ok: res://src/gameplay/supply/supply_zone.gd
+ok: res://src/ui/hud/player_notice.gd
+ok: res://tools/evidence/split_screen_harness.gd
+ok: res://tools/evidence/split_screen/ammo_buildings_both.gd
+ok: res://tools/evidence/split_screen/ammo_buildings_cover.gd
+ok: res://tools/evidence/split_screen/ammo_buildings_data.gd
+ok: res://tools/evidence/split_screen/ammo_buildings_fps.gd
+ok: res://tools/evidence/split_screen/ammo_buildings_gyro.gd
+ok: res://tools/evidence/split_screen/ammo_buildings_kit.gd
+ok: res://tools/evidence/split_screen/ammo_buildings_lifecycle.gd
+ok: res://tools/evidence/split_screen/ammo_buildings_look.gd
+ok: res://tools/evidence/split_screen/ammo_buildings_measure.gd
+ok: res://tools/evidence/split_screen/ammo_buildings_mines.gd
+ok: res://tools/evidence/split_screen/ammo_buildings_places.gd
+ok: res://tools/evidence/split_screen/ammo_buildings_rate.gd
+ok: res://tools/evidence/split_screen/ammo_buildings_showcase.gd
+ok: res://tools/evidence/split_screen/ammo_buildings_stopped.gd
+ok: res://tools/evidence/split_screen/ammo_buildings_watch.gd
+ok: res://tools/evidence/split_screen/ammo_buildings.gd
+ok: res://tools/evidence/split_screen/fuel_building_both.gd

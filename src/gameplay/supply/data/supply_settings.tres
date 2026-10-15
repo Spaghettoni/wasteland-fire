@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="SupplySettings" format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/supply/supply_settings.gd" id="1_ssset"]
+
+[resource]
+script = ExtResource("1_ssset")
+fuel_seconds_to_full = 4.0
+ammo_seconds_to_full = 4.0
+stopped_speed = 0.1

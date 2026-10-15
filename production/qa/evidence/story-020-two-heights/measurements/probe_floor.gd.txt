@@ -1,0 +1,11 @@
+extends SceneTree
+func _initialize() -> void:
+	var map: Node3D = (load("res://src/gameplay/maps/map_01/map_01.tscn") as PackedScene).instantiate() as Node3D
+	root.add_child(map)
+	await physics_frame
+	await physics_frame
+	var space: PhysicsDirectSpaceState3D = map.get_world_3d().direct_space_state
+	for at: Vector3 in [Vector3(-135, 5, -34.35), Vector3(-135, 5, -33.35), Vector3(-120, 5, -34.35), Vector3(0, 5, 0), Vector3(-100, 5, -34.35), Vector3(-148, 5, 0), Vector3(-135, 5, -30)]:
+		var hit: Dictionary = space.intersect_ray(PhysicsRayQueryParameters3D.create(at, at + Vector3.DOWN * 10.0, 0xFFFFFFFF))
+		print("RAY from %s -> %s" % [at, "none" if hit.is_empty() else "%s at y=%.3f layer=%d" % [(hit["collider"] as Node).get_path(), hit["position"].y, (hit["collider"] as CollisionObject3D).collision_layer]])
+	quit()

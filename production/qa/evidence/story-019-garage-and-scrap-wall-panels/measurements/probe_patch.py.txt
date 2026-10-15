@@ -1,0 +1,17 @@
+import sys
+from pathlib import Path
+repo, which = Path(sys.argv[1]), sys.argv[2]
+p = repo / "tools/evidence/split_screen_harness.gd"
+t = (Path("/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire") / "tools/evidence/split_screen_harness.gd").read_text(encoding="utf-8")
+guard = "	if bool(script.get_script_constant_map().get(GARAGE_SCRAP_PANELS_CONSTANT, false)) or root.field == null:\n		return\n"
+if which == "garage":
+    old = guard + "	for base: Base in"
+    new = old.replace("if bool(", "if true or bool(")
+elif which == "field":
+    old = guard + "	var map: MapField"
+    new = old.replace("if bool(", "if true or bool(")
+else:
+    raise SystemExit("garage or field")
+assert t.count(old) == 1
+p.write_text(t.replace(old, new), encoding="utf-8")
+print("patched", which)

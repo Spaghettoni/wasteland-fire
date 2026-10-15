@@ -1,0 +1,6 @@
+#!/bin/sh
+# usage: capture.sh OUTDIR [JOBS_FILE] [PARALLEL]   Runs every job of the list, P at a time.
+HERE="$(cd "$(dirname "$0")" && pwd)"
+OUT="$1"; JOBS="${2:-$HERE/jobs.txt}"; P="${3:-3}"
+mkdir -p "$OUT"
+xargs -P "$P" -L 1 "$HERE/run_one.sh" "$OUT" < "$JOBS"

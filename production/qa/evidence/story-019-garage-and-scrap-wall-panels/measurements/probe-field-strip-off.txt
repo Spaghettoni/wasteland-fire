@@ -1,0 +1,75 @@
+STRICT     drive coast                  rc=0
+STRICT     drive showcase               rc=0
+STRICT     drive soak                   rc=0
+STRICT     drive walls                  rc=0
+NORMALIZED split badly_damaged          rc=0 rewrites=[2]
+STRICT     split badly_damaged_off      rc=0
+STRICT     split badly_damaged_showcase rc=0
+STRICT     split base_walls             rc=0
+STRICT     split base_walls_showcase    rc=0
+STRICT     split bases                  rc=0
+STRICT     split camera_showcase        rc=0
+STRICT     split camera_views           rc=0
+STRICT     split choice                 rc=0
+STRICT     split countdown              rc=0
+STRICT     split depot_tanks            rc=0
+STRICT     split destruction            rc=0
+NORMALIZED split explosions             rc=0 rewrites=[3]
+STRICT     split explosions_off         rc=0
+STRICT     split explosions_showcase    rc=0
+STRICT     split flag_run               rc=0
+STRICT     split flag_showcase          rc=0
+DIFF       split flag_walls             rc 0->0, lines 62->62, first difference at line 3
+    base: CHECK flag_walls walls_data PASS Base1 x -115.3..-110.7 z -2.3..2.3 ; Base2 x 110.7..115.3 z -2.3..2.3 | 8 Flag Walls on layer 64, mask 0, flag_wall_stats.tres, 40 hit points | mirror items=125 self=7 worst=0.0000 m | first spots 
+    new : CHECK flag_walls walls_data PASS Base1 x -115.3..-110.7 z -2.3..2.3 ; Base2 x 110.7..115.3 z -2.3..2.3 | 8 Flag Walls on layer 64, mask 0, flag_wall_stats.tres, 40 hit points | mirror items=131 self=7 worst=0.0000 m | first spots 
+STRICT     split flag_walls_showcase    rc=0
+STRICT     split fuel                   rc=0
+STRICT     split fuel_cans              rc=0
+STRICT     split fuel_hint              rc=0
+STRICT     split fuel_showcase          rc=0
+STRICT     split gyro                   rc=0
+DIFF       split gyro_cover             rc 0->1, lines 29->39, first difference at line 3
+    base: CHECK gyro_cover cover_data PASS 12 cover bodies on layer 64 | masks motorbike 99, buggy 99, truck 99, gyrocopter 1 | shot mask 83 | 18 Base wall bodies on layer 1 | Gyrocopter model rise_body_mask=64, hover 0.780 m over the floor
+    new : CHECK gyro_cover cover_data FAIL 10 cover bodies on layer 64 | masks motorbike 99, buggy 99, truck 99, gyrocopter 1 | shot mask 83 | 18 Base wall bodies on layer 1 | Gyrocopter model rise_body_mask=64, hover 0.780 m over the floor
+STRICT     split hud                    rc=0
+STRICT     split idle_burn              rc=0
+STRICT     split isolation              rc=0
+STRICT     split layout                 rc=0
+STRICT     split loss                   rc=0
+STRICT     split map_bases              rc=0
+DIFF       split map_cover              rc 0->1, lines 34->26, first difference at line 19
+    base: SPLIT map_cover t=14.000 run=ScrapWallWest type=gyrocopter player=1 hit=16.40 contact_tick=87 stop_ticks=1 gap=1.200 half=1.200 end=0.00
+    new : SPLIT map_cover t=12.733 depot=FuelCanDepot1 taken_after=1.38 wall_contacts=0
+STRICT     split map_edges              rc=0
+STRICT     split map_ford               rc=0
+DIFF       split map_layout             rc 0->1, lines 135->135, first difference at line 69
+    base: SPLIT map_layout t=0.167 entry=Cover/ScrapWalls/ScrapWallWest group=extent table=(x-13.25..-10.75,z6.00..18.00) built=(x-13.25..-10.75,z6.00..18.00) off=0.000
+    new : SPLIT map_layout t=0.167 entry=Cover/ScrapWalls/ScrapWallWest group=extent table=(x-13.25..-10.75,z6.00..18.00) built=(xinf..-inf,zinf..-inf) off=inf
+STRICT     split map_legibility         rc=0
+STRICT     split map_showcase           rc=0
+STRICT     split mines                  rc=0
+STRICT     split mines_showcase         rc=0
+STRICT     split quick_fixes_showcase   rc=0
+STRICT     split respawn_showcase       rc=0
+STRICT     split round_over             rc=0
+STRICT     split showcase               rc=0
+STRICT     split simultaneous           rc=0
+STRICT     split spot_turn              rc=0
+STRICT     split token_choice           rc=0
+STRICT     split token_layout           rc=0
+NORMALIZED split token_ui               rc=0 rewrites=[2]
+STRICT     split tokens                 rc=0
+NORMALIZED split tokens_data            rc=0 rewrites=[18]
+STRICT     split tokens_showcase        rc=0
+NORMALIZED split turret_looks           rc=0 rewrites=[5]
+STRICT     split turret_looks_showcase  rc=0
+DIFF       split turrets                rc 0->0, lines 39->39, first difference at line 3
+    base: CHECK turrets turrets_data PASS 4 Turrets at (-101, -10), (-101, 10), (101, 10), (101, -10), mirrored (mirror items=129 self=7 worst=0.0000 m), on layer 1 with mask 0, turret_stats.tres, the Buggy's weapon with the interval double
+    new : CHECK turrets turrets_data PASS 4 Turrets at (-101, -10), (-101, 10), (101, 10), (101, -10), mirrored (mirror items=135 self=7 worst=0.0000 m), on layer 1 with mask 0, turret_stats.tres, the Buggy's weapon with the interval double
+STRICT     split turrets_showcase       rc=0
+NORMALIZED split unit_swap              rc=0 rewrites=[1]
+STRICT     split unit_swap_showcase     rc=0
+STRICT     split units                  rc=0
+STRICT     split units_showcase         rc=0
+STRICT     split weapons                rc=0
+-- 53 strict, 6 normalized, 5 bad of 64 compared

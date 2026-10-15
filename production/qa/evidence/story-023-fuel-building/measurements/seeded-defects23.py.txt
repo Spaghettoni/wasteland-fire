@@ -1,0 +1,251 @@
+#!/usr/bin/env python3
+"""Seeded defects for Story 023 (the Fuel building replaces the Fuel Cans): each one exact text replacement in a scratch copy
+of the repo, run against the scenario that guards it (the whole fuel_building scenario: about ten seconds headless). KILLED when the scenario fails (rc != 0 or a FAIL CHECK) or, for the regression kind, when an older scenario's output differs
+from its baseline (through the story's exact rewrites). A mutant whose run prints no RESULT line for its scenario is BROKEN (the
+replacement made the script unusable, not a verdict) and is counted apart. One worker per scratch copy, so no two mutants ever share a
+file (story 011's lesson). Template: story 021's seeded-defects21.py.
+
+usage: seeded-defects21.py BASELINE_DIR WORK_DIR [--dry] [--only name,name]
+  BASELINE_DIR holds the baselines of the older scenarios as split-NAME.txt (the regression kind)
+  WORK_DIR gets copy0..copy2 (scratch copies of the repo; they are diffed against the repo at the end)
+  NORMALIZERS (environment) names the story's exact rewrites (normalizers.json), applied to the regression kind
+  PROBES (environment) names the probe result files (probe-NAME.txt of the regression folder): every older scenario a probe found to differ
+  gets a regression mutant for that probe's strip rule
+  EXTRA (environment) names a JSON file of more mutants [[name, file, old, new, scenario, kind, module], ...]
+  --dry only checks that every replacement text occurs exactly once in its file
+"""
+import json
+import os
+import re
+import subprocess
+import sys
+from concurrent.futures import ThreadPoolExecutor
+
+REPO = "/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire"
+BASE = sys.argv[1]
+WORK = sys.argv[2]
+DRY = "--dry" in sys.argv
+WORKERS = 3
+RULES = json.load(open(os.environ["NORMALIZERS"])) if os.environ.get("NORMALIZERS") else {}
+COPIES = [os.path.join(WORK, "copy%d" % i) for i in range(WORKERS)]
+
+
+SUPPLY = "src/gameplay/supply/supply_zone.gd"
+SETTINGS = "src/gameplay/supply/supply_settings.gd"
+ZONE_SCENE = "src/gameplay/supply/supply_zone.tscn"
+DEPOT = "src/gameplay/maps/map_01/map_01_depot.tscn"
+MAP = "src/gameplay/maps/map_01/map_01.tscn"
+RUNNER = "tools/evidence/split_screen_harness.gd"
+F = "fuel_building"
+
+GIVE = "func _give(unit: Unit, delta: float) -> void:\n\tmatch kind:\n\t\tKind.FUEL:\n\t\t\tunit.refuel(unit.fuel_capacity / settings.fuel_seconds_to_full * delta)\n"
+LOOP = "\tfor unit: Unit in listed:\n\t\tif before.has(unit) and unit.is_alive and _is_stopped(unit):\n\t\t\t_give(unit, delta)\n"
+STOPPED = "\tvar velocity: Vector3 = unit.get_real_velocity()\n\treturn Vector2(velocity.x, velocity.z).length() <= settings.stopped_speed\n"
+WEST = '[node name="FuelZoneWest" parent="." instance=ExtResource("1_supply_zone")]\ntransform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 0)\nkind = 0\nsize = Vector3(6, 6, 6)\n'
+EAST = '[node name="FuelZoneEast" parent="." instance=ExtResource("1_supply_zone")]\ntransform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 12, 0, 0)\nkind = 0\nsize = Vector3(6, 6, 6)\n'
+COLLIDER = "[sub_resource type=\"CylinderShape3D\" id=\"CylinderShape3D_fuel_tank\"]\nheight = 3.0\nradius = 2.56\n"
+STRIP_GUARD = "bool(script.get_script_constant_map().get(FUEL_BUILDING_CONSTANT, false)) or root.field == null:"
+CAN_NODE = '[node name="FuelCanLeftBehind" parent="." instance=ExtResource("2_can")]\ntransform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -62, 0, 14)\n'
+CAN_RES = '[ext_resource type="PackedScene" path="res://src/gameplay/fuel/fuel_can.tscn" id="2_can"]\n'
+SUPPLY_RES = '[ext_resource type="PackedScene" path="res://src/gameplay/supply/supply_zone.tscn" id="1_supply_zone"]\n'
+
+M = [
+ # name, file, old, new, scenario, kind, module ("" for the whole scenario); old and new may be lists of equal length
+ # --- the story's seeded defects (Implementation Notes)
+ ("zone_on_the_units_layer_alone", ZONE_SCENE, "collision_mask = 18\n", "collision_mask = 2\n", F, "check", ""),
+ ("drive_speed_as_the_stopped_test", SUPPLY, STOPPED, "\treturn absf(unit.current_speed) <= settings.stopped_speed\n", F, "check", ""),
+ ("no_stopped_test", SUPPLY, "unit.is_alive and _is_stopped(unit):", "unit.is_alive:", F, "check", ""),
+ ("a_stock_that_runs_dry", SUPPLY, GIVE, "func _give(unit: Unit, delta: float) -> void:\n\tvar left: float = float(get_meta(&\"stock\", 300.0))\n\tif left > 0.0:\n\t\tset_meta(&\"stock\", left - unit.refuel(unit.fuel_capacity / settings.fuel_seconds_to_full * delta))\n", F, "check", ""),
+ ("only_the_first_unit_refuelled", SUPPLY, LOOP, LOOP + "\t\t\tbreak\n", F, "check", ""),
+ ("the_whole_refill_at_once", SUPPLY, "unit.refuel(unit.fuel_capacity / settings.fuel_seconds_to_full * delta)", "unit.refuel(unit.fuel_capacity)", F, "check", ""),
+ ("the_rate_written_in_code", SUPPLY, "unit.fuel_capacity / settings.fuel_seconds_to_full * delta", "unit.fuel_capacity / 4.0 * delta", F, "check", ""),
+ ("a_can_left_on_the_map", [DEPOT, DEPOT], [SUPPLY_RES, WEST], [SUPPLY_RES + CAN_RES, CAN_NODE + "\n" + WEST], F, "check", ""),
+ ("first_problem_time_le_zero", SETTINGS, "	if not (fuel_seconds_to_full > 0.0):\n", "	if fuel_seconds_to_full <= 0.0:\n", F, "check", ""),
+ ("first_problem_speed_le_zero", SETTINGS, "	if not (stopped_speed > 0.0):\n", "	if stopped_speed <= 0.0:\n", F, "check", ""),
+ # --- the zone's rules
+ ("the_rate_per_tick_not_per_second", SUPPLY, "unit.fuel_capacity / settings.fuel_seconds_to_full * delta", "unit.fuel_capacity / settings.fuel_seconds_to_full / 60.0", F, "check", ""),
+ ("no_two_tick_rule", SUPPLY, "if before.has(unit) and unit.is_alive and _is_stopped(unit):", "if unit.is_alive and _is_stopped(unit):", F, "check", ""),
+ ("the_list_is_never_noted", SUPPLY, "	_listed_before = listed\n", "", F, "check", ""),
+ ("the_list_of_this_tick_noted_before_it_is_read", SUPPLY, "	var before: Array[Unit] = _listed_before\n	_listed_before = listed\n", "	_listed_before = listed\n	var before: Array[Unit] = _listed_before\n", F, "check", ""),
+ ("zone_listens_to_nobody", ZONE_SCENE, "collision_mask = 18\n", "collision_mask = 0\n", F, "check", ""),
+ ("real_speed_without_the_ground_plane", SUPPLY, "return Vector2(velocity.x, velocity.z).length() <= settings.stopped_speed", "return velocity.length() <= settings.stopped_speed", F, "check", ""),
+ ("zero_approx_as_the_stopped_test", SUPPLY, "return Vector2(velocity.x, velocity.z).length() <= settings.stopped_speed", "return is_zero_approx(Vector2(velocity.x, velocity.z).length())", F, "check", ""),
+ ("stopped_means_below", SUPPLY, "length() <= settings.stopped_speed", "length() < settings.stopped_speed", F, "check", ""),
+ ("a_unit_out_of_play_is_not_skipped", SUPPLY, "if before.has(unit) and unit.is_alive and _is_stopped(unit):", "if before.has(unit) and _is_stopped(unit):", F, "check", ""),
+ ("the_list_not_sorted", SUPPLY, "	listed.sort_custom(func(a: Unit, b: Unit) -> bool: return String(a.name) < String(b.name))\n", "", F, "check", ""),
+ ("the_zone_ticks_while_the_tree_is_paused", ZONE_SCENE, 'collision_mask = 18\n', 'collision_mask = 18\nprocess_mode = 3\n', F, "check", ""),
+ ("zone_on_the_units_layer", ZONE_SCENE, "collision_layer = 0\n", "collision_layer = 2\n", F, "check", ""),
+ ("mask_adds_the_map_layer", ZONE_SCENE, "collision_mask = 18\n", "collision_mask = 19\n", F, "check", ""),
+ ("settings_not_validated", SUPPLY, '	var problem: String = settings.first_problem()\n', '	var problem: String = ""\n', F, "check", ""),
+ ("no_error_for_a_missing_size", SUPPLY, '	if not (size.x > 0.0 and size.y > 0.0 and size.z > 0.0):\n', '	if false:\n', F, "check", ""),
+ # --- the box and the marking
+ ("box_half_the_size", SUPPLY, "	box.size = size\n", "	box.size = size / 2.0\n", F, "check", ""),
+ ("box_one_metre_tall_from_the_floor", [SUPPLY, SUPPLY], ["	box.size = size\n", "	zone_shape.position = Vector3(0.0, size.y / 2.0, 0.0)\n"], ["	box.size = Vector3(size.x, 1.0, size.z)\n", "	zone_shape.position = Vector3(0.0, 0.5, 0.0)\n"], F, "check", ""),
+ ("box_centred_on_the_floor", SUPPLY, "	zone_shape.position = Vector3(0.0, size.y / 2.0, 0.0)\n", "", F, "check", ""),
+ ("box_one_metre_tall_in_the_air", SUPPLY, "	box.size = size\n", "	box.size = Vector3(size.x, 1.0, size.z)\n", F, "check", ""),
+ ("slab_scale_ignored", SUPPLY, "	slab.scale = Vector3(size.x, 1.0, size.z)\n", "", F, "check", ""),
+ ("one_dash_a_side", SUPPLY, "		var count: int = maxi(roundi(length / edge_pitch), 1)\n", "		var count: int = 1\n", F, "check", ""),
+ ("a_mesh_of_its_own_for_every_dash", SUPPLY, "			dash.mesh = edge_dash\n", "			dash.mesh = edge_dash.duplicate()\n", F, "check", ""),
+ ("dashes_cast_shadows", SUPPLY, "			dash.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF\n", "", F, "check", ""),
+ ("dashes_at_the_slab_height", ZONE_SCENE, 'transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0)\n', 'transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)\n', F, "check", ""),
+ ("slab_below_the_ring", ZONE_SCENE, 'transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)\n', 'transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.005, 0)\n', F, "check", ""),
+ ("slab_casts_shadows", ZONE_SCENE, '[node name="Slab" type="MeshInstance3D" parent="Marking"]\ntransform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)\ncast_shadow = 0\n', '[node name="Slab" type="MeshInstance3D" parent="Marking"]\ntransform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)\n', F, "check", ""),
+ ("slab_not_the_fuel_amber", ZONE_SCENE, "albedo_color = Color(0.96, 0.7, 0.18, 1)\n", "albedo_color = Color(0.96, 0.2, 0.18, 1)\n", F, "check", ""),
+ ("slab_hidden_from_the_view_above", ZONE_SCENE, '[node name="Slab" type="MeshInstance3D" parent="Marking"]\n', '[node name="Slab" type="MeshInstance3D" parent="Marking"]\nlayers = 2\n', F, "check", ""),
+ # --- the Map's scenes and the data
+ ("east_zone_mirrored_not_turned", DEPOT, EAST, EAST.replace("0, 0, 0, -1, 12", "0, 0, 0, 1, 12"), F, "check", ""),
+ ("west_zone_one_metre_away", DEPOT, WEST, WEST.replace("-12, 0, 0)", "-13, 0, 0)"), F, "check", ""),
+ ("west_zone_size_smaller", DEPOT, WEST, WEST.replace("Vector3(6, 6, 6)", "Vector3(5, 6, 5)"), F, "check", ""),
+ ("east_zone_never_declares_its_kind", DEPOT, EAST, EAST.replace("kind = 0\n", ""), F, "check", ""),
+ ("tank_collider_smaller", DEPOT, COLLIDER, COLLIDER.replace("radius = 2.56", "radius = 2.0"), F, "check", ""),
+ ("settings_time_to_full_5", "src/gameplay/supply/data/supply_settings.tres", "fuel_seconds_to_full = 4.0\n", "fuel_seconds_to_full = 5.0\n", F, "check", ""),
+ ("settings_stopped_speed_1", "src/gameplay/supply/data/supply_settings.tres", "stopped_speed = 0.1\n", "stopped_speed = 1.0\n", F, "check", ""),
+ ("settings_stopped_speed_0_01", "src/gameplay/supply/data/supply_settings.tres", "stopped_speed = 0.1\n", "stopped_speed = 0.01\n", F, "check", ""),
+ # --- the runner's strip: the older scenarios keep their outputs (one regression mutant per older output a probe found to change)
+]
+for _probe in [a for a in os.environ.get("PROBES", "").split(",") if a]:
+    _rule = {"zones_on": ("if " + STRIP_GUARD + "\n", "if true or " + STRIP_GUARD + "\n"),
+             "zones_stay": ('for zone: Node in map.find_children("*", "SupplyZone", true, false):\n', "for zone: Node in ([] as Array[Node]):\n"),
+             "map_cans_out": ("for can_name: StringName in MAP_FUEL_CAN_NAMES:\n", "for can_name: StringName in ([] as Array[StringName]):\n"),
+             "depot_cans_out": ("for can_name: StringName in DEPOT_FUEL_CAN_NAMES:\n", "for can_name: StringName in ([] as Array[StringName]):\n")}[_probe]
+    _text = open(os.path.join(os.environ["PROBE_DIR"], "probe-%s.txt" % _probe)).read()
+    for _scn in re.findall(r"^DIFF\s+split\s+(\S+)", _text, re.M):
+        M.append(("runner_%s_%s" % (_probe, _scn), RUNNER, "\t" + _rule[0], "\t" + _rule[1], _scn, "regress", ""))
+if os.environ.get("EXTRA"):
+    M.extend(tuple(m) for m in json.load(open(os.environ["EXTRA"])))
+
+# Mutants no output can tell from the build: reported apart, with the reason, when they survive.
+EQUIVALENT = {
+ "a_unit_out_of_play_is_not_skipped": "Unit.refuel() refuses a Unit that is out of play (the second guard) and the zone's two-tick rule keeps the one stale entry out as well: nothing a run can read",
+ "the_list_not_sorted": "the order the Units are served in changes only the order of two fuel_changed signals inside one tick: no check, HUD or rule reads it",
+ "stopped_means_below": "no Unit's real speed lands exactly on the stopped speed (the crawl pair is half and 1.1 times it, a standing Unit reads 0.0)",
+ "real_speed_without_the_ground_plane": "every Unit that is judged stands on the floor or hovers with its body on it: its real vertical velocity is 0.0 in every row",
+ "box_centred_on_the_floor": "a box centred on the floor still reaches 3 m up, and every Unit's body is within 1 m of the floor: the overlap is the same",
+ "box_one_metre_tall_from_the_floor": "a Gyrocopter's body is on the floor (its model flies), so a zone 1 m tall from the floor lists it too: the story's own expectation of an equivalent mutant",
+ "mask_adds_the_map_layer": "the zone lists static bodies of the map layer too and ignores everything that is not a Unit (the cast in its loop)",
+ "zone_on_the_units_layer": "an Area3D is not a body: no Unit, Shot or ray reacts to its layer",
+
+ "the_floor_counted": "the Floor's normal is up and a Gyrocopter never moves into it at the crash speed (the probe: no Floor collision at all while it flies, the normal up and no motion while it stands), so its arrival along that normal is about zero",
+ "strictly_above_the_crash_speed": "no arrival lands exactly on the crash speed in any check (the edges are 0.1 m/s and 0.1 degree either side); the story's word is 'reaches', the build uses >=",
+ "crash_without_a_return": "after destroy() the rest of the tick only stores a velocity and the blocked flag on an out-of-play Unit, and the next spawn's reset_motion() zeroes both: nothing a run can read",
+}
+WINDOWED = {}
+
+
+def prepare(i):
+    d = COPIES[i]
+    os.makedirs(WORK, exist_ok=True)
+    if os.path.exists(d):
+        subprocess.run(["find", d, "-delete"], check=True)
+    subprocess.run(["rsync", "-a", "--exclude", ".git", "--exclude", "production", "--exclude", "design", "--exclude", "docs",
+                    "--exclude", "tests", "--exclude", "assets/art/svaty_jur", REPO + "/", d + "/"], check=True)
+    return d
+
+
+def run(copy, scn, module):
+    env = dict(os.environ)
+    env["FUEL_ONLY"] = module
+    p = subprocess.run(["godot", "--headless", "--fixed-fps", "60", "--path", copy, "res://tools/evidence/split_screen_harness.tscn", "--", "--scenario=" + scn],
+                       capture_output=True, text=True, timeout=2400, env=env)
+    return p.returncode, p.stdout + p.stderr
+
+
+def pairs_of(rel, old, new):
+    """The (file, old text, new text) replacements of a mutant: one, or several when the three are lists of equal length."""
+    if isinstance(old, list):
+        assert len(old) == len(new)
+        rels = rel if isinstance(rel, list) else [rel] * len(old)
+        return list(zip(rels, old, new))
+    return [(rel, old, new)]
+
+
+def one(copy, mutant):
+    name, rel, old, new, scn, kind, module = mutant
+    pairs = pairs_of(rel, old, new)
+    origs = {}
+    for file, _, _ in pairs:
+        origs[file] = open(os.path.join(copy, file)).read()   # this worker is the only one that touches this copy
+    work = dict(origs)
+    for file, before, after in pairs:
+        if work[file].count(before) != 1:
+            return name, None, "NOT APPLIED (text found %d times in %s)" % (work[file].count(before), file)
+        work[file] = work[file].replace(before, after)
+    for file, text in work.items():
+        open(os.path.join(copy, file), "w").write(text)
+    try:
+        rc, out = run(copy, scn, module)
+    finally:
+        for file, text in origs.items():
+            open(os.path.join(copy, file), "w").write(text)
+    if not re.search(r"^RESULT %s " % scn, out, re.M):
+        return name, None, "BROKEN: no RESULT line (rc=%d) %s" % (rc, " | ".join(l for l in out.splitlines() if "ERROR" in l)[:300])
+    if kind == "check":
+        fails = re.findall(r"^CHECK \S+ (\S+) FAIL", out, re.M)
+        dead = rc != 0 or bool(fails)
+        detail = "%s%s rc=%d fails=%s" % (scn, "[" + module + "]" if module else "", rc, ",".join(fails) or "-")
+    else:
+        if not os.path.exists(os.path.join(BASE, "split-%s.txt" % scn)):
+            return name, None, "BROKEN: no baseline split-%s.txt (the regression kind needs a retained scenario)" % scn
+        base = open(os.path.join(BASE, "split-%s.txt" % scn)).read()
+        for before, after in RULES.get(scn, []):
+            out = out.replace(after, before)
+        keep = lambda t: [l for l in t.splitlines() if l.startswith(("SPLIT ", "CHECK ", "RESULT ", "SCRIPT ERROR", "ERROR:", "WARNING:"))]
+        dead = keep(out) != keep(base) or rc != 0
+        detail = "%s rc=%d output %s the baseline" % (scn, rc, "differs from" if dead else "equals")
+    return name, dead, detail
+
+
+def worker(i, jobs):
+    return [one(COPIES[i], m) for m in jobs[i::WORKERS]]
+
+
+def main():
+    if DRY:
+        bad = 0
+        for name, rel, old, new, scn, kind, module in M:
+            for file, before, after in pairs_of(rel, old, new):
+                n = open(os.path.join(REPO, file)).read().count(before)
+                if n != 1 or before == after:
+                    bad += 1
+                    print("DRY  %-52s text found %d times in %s (or no change)" % (name, n, file))
+        print("DRY: %d mutants, %d with a replacement text that is not found exactly once" % (len(M), bad))
+        return 1 if bad else 0
+    jobs = M
+    if "--only" in sys.argv:
+        wanted = sys.argv[sys.argv.index("--only") + 1].split(",")
+        jobs = [m for m in M if m[0] in wanted]
+    for i in range(WORKERS):
+        prepare(i)
+    with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+        results = [r for part in pool.map(lambda i: worker(i, jobs), range(WORKERS)) for r in part]
+    order = {m[0]: k for k, m in enumerate(M)}
+    results.sort(key=lambda r: order[r[0]])
+    killed = survived = broken = 0
+    for name, dead, detail in results:
+        if dead is False and name in WINDOWED:
+            print("WINDOWED   %-52s %s | %s" % (name, detail, WINDOWED[name]))
+            killed += 1
+            continue
+        if dead is False and name in EQUIVALENT:
+            print("EQUIVALENT %-52s %s | %s" % (name, detail, EQUIVALENT[name]))
+            killed += 1
+            continue
+        status = "BROKEN " if dead is None else ("KILLED " if dead else "SURVIVED")
+        killed += dead is True
+        survived += dead is False
+        broken += dead is None
+        print("%s %-56s %s" % (status, name, detail))
+    print("-- %d mutants: %d killed or equivalent, %d survived, %d broken or not applied" % (len(jobs), killed, survived, broken))
+    clean = True
+    for i in range(WORKERS):
+        d = subprocess.run(["diff", "-rq", "--exclude=.godot", "--exclude=production", "--exclude=.git", "--exclude=design", "--exclude=docs",
+                            "--exclude=tests", "--exclude=svaty_jur", REPO, COPIES[i]], capture_output=True, text=True)
+        if d.stdout.strip():
+            clean = False
+            print("COPY %d DIFFERS FROM THE REPO:\n%s" % (i, d.stdout[:600]))
+    print("-- the %d scratch copies %s the repo (apart from .godot, production, design, docs, tests, svaty_jur)" % (WORKERS, "equal" if clean else "DIFFER FROM"))
+    return 0 if survived == 0 and broken == 0 and clean else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

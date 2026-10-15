@@ -1,0 +1,16 @@
+"""Adds the rewrites of older scenarios' printed TEXT that this story's own edits to an older check changed, to the normalizers.
+usage: add_rewrites24.py NORMALIZERS.json   (read and written back; each pair is [old, new] as compare.py wants: new -> old)"""
+import json
+import sys
+from pathlib import Path
+
+out = Path(sys.argv[1])
+rules = json.loads(out.read_text(encoding="utf-8"))
+EXTRA = [
+    ("fuel_building", "and the zone's script keeps no variable besides its exports but _listed_before",
+     "and the zone's script keeps no variable besides its exports and the Weapons handed to it but _listed_before"),
+]
+for name, old, new in EXTRA:
+    rules.setdefault(name, []).append([old, new])
+out.write_text(json.dumps(rules, indent=1) + "\n", encoding="utf-8")
+print("added", len(EXTRA), "rewrites")

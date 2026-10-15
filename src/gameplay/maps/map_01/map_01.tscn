@@ -11,8 +11,9 @@
 [ext_resource type="Material" path="res://src/gameplay/split_screen/data/team_teal_material.tres" id="9_team_teal_material"]
 [ext_resource type="PackedScene" path="res://src/gameplay/maps/map_01/map_01_cover.tscn" id="10_cover"]
 [ext_resource type="PackedScene" path="res://src/gameplay/maps/map_01/map_01_depot.tscn" id="11_depot"]
-[ext_resource type="PackedScene" path="res://src/gameplay/fuel/fuel_can.tscn" id="12_fuel_can"]
 [ext_resource type="PackedScene" path="res://src/gameplay/maps/map_01/map_01_dressing.tscn" id="13_dressing"]
+[ext_resource type="PackedScene" path="res://src/gameplay/defences/wall_panel_scrap.tscn" id="14_wall_panel_scrap"]
+[ext_resource type="PackedScene" path="res://src/gameplay/supply/ammo_building.tscn" id="15_ammo_building"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(300, 1, 100)
@@ -46,11 +47,13 @@ fog_sky_affect = 0.3
 fog_depth_begin = 60.0
 fog_depth_end = 260.0
 
-[node name="Map" type="Node3D" node_paths=PackedStringArray("player_1_base", "player_2_base")]
+[node name="Map" type="Node3D" node_paths=PackedStringArray("player_1_base", "player_2_base", "neutral_structures", "supply_zones")]
 unique_name_in_owner = true
 script = ExtResource("1_map_field")
 player_1_base = NodePath("Base1")
 player_2_base = NodePath("Base2")
+neutral_structures = [NodePath("FieldWalls/FieldWallWest/Panel1"), NodePath("FieldWalls/FieldWallWest/Panel2"), NodePath("FieldWalls/FieldWallWest/Panel3"), NodePath("FieldWalls/FieldWallWest/Panel4"), NodePath("FieldWalls/FieldWallEast/Panel1"), NodePath("FieldWalls/FieldWallEast/Panel2"), NodePath("FieldWalls/FieldWallEast/Panel3"), NodePath("FieldWalls/FieldWallEast/Panel4")]
+supply_zones = [NodePath("Depot/FuelZoneWest"), NodePath("Depot/FuelZoneEast"), NodePath("AmmoBuildingWest/AmmoZone"), NodePath("AmmoBuildingEast/AmmoZone")]
 token_stock = ExtResource("2_token_stock")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
@@ -93,18 +96,44 @@ spare_spawn_points = [NodePath("SpareSpawnLeft")]
 
 [node name="Cover" parent="." instance=ExtResource("10_cover")]
 
+[node name="FieldWalls" type="Node3D" parent="."]
+
+[node name="FieldWallWest" type="Node3D" parent="FieldWalls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 12)
+
+[node name="Panel1" parent="FieldWalls/FieldWallWest" instance=ExtResource("14_wall_panel_scrap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4.5)
+
+[node name="Panel2" parent="FieldWalls/FieldWallWest" instance=ExtResource("14_wall_panel_scrap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.5)
+
+[node name="Panel3" parent="FieldWalls/FieldWallWest" instance=ExtResource("14_wall_panel_scrap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.5)
+
+[node name="Panel4" parent="FieldWalls/FieldWallWest" instance=ExtResource("14_wall_panel_scrap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.5)
+
+[node name="FieldWallEast" type="Node3D" parent="FieldWalls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 12)
+
+[node name="Panel1" parent="FieldWalls/FieldWallEast" instance=ExtResource("14_wall_panel_scrap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4.5)
+
+[node name="Panel2" parent="FieldWalls/FieldWallEast" instance=ExtResource("14_wall_panel_scrap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.5)
+
+[node name="Panel3" parent="FieldWalls/FieldWallEast" instance=ExtResource("14_wall_panel_scrap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.5)
+
+[node name="Panel4" parent="FieldWalls/FieldWallEast" instance=ExtResource("14_wall_panel_scrap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.5)
+
 [node name="Depot" parent="." instance=ExtResource("11_depot")]
 
-[node name="FuelCanCanyonWest" parent="." instance=ExtResource("12_fuel_can")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -88, 0, -26)
+[node name="AmmoBuildingWest" parent="." instance=ExtResource("15_ammo_building")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -64, 0, 14)
 
-[node name="FuelCanCanyonEast" parent="." instance=ExtResource("12_fuel_can")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88, 0, -26)
-
-[node name="FuelCanFlatWest" parent="." instance=ExtResource("12_fuel_can")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -62, 0, 14)
-
-[node name="FuelCanFlatEast" parent="." instance=ExtResource("12_fuel_can")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 62, 0, 14)
+[node name="AmmoBuildingEast" parent="." instance=ExtResource("15_ammo_building")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 64, 0, 14)
 
 [node name="Dressing" parent="." instance=ExtResource("13_dressing")]

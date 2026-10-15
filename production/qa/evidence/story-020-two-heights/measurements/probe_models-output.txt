@@ -1,0 +1,2 @@
+MODEL gyrocopter_mesh_model.tscn lowest=2.5000 highest=4.3016 hover=2.5 rise=false physics_processing=false
+MODEL gyrocopter_kit_model.tscn lowest=2.5002 highest=4.3205 hover=2.52 rise=false physics_processing=false

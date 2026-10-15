@@ -1,0 +1,27 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+SPLIT base_walls_showcase t=1.133 frame=67 moment=whole_gate_above panels=60 looks=whole views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT base_walls_showcase t=1.633 frame=97 moment=whole_yard_above panels=60 looks=whole views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT base_walls_showcase t=2.683 frame=160 moment=first_look_above back-wall panels 2 and 7 at the first look beside whole ones: looks 1 1 beside 0 0 views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT base_walls_showcase t=3.733 frame=223 moment=second_look_above back-wall panels 2 and 7 at the second look views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT base_walls_showcase t=4.783 frame=286 moment=back_breach_above back-wall panels 2 and 7 fallen (rubble) with the first look beside them views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT base_walls_showcase t=5.283 frame=316 moment=side_breach_above the left side wall's lane panel fallen at both Bases views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT base_walls_showcase t=5.783 frame=346 moment=gate_breach_above the middle panel of each Gate wall fallen at both Bases, a Turret to be seen through each views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT base_walls_showcase t=8.567 frame=513 moment=truck_through_gate_breach_above both Trucks at the middle of the wall's thickness (14.35 m from the axis) at 10.9 m/s
+SPLIT base_walls_showcase t=11.333 frame=679 moment=gyro_over_side_wall_above both Gyrocopters over the wall, models 0.25 m over its top
+SPLIT base_walls_showcase t=14.433 frame=865 moment=turret_shot_through_breach_above a Turret's Shot 2.3 m inside the yard face, through the fallen panel, toward the Truck
+SPLIT base_walls_showcase t=18.650 frame=1118 moment=mine_in_side_breach_above a live Mine in the outer part of the left side wall's breach at each Base: 2 Mines views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT base_walls_showcase t=20.767 frame=1245 moment=whole_gate_chase panels=60 looks=whole views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT base_walls_showcase t=21.267 frame=1275 moment=whole_yard_chase panels=60 looks=whole views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT base_walls_showcase t=22.317 frame=1338 moment=first_look_chase back-wall panels 2 and 7 at the first look beside whole ones: looks 1 1 beside 0 0 views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT base_walls_showcase t=23.367 frame=1401 moment=second_look_chase back-wall panels 2 and 7 at the second look views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT base_walls_showcase t=24.417 frame=1464 moment=back_breach_chase back-wall panels 2 and 7 fallen (rubble) with the first look beside them views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT base_walls_showcase t=24.917 frame=1494 moment=side_breach_chase the left side wall's lane panel fallen at both Bases views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT base_walls_showcase t=25.417 frame=1524 moment=gate_breach_chase the middle panel of each Gate wall fallen at both Bases, a Turret to be seen through each views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT base_walls_showcase t=28.200 frame=1691 moment=truck_through_gate_breach_chase both Trucks at the middle of the wall's thickness (14.35 m from the axis) at 10.9 m/s
+SPLIT base_walls_showcase t=30.967 frame=1857 moment=gyro_over_side_wall_chase both Gyrocopters over the wall, models 0.25 m over its top
+SPLIT base_walls_showcase t=34.067 frame=2043 moment=turret_shot_through_breach_chase a Turret's Shot 2.3 m inside the yard face, through the fallen panel, toward the Truck
+SPLIT base_walls_showcase t=38.283 frame=2296 moment=mine_in_side_breach_chase a live Mine in the outer part of the left side wall's breach at each Base: 2 Mines views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT base_walls_showcase t=42.317 frame=2538 moment=round_over_panels_kept Round over, 10 panels fallen
+SPLIT base_walls_showcase t=42.933 frame=2575 moment=after_r_chase panels whole: 60 of 60 views=chase_camera_settings.tres, chase_camera_settings.tres
+RESULT base_walls_showcase ok checks=0 failed=0 t=42.933 moments=24

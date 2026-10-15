@@ -2,8 +2,8 @@ class_name MineLayer
 extends Node
 ## One Player's Mines: how many that Player's Unit has left, and the lay itself. A press of the lay
 ## key lays one Mine on the ground just behind the Truck's tail, unless the spot is in or near a
-## Base or is not open ground, in which case nothing is laid, the count stays and the Player is
-## told why.
+## Base or a supply zone or is not open ground, in which case nothing is laid, the count stays and
+## the Player is told why.
 ##
 ## Implements: production/epics/wasteland-fire/story-014-truck-mines.md AC-1 (one press lays one
 ## Mine just behind the Truck's tail; a stranded Truck lays; a type that carries none lays none and
@@ -11,14 +11,16 @@ extends Node
 ## respawn and after every Swap; the count is shown only while the Unit is in play), AC-5 (the lay
 ## is refused in and near both Bases and wherever the Mine would not lie on open ground), AC-7
 ## (Mines stay when their Truck is gone) and AC-9 (every number is data: UnitStats.mine_capacity
-## and mine_drop_offset, and MineSettings); design/rules.md "Turrets, Flag Walls and Mines".
-## Vocabulary: CONTEXT.md (Mine, Truck, Base, Gate, Unit, Swap).
+## and mine_drop_offset, and MineSettings); production/epics/wasteland-fire/story-024-ammunition-
+## buildings.md AC-4 (no Mine in or within the margin of a supply zone); design/rules.md "Turrets,
+## Flag Walls and Mines". Vocabulary: CONTEXT.md (Mine, Truck, Base, Gate, Unit, Swap, Fuel, Ammo).
 ##
 ## Driven by command, not by input, like the Weapon: whoever presses the lay key (PlayerMineInput
 ## for a Player, a test) calls request_lay(), and the request is applied in this node's own tick,
 ## so the drop point is where the Truck stands after its move. One MineLayer per Player's Unit,
 ## stored in split_screen.tscn beside the Weapons; it knows its Unit, the settings and the Mine
-## scene, and SplitScreen hands it the two Bases (bases) before the Round begins. It reads the
+## scene, and SplitScreen hands it the two Bases (bases) and the Map's supply zones (supply_zones)
+## before the Round begins. It reads the
 ## Player's index from the Unit (Unit.player_index), never from a second index of its own, which
 ## could disagree with it in silence.
 ##
@@ -35,9 +37,12 @@ extends Node
 ## destroyed or swapped.
 ##
 ## A press, in this order: the Unit is out of play or carries none: nothing happens, no signal.
-## None left: refused, NONE_LEFT. The drop point in a no-mine area: refused, NEAR_BASE. Not open
-## ground: refused, NO_ROOM. Else the Mine is instanced under the Unit's parent, laid at the drop
-## point (the Unit's transform times mine_drop_offset), and the count goes down by one.
+## None left: refused, NONE_LEFT. The drop point in a no-mine area: refused, NEAR_BASE. In or near
+## a supply zone: refused, NEAR_SUPPLY. Not open ground: refused, NO_ROOM. Else the Mine is
+## instanced under the Unit's parent, laid at the drop point (the Unit's transform times
+## mine_drop_offset), and the count goes down by one. The supply test comes before the open-ground
+## one, so a lay at an ammunition building's face, whose collider the open-ground probe also
+## meets, says why: a supply building.
 ##
 ## The no-mine areas (is_in_no_mine_area()). A geometric test, deterministic, never
 ## overlaps_body(), which reports a Unit a tick or two late. For each Base, in the frame of its
@@ -47,12 +52,20 @@ extends Node
 ## Mine lies in a Base or less than the approach's depth in front of its Gate wall. The height is
 ## ignored.
 ##
+## Near a supply zone (is_near_supply_zone(), Story 024). The same kind of test, a second area with
+## the same geometry: for each zone the Map lists, in the zone's own horizontal frame (the height
+## ignored), its footprint grown on every side by the settings' supply_margin plus the trigger
+## radius. A drop point inside it is refused, so no part of a Mine lies in a supply zone or within
+## supply_margin of one. A lay outside the margin that would touch an ammunition building itself
+## is refused as NO_ROOM: the building is not open ground.
+##
 ## Open ground (is_open_ground()). One shape query at the drop point: a box of the Mine's footprint
 ## (twice the trigger radius, square) from probe_floor to probe_top above the drop point, on
-## open_ground_mask, bodies only. Areas never count: a ford, a Fuel Can, a Flag and another Mine
-## leave the ground open. The probe starts above the floor so the Map's floor never counts, and
-## reaches far above the cliffs because a cliff is a hollow shell of faces: a footprint wholly
-## inside the rock meets none of them, and a box that crosses the shell's top face always does.
+## open_ground_mask, bodies only. Areas never count: a ford, a Fuel Can, a supply zone (its own
+## test refuses it), a Flag and another Mine leave the ground open. The probe starts above the
+## floor so the Map's floor never counts, and reaches far above the cliffs because a cliff is a
+## hollow shell of faces: a footprint wholly inside the rock meets none of them, and a box that
+## crosses the shell's top face always does.
 ##
 ## Ordering: _ready() sets process_physics_priority one above the Unit's own, as the Weapon does.
 ## The MineLayer destroys nothing, so its priority does not matter to a double loss.
@@ -66,6 +79,9 @@ enum Refusal {
 	## The drop point is not open ground: a wall, a tower, the cover, a tank, a Turret, a Flag Wall,
 	## a cliff or water would meet the Mine.
 	NO_ROOM,
+	## The drop point is in or near a supply zone: some part of the Mine would lie in a zone or
+	## within the settings' supply_margin of one (Story 024).
+	NEAR_SUPPLY,
 }
 
 ## Added to the Unit's process_physics_priority so this node runs just after it.
@@ -92,6 +108,11 @@ signal lay_refused(reason: Refusal)
 ## Both Bases of the Map, handed by SplitScreen before the Round begins: where a Mine may not be
 ## laid. With none (a stand-in) no area is refused.
 var bases: Array[Base] = []
+
+## Every supply zone of the Map, handed by SplitScreen before the Round begins: where a Mine may
+## not be laid either. With none (a stand-in, the greybox field) no zone is refused. Entries must
+## be live nodes; the evidence runner drops the ones it frees.
+var supply_zones: Array[SupplyZone] = []
 
 ## Mines left in the Truck's load: the type's mine_capacity after a spawn, down by one for every
 ## Mine laid, zero while the Unit is out of play. Read-only: assigning to it pushes an error.
@@ -155,6 +176,21 @@ func is_in_no_mine_area(point: Vector3) -> bool:
 	return false
 
 
+## True when a Mine dropped at the point would lie in or near a supply zone: the point is inside the
+## footprint of a zone of supply_zones, in the zone's own horizontal frame, grown on every side by
+## the settings' supply_margin plus the trigger radius (the class doc). The height is ignored. Call
+## it inside the tree: a zone's frame is its global transform.
+func is_near_supply_zone(point: Vector3) -> bool:
+	var grown: float = settings.supply_margin + settings.trigger_radius
+	for zone: SupplyZone in supply_zones:
+		if zone == null:
+			continue
+		var local: Vector3 = zone.global_transform.affine_inverse() * point
+		if absf(local.x) <= zone.size.x / 2.0 + grown and absf(local.z) <= zone.size.z / 2.0 + grown:
+			return true
+	return false
+
+
 ## True when nothing on the open-ground layers meets the footprint of a Mine dropped at the point
 ## (the class doc). Call it inside a physics tick: it queries the physics space.
 func is_open_ground(point: Vector3) -> bool:
@@ -200,6 +236,9 @@ func _lay() -> void:
 	var point: Vector3 = unit.global_transform * unit.stats.mine_drop_offset
 	if is_in_no_mine_area(point):
 		lay_refused.emit(Refusal.NEAR_BASE)
+		return
+	if is_near_supply_zone(point):
+		lay_refused.emit(Refusal.NEAR_SUPPLY)
 		return
 	if not is_open_ground(point):
 		lay_refused.emit(Refusal.NO_ROOM)

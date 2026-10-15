@@ -32,8 +32,8 @@ extends Resource
 ## design/rules.md "Resources" and "Destruction and respawn") add the Fuel group: the size of each
 ## type's tank (fuel_capacity), what it burns per second while the Unit moves (fuel_use, the
 ## source's field name; the Gyrocopter's is the highest of the four), the share of the tank a
-## freshly spawned Unit starts with (spawn_fuel_fraction, so dying is never a free refuel) and how
-## fast a ground Unit with an empty tank turns on the spot (empty_turn_rate). A type whose
+## freshly spawned Unit starts with (spawn_fuel_fraction: a half until Story 022, all of it since)
+## and how fast a ground Unit with an empty tank turns on the spot (empty_turn_rate). A type whose
 ## fuel_capacity is zero has no Fuel system: nothing burns and a Unit of it is never empty, as
 ## before Story 006. empty_turn_rate is unused by a flying type (can_fly), which crashes when its
 ## tank runs dry instead of standing still. The four .tres hold starting values, to tune by playing.
@@ -58,6 +58,21 @@ extends Resource
 ## (badly_damaged_speed_share), so the state is data per type and nothing in code asks what type
 ## a Unit is. A type whose .tres has no line has no such state. The four .tres hold starting
 ## values, to tune by playing: 0.2 and 0.5.
+##
+## Story 021 (production/epics/wasteland-fire/story-021-gyrocopter-crash.md AC-7; design/rules.md
+## "Heights", the crash) adds the crash speed to the Body group: the speed at which a Unit of this
+## type that flies straight into a Tall piece is destroyed (crash_speed), data per type like every
+## other value here, so nothing in code asks what type a Unit is. A type whose .tres has no line
+## never crashes. The Gyrocopter's .tres holds 4.0, to tune by playing.
+##
+## Story 022 (production/epics/wasteland-fire/story-022-ammo-and-full-start.md AC-1, AC-3 and AC-7;
+## design/rules.md "Units", "Resources" and "Destruction and respawn") adds the load of ammunition
+## to the Weapon group: the Shots a Unit of this type fires on one load (ammo_capacity), where zero
+## means no count at all, so a type whose .tres has no line fires without limit, the way
+## fuel_capacity zero means no Fuel system and mine_capacity zero no Mines. It also changes the
+## shipped spawn_fuel_fraction to 1.0: every new Unit starts with a full tank and a full load, so a
+## Self-destruct trades a Token for full supplies and a Swap at the own Base is a free resupply.
+## The four .tres hold 100, 50, 25 and 40 Shots, to tune by playing.
 ##
 ## Data only. A Unit reads these numbers and never writes them. One .tres is shared by every
 ## Unit that references it, so treat it as read-only at runtime (duplicate() it for a private
@@ -204,6 +219,17 @@ extends Resource
 ## the one height all Units share. Zero by default (class doc).
 @export_range(0.0, 10.0, 0.05, "or_greater", "suffix:m") var muzzle_forward: float = 0.0
 
+## How many Shots a Unit of this type fires on one load of ammunition (Story 022 AC-1;
+## design/rules.md "Units", the Weapons and Data bullets, and "Resources", the Ammo bullet): the
+## Weapon refills its count to this on the first tick it finds the Unit in play, so a first spawn, a
+## respawn and a Swap at the own Base all bring a full load; each Shot it fires spends one; and a
+## Weapon with none left fires nothing until the next new Unit. 20 s of continuous fire at the
+## type's own fire_interval_seconds: 100, 50, 25 and 40 in the four .tres, to tune by playing. Zero
+## by default (class doc), and zero means no count at all: a type whose .tres has no line fires
+## without limit, as before Story 022. No branch anywhere names a type for this. first_problem()
+## refuses a negative one.
+@export_range(0, 1000, 1, "or_greater") var ammo_capacity: int = 0
+
 @export_group("Body")
 
 ## Whether this type flies (Story 005 AC-1 and AC-5; design/rules.md "Units": "Flying means only
@@ -238,13 +264,13 @@ extends Resource
 ## layer the Unit's scene has.
 @export_flags_3d_physics var collision_layer: int = 0
 
-## The physics layers the Unit collides with while it drives as this type (Story 005 AC-5): a
-## ground type takes the map, the units, the cliffs_water and the cover layers (1 + 2 + 32 + 64 =
-## 99), so cliffs, water and the Map's cover stop it; the Gyrocopter takes the map alone (1), so it
-## crosses cliffs and water, flies over the cover (Story 009 AC-2), passes through ground Units and
-## they through it (decided 2026-10-01), and still stops at the walls and the depot's tanks, which
-## are on the map layer. Zero by default (class doc), and zero means keep the mask the Unit's scene
-## has.
+## The physics layers the Unit collides with while it drives as this type (Story 005 AC-5): a ground
+## type takes the map, the units, the cliffs_water and the cover layers (1 + 2 + 32 + 64 = 99), so
+## cliffs, water and the Map's cover stop it; the Gyrocopter takes the map alone (1), so it crosses
+## cliffs and water, flies over the cover (Story 009 AC-2), passes through ground Units and they
+## through it (decided 2026-10-01), and still meets the Tall pieces on the map layer (towers, legs,
+## tanks, Turrets), which stop it or, at its crash_speed, destroy it (Story 021). Zero by default
+## (class doc), and zero means keep the mask the Unit's scene has.
 @export_flags_3d_physics var collision_mask: int = 0
 
 ## The physics layers a spawn spot must be free of before the Unit is put down there as this type
@@ -253,11 +279,21 @@ extends Resource
 ## AC-6). Zero by default (class doc), and zero means test the Unit's own layer, as Story 003 did.
 @export_flags_3d_physics var spot_mask: int = 0
 
+## The speed in metres per second at which a Unit of this type that flies straight into a Tall piece
+## is destroyed (Story 021 AC-7; design/rules.md "Heights", the crash): the real velocity it arrived
+## with, along the normal of the collision, at or above this destroys it in the tick of the contact
+## (Unit, movement model step 7), and a graze, a slow nudge or a turn on the spot only stops it. A
+## quarter of the Gyrocopter's 16.4 m/s top speed to start, 4.0 in its .tres, to tune by playing:
+## with its 15 m/s^2 it reaches that in about half a metre. Zero by default (class doc), and zero
+## means the type never crashes, as the Motorbike, the Buggy and the Truck, which leave the line
+## out: no branch anywhere names a type for this. first_problem() refuses a negative one.
+@export_range(0.0, 100.0, 0.1, "or_greater", "suffix:m/s") var crash_speed: float = 0.0
+
 @export_group("Fuel")
 
 ## Size of this type's Fuel tank, in Fuel units (Story 006 AC-1,
 ## production/epics/wasteland-fire/story-006-fuel-and-fuel-cans.md; design/rules.md "Resources"):
-## the most Fuel a Unit of this type holds, the top of its Fuel gauge and what a Fuel Can fills it
+## the most Fuel a Unit of this type holds, the top of its Fuel gauge and what a Fuel zone fills it
 ## up to. Zero by default (class doc), and zero means this type has no Fuel system: a Unit of it
 ## burns nothing and is never empty, as before Story 006. A Unit has a tank only once it has spawned
 ## (Unit.spawn()), so a Unit nobody spawns (the driving toy's) burns nothing whatever this says.
@@ -279,12 +315,15 @@ extends Resource
 ## as before Story 009.
 @export_range(0.0, 100.0, 0.01, "or_greater", "suffix:fuel/s") var fuel_use_idle: float = 0.0
 
-## The share of fuel_capacity a Unit of this type starts with every time it spawns, from 0 to 1
-## (Story 006 AC-5; design/rules.md "Destruction and respawn": a fresh Unit spawns with a fixed
-## partial tank, so dying is never a free refuel, even for a Unit refuelled to full before it was
-## destroyed). The Unit clamps it to that range. Zero by default (class doc): a type whose .tres has
-## no line spawns with an empty tank, which leaves a ground Unit unable to drive and crashes a
-## flying one on its first tick.
+## The share of fuel_capacity a Unit of this type starts with every time it spawns, from 0 to 1.
+## Story 006 AC-5 made it a fixed half, so that dying was never a free refuel; Story 022 AC-3
+## (design/rules.md "Destruction and respawn": every new Unit starts with full supplies, a full
+## tank and a full load of ammo) makes it 1.0 in the four .tres, so a Self-destruct trades a Token
+## for full supplies and a Swap at the own Base is a free resupply. The Unit clamps it to that
+## range. The knob stays: the evidence runner gives the scenarios written before Story 022 their
+## half tank back through it. Zero by default (class doc): a type whose .tres has no line spawns
+## with an empty tank, which leaves a ground Unit unable to drive and crashes a flying one on its
+## first tick.
 @export_range(0.0, 1.0, 0.01) var spawn_fuel_fraction: float = 0.0
 
 ## How fast a ground Unit of this type turns on the spot while its tank is empty, in radians per
@@ -342,7 +381,8 @@ extends Resource
 ## error and never a Unit that spawns already destroyed. A type with a badly damaged state must
 ## keep a share of its speed above zero (Story 017): a fraction outside 0 to under 1 is refused,
 ## and so is a share outside above 0 to 1 while the fraction is above 0; both are tested so that
-## a NaN fails them.
+## a NaN fails them. A crash_speed below zero is refused too (Story 021), a NaN included, and so is
+## an ammo_capacity below zero (Story 022): a negative load would otherwise read as no count at all.
 func first_problem() -> String:
 	if max_speed <= 0.0:
 		return "max_speed is not above zero"
@@ -357,4 +397,8 @@ func first_problem() -> String:
 	var share_usable: bool = badly_damaged_speed_share > 0.0 and badly_damaged_speed_share <= 1.0
 	if badly_damaged_fraction > 0.0 and not share_usable:
 		return "badly_damaged_speed_share is not above 0 and at most 1 while badly_damaged_fraction is above 0"
+	if not (crash_speed >= 0.0):
+		return "crash_speed is not zero or above"
+	if ammo_capacity < 0:
+		return "ammo_capacity is below zero"
 	return ""

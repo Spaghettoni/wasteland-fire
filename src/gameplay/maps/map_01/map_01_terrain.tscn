@@ -127,224 +127,224 @@ material = ExtResource("3_road")
 
 [node name="ShoreEdge" type="Node3D" parent="."]
 
-[node name="ShoreNW1" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreNW1" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreNW1"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -15.0033333, 1.5, -47.1)
 shape = SubResource("BoxShape3D_shorenw1")
 
-[node name="ShoreNW2" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreNW2" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreNW2"]
 transform = Transform3D(-0.999977779, 0, -0.006666519, 0, 1, 0, 0.006666519, 0, -0.999977779, -45.0033333, 1.5, -47)
 shape = SubResource("BoxShape3D_shorenw2")
 
-[node name="ShoreNW3" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreNW3" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreNW3"]
 transform = Transform3D(-0.999977779, 0, -0.006666519, 0, 1, 0, 0.006666519, 0, -0.999977779, -75.0532001, 1.5, -46.7996676)
 shape = SubResource("BoxShape3D_shorenw3")
 
-[node name="ShoreNW4" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreNW4" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreNW4"]
 transform = Transform3D(-0.99503719, 0, -0.099503719, 0, 1, 0, 0.099503719, 0, -0.99503719, -101.1514677, 1.5, -45.5898408)
 shape = SubResource("BoxShape3D_shorenw4")
 
-[node name="ShoreNW5" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreNW5" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreNW5"]
 transform = Transform3D(-0.956351571, 0, -0.292218536, 0, 1, 0, 0.292218536, 0, -0.956351571, -121.4122675, 1.5, -41.6696699)
 shape = SubResource("BoxShape3D_shorenw5")
 
-[node name="ShoreNW6" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreNW6" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreNW6"]
 transform = Transform3D(-0.739940073, 0, -0.672672794, 0, 1, 0, 0.672672794, 0, -0.739940073, -136.1794391, 1.5, -33.7337889)
 shape = SubResource("BoxShape3D_shorenw6")
 
-[node name="ShoreNW7" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreNW7" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreNW7"]
 transform = Transform3D(-0.365652372, 0, -0.930751493, 0, 1, 0, 0.930751493, 0, -0.365652372, -144.6579069, 1.5, -21.4238022)
 shape = SubResource("BoxShape3D_shorenw7")
 
-[node name="ShoreNW8" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreNW8" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreNW8"]
 transform = Transform3D(-0.035691531, 0, -0.999362854, 0, 1, 0, 0.999362854, 0, -0.035691531, -147.7445359, 1.5, -7.1708451)
 shape = SubResource("BoxShape3D_shorenw8")
 
-[node name="ShoreSW8" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreSW8" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreSW8"]
 transform = Transform3D(0.035691531, 0, -0.999362854, 0, 1, 0, 0.999362854, 0, 0.035691531, -147.7445359, 1.5, 7.1708451)
 shape = SubResource("BoxShape3D_shoresw8")
 
-[node name="ShoreSW7" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreSW7" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreSW7"]
 transform = Transform3D(0.365652372, 0, -0.930751493, 0, 1, 0, 0.930751493, 0, 0.365652372, -144.6579069, 1.5, 21.4238022)
 shape = SubResource("BoxShape3D_shoresw7")
 
-[node name="ShoreSW6" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreSW6" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreSW6"]
 transform = Transform3D(0.739940073, 0, -0.672672794, 0, 1, 0, 0.672672794, 0, 0.739940073, -136.1694626, 1.5, 33.7428584)
 shape = SubResource("BoxShape3D_shoresw6")
 
-[node name="ShoreSW5" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreSW5" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreSW5"]
 transform = Transform3D(0.96351791, 0, -0.267643864, 0, 1, 0, 0.267643864, 0, 0.96351791, -121.4249053, 1.5, 41.4198342)
 shape = SubResource("BoxShape3D_shoresw5")
 
-[node name="ShoreSW4" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreSW4" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreSW4"]
 transform = Transform3D(0.992553028, 0, -0.121813326, 0, 1, 0, 0.121813326, 0, 0.992553028, -101.1384521, 1.5, 45.340511)
 shape = SubResource("BoxShape3D_shoresw4")
 
-[node name="ShoreSW3" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreSW3" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreSW3"]
 transform = Transform3D(0.999977779, 0, -0.006666519, 0, 1, 0, 0.006666519, 0, 0.999977779, -75.0644545, 1.5, 46.7995925)
 shape = SubResource("BoxShape3D_shoresw3")
 
-[node name="ShoreSW2" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreSW2" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreSW2"]
 transform = Transform3D(0.999977779, 0, -0.006666519, 0, 1, 0, 0.006666519, 0, 0.999977779, -45.0033333, 1.5, 47)
 shape = SubResource("BoxShape3D_shoresw2")
 
-[node name="ShoreSW1" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreSW1" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreSW1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.0033333, 1.5, 47.1)
 shape = SubResource("BoxShape3D_shoresw1")
 
-[node name="ShoreSE1" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreSE1" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreSE1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.0033333, 1.5, 47.1)
 shape = SubResource("BoxShape3D_shorese1")
 
-[node name="ShoreSE2" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreSE2" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreSE2"]
 transform = Transform3D(0.999977779, 0, 0.006666519, 0, 1, 0, -0.006666519, 0, 0.999977779, 45.0033333, 1.5, 47)
 shape = SubResource("BoxShape3D_shorese2")
 
-[node name="ShoreSE3" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreSE3" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreSE3"]
 transform = Transform3D(0.999977779, 0, 0.006666519, 0, 1, 0, -0.006666519, 0, 0.999977779, 75.0644545, 1.5, 46.7995925)
 shape = SubResource("BoxShape3D_shorese3")
 
-[node name="ShoreSE4" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreSE4" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreSE4"]
 transform = Transform3D(0.992553028, 0, 0.121813326, 0, 1, 0, -0.121813326, 0, 0.992553028, 101.1384521, 1.5, 45.340511)
 shape = SubResource("BoxShape3D_shorese4")
 
-[node name="ShoreSE5" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreSE5" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreSE5"]
 transform = Transform3D(0.96351791, 0, 0.267643864, 0, 1, 0, -0.267643864, 0, 0.96351791, 121.4249053, 1.5, 41.4198342)
 shape = SubResource("BoxShape3D_shorese5")
 
-[node name="ShoreSE6" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreSE6" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreSE6"]
 transform = Transform3D(0.739940073, 0, 0.672672794, 0, 1, 0, -0.672672794, 0, 0.739940073, 136.1694626, 1.5, 33.7428584)
 shape = SubResource("BoxShape3D_shorese6")
 
-[node name="ShoreSE7" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreSE7" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreSE7"]
 transform = Transform3D(0.365652372, 0, 0.930751493, 0, 1, 0, -0.930751493, 0, 0.365652372, 144.6579069, 1.5, 21.4238022)
 shape = SubResource("BoxShape3D_shorese7")
 
-[node name="ShoreSE8" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreSE8" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreSE8"]
 transform = Transform3D(0.035691531, 0, 0.999362854, 0, 1, 0, -0.999362854, 0, 0.035691531, 147.7445359, 1.5, 7.1708451)
 shape = SubResource("BoxShape3D_shorese8")
 
-[node name="ShoreNE8" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreNE8" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreNE8"]
 transform = Transform3D(-0.035691531, 0, 0.999362854, 0, 1, 0, -0.999362854, 0, -0.035691531, 147.7445359, 1.5, -7.1708451)
 shape = SubResource("BoxShape3D_shorene8")
 
-[node name="ShoreNE7" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreNE7" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreNE7"]
 transform = Transform3D(-0.365652372, 0, 0.930751493, 0, 1, 0, -0.930751493, 0, -0.365652372, 144.6579069, 1.5, -21.4238022)
 shape = SubResource("BoxShape3D_shorene7")
 
-[node name="ShoreNE6" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreNE6" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreNE6"]
 transform = Transform3D(-0.739940073, 0, 0.672672794, 0, 1, 0, -0.672672794, 0, -0.739940073, 136.1794391, 1.5, -33.7337889)
 shape = SubResource("BoxShape3D_shorene6")
 
-[node name="ShoreNE5" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreNE5" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreNE5"]
 transform = Transform3D(-0.956351571, 0, 0.292218536, 0, 1, 0, -0.292218536, 0, -0.956351571, 121.4122675, 1.5, -41.6696699)
 shape = SubResource("BoxShape3D_shorene5")
 
-[node name="ShoreNE4" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreNE4" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreNE4"]
 transform = Transform3D(-0.99503719, 0, 0.099503719, 0, 1, 0, -0.099503719, 0, -0.99503719, 101.1514677, 1.5, -45.5898408)
 shape = SubResource("BoxShape3D_shorene4")
 
-[node name="ShoreNE3" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreNE3" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreNE3"]
 transform = Transform3D(-0.999977779, 0, 0.006666519, 0, 1, 0, -0.006666519, 0, -0.999977779, 75.0532001, 1.5, -46.7996676)
 shape = SubResource("BoxShape3D_shorene3")
 
-[node name="ShoreNE2" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreNE2" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreNE2"]
 transform = Transform3D(-0.999977779, 0, 0.006666519, 0, 1, 0, -0.006666519, 0, -0.999977779, 45.0033333, 1.5, -47)
 shape = SubResource("BoxShape3D_shorene2")
 
-[node name="ShoreNE1" type="StaticBody3D" parent="ShoreEdge"]
+[node name="ShoreNE1" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ShoreEdge/ShoreNE1"]

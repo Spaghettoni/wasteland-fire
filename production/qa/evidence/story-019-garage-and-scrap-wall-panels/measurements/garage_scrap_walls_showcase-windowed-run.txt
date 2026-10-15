@@ -1,0 +1,38 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+Movie Maker mode enabled, recording movie in 1280×720 @ 60 FPS...
+SPLIT garage_scrap_walls_showcase t=1.133 frame=67 moment=garage_whole_inside_above Garage panels=20 looks=whole views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT garage_scrap_walls_showcase t=1.633 frame=97 moment=garage_whole_yard_above Garage panels=20 looks=whole views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT garage_scrap_walls_showcase t=2.683 frame=160 moment=garage_first_look_above the middle panel of the Garage wall on the yard side at the first look beside whole ones: looks 1 1 beside 0 0 views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT garage_scrap_walls_showcase t=3.733 frame=223 moment=garage_second_look_above the same panel at the second look views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT garage_scrap_walls_showcase t=5.367 frame=321 moment=garage_breach_spot_above the Buggy's Shot 6.51 m from the axis, inside the fallen panel's thickness, toward the Truck on the spot
+SPLIT garage_scrap_walls_showcase t=8.250 frame=494 moment=gyro_on_spot_above both Gyrocopters on their spawn spots beside a Garage wall, the models' lowest points 2.25 and 2.25 m up (the hover is 0.78)
+SPLIT garage_scrap_walls_showcase t=10.833 frame=649 moment=gyro_leaving_over_back_wall_above both Gyrocopters over the Garage's back wall, models 0.25 m over its top
+SPLIT garage_scrap_walls_showcase t=12.300 frame=737 moment=field_whole_above field panels=8 looks=whole views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT garage_scrap_walls_showcase t=13.350 frame=800 moment=field_looks_above panels 2 and 3 of each field wall at the first and second look beside whole ones: looks 1 2 beside 0 0 views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT garage_scrap_walls_showcase t=14.400 frame=863 moment=field_breach_above the lane panel of each field wall fallen (rubble) beside a first look and whole panels views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT garage_scrap_walls_showcase t=17.250 frame=1034 moment=truck_through_field_breach_above both Trucks at the middle of the wall's thickness (12.00 m from the axis) at 10.9 m/s
+SPLIT garage_scrap_walls_showcase t=20.000 frame=1199 moment=garage_whole_inside_chase Garage panels=20 looks=whole views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT garage_scrap_walls_showcase t=20.500 frame=1229 moment=garage_whole_yard_chase Garage panels=20 looks=whole views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT garage_scrap_walls_showcase t=21.550 frame=1292 moment=garage_first_look_chase the middle panel of the Garage wall on the yard side at the first look beside whole ones: looks 1 1 beside 0 0 views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT garage_scrap_walls_showcase t=22.600 frame=1355 moment=garage_second_look_chase the same panel at the second look views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT garage_scrap_walls_showcase t=24.233 frame=1453 moment=garage_breach_spot_chase the Buggy's Shot 6.51 m from the axis, inside the fallen panel's thickness, toward the Truck on the spot
+SPLIT garage_scrap_walls_showcase t=26.917 frame=1614 moment=gyro_on_spot_chase both Gyrocopters on their spawn spots beside a Garage wall, the models' lowest points 2.25 and 2.25 m up (the hover is 0.78)
+SPLIT garage_scrap_walls_showcase t=29.500 frame=1769 moment=gyro_leaving_over_back_wall_chase both Gyrocopters over the Garage's back wall, models 0.25 m over its top
+SPLIT garage_scrap_walls_showcase t=30.967 frame=1857 moment=field_whole_chase field panels=8 looks=whole views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT garage_scrap_walls_showcase t=32.017 frame=1920 moment=field_looks_chase panels 2 and 3 of each field wall at the first and second look beside whole ones: looks 1 2 beside 0 0 views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT garage_scrap_walls_showcase t=33.067 frame=1983 moment=field_breach_chase the lane panel of each field wall fallen (rubble) beside a first look and whole panels views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT garage_scrap_walls_showcase t=35.917 frame=2154 moment=truck_through_field_breach_chase both Trucks at the middle of the wall's thickness (12.00 m from the axis) at 10.9 m/s
+SPLIT garage_scrap_walls_showcase t=40.583 frame=2434 moment=round_over_panels_kept Round over, 8 of 28 panels fallen
+SPLIT garage_scrap_walls_showcase t=41.250 frame=2474 moment=after_r_garage_chase Garage panels whole: 20 of 20 views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT garage_scrap_walls_showcase t=41.750 frame=2504 moment=after_r_field_chase field panels whole: 8 of 8 views=chase_camera_settings.tres, chase_camera_settings.tres
+RESULT garage_scrap_walls_showcase ok checks=0 failed=0 t=41.750 moments=25
+--------------------------------------------------------------------------------
+Done recording movie at path: /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/f989e592-0c99-4f6a-9d66-b271794c14c4/scratchpad/w19/rec2/gs.png
+2506 frames at 60 FPS (movie length: 00:00:41:46), recorded in 00:07:35 (9% of real-time speed).
+CPU render time: 0.04 seconds (average: 0.02 ms/frame)
+GPU render time: 0.00 seconds (average: 0.00 ms/frame)
+Encoding time: 432.45 seconds (average: 172.56 ms/frame)
+--------------------------------------------------------------------------------
+rc=0

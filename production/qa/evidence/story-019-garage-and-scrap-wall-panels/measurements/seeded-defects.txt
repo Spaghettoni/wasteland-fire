@@ -1,0 +1,53 @@
+KILLED  garage_panel_on_the_map_layer                            garage_scrap_walls[over] rc=1 fails=panels_data,drawn_height,gyro_over
+KILLED  field_panel_with_a_mask                                  garage_scrap_walls[moves] rc=1 fails=panels_data
+KILLED  garage_panels_left_out_of_structures                     garage_scrap_walls[round] rc=1 fails=panels_data,restore
+KILLED  garage_panel_0_1_m_short                                 garage_scrap_walls[breach] rc=1 fails=panels_data
+KILLED  field_panel_0_1_m_short                                  garage_scrap_walls[field] rc=1 fails=panels_data
+KILLED  garage_panel_moved_0_1_m_leaving_a_gap                   garage_scrap_walls[moves] rc=1 fails=panels_data
+KILLED  stats_with_another_type_id_and_no_matrix_row             garage_scrap_walls[damage] rc=1 fails=panels_data,damage,no_engine_noise
+KILLED  hit_points_45                                            garage_scrap_walls[damage] rc=1 fails=panels_data,damage,looks
+KILLED  second_look_below_40_percent                             garage_scrap_walls[damage] rc=1 fails=panels_data,damage,looks
+KILLED  field_damaged_looks_swapped                              garage_scrap_walls[damage] rc=1 fails=damage,looks
+KILLED  container_on_the_map_layer                               garage_scrap_walls[cover] rc=1 fails=panels_data,cover_unchanged
+KILLED  spot_test_counts_the_cover_layer                         garage_scrap_walls[moves] rc=1 fails=panels_data
+KILLED  field_panels_given_a_player                              garage_scrap_walls[damage] rc=1 fails=panels_data,damage
+KILLED  map_list_not_restored_at_r                               garage_scrap_walls[round] rc=1 fails=restore
+KILLED  fallen_panel_keeps_its_layer                             garage_scrap_walls[breach] rc=1 fails=garage_exposed
+KILLED  restore_leaves_a_fallen_panel_fallen                     garage_scrap_walls[round] rc=1 fails=restore
+KILLED  restart_does_not_restore_structures                      garage_scrap_walls[round] rc=1 fails=restore
+KILLED  motorbike_breaks_panels                                  garage_scrap_walls[damage] rc=1 fails=panels_data,damage
+KILLED  own_shots_hurt_own_panels                                garage_scrap_walls[damage] rc=1 fails=damage
+KILLED  shots_fly_through_standing_panels                        garage_scrap_walls[moves] rc=1 fails=stops
+KILLED  gyrocopter_model_does_not_rise_over_panels               garage_scrap_walls[over] rc=1 fails=drawn_height,gyro_over
+KILLED  mine_probe_ignores_the_cover_layer                       garage_scrap_walls[field] rc=1 fails=field_breach
+KILLED  no_mine_area_ends_inside_the_garage                      garage_scrap_walls[moves] rc=1 fails=garage_unchanged,stops
+EQUIVALENT runner_leaves_the_garage_panels_on                   garage_scrap_walls[moves] rc=0 fails=- | garage_scrap_walls itself declares GARAGE_SCRAP_PANELS, so both strips are skipped for it with or without the defect; the strips' guard is the regression kind below, all killed
+EQUIVALENT runner_leaves_the_field_panels_on                    garage_scrap_walls[moves] rc=0 fails=- | garage_scrap_walls itself declares GARAGE_SCRAP_PANELS, so both strips are skipped for it with or without the defect; the strips' guard is the regression kind below, all killed
+KILLED  garage_strip_guard_inverted                              garage_scrap_walls[moves] rc=1 fails=panels_data,stops,no_engine_noise
+KILLED  field_strip_guard_inverted                               garage_scrap_walls[moves] rc=1 fails=panels_data,no_engine_noise
+KILLED  field_strip_after_the_pre_009_map                        map_cover rc=1 output differs from the baseline
+KILLED  frozen_garage_back_wall_on_the_cover_layer               base_walls rc=1 output differs from the baseline
+KILLED  frozen_scrap_walls_on_the_map_layer                      gyro_cover rc=1 output differs from the baseline
+KILLED  runner_leaves_the_garage_panels_on_base_walls            base_walls rc=1 output differs from the baseline
+KILLED  garage_strip_keeps_the_panels_listed_base_walls          base_walls rc=1 output differs from the baseline
+KILLED  runner_leaves_the_garage_panels_on_flag_walls            flag_walls rc=1 output differs from the baseline
+KILLED  garage_strip_keeps_the_panels_listed_flag_walls          flag_walls rc=1 output differs from the baseline
+KILLED  runner_leaves_the_garage_panels_on_map_layout            map_layout rc=0 output differs from the baseline
+KILLED  garage_strip_keeps_the_panels_listed_map_layout          map_layout rc=0 output differs from the baseline
+KILLED  runner_leaves_the_garage_panels_on_mines                 mines rc=0 output differs from the baseline
+KILLED  garage_strip_keeps_the_panels_listed_mines               mines rc=1 output differs from the baseline
+KILLED  runner_leaves_the_garage_panels_on_turrets               turrets rc=0 output differs from the baseline
+KILLED  garage_strip_keeps_the_panels_listed_turrets             turrets rc=1 output differs from the baseline
+KILLED  runner_leaves_the_field_panels_on_flag_walls             flag_walls rc=0 output differs from the baseline
+KILLED  field_strip_keeps_the_map_list_flag_walls                flag_walls rc=0 output differs from the baseline
+KILLED  runner_leaves_the_field_panels_on_gyro_cover             gyro_cover rc=1 output differs from the baseline
+KILLED  field_strip_keeps_the_map_list_gyro_cover                gyro_cover rc=0 output differs from the baseline
+KILLED  runner_leaves_the_field_panels_on_map_cover              map_cover rc=1 output differs from the baseline
+KILLED  field_strip_keeps_the_map_list_map_cover                 map_cover rc=0 output differs from the baseline
+KILLED  runner_leaves_the_field_panels_on_map_layout             map_layout rc=1 output differs from the baseline
+KILLED  field_strip_keeps_the_map_list_map_layout                map_layout rc=0 output differs from the baseline
+KILLED  runner_leaves_the_field_panels_on_turrets                turrets rc=0 output differs from the baseline
+KILLED  field_strip_keeps_the_map_list_turrets                   turrets rc=0 output differs from the baseline
+-- 50 mutants: 50 killed or equivalent, 0 survived, 0 broken or not applied
+-- the 3 scratch copies equal the repo (apart from .godot, production, design, docs)
+rc=0

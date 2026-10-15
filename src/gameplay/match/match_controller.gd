@@ -78,8 +78,8 @@ extends Node
 ## that deliveries use) puts the Unit away instead: GarageQueue.bench(), the very call of the start of
 ## a Round, so no `destroyed` goes out, no Token is taken and no respawn wait starts, and the Player is
 ## choosing at once from the types with Tokens left (the type just put away included, because its
-## Token was never spent); the chosen Unit appears after the bench settle, with the hit points and the
-## spawn tank of its type. Everywhere else, and with the switch off, the key destroys the Unit as it
+## Token was never spent); the chosen Unit appears after the bench settle, with the hit points and
+## full supplies of its type. Elsewhere, and with the switch off, the key destroys the Unit as it
 ## did. request_self_destruct() decides which at the press: a destruction is made on the spot, in the
 ## input node's tick, so nothing about it moved when the swap came; a swap is only noted, and made in
 ## this node's tick after the deliveries (_apply_swaps(), before the loss check). So a Carrier that

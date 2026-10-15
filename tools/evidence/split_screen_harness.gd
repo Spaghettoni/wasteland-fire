@@ -20,7 +20,12 @@ extends Node
 ## mines_showcase (windowed); since Story 015, turret_looks, turret_looks_showcase and
 ## turret_looks_fps (windowed); since Story 016, explosions, explosions_off, explosions_showcase and
 ## explosions_fps (windowed); since Story 017, badly_damaged, badly_damaged_off, badly_damaged_showcase and
-## badly_damaged_fps (windowed). Each is a script under tools/evidence/split_screen/,
+## badly_damaged_fps (windowed); since Story 018, base_walls and base_walls_showcase (windowed); since Story
+## 019, garage_scrap_walls and garage_scrap_walls_showcase (windowed); since Story 020, heights and heights_showcase
+## (windowed); since Story 021, crash and crash_showcase (windowed); since Story 022, ammo, ammo_alone and
+## ammo_showcase (windowed); since Story 023, fuel_building, fuel_building_showcase and fuel_building_fps
+## (windowed); since Story 024, ammo_buildings, ammo_buildings_showcase and ammo_buildings_fps
+## (windowed). Each is a script under tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
 ## line there. A scenario reaches this script, DriveStep, UnitTrack and check_kit.gd through preload
@@ -200,6 +205,82 @@ extends Node
 ## The state puts nothing on the notice line, so the notice keep rule (TURRETS or MINES) does not
 ## read it. A scenario of Story 017 declares it, with the opt-ins of the pieces it needs.
 ##
+## The Wall Panels (Story 018). Map 01's Bases now close their back, side and Gate walls with Wall Panels:
+## 30 Structures a Base, each 2 m tall with 40 hit points on the cover layer, listed in its structures and
+## standing in the five nodes under its Walls (WallBack, WallLeft, WallRight, GateWallLeft, GateWallRight),
+## which were 3.2 m StaticBody3D on the map layer in Story 007. Every scenario written before it was
+## measured with those walls (no Shot breaks them and the Gyrocopter cannot fly over them), so the runner
+## puts them back in the freshly instanced launch scene, before it enters the tree
+## (_apply_wall_panels_off()), unless the scenario script declares const WALL_PANELS: bool = true, which
+## keeps the Map as it ships: for each Map Base whose Walls node holds the five runs, every Structure
+## under a run is dropped from its structures, each run is removed and freed at once, and the StaticBody3D
+## of the same name from the frozen scene of Story 007 (tools/evidence/frozen/base_walls_story_007.tscn)
+## takes its child index, with the Base as the owner of every node of it, as the nodes of the Base's own
+## scene have. Only what stands under those five nodes is stripped, so the corner towers stay. A Base with
+## no Walls node (the greybox composition) is left alone. A scenario of Story 018 declares it, with the
+## opt-ins of the pieces it needs; any other scenario, now and later, runs on the old walls. The panels put
+## nothing on the notice line, so the notice keep rule (TURRETS or MINES) does not read it.
+##
+## The Garage and field Wall Panels (Story 019). Map 01's Garages now close their back and two side walls with
+## Wall Panels too: 10 a Base, listed in its structures and standing in the three nodes under its Garage
+## (GarageBack, GarageSideLeft, GarageSideRight), which were 2.5 m StaticBody3D on the map layer in Story 007.
+## The two walls in the field are 8 more, listed in the Map's neutral_structures and standing in its
+## FieldWalls node (FieldWallWest, FieldWallEast); they were two 12 m StaticBody3D on the cover layer under
+## Cover/ScrapWalls, and Cover with them. Every scenario written before it was measured with those walls (no
+## Shot breaks them, the Gyrocopter cannot fly over a Garage wall and the scrap walls are Cover), so the
+## runner puts them back in the freshly instanced launch scene, before it enters the tree, unless the scenario
+## script declares const GARAGE_SCRAP_PANELS: bool = true, which keeps the Map as it ships.
+##
+## _apply_garage_panels_off(): for each Map Base whose Garage node holds the three walls, every Structure
+## under one of them is dropped from its structures, each wall is removed and freed at once, and the
+## StaticBody3D of the same name from the frozen scene of Story 007
+## (tools/evidence/frozen/garage_walls_story_007.tscn) takes its child index, with the Base as the owner of
+## every node of it. _apply_field_panels_off(): for a Map with a FieldWalls node and a Cover node,
+## neutral_structures is emptied, FieldWalls is freed and a ScrapWalls Node3D is added as the last child of
+## Cover holding the two StaticBody3D of tools/evidence/frozen/scrap_walls_story_007.tscn, Cover as the owner
+## of every node; it runs after the greybox composition and before _apply_pre_009_map(), so the frozen scrap
+## walls get the layer Story 007 had as before. A Base or a Map without those nodes (the greybox composition)
+## is left alone. A scenario of Story 019 declares it, with the opt-ins of the pieces it needs; any other
+## scenario, now and later, runs on the old walls, those of Story 018 among them. The panels put nothing on
+## the notice line, so the notice keep rule (TURRETS or MINES) does not read it.
+##
+## The Heights (Story 020). The shipped Gyrocopter model no longer rises: gyrocopter_mesh_model.tscn stands at the
+## flying height (hover_height, 2.5 m) from the tick it is made and has no rise values. Every scenario written before
+## it was measured on the model of Stories 007 to 019, which hovers 0.78 m up and rises over the cliffs and the cover
+## (the Wall Panels among it), so the runner gives that model back unless the scenario script declares
+## const HEIGHTS: bool = true, which keeps the model as it ships (_apply_heights_off()): every UnitStats of
+## match_rules.tres's unit_types whose model is the shipped Gyrocopter scene takes the frozen copy of the earlier
+## model (tools/evidence/frozen/gyrocopter_model_story_019.tscn, a byte copy taken at the start of Story 020) before
+## the launch scene is instanced, after _apply_greybox_models(), so a greybox scenario keeps its greybox Gyrocopter. A
+## scenario of Story 020 declares it, with the opt-ins of the pieces it needs; any other scenario, now and later,
+## runs on the model that rises. The model puts nothing on the notice line, so the notice keep rule (TURRETS or
+## MINES) does not read it.
+##
+## The crash (Story 021). The Gyrocopter's data now says it crashes: UnitStats.crash_speed is 4.0 in the shipped
+## gyrocopter_stats.tres (0, never, for the other three), so a Gyrocopter that flies straight into a Tall piece at or above
+## that speed is destroyed in the tick of the contact. Every scenario written before it flew a Gyrocopter into a Tall piece
+## and kept it, stopped (depot_tanks, turrets, flag_walls_over, gyro_cover, gyro at the greybox field's wall, fuel's run_dry,
+## heights), so the runner takes the crash out of the data before the scene is instanced unless the scenario script declares
+## const GYRO_CRASH: bool = true (_apply_crash_off()): crash_speed is 0 on every UnitStats of match_rules.tres's unit_types,
+## the shared resources the Units spawn with, so no type ever crashes. The sea edge's group on the Map's shore bodies stays,
+## read by nothing then. A scenario of Story 021 declares it, with the opt-ins of the pieces it needs; any other scenario,
+## now and later, runs without the crash. The crash puts nothing on the notice line, so the notice keep rule (TURRETS or
+## MINES) does not read it.
+##
+## The ammunition and the full start (Story 022). The shipped data now gives every Unit type a load of ammunition
+## (UnitStats.ammo_capacity: 100, 50, 25 and 40 Shots; each Shot spends one and a Weapon with none left fires nothing)
+## and every new Unit starts with a full tank (spawn_fuel_fraction 1.0 in the four files, where Story 006 had a half);
+## each Player's view has an AmmoCount Label and the notice line says "Out of ammo". Every scenario written before it
+## fired without a count and spawned with the half tank, so the runner takes both out of the data before the scene is
+## instanced unless the scenario script declares const AMMO: bool = true (_apply_ammo_off()): ammo_capacity is 0 and
+## spawn_fuel_fraction is LEGACY_SPAWN_FUEL_FRACTION on every UnitStats of match_rules.tres's unit_types, the shared
+## resources the Units spawn with, so no Weapon counts, spends or emits anything. Both AmmoCount Labels are freed in the
+## instanced scene (_apply_ammo_counts_off(): camera_views counts every Control in each view). The notice line keeps its
+## rule of Story 013 and 014, extended: the PlayerNotice Labels stay for a scenario that declares TURRETS, MINES or AMMO,
+## and with ammo_capacity 0 the new out_of_ammo connection never fires in an older one. A scenario of Story 022
+## declares AMMO, with the opt-ins of the pieces it needs; any other scenario, now and later, runs without the ammunition
+## and with the half tank.
+##
 ## Output: SPLIT <scenario> t=<seconds> key=value ... (progress), CHECK <scenario> <check name> PASS|FAIL
 ## <detail> and exactly one last RESULT <scenario> ok|fail checks=<n> failed=<n> key=value ...; then quit with
 ## exit code 0 when every check passed, 1 when one failed, 2 for a missing or unknown scenario. TD-003
@@ -279,6 +360,23 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"badly_damaged_off": preload("res://tools/evidence/split_screen/badly_damaged_off.gd"),
 	&"badly_damaged_showcase": preload("res://tools/evidence/split_screen/badly_damaged_showcase.gd"),
 	&"badly_damaged_fps": preload("res://tools/evidence/split_screen/badly_damaged_fps.gd"),
+	&"base_walls": preload("res://tools/evidence/split_screen/base_walls.gd"),
+	&"base_walls_showcase": preload("res://tools/evidence/split_screen/base_walls_showcase.gd"),
+	&"garage_scrap_walls": preload("res://tools/evidence/split_screen/garage_scrap_walls.gd"),
+	&"garage_scrap_walls_showcase": preload("res://tools/evidence/split_screen/garage_scrap_walls_showcase.gd"),
+	&"heights": preload("res://tools/evidence/split_screen/heights.gd"),
+	&"heights_showcase": preload("res://tools/evidence/split_screen/heights_showcase.gd"),
+	&"crash": preload("res://tools/evidence/split_screen/crash.gd"),
+	&"crash_showcase": preload("res://tools/evidence/split_screen/crash_showcase.gd"),
+	&"ammo": preload("res://tools/evidence/split_screen/ammo.gd"),
+	&"ammo_alone": preload("res://tools/evidence/split_screen/ammo_alone.gd"),
+	&"ammo_showcase": preload("res://tools/evidence/split_screen/ammo_showcase.gd"),
+	&"fuel_building": preload("res://tools/evidence/split_screen/fuel_building.gd"),
+	&"fuel_building_showcase": preload("res://tools/evidence/split_screen/fuel_building_showcase.gd"),
+	&"fuel_building_fps": preload("res://tools/evidence/split_screen/fuel_building_fps.gd"),
+	&"ammo_buildings": preload("res://tools/evidence/split_screen/ammo_buildings.gd"),
+	&"ammo_buildings_showcase": preload("res://tools/evidence/split_screen/ammo_buildings_showcase.gd"),
+	&"ammo_buildings_fps": preload("res://tools/evidence/split_screen/ammo_buildings_fps.gd"),
 }
 
 ## The shared step class (drive_step.gd): keys held for a time.
@@ -389,6 +487,79 @@ const EXPLOSIONS_CONSTANT: StringName = &"EXPLOSIONS"
 ## The constant a scenario script declares as true to keep the badly damaged state the shipped data
 ## gives every Unit type (Story 017), instead of the data without it (_apply_badly_damaged_off()).
 const BADLY_DAMAGED_CONSTANT: StringName = &"BADLY_DAMAGED"
+## The constant a scenario script declares as true to keep the Wall Panels the shipped Map 01's Bases have
+## for their back, side and Gate walls (Story 018), instead of the five Base walls of Story 007
+## (_apply_wall_panels_off()).
+const WALL_PANELS_CONSTANT: StringName = &"WALL_PANELS"
+## The node of a Map Base that holds its walls and its four corner towers.
+const WALLS_NODE_NAME: StringName = &"Walls"
+## The five wall nodes under a Base's Walls node, in the child order they stand in: a StaticBody3D each in
+## Story 007, a Node3D holding that wall's Wall Panels since Story 018.
+const WALL_RUN_NAMES: Array[StringName] = [&"WallBack", &"WallLeft", &"WallRight", &"GateWallLeft", &"GateWallRight"]
+## The five Base walls of Story 007 as the scene had them at 03ed864, before Story 018, cut out of
+## compound_base.tscn into a scene of their own (tools/evidence/frozen/): 3.2 m tall StaticBody3D on the
+## map layer, with the map art's trims. Evidence-only: nothing under src/ uses it.
+const FROZEN_BASE_WALLS_SCENE: PackedScene = preload("res://tools/evidence/frozen/base_walls_story_007.tscn")
+## The constant a scenario script declares as true to keep the Wall Panels the shipped Map 01 has for its
+## Garages' walls and for the two walls in the field (Story 019), instead of the old walls
+## (_apply_garage_panels_off() and _apply_field_panels_off()).
+const GARAGE_SCRAP_PANELS_CONSTANT: StringName = &"GARAGE_SCRAP_PANELS"
+## The node of a Map Base that holds its Garage: the floor, the three walls and the Marking.
+const GARAGE_NODE_NAME: StringName = &"Garage"
+## The three wall nodes under a Base's Garage, in the child order they stand in (1 to 3, after the floor): a
+## StaticBody3D each in Story 007, a Node3D holding that wall's Wall Panels since Story 019.
+const GARAGE_WALL_NAMES: Array[StringName] = [&"GarageBack", &"GarageSideLeft", &"GarageSideRight"]
+## The node of the Map that holds the walls in the field since Story 019, the Wall Panels of no Player, and
+## the node under the Map's cover that held them in Story 007, with the names of the two walls there.
+const FIELD_WALLS_NODE_NAME: StringName = &"FieldWalls"
+const SCRAP_WALLS_NODE_NAME: StringName = &"ScrapWalls"
+const SCRAP_WALL_NAMES: Array[StringName] = [&"ScrapWallWest", &"ScrapWallEast"]
+## The three Garage walls and the two scrap walls of Story 007 as the scenes had them at 03ed864, before Story
+## 019, cut out of compound_base.tscn and map_01_cover.tscn into scenes of their own (tools/evidence/frozen/):
+## the Garage walls 2.5 m tall StaticBody3D on the map layer, with the map art's trims, the scrap walls two 12
+## m StaticBody3D on the cover layer. Evidence-only: nothing under src/ uses them.
+const FROZEN_GARAGE_WALLS_SCENE: PackedScene = preload("res://tools/evidence/frozen/garage_walls_story_007.tscn")
+const FROZEN_SCRAP_WALLS_SCENE: PackedScene = preload("res://tools/evidence/frozen/scrap_walls_story_007.tscn")
+## The constant a scenario script declares as true to keep the Gyrocopter model the build ships with (Story 020): it
+## stands at the flying height from the tick it is made and never rises, instead of the model of Stories 007 to 019
+## that hovers 0.78 m up and rises over the cliffs and the cover (_apply_heights_off()).
+const HEIGHTS_CONSTANT: StringName = &"HEIGHTS"
+## The constant a scenario script declares as true to keep the crash the build ships with (Story 021): the Gyrocopter's
+## crash speed, so that a Gyrocopter flown into a Tall piece at speed is destroyed instead of stopped (_apply_crash_off()).
+const GYRO_CRASH_CONSTANT: StringName = &"GYRO_CRASH"
+## The constant a scenario script declares as true to keep the ammunition and the full start the shipped data gives every Unit
+## type (Story 022), instead of the unlimited Shots and the half tank every older output was measured with
+## (_apply_ammo_off(), _apply_ammo_counts_off(), and the notice keep rule of _apply_turrets_off()).
+const AMMO_CONSTANT: StringName = &"AMMO"
+## The share of the tank a new Unit started with in every output written before Story 022, the half of Story 006
+## (_apply_ammo_off()), beside LEGACY_FUEL_USE: the data says 1.0 now.
+const LEGACY_SPAWN_FUEL_FRACTION: float = 0.5
+## The constant a scenario script declares as true to keep the Fuel building of Story 023: the two Fuel zones on Map 01 and no Fuel
+## Can on it, instead of the nine Fuel Cans every older output was measured with (_apply_fuel_building_off()).
+const FUEL_BUILDING_CONSTANT: StringName = &"FUEL_BUILDING"
+## The constant a scenario script declares as true to keep the ammunition buildings of Story 024: the two ammunition buildings on Map
+## 01, each with its ammunition zone, and the Map's supply zones handed to both MineLayers (a lay refused in or near any of them),
+## instead of the Map every older output was measured on, with no ammunition building and no zone that refuses a Mine
+## (_apply_ammo_buildings_off()).
+const AMMO_BUILDINGS_CONSTANT: StringName = &"AMMO_BUILDINGS"
+## The two ammunition buildings of Map 01 by node name under the Map, west before east: each holds its ammunition zone.
+const AMMO_BUILDING_NAMES: Array[StringName] = [&"AmmoBuildingWest", &"AmmoBuildingEast"]
+## The Map's depot, by path from the Map: the Fuel zones stand under it, and the five Fuel Cans of Story 007 stood under it.
+const MAP_DEPOT_PATH: NodePath = ^"Depot"
+## The nine Fuel Cans of Map 01 as Story 022 left them, in a byte-checkable scene (tools/evidence/frozen/): the four that were
+## the Map's children, after the Depot, and the five that were the Depot's last children. Evidence-only: nothing under src/
+## uses it.
+const FROZEN_FUEL_CANS_SCENE: PackedScene = preload("res://tools/evidence/frozen/fuel_cans_story_022.tscn")
+## The four Cans that were children of the Map, in their old order: the first right after the Depot.
+const MAP_FUEL_CAN_NAMES: Array[StringName] = [&"FuelCanCanyonWest", &"FuelCanCanyonEast", &"FuelCanFlatWest", &"FuelCanFlatEast"]
+## The five Cans that were the Depot's last children, in their old order.
+const DEPOT_FUEL_CAN_NAMES: Array[StringName] = [&"FuelCanDepot1", &"FuelCanDepot2", &"FuelCanDepot3", &"FuelCanDepot4", &"FuelCanDepot5"]
+## The shipped Gyrocopter model scene, by path: a UnitStats whose model is this scene takes the frozen copy below.
+const SHIPPED_GYROCOPTER_MODEL_PATH: String = "res://src/gameplay/units/models/gyrocopter_mesh_model.tscn"
+## The Gyrocopter's model scene as Story 019 left it, a byte copy taken at the start of Story 020
+## (tools/evidence/frozen/): hover_height 0.78 m, the rise over the cliffs and the cover, and the smoke Story 017
+## exports. Evidence-only: nothing under src/ uses it.
+const FROZEN_GYROCOPTER_MODEL: PackedScene = preload("res://tools/evidence/frozen/gyrocopter_model_story_019.tscn")
 ## The Turret of Story 013 as it was measured, kept as a byte copy (tools/evidence/frozen/): a drum
 ## 1 m tall, a collider 1.8 m tall and no damaged look. Evidence-only: nothing under src/ uses it.
 const FROZEN_TURRET_SCENE: PackedScene = preload("res://tools/evidence/frozen/turret_story_013.tscn")
@@ -564,18 +735,27 @@ func _ready() -> void:
 	_apply_swap_off(SCENARIOS[scenario])
 	_apply_mines_off(SCENARIOS[scenario])
 	_apply_badly_damaged_off(SCENARIOS[scenario])
+	_apply_heights_off(SCENARIOS[scenario])
+	_apply_crash_off(SCENARIOS[scenario])
+	_apply_ammo_off(SCENARIOS[scenario])
 	_apply_turret_looks_data_off(SCENARIOS[scenario])
 	turret_scene = SHIPPED_TURRET_SCENE if _keeps_turret_looks(SCENARIOS[scenario]) else FROZEN_TURRET_SCENE
 	split = SPLIT_SCENE.instantiate() as SplitScreen
 	_apply_chase_camera(split, SCENARIOS[scenario])
 	if GREYBOX_SCENARIOS.has(scenario):
 		_apply_greybox_composition(split)
+	_apply_field_panels_off(split, SCENARIOS[scenario])
+	_apply_ammo_buildings_off(split, SCENARIOS[scenario])
+	_apply_fuel_building_off(split, SCENARIOS[scenario])
 	if PRE_009_MAP_SCENARIOS.has(scenario):
 		_apply_pre_009_map(split)
 	_apply_defences_off(split, SCENARIOS[scenario])
 	_apply_turrets_off(split, SCENARIOS[scenario])
 	_apply_turret_looks_off(split, SCENARIOS[scenario])
+	_apply_wall_panels_off(split, SCENARIOS[scenario])
+	_apply_garage_panels_off(split, SCENARIOS[scenario])
 	_apply_mine_counts_off(split, SCENARIOS[scenario])
+	_apply_ammo_counts_off(split, SCENARIOS[scenario])
 	_apply_explosions_off(split, SCENARIOS[scenario])
 	_apply_token_stock(split, SCENARIOS[scenario])
 	if split.match_controller != null:
@@ -782,15 +962,15 @@ func _apply_defences_off(root: SplitScreen, script: GDScript) -> void:
 
 ## Takes the Turrets of Story 013 off a freshly instanced launch scene, before it enters the tree,
 ## unless the scenario script declares TURRETS (the class doc says why), and the two PlayerNotice
-## Labels unless it declares TURRETS or MINES (the notice line also shows the Mine refusals of Story
-## 014). The Labels are freed first, for every scenario that declares neither, greybox or not. Then,
+## Labels unless it declares TURRETS, MINES or AMMO (the notice line also shows the Mine refusals of
+## Story 014 and the "Out of ammo" of Story 022). The Labels are freed first, for every scenario that declares neither, greybox or not. Then,
 ## for each Map Base with a TURRETS_NODE_NAME child: every color_meshes entry under it and every
 ## Structure under it, and only those, is dropped from its list, and the node is removed and freed
 ## at once. A Base with no such child is left alone.
 func _apply_turrets_off(root: SplitScreen, script: GDScript) -> void:
 	var constants: Dictionary = script.get_script_constant_map()
 	var keeps_turrets: bool = bool(constants.get(TURRETS_CONSTANT, false))
-	if not keeps_turrets and not bool(constants.get(MINES_CONSTANT, false)):
+	if not keeps_turrets and not bool(constants.get(MINES_CONSTANT, false)) and not bool(constants.get(AMMO_CONSTANT, false)):
 		for node: Node in root.find_children("*", "PlayerNotice", true, false):
 			node.get_parent().remove_child(node)
 			node.free()
@@ -880,6 +1060,209 @@ func _apply_turret_looks_off(root: SplitScreen, script: GDScript) -> void:
 			fresh.owner = root
 
 
+## Puts the five Base walls of Story 007 back on every Map Base of a freshly instanced launch scene, before
+## it enters the tree, unless the scenario script declares WALL_PANELS (the class doc says why). For each
+## Map Base with a WALLS_NODE_NAME child that holds all of the WALL_RUN_NAMES: every Structure under a
+## run, and only those, is dropped from the Base's structures; each run is removed and freed at once
+## (remove_child() and free(), as _apply_greybox_composition() frees the Map); and the StaticBody3D of the
+## same name from FROZEN_BASE_WALLS_SCENE is put in its place, at the same child index, with the Base as
+## the owner of it and of every node under it (the owner the nodes of the Base's own scene have). A Base
+## with no such node, or whose runs are not all there (the greybox composition), is left alone.
+func _apply_wall_panels_off(root: SplitScreen, script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(WALL_PANELS_CONSTANT, false)) or root.field == null:
+		return
+	for base: Base in [root.field.player_1_base, root.field.player_2_base]:
+		var walls: Node = null if base == null else base.get_node_or_null(NodePath(String(WALLS_NODE_NAME)))
+		if walls == null:
+			continue
+		var runs: Array[Node] = []
+		for run_name: StringName in WALL_RUN_NAMES:
+			runs.append(walls.get_node_or_null(NodePath(String(run_name))))
+		if runs.has(null):
+			continue
+		var kept: Array[Structure] = []
+		for structure: Structure in base.structures:
+			var under_a_run: bool = false
+			for run: Node in runs:
+				under_a_run = under_a_run or (structure != null and run.is_ancestor_of(structure))
+			if not under_a_run:
+				kept.append(structure)
+		base.structures = kept
+		var frozen: Node = FROZEN_BASE_WALLS_SCENE.instantiate()
+		for index: int in WALL_RUN_NAMES.size():
+			var old: Node = frozen.get_node(NodePath(String(WALL_RUN_NAMES[index])))
+			var place: int = runs[index].get_index()
+			walls.remove_child(runs[index])
+			runs[index].free()
+			frozen.remove_child(old)
+			var parts: Array[Node] = old.find_children("*", "", true, false)
+			parts.append(old)
+			for part: Node in parts:
+				part.owner = null
+			walls.add_child(old)
+			walls.move_child(old, place)
+			for part: Node in parts:
+				part.owner = base
+		frozen.free()
+
+
+## Puts the three Garage walls of Story 007 back on every Map Base of a freshly instanced launch scene, before
+## it enters the tree, unless the scenario script declares GARAGE_SCRAP_PANELS (the class doc says why). For
+## each Map Base with a GARAGE_NODE_NAME child (_put_back_frozen_walls()): every Structure under one of the
+## GARAGE_WALL_NAMES, and only those, is dropped from the Base's structures; each wall is removed and freed at
+## once; and the StaticBody3D of the same name from FROZEN_GARAGE_WALLS_SCENE is put in its place, at the same
+## child index, with the Base as the owner of it and of every node under it. A Base with no such node, or
+## whose Garage lacks one of the walls, is left alone.
+func _apply_garage_panels_off(root: SplitScreen, script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(GARAGE_SCRAP_PANELS_CONSTANT, false)) or root.field == null:
+		return
+	for base: Base in [root.field.player_1_base, root.field.player_2_base]:
+		var garage: Node = null if base == null else base.get_node_or_null(NodePath(String(GARAGE_NODE_NAME)))
+		if garage != null:
+			_put_back_frozen_walls(base, garage, GARAGE_WALL_NAMES, FROZEN_GARAGE_WALLS_SCENE)
+
+
+## Swaps the named children of a Base's holder node, each a Node3D that holds Wall Panels, for the
+## StaticBody3D of the same names from a frozen scene (Story 019; the way _apply_wall_panels_off() does it for
+## the Base walls): the Structures under them are dropped from the Base's structures first (a NodePath export
+## is resolved when the scene is instanced, so a freed entry would be walked), each Node3D is removed and
+## freed at once, and the frozen body takes its child index with the Base as the owner of it and of every node
+## under it, the owner the nodes of the Base's own scene have. Nothing is changed when the holder lacks one of
+## the names.
+func _put_back_frozen_walls(base: Base, holder: Node, names: Array[StringName], frozen_scene: PackedScene) -> void:
+	var runs: Array[Node] = []
+	for run_name: StringName in names:
+		runs.append(holder.get_node_or_null(NodePath(String(run_name))))
+	if runs.has(null):
+		return
+	var kept: Array[Structure] = []
+	for structure: Structure in base.structures:
+		var under_a_run: bool = false
+		for run: Node in runs:
+			under_a_run = under_a_run or (structure != null and run.is_ancestor_of(structure))
+		if not under_a_run:
+			kept.append(structure)
+	base.structures = kept
+	var frozen: Node = frozen_scene.instantiate()
+	for index: int in names.size():
+		var old: Node = frozen.get_node(NodePath(String(names[index])))
+		var place: int = runs[index].get_index()
+		holder.remove_child(runs[index])
+		runs[index].free()
+		frozen.remove_child(old)
+		var parts: Array[Node] = old.find_children("*", "", true, false)
+		parts.append(old)
+		for part: Node in parts:
+			part.owner = null
+		holder.add_child(old)
+		holder.move_child(old, place)
+		for part: Node in parts:
+			part.owner = base
+	frozen.free()
+
+
+## Puts the two scrap walls of Story 007 back in the Map's cover of a freshly instanced launch scene, before
+## it enters the tree, unless the scenario script declares GARAGE_SCRAP_PANELS (the class doc says why). A Map
+## with a FIELD_WALLS_NODE_NAME child and a cover node (MAP_COVER_PATH): neutral_structures is emptied, the
+## walls in the field are removed and freed at once with the 8 Wall Panels under them, and a
+## SCRAP_WALLS_NODE_NAME Node3D is added as the last child of the cover, as it was, holding the StaticBody3D
+## of the SCRAP_WALL_NAMES from FROZEN_SCRAP_WALLS_SCENE at child indices 0 and 1, the cover as the owner of
+## it and of every node under it (the owner the nodes of the cover's own scene have). It runs after the
+## greybox composition, which frees the Map (a field without the walls is left alone), and before
+## _apply_pre_009_map(), which gives every CollisionObject3D under the cover the layer it had before Story
+## 009, the frozen walls included and no Wall Panel (they are not under the cover).
+func _apply_field_panels_off(root: SplitScreen, script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(GARAGE_SCRAP_PANELS_CONSTANT, false)) or root.field == null:
+		return
+	var map: MapField = root.field
+	var walls: Node = map.get_node_or_null(NodePath(String(FIELD_WALLS_NODE_NAME)))
+	var cover: Node = map.get_node_or_null(MAP_COVER_PATH)
+	if walls == null or cover == null:
+		return
+	var none: Array[Structure] = []
+	map.neutral_structures = none
+	map.remove_child(walls)
+	walls.free()
+	var scrap: Node3D = Node3D.new()
+	scrap.name = SCRAP_WALLS_NODE_NAME
+	cover.add_child(scrap)
+	scrap.owner = cover
+	var frozen: Node = FROZEN_SCRAP_WALLS_SCENE.instantiate()
+	for wall_name: StringName in SCRAP_WALL_NAMES:
+		var old: Node = frozen.get_node(NodePath(String(wall_name)))
+		frozen.remove_child(old)
+		var parts: Array[Node] = old.find_children("*", "", true, false)
+		parts.append(old)
+		for part: Node in parts:
+			part.owner = null
+		scrap.add_child(old)
+		for part: Node in parts:
+			part.owner = cover
+	frozen.free()
+
+
+## Takes the ammunition buildings of Story 024 off a freshly instanced launch scene, before it enters the tree, unless the scenario
+## script declares AMMO_BUILDINGS (the constant's doc says why): both buildings of AMMO_BUILDING_NAMES, with their zones and markings,
+## are removed and freed at once (remove_child() and free(), so nothing stays in a group for a frame), and the Map's supply_zones is
+## emptied first (a NodePath export is resolved to nodes when the scene is instanced, so a freed entry would be walked): no zone is
+## then handed to the MineLayers, so no lay is refused at any zone, a Fuel zone included, as before the story. The Fuel zones stand or go
+## with FUEL_BUILDING and refuel wherever they stand, listed or not. It runs before _apply_fuel_building_off(), so the four frozen Cans
+## land right after the Depot as they did at 73de824. A field without the buildings (the greybox composition) is left alone.
+func _apply_ammo_buildings_off(root: SplitScreen, script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(AMMO_BUILDINGS_CONSTANT, false)) or root.field == null:
+		return
+	root.field.supply_zones = []
+	for building_name: StringName in AMMO_BUILDING_NAMES:
+		var building: Node = root.field.get_node_or_null(NodePath(String(building_name)))
+		if building != null:
+			root.field.remove_child(building)
+			building.free()
+
+
+## Takes the Fuel building of Story 023 off a freshly instanced launch scene, before it enters the tree, unless the scenario script
+## declares FUEL_BUILDING (the class doc says why), and gives it the nine Fuel Cans the older outputs were measured with: every
+## Fuel SupplyZone under the Map, its marking with it, is dropped from the Map's supply_zones, removed and freed at once (remove_child() and free(), as
+## _apply_greybox_composition() frees the Map, so nothing stays in a group for a frame), and the Cans of FROZEN_FUEL_CANS_SCENE are
+## put back under their old names and in their old order, with the owner the nodes of the Map's and the Depot's own scenes had:
+## the four of MAP_FUEL_CAN_NAMES as the Map's children right after the Depot, so the Dressing follows them, and the five of
+## DEPOT_FUEL_CAN_NAMES as the Depot's last children, because a Can ticks under the Map before the Units and tree order is tick
+## order. A field without a Depot (the greybox composition, which freed the Map with its Depot and zones and keeps its own five
+## Cans) is left alone.
+func _apply_fuel_building_off(root: SplitScreen, script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(FUEL_BUILDING_CONSTANT, false)) or root.field == null:
+		return
+	var map: Node = root.field
+	var depot: Node = map.get_node_or_null(MAP_DEPOT_PATH)
+	if depot == null:
+		return
+	var listed: Array[SupplyZone] = []
+	for zone: SupplyZone in root.field.supply_zones:
+		if zone != null and zone.kind != SupplyZone.Kind.FUEL:
+			listed.append(zone)
+	root.field.supply_zones = listed
+	for node: Node in map.find_children("*", "SupplyZone", true, false):
+		if (node as SupplyZone).kind == SupplyZone.Kind.FUEL:
+			node.get_parent().remove_child(node)
+			node.free()
+	var frozen: Node = FROZEN_FUEL_CANS_SCENE.instantiate()
+	var place: int = depot.get_index()
+	for can_name: StringName in MAP_FUEL_CAN_NAMES:
+		var can: Node = frozen.get_node(NodePath(String(can_name)))
+		frozen.remove_child(can)
+		can.owner = null
+		map.add_child(can)
+		place += 1
+		map.move_child(can, place)
+		can.owner = map
+	for can_name: StringName in DEPOT_FUEL_CAN_NAMES:
+		var can: Node = frozen.get_node(NodePath(String(can_name)))
+		frozen.remove_child(can)
+		can.owner = null
+		depot.add_child(can)
+		can.owner = depot
+	frozen.free()
+
+
 ## Takes the Mines out of the data every scenario that does not declare MINES runs on (Story 014),
 ## on the shared resources before the launch scene is instanced: mine_capacity 0 on every UnitStats
 ## of match_rules.tres's unit_types (one cached object per type, the one the Units spawn with), so no
@@ -913,6 +1296,70 @@ func _apply_badly_damaged_off(script: GDScript) -> void:
 	for stats: UnitStats in rules.unit_types:
 		if stats != null:
 			stats.badly_damaged_fraction = 0.0
+
+
+## Gives every scenario that does not declare HEIGHTS the Gyrocopter model it was measured with (Story 020), on the
+## shared resources before the launch scene is instanced: every UnitStats of match_rules.tres's unit_types whose
+## model is the shipped Gyrocopter scene (SHIPPED_GYROCOPTER_MODEL_PATH) takes the frozen copy
+## (FROZEN_GYROCOPTER_MODEL), which hovers 0.78 m up and rises over the cliffs and the cover. It runs after
+## _apply_greybox_models(), so a greybox scenario, whose Gyrocopter is no longer the shipped scene, keeps its
+## greybox model. Rules that fail to load are an error, and nothing is applied.
+func _apply_heights_off(script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(HEIGHTS_CONSTANT, false)):
+		return
+	var rules: MatchRules = load(MATCH_RULES_PATH) as MatchRules
+	if rules == null:
+		push_error("split_screen_harness: %s did not load as MatchRules, so the Gyrocopter's rise is not given back." % MATCH_RULES_PATH)
+		return
+	for stats: UnitStats in rules.unit_types:
+		if stats != null and stats.model != null and stats.model.resource_path == SHIPPED_GYROCOPTER_MODEL_PATH:
+			stats.model = FROZEN_GYROCOPTER_MODEL
+
+
+## Takes the crash out of the data every scenario that does not declare GYRO_CRASH runs on (Story 021), on the shared
+## resources before the launch scene is instanced: crash_speed 0 on every UnitStats of match_rules.tres's unit_types (one
+## cached object per type, the one the Units spawn with), so no type ever crashes and a Gyrocopter flown into a Tall piece,
+## the depot's tanks among them, only stops, as it did before the story. Rules that fail to load are an error, and nothing
+## is applied.
+func _apply_crash_off(script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(GYRO_CRASH_CONSTANT, false)):
+		return
+	var rules: MatchRules = load(MATCH_RULES_PATH) as MatchRules
+	if rules == null:
+		push_error("split_screen_harness: %s did not load as MatchRules, so the crash is not turned off." % MATCH_RULES_PATH)
+		return
+	for stats: UnitStats in rules.unit_types:
+		if stats != null:
+			stats.crash_speed = 0.0
+
+
+## Takes the ammunition and the full start out of the data every scenario that does not declare AMMO runs on (Story 022), on
+## the shared resources before the launch scene is instanced: ammo_capacity 0 and spawn_fuel_fraction
+## LEGACY_SPAWN_FUEL_FRACTION on every UnitStats of match_rules.tres's unit_types (one cached object per type, the one the
+## Units spawn with), so no Weapon counts, spends or emits anything and a new Unit starts with the half tank the older
+## outputs were measured with. Rules that fail to load are an error, and nothing is applied.
+func _apply_ammo_off(script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(AMMO_CONSTANT, false)):
+		return
+	var rules: MatchRules = load(MATCH_RULES_PATH) as MatchRules
+	if rules == null:
+		push_error("split_screen_harness: %s did not load as MatchRules, so the ammunition and the full start are not turned off." % MATCH_RULES_PATH)
+		return
+	for stats: UnitStats in rules.unit_types:
+		if stats != null:
+			stats.ammo_capacity = 0
+			stats.spawn_fuel_fraction = LEGACY_SPAWN_FUEL_FRACTION
+
+
+## Frees both AmmoCount Labels of a freshly instanced launch scene, before it enters the tree, unless the scenario script
+## declares AMMO (Story 022: camera_views counts every Control in each view, and the older outputs were measured without
+## the line).
+func _apply_ammo_counts_off(root: SplitScreen, script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(AMMO_CONSTANT, false)):
+		return
+	for node: Node in root.find_children("*", "AmmoCount", true, false):
+		node.get_parent().remove_child(node)
+		node.free()
 
 
 ## Frees both MineCount Labels of a freshly instanced launch scene, before it enters the tree, unless

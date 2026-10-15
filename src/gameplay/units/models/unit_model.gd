@@ -5,16 +5,20 @@ extends Node3D
 ## at. Two kinds extend it: MeshUnitModel, drawn from a mesh file built in Blender (each type's
 ## <type>_mesh_model.tscn since 2026-10-10), and KitUnitModel, built from one of the author's
 ## concept-kit models (each type's <type>_kit_model.tscn, the models from Story 007 until then).
-## This class places the model in the Unit's frame and lifts it over the cliffs and the cover it
-## crosses when its scene asks for it (the Gyrocopter's); each kind adds its own meshes.
+## This class places the model in the Unit's frame, at the height its scene gives it (the Gyrocopter's
+## flying height, Story 020), and can lift it over the cliffs and the cover it crosses when its scene
+## asks for it (no shipped scene does since Story 020); each kind adds its own meshes.
 ##
 ## Implements: production/epics/wasteland-fire/story-007-the-map.md AC-13 (the Gyrocopter stays
 ## visible over the canyon walls and the ridge: the story's open question 3, a visual offset only);
 ## production/epics/wasteland-fire/story-009-playtest-quick-fixes.md AC-2 (the Gyrocopter flies over
 ## the Map's cover and its model rises over each piece, rise_body_mask);
 ## production/epics/wasteland-fire/story-017-badly-damaged-units.md AC-4 (a badly damaged Unit
-## smokes from its drawn body: smoke_scene); design/rules.md "Teams and visual style" and
-## "Units". Vocabulary: CONTEXT.md (Unit, Gyrocopter, Map, Cover).
+## smokes from its drawn body: smoke_scene);
+## production/epics/wasteland-fire/story-020-two-heights.md AC-2 and AC-9 (the Gyrocopter's model
+## stands at one flying height, hover_height, from the tick it is made and never rises; the rise
+## switched off in its scene); design/rules.md "Heights", "Teams and visual style" and "Units".
+## Vocabulary: CONTEXT.md (Unit, Gyrocopter, Height, Tall piece, Map, Cover).
 ##
 ## _ready() scales the model by model_scale, stands it at offset plus hover_height in the Unit's
 ## frame and calls _build_meshes(), which each kind implements: it adds the MeshInstance3D
@@ -22,8 +26,12 @@ extends Node3D
 ## with the Unit's team_material, and sets _hull, the box of the model's body in its own frame. The
 ## collider, the shots and the Fuel are the Unit's: this node is only what is drawn.
 ##
-## Rise over cliffs (rise_over_cliffs, set on the Gyrocopter's scene only, so no code names a type):
-## a flying Unit's collider stays on the floor and passes under the canyon rock and the ridge (2.0 m
+## Rise over cliffs (rise_over_cliffs, set on no shipped scene since Story 020, so no code names a
+## type): the Gyrocopter's model flew at 0.78 m and rose over what it crossed from Story 007 to
+## Story 019; its scene now stands at the flying height with no rise, and this code stays for the
+## frozen copy of that earlier model which the evidence runner gives the scenarios written before
+## (tools/evidence/frozen/gyrocopter_model_story_019.tscn): evidence-only code. A flying Unit's
+## collider stays on the floor and passes under the canyon rock and the ridge (2.0 m
 ## tall, on the cliffs_water layer), so its model rises over them instead. Each physics tick one box
 ## query (intersect_shape) tests the model's hull footprint, widened by rise_margin on every side
 ## and stretched along the Unit's motion by rise_lead_seconds of it, from the floor up to
@@ -40,14 +48,16 @@ extends Node3D
 ## a Round a Unit appears only in its Garage.
 ##
 ## Rise over the cover (Story 009 AC-2): the Gyrocopter's collider also passes under the Map's cover
-## (the wrecks, the containers and the scrap walls, on the cover layer), and each piece is a body
-## drawn by its Mesh child, not drawn geometry itself. So the same query also tests rise_body_mask,
-## and a body on it lifts the model until its lowest point stands rise_clearance above the highest
-## of its GeometryInstance3D children, with the same margin, lead and rates. A body on rise_mask
-## alone is still a bare body, flown over at the hover (the water), so the rise over the cliffs and
-## the water is what it was before Story 009. The Flag Walls of Story 012 stand on the cover layer
-## too, each drawn by a direct Mesh child, so the model rises over them as over a piece of cover; a
-## Flag Wall that has fallen has no layer and is not found.
+## (the wrecks and the containers, on the cover layer), and each piece is a body drawn by its Mesh
+## child, not drawn geometry itself. So the same query also tests rise_body_mask, and a body on it
+## lifts the model until its lowest point stands rise_clearance above the highest of its
+## GeometryInstance3D children, with the same margin, lead and rates. A body on rise_mask alone is
+## still a bare body, flown over at the hover (the water), so the rise over the cliffs and the water
+## is what it was before Story 009. The Flag Walls of Story 012 and the Wall Panels of Stories 018
+## and 019 (the Base walls, the Garage walls and the scrap walls in the field) stand on the cover
+## layer too, each drawn by a direct Mesh child, so the model rises over them as over a piece of
+## cover (its lowest point at rise_clearance over a 2 m panel's top); a piece that has fallen has no
+## layer and is not found.
 ##
 ## Smoke (Story 017 AC-4, smoke_scene, set on the mesh models of the four types; the kit models and
 ## the greybox models of the older scenarios leave it empty and show none): the model listens to
@@ -79,16 +89,17 @@ const COLLIDER_KEY: String = "collider"
 ## Uniform scale of the model: 1.0 for a mesh file built to the type's collider in metres; a kit
 ## model's length fitted to the collider.
 @export var model_scale: float = 1.0
-## Height of the model above the Unit's floor, metres: the Gyrocopter's body hovers while its
-## collider stays on the floor.
+## Height of the model above the Unit's floor, metres: the Gyrocopter's flying height, where its
+## model's lowest drawn point stands from the tick it is made (Story 020), while its collider stays
+## on the floor.
 @export var hover_height: float = 0.0
 ## Shift of the model in the Unit's frame, metres (the kit Gyrocopter's hull centred on its
 ## collider).
 @export var offset: Vector3 = Vector3.ZERO
 
 @export_group("Rise over cliffs")
-## Whether the model rises over the drawn cliffs it crosses (the Gyrocopter's scene only): a visual
-## offset, the collider stays on the floor.
+## Whether the model rises over the drawn cliffs it crosses: a visual offset, the collider stays on
+## the floor. No shipped scene sets it since Story 020; the frozen model of the evidence runner does.
 @export var rise_over_cliffs: bool = false
 ## The physics layers the rise query tests: the cliffs_water layer (value 32). Required, with no
 ## default, when rise_over_cliffs is set.

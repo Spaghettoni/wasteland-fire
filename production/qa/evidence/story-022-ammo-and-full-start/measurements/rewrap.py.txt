@@ -1,0 +1,31 @@
+"""Rewrap one comment paragraph to 100 columns: rewrap.py FILE LINE [LINE...] (1-based, any line inside the paragraph).
+
+A paragraph is the run of consecutive '## ' lines (text after the marker) around the line; a bare '##' line or any
+other line ends it. Words are never split. Prints the old and new line counts so a caller can see the count move."""
+import sys
+from pathlib import Path
+
+WIDTH = 100
+path = Path(sys.argv[1])
+lines = path.read_text(encoding="utf-8").split("\n")
+for target in sorted((int(a) for a in sys.argv[2:]), reverse=True):
+    index = target - 1
+    assert lines[index].startswith("## "), (target, lines[index])
+    first = index
+    while first > 0 and lines[first - 1].startswith("## "):
+        first -= 1
+    last = index
+    while last + 1 < len(lines) and lines[last + 1].startswith("## "):
+        last += 1
+    words = " ".join(l[3:] for l in lines[first:last + 1]).split(" ")
+    out, current = [], "##"
+    for word in words:
+        if len(current) + 1 + len(word) > WIDTH:
+            out.append(current)
+            current = "## " + word
+        else:
+            current = current + " " + word
+    out.append(current)
+    print(f"{path}:{first + 1}-{last + 1}: {last - first + 1} -> {len(out)} lines")
+    lines[first:last + 1] = out
+path.write_text("\n".join(lines), encoding="utf-8")

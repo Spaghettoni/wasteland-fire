@@ -1,0 +1,5 @@
+#!/bin/sh
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire
+export STRIP_REGRESS=flag_walls,gyro_cover,map_layout,mines,turret_looks,turrets NORMALIZERS=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a697afdf-12e5-4fa4-bf14-518f3d5667d2/scratchpad/rg18/normalizers18.json
+python3 -I /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/e4457e7a-2740-444a-b8a5-9e1f571391e9/scratchpad/w18/seeded-defects18.py /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a697afdf-12e5-4fa4-bf14-518f3d5667d2/scratchpad/rg18/f-base /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/e4457e7a-2740-444a-b8a5-9e1f571391e9/scratchpad/w18/mut > /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/e4457e7a-2740-444a-b8a5-9e1f571391e9/scratchpad/w18/mutants.txt 2>&1
+echo "rc=$?" >> /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/e4457e7a-2740-444a-b8a5-9e1f571391e9/scratchpad/w18/mutants.txt

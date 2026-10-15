@@ -1,0 +1,41 @@
+"""Adds to the normalizers the rewrites of the four lints that print a count, computed from the SOURCE: lintcount24.py on the
+pre-edit snapshot (OLD_ROOT) and on the tree (NEW_ROOT).
+usage: mk_lint_rewrites24.py OLD_ROOT NEW_ROOT NORMALIZERS.json   (the file is read and written back)"""
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+old_root, new_root, out = sys.argv[1], sys.argv[2], Path(sys.argv[3])
+here = Path(__file__).parent
+
+def counts(root):
+    text = subprocess.run(["python3", "-I", str(here / "lintcount24.py"), root], capture_output=True, text=True, check=True).stdout
+    found = {}
+    for line in text.strip().split("\n"):
+        key, *values = line.split()
+        found[key] = [int(v) for v in values]
+    return found
+
+old, new = counts(old_root), counts(new_root)
+rules = json.loads(out.read_text(encoding="utf-8"))
+if old["T33"] != new["T33"]:
+    rules.setdefault("tokens_data", []).append([
+        "lint: %d files, %d code lines" % tuple(old["T33"]), "lint: %d files, %d code lines" % tuple(new["T33"])])
+    if old["T33"][0] != new["T33"][0]:
+        rules["tokens_data"].append(["lint_files=%d" % old["T33"][0], "lint_files=%d" % new["T33"][0]])
+if old["MINES"] != new["MINES"]:
+    rules.setdefault("mines", []).append([
+        "PASS %d code lines of the Mines' scripts" % old["MINES"][0], "PASS %d code lines of the Mines' scripts" % new["MINES"][0]])
+    rules["mines"].append(["lint_lines=%d" % old["MINES"][0], "lint_lines=%d" % new["MINES"][0]])
+if old["AMMO"] != new["AMMO"]:
+    rules.setdefault("ammo", []).append([
+        "%d code lines of the Weapon, the Ammo line and the notice" % old["AMMO"][0],
+        "%d code lines of the Weapon, the Ammo line and the notice" % new["AMMO"][0]])
+    rules["ammo"].append(["ammo_lint_lines=%d" % old["AMMO"][0], "ammo_lint_lines=%d" % new["AMMO"][0]])
+if old["FUEL"] != new["FUEL"]:
+    rules.setdefault("fuel_building", []).append([
+        "%d numbers in the code lines of the zone and its settings" % old["FUEL"][0],
+        "%d numbers in the code lines of the zone and its settings" % new["FUEL"][0]])
+out.write_text(json.dumps(rules, indent=1) + "\n", encoding="utf-8")
+print("T33", old["T33"], "->", new["T33"], "; MINES", old["MINES"], "->", new["MINES"], "; AMMO", old["AMMO"], "->", new["AMMO"], "; FUEL", old["FUEL"], "->", new["FUEL"])

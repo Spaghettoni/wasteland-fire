@@ -1,0 +1,31 @@
+"""Re-implements the two lints that print a count of code lines, so the exact rewrites come from the SOURCE:
+tokens_data T33 (tokens_data_kit.scan: .gd files under src/gameplay/match and src/ui/hud, recursive) and mines_lint
+(mines.gd: .gd files directly in src/gameplay/mines plus mine_count.gd and player_notice.gd).
+usage: lintcount.py ROOT   (ROOT holds src/)  -> prints  T33 FILES CODE  and  MINES CODE"""
+import re
+import sys
+from pathlib import Path
+
+root = Path(sys.argv[1])
+quoted = re.compile(r"\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*'")
+hint = re.compile(r"@export_range\([^)]*\)")
+
+def code_of(line):
+    return quoted.sub("", line).split("#")[0]
+
+def scripts_under(folder):
+    return sorted(folder.rglob("*.gd"))
+
+files = code = 0
+for sub in ("src/gameplay/match", "src/ui/hud"):
+    for path in scripts_under(root / sub):
+        files += 1
+        for line in path.read_text(encoding="utf-8").split("\n"):
+            code += 0 if not code_of(line).strip() else 1
+print("T33", files, code)
+mines = 0
+paths = sorted((root / "src/gameplay/mines").glob("*.gd")) + [root / "src/ui/hud/mine_count.gd", root / "src/ui/hud/player_notice.gd"]
+for path in paths:
+    for line in path.read_text(encoding="utf-8").split("\n"):
+        mines += 0 if not hint.sub("", code_of(line)).strip() else 1
+print("MINES", mines)

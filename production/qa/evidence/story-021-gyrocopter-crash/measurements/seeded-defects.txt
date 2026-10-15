@@ -1,0 +1,48 @@
+KILLED  commanded_velocity_not_the_real_one                      crash[edges] rc=1 fails=pinned
+KILLED  this_ticks_real_velocity_not_the_last                    crash[edges] rc=1 fails=speed_edge,angle_edge,offset_edges
+KILLED  speed_along_the_motion_not_the_normal                    crash[edges] rc=1 fails=only_stops,angle_edge,offset_edges
+EQUIVALENT the_floor_counted                                    crash[never] rc=0 fails=- | the Floor's normal is up and a Gyrocopter never moves into it at the crash speed (the probe: no Floor collision at all while it flies, the normal up and no motion while it stands), so its arrival along that normal is about zero
+KILLED  the_sea_edge_not_told_apart                              crash[never] rc=1 fails=sea_edge_stops,low_pieces_pass
+KILLED  every_type_given_4_truck                                 crash[never] rc=1 fails=ground_never
+KILLED  every_type_given_4_buggy                                 crash[never] rc=1 fails=ground_never
+KILLED  every_type_given_4_motorbike                             crash[never] rc=1 fails=ground_never
+KILLED  zero_read_as_always                                      crash[never] rc=1 fails=ground_never
+KILLED  stored_velocity_not_reset_at_a_spawn                     crash[spawn] rc=1 fails=spawn_never
+KILLED  destroy_deferred_past_the_frame                          crash[tall] rc=1 fails=tall_crashes,reverse_crash
+KILLED  unit_ticks_after_the_controller                          crash[frame] rc=1 fails=crash_on_the_loss_tick
+KILLED  damage_dealt_to_the_piece                                crash[tall] rc=1 fails=crash_costs
+KILLED  arrival_never_stored                                     crash[tall] rc=1 fails=tall_crashes,crash_costs,two_crashes_one_tick,reverse_crash
+KILLED  arrival_stored_before_the_test                           crash[edges] rc=1 fails=speed_edge,angle_edge,offset_edges
+KILLED  test_before_the_move                                     crash[tall] rc=1 fails=tall_crashes,crash_costs,reverse_crash
+KILLED  normal_sign_flipped                                      crash[tall] rc=1 fails=tall_crashes,crash_costs,two_crashes_one_tick,reverse_crash
+KILLED  floor_test_against_the_wrong_axis                        crash[tall] rc=1 fails=tall_crashes,crash_costs
+KILLED  floor_test_inverted                                      crash[tall] rc=1 fails=tall_crashes,crash_costs,two_crashes_one_tick,reverse_crash
+EQUIVALENT strictly_above_the_crash_speed                       crash[edges] rc=0 fails=- | no arrival lands exactly on the crash speed in any check (the edges are 0.1 m/s and 0.1 degree either side); the story's word is 'reaches', the build uses >=
+KILLED  crash_speed_halved_in_the_test                           crash[edges] rc=1 fails=only_stops,pinned,speed_edge,angle_edge,offset_edges
+KILLED  edge_group_name_misspelt                                 crash[never] rc=1 fails=sea_edge_stops,low_pieces_pass
+KILLED  west_shore_body_left_out_of_the_group                    crash[never] rc=1 fails=sea_edge_stops
+EQUIVALENT crash_without_a_return                               crash[spawn] rc=0 fails=- | after destroy() the rest of the tick only stores a velocity and the blocked flag on an out-of-play Unit, and the next spawn's reset_motion() zeroes both: nothing a run can read
+KILLED  reverse_never_crashes                                    crash[tall] rc=1 fails=reverse_crash
+KILLED  script_default_4                                         crash[never] rc=1 fails=ground_never
+KILLED  first_problem_accepts_a_negative                         crash[data] rc=1 fails=data_lines
+KILLED  first_problem_lets_nan_through                           crash[data] rc=1 fails=data_lines
+KILLED  gyrocopter_crash_speed_8                                 crash[edges] rc=1 fails=speed_edge
+KILLED  gyrocopter_crash_speed_line_gone                         crash[tall] rc=1 fails=tall_crashes,crash_costs,two_crashes_one_tick,reverse_crash
+KILLED  runner_strip_guard_inverted                              crash[tall] rc=1 fails=tall_crashes,crash_costs,two_crashes_one_tick,reverse_crash
+KILLED  runner_leaves_the_crash_on_base_walls                    base_walls rc=1 output differs from the baseline
+KILLED  runner_leaves_the_crash_on_depot_tanks                   depot_tanks rc=1 output differs from the baseline
+KILLED  runner_leaves_the_crash_on_fuel                          fuel rc=0 output differs from the baseline
+KILLED  runner_leaves_the_crash_on_garage_scrap_walls            garage_scrap_walls rc=1 output differs from the baseline
+KILLED  runner_leaves_the_crash_on_gyro                          gyro rc=0 output differs from the baseline
+KILLED  runner_leaves_the_crash_on_gyro_cover                    gyro_cover rc=1 output differs from the baseline
+KILLED  runner_leaves_the_crash_on_heights                       heights rc=0 output differs from the baseline
+KILLED  runner_leaves_the_crash_on_heights_showcase              heights_showcase rc=1 output differs from the baseline
+KILLED  runner_leaves_the_crash_on_map_cover                     map_cover rc=1 output differs from the baseline
+KILLED  runner_leaves_the_crash_on_tokens                        tokens rc=1 output differs from the baseline
+KILLED  runner_leaves_the_crash_on_turret_looks                  turret_looks rc=1 output differs from the baseline
+KILLED  runner_leaves_the_crash_on_turret_looks_showcase         turret_looks_showcase rc=1 output differs from the baseline
+KILLED  runner_leaves_the_crash_on_turrets                       turrets rc=1 output differs from the baseline
+KILLED  runner_leaves_the_crash_on_units_showcase                units_showcase rc=1 output differs from the baseline
+-- 45 mutants: 45 killed or equivalent, 0 survived, 0 broken or not applied
+-- the 3 scratch copies equal the repo (apart from .godot, production, design, docs, tests, svaty_jur)
+rc=0

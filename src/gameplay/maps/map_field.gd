@@ -30,10 +30,23 @@ extends Node3D
 ## StaticBody3D with a mesh child (as terrain_stand_ins.tscn's is) would hide the Gyrocopter
 ## inside it, and water built as a CSG shape would lift it over the water.
 ##
-## Data, no behaviour: the Map's scene sets the three exports and nothing here checks them.
-## SplitScreen refuses to begin a Round while either Base is missing, and the MatchController
-## refuses it while a Base's SpawnPoint markers lie off its pad (Base.first_spawn_problem()) and
-## while the Token stock is missing or cannot be used (TokenLedger.first_problem(); Story 008).
+## The pieces of no Base (Story 019 AC-5). A Map may hold damageable pieces that belong to no Base
+## and so to no Player: Map 01's four Wall Panels in each of its two scrap walls, which the Bases'
+## own walls cannot list. It lists them in neutral_structures, and SplitScreen restores them at
+## every restart beside the Bases' pieces, from that list and with no search of the tree.
+##
+## The supply zones (Story 024). A Map lists its SupplyZones in supply_zones, so whoever needs
+## them asks the Map and never searches the tree: Map 01 lists the two Fuel zones under its depot
+## and the two ammunition zones of its ammunition buildings. SplitScreen reads the list once,
+## before the Round begins, and hands every ammunition zone the Players' Weapons and both
+## MineLayers every zone, which they keep clear of Mines
+## (production/epics/wasteland-fire/story-024-ammunition-buildings.md AC-2, AC-4).
+##
+## Data, almost no behaviour: the Map's scene sets the exports and nothing here checks them but
+## the warnings for an unassigned entry of neutral_structures and of supply_zones. SplitScreen
+## refuses to begin a Round while either Base is missing, and the MatchController refuses it
+## while a Base's SpawnPoint markers lie off its pad (Base.first_spawn_problem()) and while the
+## Token stock is missing or cannot be used (TokenLedger.first_problem(); Story 008).
 
 ## The Base of Player 1 (Base A in design/rules.md): where that Player's Units appear, in its
 ## Garage, at the start of the Round and after every destruction, and where that Player's Flag
@@ -53,3 +66,29 @@ extends Node3D
 ## count, a key no Unit type has, or no Token for the type that can carry the Flag.
 ## data/token_stock.tres holds the source's example.
 @export var token_stock: TokenStock
+
+## The damageable pieces of this Map that belong to no Base (Story 019): Map 01 lists the 8 Wall
+## Panels of its two scrap walls, 4 each. SplitScreen leaves each one's player_index at -1, so a
+## Shot of either Player damages it by the matrix, and restores each one when a Round starts again,
+## as it restores a Base's own pieces (Base.structures). It does not arm them: a Turret is a Base's.
+## A piece listed here is a Structure like the Base's, so a fallen one stays down until the restart.
+## Optional and empty by default: a Map with no such piece, the greybox field among them, lists
+## none. An entry that is not assigned is skipped with a warning.
+@export var neutral_structures: Array[Structure] = []
+
+## The supply zones of this Map (Story 024): Map 01 lists its two Fuel zones, then its two
+## ammunition zones, west before east. SplitScreen hands every one of kind AMMO both Weapons and
+## hands both MineLayers the whole list. A zone is polled by its own tick, so it gives its supplies
+## whether or not it is listed here; the list is only who is handed what. Optional and empty by
+## default: a Map with no supply building, the greybox field among them, lists none. An entry that
+## is not assigned is skipped with a warning.
+@export var supply_zones: Array[SupplyZone] = []
+
+
+func _ready() -> void:
+	for index: int in neutral_structures.size():
+		if neutral_structures[index] == null:
+			push_warning("MapField '%s': neutral_structures entry %d is not assigned, so that piece is skipped." % [name, index])
+	for index: int in supply_zones.size():
+		if supply_zones[index] == null:
+			push_warning("MapField '%s': supply_zones entry %d is not assigned, so that zone is skipped." % [name, index])

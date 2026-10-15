@@ -9,8 +9,9 @@ extends UnitModel
 ## judged in the game's own cameras, then kept, and the other three Units modelled the same way);
 ## production/epics/wasteland-fire/story-007-the-map.md AC-11 (a Unit wears its Team's colour and
 ## no other) and AC-12 (each type reads by its silhouette; the Motorbike's cream heading cue, a lamp
-## part of its file); design/rules.md "Teams and visual style". The Gyrocopter's rise over cliffs
-## and cover is UnitModel's. Vocabulary: CONTEXT.md (Unit, Team, Motorbike, Gyrocopter).
+## part of its file); design/rules.md "Teams and visual style". The Gyrocopter's model stands at its
+## flying height, UnitModel's hover_height, and no longer rises (Story 020). Vocabulary: CONTEXT.md
+## (Unit, Team, Motorbike, Gyrocopter, Height).
 ##
 ## The file holds three meshes, named by tools/blender/wasteland_kit.py: Accent, the Team paint;
 ## Neutral, the metal, rubber and cargo; and Lamp, the lamp lenses. _build_meshes() adds one
@@ -19,8 +20,9 @@ extends UnitModel
 ## Unit._paint_team_colour() paints with the Unit's team_material (a vertex-coloured steel until
 ## then); Neutral vertex-coloured at KitMerge.NEUTRAL_ROUGHNESS and KitMerge.NEUTRAL_METALLIC; Lamp
 ## in the palette's glowing lamp colour. The vertex colours of the file are sRGB numbers (the
-## script writes them so), read with vertex_color_is_srgb as the kit folds' are. The hull the rise
-## reads is the box of the file's vertices up to hull_top (the Gyrocopter's rotor left out).
+## script writes them so), read with vertex_color_is_srgb as the kit folds' are. The hull is the box
+## of the file's vertices up to hull_top (the Gyrocopter's rotor left out): the badly damaged smoke
+## stands at its top, and the rise reads it where a scene asks for one.
 ##
 ## The meshes are read from the file once per file and shared by every model of it after
 ## (MeshFile, which the Map's PropMesh reads through too), and so is the hull (_hulls): SplitScreen
@@ -38,9 +40,10 @@ const Palette := preload("res://assets/art/shared/wasteland_palette.gd")
 ## The mesh file, a .glb that holds the Accent, Neutral and Lamp meshes. Required, with no
 ## default: each model scene stores it.
 @export var mesh_scene: PackedScene
-## Vertices up to this height in the file's frame, metres, make the hull the rise reads: on the
-## Gyrocopter's scene, above its body and below its rotor, whose blades reach far past the body.
-## Optional: INF, the default, takes every vertex (a model that does not rise never reads it).
+## Vertices up to this height in the file's frame, metres, make the hull: on the Gyrocopter's scene,
+## above its body and below its rotor, whose blades reach far past the body, so the smoke stands
+## over the body and the rise (where a scene has one) reads the body's footprint.
+## Optional: INF, the default, takes every vertex.
 @export var hull_top: float = INF
 
 ## The hull of every file and hull_top read so far, by the file's path and the height.

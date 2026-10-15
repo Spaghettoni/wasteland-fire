@@ -1,0 +1,22 @@
+#!/bin/sh
+# The final chain of Story 022: import, parse every .gd the story added or changed, regenerate the exact rewrites from the source
+# lines, regress the 70 older outputs, run ammo twice (byte compare) and the showcase headless, gdUnit, and the main scene.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/12ce1e2b-c78d-4d9e-a4b5-6a970ab10612/scratchpad
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+godot --headless --path . --import > $S/w22/import.txt 2>&1; echo "import rc=$?"; grep -c -E "ERROR|WARNING" $S/w22/import.txt
+{ for f in src/gameplay/combat/weapon.gd src/gameplay/units/unit_stats.gd src/gameplay/units/unit.gd src/gameplay/match/match_controller.gd src/ui/hud/player_notice.gd src/ui/hud/ammo_count.gd tools/evidence/split_screen_harness.gd; do echo $f; done; git ls-files --others --exclude-standard -- 'tools/evidence/split_screen/ammo*.gd' | grep '\.gd$'; } | sort -u > $S/w22/gd-list.txt
+wc -l < $S/w22/gd-list.txt
+sed 's#^#res://#' $S/w22/gd-list.txt | xargs godot --headless --path . -s res://.claude/scripts/godot-parse-check.gd -- > $S/w22/parse.txt 2>&1; echo "parse rc=$?"; grep -c "^ok:" $S/w22/parse.txt; grep "PARSE FAIL" $S/w22/parse.txt
+python3 -I $S/rg22/mk_normalizers.py /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire $S/rg22/f-base $S/rg22/before22 $S/rg22/normalizers22.json | tail -3
+python3 -I $S/rg22/mk_lint_rewrites.py $S/pre22 /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire $S/rg22/normalizers22.json
+sh $S/rg22/regress.sh final $S/rg22/normalizers22.json 2>&1 | tail -14
+for run in a b; do godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=ammo > $S/w22/final-$run.txt 2>&1 & done; wait
+grep -c "^CHECK" $S/w22/final-a.txt; grep -E "^RESULT|FAIL" $S/w22/final-a.txt | cut -c1-300
+cmp $S/w22/final-a.txt $S/w22/final-b.txt && echo "BYTE-IDENTICAL"
+godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=ammo_showcase > $S/w22/showcase-headless.txt 2>&1; echo "showcase rc=$?"; grep -E "^RESULT|FAIL" $S/w22/showcase-headless.txt | cut -c1-200
+godot --headless -s -d --remote-debug tcp://127.0.0.1:0 res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a res://tests --ignoreHeadlessMode > $S/w22/gdunit.txt 2>&1; echo "gdunit rc=$?"; grep -a "Overall Summary" $S/w22/gdunit.txt | cut -c1-200
+godot --path . --windowed --resolution 1280x720 --quit-after 600 > $S/w22/main-scene-600-frames.txt 2>&1; echo "main scene rc=$?"; grep -c -E "ERROR|WARNING|SCRIPT" $S/w22/main-scene-600-frames.txt
+echo FINAL_DONE
+for run in a b; do godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=ammo_alone > $S/w22/alone-$run.txt 2>&1 & done; wait
+grep -E "^RESULT" $S/w22/alone-a.txt | cut -c1-200; cmp $S/w22/alone-a.txt $S/w22/alone-b.txt && echo "ALONE BYTE-IDENTICAL"
+echo FINAL2_DONE

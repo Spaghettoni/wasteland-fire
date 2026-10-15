@@ -1,0 +1,19 @@
+#!/bin/sh
+# usage: frames22.sh ROOT SCENARIO OUT_DIR [QUIT_AFTER]   records one evidence scenario windowed at 1280x720 with Movie Maker
+# (frames under OUT_DIR/all), keeps frame 0 (the launch) and every frame its SPLIT lines name (frame=N) in OUT_DIR/kept,
+# deletes the rest, saves the log as OUT_DIR/run.txt. QUIT_AFTER cuts the run after that many main-loop frames.
+R="$1"; SC="$2"; OUT="$3"; Q="$4"
+mkdir -p "$OUT/all" "$OUT/kept"
+cd "$R" || exit 9
+if [ -n "$Q" ]; then QA="--quit-after $Q"; else QA=""; fi
+godot --path . --windowed --resolution 1280x720 --write-movie "$OUT/all/f.png" $QA \
+  res://tools/evidence/split_screen_harness.tscn -- --scenario="$SC" > "$OUT/run.txt" 2>&1
+echo "$SC rc $?"
+grep -E "ERROR|WARNING" "$OUT/run.txt" | head -5
+grep -E "^RESULT" "$OUT/run.txt" | head -3
+( echo "frame=0"; grep -o "frame=[0-9]*" "$OUT/run.txt" ) | sort -u | while read -r f; do
+  n=${f#frame=}; src=$(printf "%s/all/f%08d.png" "$OUT" "$n")
+  [ -f "$src" ] && cp "$src" "$OUT/kept/"
+done
+find "$OUT/all" -name '*.png' -delete
+echo "$SC kept $(find "$OUT/kept" -name '*.png' | wc -l) frames"

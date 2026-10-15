@@ -9,7 +9,8 @@ extends UnitModel
 ## Implements: production/epics/wasteland-fire/story-007-the-map.md AC-11 (a Unit wears its Team's
 ## colour and no other), AC-12 (each type reads by its silhouette; the Motorbike's cream heading
 ## cue) and AC-14 (one build per type, cached); design/rules.md "Teams and visual style" and
-## "Units". The rise over cliffs and cover (Story 007 AC-13, Story 009 AC-2) is UnitModel's.
+## "Units". The rise over cliffs and cover (Story 007 AC-13, Story 009 AC-2) is UnitModel's; the kit
+## Gyrocopter stands at the flying height with no rise, as the Blender one does (Story 020).
 ## Vocabulary: CONTEXT.md (Unit, Team, Motorbike, Gyrocopter).
 ##
 ## _build_meshes() takes the build of kit_scene from KitMerge (made the first time a model of that

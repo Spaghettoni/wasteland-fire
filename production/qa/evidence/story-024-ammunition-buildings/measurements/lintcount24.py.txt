@@ -1,0 +1,43 @@
+"""Re-implements the four lints that print a count, so the exact rewrites come from the SOURCE:
+tokens_data T33 (tokens_data_kit.scan: .gd files under src/gameplay/match and src/ui/hud, recursive),
+mines_lint (mines.gd: .gd files directly in src/gameplay/mines plus mine_count.gd and player_notice.gd),
+ammo_lint (ammo_data.gd: weapon.gd, ammo_count.gd, player_notice.gd: non-empty code lines) and
+fuel_building's no_gameplay_number_in_the_code (fuel_building_data.gd: the numbers in supply_zone.gd and supply_settings.gd).
+usage: lintcount24.py ROOT   (ROOT holds src/)  -> prints  T33 FILES CODE, MINES CODE, AMMO LINES and FUEL NUMBERS"""
+import re
+import sys
+from pathlib import Path
+
+root = Path(sys.argv[1])
+quoted = re.compile(r"\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*'")
+hint = re.compile(r"@export_range\([^)]*\)")
+fuel_hints = re.compile(r"@export_range\([^)]*\)|\"[^\"]*\"")
+literal = re.compile(r"(?<![\w.])\d+(\.\d+)?(?![\w.])")
+
+def code_of(line):
+    return quoted.sub("", line).split("#")[0]
+
+files = code = 0
+for sub in ("src/gameplay/match", "src/ui/hud"):
+    for path in sorted((root / sub).rglob("*.gd")):
+        files += 1
+        for line in path.read_text(encoding="utf-8").split("\n"):
+            code += 0 if not code_of(line).strip() else 1
+print("T33", files, code)
+mines = 0
+paths = sorted((root / "src/gameplay/mines").glob("*.gd")) + [root / "src/ui/hud/mine_count.gd", root / "src/ui/hud/player_notice.gd"]
+for path in paths:
+    for line in path.read_text(encoding="utf-8").split("\n"):
+        mines += 0 if not hint.sub("", code_of(line)).strip() else 1
+print("MINES", mines)
+ammo = 0
+for rel in ("src/gameplay/combat/weapon.gd", "src/ui/hud/ammo_count.gd", "src/ui/hud/player_notice.gd"):
+    for line in (root / rel).read_text(encoding="utf-8").split("\n"):
+        ammo += 0 if not hint.sub("", code_of(line)).strip() else 1
+print("AMMO", ammo)
+numbers = 0
+for rel in ("src/gameplay/supply/supply_zone.gd", "src/gameplay/supply/supply_settings.gd"):
+    for line in (root / rel).read_text(encoding="utf-8").split("\n"):
+        text = fuel_hints.sub("", line.split("#")[0])
+        numbers += len(list(literal.finditer(text)))
+print("FUEL", numbers)

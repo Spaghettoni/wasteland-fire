@@ -1,0 +1,23 @@
+Floor                                            pos=(0.0, 0.0, 0.0) yaw=0.0  box x -150.00..150.00 y -1.00..0.00 z -50.00..50.00
+Cover/Wrecks/WreckWestOuterSouth                 pos=(-80.0, 0.65, 5.0) yaw=30.0  box x -83.35..-76.65 y 0.00..1.30 z 2.20..7.80
+Cover/Wrecks/WreckWestMiddleNorth                pos=(-53.0, 0.65, -8.0) yaw=-30.0  box x -56.35..-49.65 y 0.00..1.30 z -10.80..-5.20
+Cover/Wrecks/WreckWestInnerSouth                 pos=(-26.0, 0.65, 7.6) yaw=-45.0  box x -29.18..-22.82 y 0.00..1.30 z 4.42..10.78
+Cover/Wrecks/WreckWestInnerNorth                 pos=(-22.0, 0.65, -10.0) yaw=20.0  box x -25.33..-18.67 y 0.00..1.30 z -12.44..-7.56
+Cover/Containers/ContainerWest                   pos=(-58.0, 1.0, 0.0) yaw=0.0  box x -64.00..-52.00 y 0.00..2.00 z -1.25..1.25
+Cliffs/RockCanyonNorth                           pos=(0.0, -0.5, 0.0) yaw=0.0  box x -100.00..100.00 y -0.50..2.00 z -48.00..-30.00
+Cliffs/RockCanyonSouth                           pos=(0.0, -0.5, 0.0) yaw=0.0  box x -96.00..96.00 y -0.50..2.00 z -32.00..-20.00
+Cliffs/RidgeWest                                 pos=(0.0, -0.5, 0.0) yaw=0.0  box x -100.00..-46.00 y -0.50..2.00 z 22.00..48.00
+Cliffs/RidgeCentre                               pos=(0.0, -0.5, 0.0) yaw=0.0  box x -34.00..34.00 y -0.50..2.00 z 21.00..48.00
+Cliffs/RidgeEast                                 pos=(0.0, -0.5, 0.0) yaw=0.0  box x 46.00..100.00 y -0.50..2.00 z 22.00..48.00
+Water/ChannelWest                                pos=(-40.0, 0.0, 34.0) yaw=0.0  box x -46.00..-34.00 y 0.00..1.50 z 20.00..48.00
+Water/ChannelEast                                pos=(40.0, 0.0, 34.0) yaw=0.0  box x 34.00..46.00 y 0.00..1.50 z 20.00..48.00
+Depot/FuelTanks/FuelTankNorthWest/Collider       pos=(-6.8115, 1.5, -6.6222) yaw=0.0  box x -9.37..-4.25 y 0.00..3.00 z -9.18..-4.06
+Depot/FuelTanks/FuelTankSouth/Collider           pos=(0.0, 1.5, 8.0) yaw=0.0  box x -2.56..2.56 y 0.00..3.00 z 5.44..10.56
+Base1                                            pos=(-120.0, 0.0, 0.0) yaw=-90.0
+Base2                                            pos=(120.0, 0.0, 0.0) yaw=90.0
+Base1/Turrets/TurretLeft                         pos=(-101.0, 0.0, -10.0) yaw=-90.0  box x -102.00..-100.00 y 0.00..3.00 z -11.00..-9.00
+Base1/Turrets/TurretRight                        pos=(-101.0, 0.0, 10.0) yaw=-90.0  box x -102.00..-100.00 y 0.00..3.00 z 9.00..11.00
+Base1/Walls/TowerGateLeft                        pos=(-105.0, 3.0, -16.0) yaw=-90.0  box x -107.15..-102.85 y 0.00..6.00 z -18.15..-13.85
+Base1/Walls/TowerBackLeft                        pos=(-135.0, 3.0, -16.0) yaw=-90.0  box x -137.15..-132.85 y 0.00..6.00 z -18.15..-13.85
+Terrain/ShoreEdge/ShoreNW1                       pos=(0.0, 0.0, 0.0) yaw=0.0  box x -30.26..0.25 y 0.00..3.00 z -48.10..-46.10
+Terrain/ShoreEdge/ShoreSW1                       pos=(0.0, 0.0, 0.0) yaw=0.0  box x -30.26..0.25 y 0.00..3.00 z 46.10..48.10

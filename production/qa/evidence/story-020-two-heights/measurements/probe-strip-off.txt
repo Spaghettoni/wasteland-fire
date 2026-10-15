@@ -1,0 +1,91 @@
+STRICT     drive coast                  rc=0
+STRICT     drive showcase               rc=0
+STRICT     drive soak                   rc=0
+STRICT     drive walls                  rc=0
+DIFF       split badly_damaged          rc 0->0, lines 57->57, first difference at line 16
+    base: CHECK badly_damaged smoke_begins_at_the_hit_from_the_drawn_body PASS motorbike: no node before, on the tick of the hit 1 puff in the Model's node (1 frame after the change) | buggy: no node before, on the tick of the hit 1 puff in
+    new : CHECK badly_damaged smoke_begins_at_the_hit_from_the_drawn_body PASS motorbike: no node before, on the tick of the hit 1 puff in the Model's node (1 frame after the change) | buggy: no node before, on the tick of the hit 1 puff in
+STRICT     split badly_damaged_off      rc=0
+DIFF       split badly_damaged_showcase rc 0->0, lines 13->13, first difference at line 7
+    base: SPLIT badly_damaged_showcase t=14.583 frame=874 moment=gyro_over_cliff smoking=false,true puffs=0,15 views=["above_camera_settings.tres", "chase_camera_settings.tres"] model_bottom=2.25 piece_top=2.00
+    new : SPLIT badly_damaged_showcase t=14.583 frame=874 moment=gyro_over_cliff smoking=false,true puffs=0,15 views=["above_camera_settings.tres", "chase_camera_settings.tres"] model_bottom=2.50 piece_top=2.00
+DIFF       split base_walls             rc 0->0, lines 23->23, first difference at line 6
+    base: CHECK base_walls gyro_over PASS 20 crossings at full throttle, one Gyrocopter of each Player over a panel of each of the five runs of its own Base, from outside into the yard and from the yard out again: no wall contact, its model
+    new : CHECK base_walls gyro_over PASS 20 crossings at full throttle, one Gyrocopter of each Player over a panel of each of the five runs of its own Base, from outside into the yard and from the yard out again: no wall contact, its model
+DIFF       split base_walls_showcase    rc 0->0, lines 28->28, first difference at line 11
+    base: SPLIT base_walls_showcase t=11.333 frame=679 moment=gyro_over_side_wall_above both Gyrocopters over the wall, models 0.25 m over its top
+    new : SPLIT base_walls_showcase t=11.333 frame=679 moment=gyro_over_side_wall_above both Gyrocopters over the wall, models 0.50 m over its top
+STRICT     split bases                  rc=0
+STRICT     split camera_showcase        rc=0
+STRICT     split camera_views           rc=0
+STRICT     split choice                 rc=0
+STRICT     split countdown              rc=0
+STRICT     split depot_tanks            rc=0
+STRICT     split destruction            rc=0
+DIFF       split explosions             rc 0->0, lines 73->73, first difference at line 55
+    base: CHECK explosions over_cliff PASS a Gyrocopter risen over RockCanyonSouth (top 2.00 m, its model's lowest point 2.25 m) was destroyed: its Explosion stands at 2.75 m, 0.75 m above the piece and 2.75 m above the floor, inside the mo
+    new : CHECK explosions over_cliff PASS a Gyrocopter risen over RockCanyonSouth (top 2.00 m, its model's lowest point 2.50 m) was destroyed: its Explosion stands at 3.00 m, 1.00 m above the piece and 3.00 m above the floor, inside the mo
+STRICT     split explosions_off         rc=0
+STRICT     split explosions_showcase    rc=0
+STRICT     split flag_run               rc=0
+STRICT     split flag_showcase          rc=0
+DIFF       split flag_walls             rc 0->0, lines 62->62, first difference at line 7
+    base: CHECK flag_walls gyro_over PASS p1: model >= 0.250 m over the 2 m top for 26 ticks, never under 16.4 m/s, out over the Garage side | p2: model >= 0.250 m over the 2 m top for 26 ticks, never under 16.4 m/s, out over the Garage sid
+    new : CHECK flag_walls gyro_over PASS p1: model >= 0.500 m over the 2 m top for 26 ticks, never under 16.4 m/s, out over the Garage side | p2: model >= 0.500 m over the 2 m top for 26 ticks, never under 16.4 m/s, out over the Garage sid
+DIFF       split flag_walls_showcase    rc 0->0, lines 13->13, first difference at line 11
+    base: SPLIT flag_walls_showcase t=15.150 frame=908 moment=gyro_over over=true model_bottom=2.25 wall_top=2.00 look=2
+    new : SPLIT flag_walls_showcase t=15.150 frame=908 moment=gyro_over over=true model_bottom=2.50 wall_top=2.00 look=2
+STRICT     split fuel                   rc=0
+STRICT     split fuel_cans              rc=0
+STRICT     split fuel_hint              rc=0
+STRICT     split fuel_showcase          rc=0
+DIFF       split garage_scrap_walls     rc 0->1, lines 20->20, first difference at line 7
+    base: CHECK garage_scrap_walls drawn_height PASS a Gyrocopter chosen with the real keys on each of the four Garage spots (the first and the spare of both Bases, the spare taken by a Unit standing on the first) is drawn beside a Garage w
+    new : CHECK garage_scrap_walls drawn_height FAIL a Gyrocopter chosen with the real keys on each of the four Garage spots (the first and the spare of both Bases, the spare taken by a Unit standing on the first) is drawn beside a Garage w
+DIFF       split garage_scrap_walls_showcase rc 0->0, lines 29->29, first difference at line 8
+    base: SPLIT garage_scrap_walls_showcase t=8.250 frame=494 moment=gyro_on_spot_above both Gyrocopters on their spawn spots beside a Garage wall, the models' lowest points 2.25 and 2.25 m up (the hover is 0.78)
+    new : SPLIT garage_scrap_walls_showcase t=8.250 frame=494 moment=gyro_on_spot_above both Gyrocopters on their spawn spots beside a Garage wall, the models' lowest points 2.50 and 2.50 m up (the hover is 0.78)
+STRICT     split gyro                   rc=0
+DIFF       split gyro_cover             rc 0->1, lines 29->29, first difference at line 3
+    base: CHECK gyro_cover cover_data PASS 12 cover bodies on layer 64 | masks motorbike 99, buggy 99, truck 99, gyrocopter 1 | shot mask 83 | 18 Base wall bodies on layer 1 | Gyrocopter model rise_body_mask=64, hover 0.780 m over the floor
+    new : CHECK gyro_cover cover_data FAIL 12 cover bodies on layer 64 | masks motorbike 99, buggy 99, truck 99, gyrocopter 1 | shot mask 83 | 18 Base wall bodies on layer 1 | Gyrocopter model rise_body_mask=0, hover 2.500 m over the floor 
+STRICT     split hud                    rc=0
+STRICT     split idle_burn              rc=0
+STRICT     split isolation              rc=0
+STRICT     split layout                 rc=0
+STRICT     split loss                   rc=0
+STRICT     split map_bases              rc=0
+STRICT     split map_cover              rc=0
+STRICT     split map_edges              rc=0
+STRICT     split map_ford               rc=0
+STRICT     split map_layout             rc=0
+STRICT     split map_legibility         rc=0
+STRICT     split map_showcase           rc=0
+STRICT     split mines                  rc=0
+STRICT     split mines_showcase         rc=0
+DIFF       split quick_fixes_showcase   rc 0->0, lines 9->9, first difference at line 3
+    base: SPLIT quick_fixes_showcase t=1.883 frame=115 moment=gyro_over_container gyro_model_over_top=0.250 gyro_z=0.23 buggy_speed=19.60
+    new : SPLIT quick_fixes_showcase t=1.883 frame=115 moment=gyro_over_container gyro_model_over_top=0.500 gyro_z=0.23 buggy_speed=19.60
+STRICT     split respawn_showcase       rc=0
+STRICT     split round_over             rc=0
+STRICT     split showcase               rc=0
+STRICT     split simultaneous           rc=0
+STRICT     split spot_turn              rc=0
+STRICT     split token_choice           rc=0
+STRICT     split token_layout           rc=0
+NORMALIZED split token_ui               rc=0 rewrites=[2]
+STRICT     split tokens                 rc=0
+NORMALIZED split tokens_data            rc=0 rewrites=[18]
+STRICT     split tokens_showcase        rc=0
+DIFF       split turret_looks           rc 0->1, lines 96->96, first difference at line 7
+    base: CHECK turret_looks growth PASS the drum's top 2.20 m, the dome's 3.00 m, the barrel drawn 2.53 to 2.77 m; the collider from the ground to 3.00 m on the drum's radius 1.0; the Gyrocopter's band, from the mesh files with the thin pa
+    new : CHECK turret_looks growth FAIL the drum's top 2.20 m, the dome's 3.00 m, the barrel drawn 2.53 to 2.77 m; the collider from the ground to 3.00 m on the drum's radius 1.0; the Gyrocopter's band, from the mesh files with the thin pa
+STRICT     split turret_looks_showcase  rc=0
+NORMALIZED split turrets                rc=0 rewrites=[1]
+STRICT     split turrets_showcase       rc=0
+NORMALIZED split unit_swap              rc=0 rewrites=[1]
+STRICT     split unit_swap_showcase     rc=0
+STRICT     split units                  rc=0
+STRICT     split units_showcase         rc=0
+STRICT     split weapons                rc=0
+-- 50 strict, 4 normalized, 12 bad of 66 compared

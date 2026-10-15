@@ -1,0 +1,15 @@
+#!/bin/sh
+# usage: regress.sh TAG [NORMALIZERS_JSON]   Captures the 75 retained outputs (3 at a time) into rg24/TAG, drops the
+# Jolt job-system load warning (two lines; it appears under parallel load and is not a behaviour change) from
+# both sides, and compares byte for byte with base-a, through the story's exact rewrites when a file is given.
+W=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/1fd5af27-c781-473f-9fcc-5a3e12baae8e/scratchpad/rg24
+TAG="$1"; NORM="$2"
+case "$TAG" in base-a|base-b|base) echo "refusing to overwrite a baseline"; exit 9;; esac
+if [ "$TAG" != "nocapture" ]; then
+mkdir -p $W/$TAG
+sh $W/capture.sh $W/$TAG $W/jobs.txt 3
+fi
+sh $W/filter.sh $W/base-a $W/f-base
+sh $W/filter.sh $W/$TAG $W/f-$TAG
+python3 -I $W/compare.py $W/f-base $W/f-$TAG $NORM > $W/$TAG.txt
+echo "compare exit $?"; grep -v "^STRICT" $W/$TAG.txt

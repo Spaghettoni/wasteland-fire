@@ -1,0 +1,20 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+Movie Maker mode enabled, recording movie in 1280×720 @ 60 FPS...
+SPLIT ammo_showcase t=1.033 frame=61 moment=rows line_p1='Ammo 100 / 100' line_p2='Ammo 25 / 25' mines_p2='Mines 5 / 5'
+SPLIT ammo_showcase t=9.267 frame=555 moment=firing line_p2='Ammo 14 / 25' line_p1='Ammo 100 / 100' in_the_air=1
+SPLIT ammo_showcase t=10.867 frame=651 moment=firing_chase line_p2='Ammo 12 / 25'
+SPLIT ammo_showcase t=31.067 frame=1863 moment=last_shot line_p1='Ammo 0 / 50' notice_p1='Out of ammo' notice_p2='hidden'
+SPLIT ammo_showcase t=35.450 frame=2126 moment=worn line_p1='Ammo 40 / 50' fuel=37.5 of 100
+SPLIT ammo_showcase t=36.150 frame=2168 moment=choosing panel=true line_p1='hidden'
+SPLIT ammo_showcase t=38.817 frame=2328 moment=new_unit line_p1='Ammo 50 / 50' started_with=100.0 fuel=99.8 of 100
+SPLIT ammo_showcase t=44.300 frame=2657 moment=round_over line_p2='Ammo 93 / 100' screen=true
+RESULT ammo_showcase ok checks=0 failed=0 t=44.567 moments=8 shots=80 errors=0 warnings=0
+--------------------------------------------------------------------------------
+Done recording movie at path: /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/12ce1e2b-c78d-4d9e-a4b5-6a970ab10612/scratchpad/w22/rec2/all/f.png
+2675 frames at 60 FPS (movie length: 00:00:44:35), recorded in 00:09:26 (7% of real-time speed).
+CPU render time: 0.04 seconds (average: 0.02 ms/frame)
+GPU render time: 0.00 seconds (average: 0.00 ms/frame)
+Encoding time: 541.14 seconds (average: 202.30 ms/frame)
+--------------------------------------------------------------------------------

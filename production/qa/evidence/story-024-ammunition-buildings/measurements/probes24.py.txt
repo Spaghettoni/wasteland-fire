@@ -1,0 +1,49 @@
+"""The strip probe of Story 024: for each strip rule of the runner's _apply_ammo_buildings_off() (and story 023's care in
+_apply_fuel_building_off()), copy the project, take that rule out with a SAME-LINE-COUNT patch of the runner (so the printed advance_ticks
+frame does not move and the normalizers stay valid; a helper function a patch needs is appended at the END of the file), capture the 75
+retained outputs there and compare them with the baseline. The outputs that differ are the regression's detectors for that rule.
+usage: probes24.py NAME [NAME...]   (names below)"""
+import subprocess
+import sys
+from pathlib import Path
+
+REPO = "/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire"
+SP = "/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/1fd5af27-c781-473f-9fcc-5a3e12baae8e/scratchpad"
+W = f"{SP}/rg24"
+RUNNER = "tools/evidence/split_screen_harness.gd"
+OPT = 'bool(script.get_script_constant_map().get(AMMO_BUILDINGS_CONSTANT, false)) or root.field == null:'
+HELPER = '''
+
+## Probe helper: the Fuel zones of a field, for a strip that leaves them handed to the MineLayers.
+func _probe_fuel_zones_of(field: MapField) -> Array[SupplyZone]:
+	var found: Array[SupplyZone] = []
+	for node: Node in field.find_children("*", "SupplyZone", true, false):
+		if (node as SupplyZone).kind == SupplyZone.Kind.FUEL:
+			found.append(node as SupplyZone)
+	return found
+'''
+# name: (list of (old, new) same-line-count replacements, text appended at the end of the runner)
+PROBES = {
+    "buildings_on": ([("\tif " + OPT + "\n", "\tif true or " + OPT + "\n")], ""),
+    "list_kept": ([("\troot.field.supply_zones = []\n\tfor building_name", "\troot.field.supply_zones = _probe_fuel_zones_of(root.field)\n\tfor building_name")], HELPER),
+    "fuel_list_not_dropped": ([("\troot.field.supply_zones = listed\n", "\tlisted.append(null)\n")], ""),
+}
+for name in sys.argv[1:]:
+    pairs, tail = PROBES[name]
+    root = f"{SP}/probes24p/{name}"
+    Path(root).mkdir(parents=True, exist_ok=True)
+    subprocess.run(["rsync", "-a", "--delete", "--exclude", ".git", "--exclude", "production", "--exclude", "docs", "--exclude", "design",
+                    "--exclude", "tests", "--exclude", "assets/art/svaty_jur", REPO + "/", root + "/"], check=True)
+    runner = Path(root) / RUNNER
+    text = runner.read_text(encoding="utf-8")
+    for old, new in pairs:
+        assert old.count("\n") == new.count("\n")
+        assert text.count(old) == 1, (name, old, text.count(old))
+        text = text.replace(old, new)
+    runner.write_text(text + tail, encoding="utf-8")
+    out = f"{W}/probe-{name}"
+    subprocess.run(["sh", f"{W}/capture_in.sh", root, out, f"{W}/jobs.txt", "3"], check=True)
+    subprocess.run(["sh", f"{W}/filter.sh", out, f"{W}/f-probe-{name}"], check=True)
+    result = subprocess.run(["python3", "-I", f"{W}/compare.py", f"{W}/f-base", f"{W}/f-probe-{name}", f"{W}/normalizers24.json"], capture_output=True, text=True)
+    Path(f"{W}/probe-{name}.txt").write_text(result.stdout, encoding="utf-8")
+    print(name, "->", [l for l in result.stdout.split("\n") if l.startswith("DIFF") or l.startswith("MISSING") or l.startswith("--")], flush=True)

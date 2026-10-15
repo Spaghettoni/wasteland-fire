@@ -1,0 +1,191 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+SCAN Floor layer=1 top=0.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreNW1 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreNW2 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreNW3 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreNW4 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreNW5 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreNW6 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreNW7 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreNW8 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreSW8 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreSW7 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreSW6 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreSW5 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreSW4 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreSW3 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreSW2 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreSW1 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreSE1 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreSE2 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreSE3 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreSE4 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreSE5 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreSE6 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreSE7 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreSE8 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreNE8 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreNE7 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreNE6 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreNE5 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreNE4 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreNE3 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreNE2 layer=1 top=3.000 drawn=none height=high
+SCAN Terrain/ShoreEdge/ShoreNE1 layer=1 top=3.000 drawn=none height=high
+SCAN Water/ChannelWest layer=32 top=1.500 drawn=0.020 height=low
+SCAN Water/ChannelEast layer=32 top=1.500 drawn=0.020 height=low
+SCAN Cliffs/RockCanyonNorth layer=32 top=2.000 drawn=2.000 height=low
+SCAN Cliffs/RockCanyonSouth layer=32 top=2.000 drawn=2.000 height=low
+SCAN Cliffs/RidgeWest layer=32 top=2.000 drawn=2.000 height=low
+SCAN Cliffs/RidgeCentre layer=32 top=2.000 drawn=2.000 height=low
+SCAN Cliffs/RidgeEast layer=32 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallBack/Panel1 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallBack/Panel2 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallBack/Panel3 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallBack/Panel4 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallBack/Panel5 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallBack/Panel6 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallBack/Panel7 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallBack/Panel8 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallLeft/Panel1 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallLeft/Panel2 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallLeft/Panel3 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallLeft/Panel4 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallLeft/Panel5 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallLeft/Panel6 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallLeft/Panel7 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallLeft/Panel8 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallRight/Panel1 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallRight/Panel2 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallRight/Panel3 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallRight/Panel4 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallRight/Panel5 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallRight/Panel6 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallRight/Panel7 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/WallRight/Panel8 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/GateWallLeft/Panel1 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/GateWallLeft/Panel2 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/GateWallLeft/Panel3 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/GateWallRight/Panel1 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/GateWallRight/Panel2 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/GateWallRight/Panel3 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Walls/TowerGateLeft layer=1 top=6.000 drawn=6.450 height=high tall
+SCAN Base1/Walls/TowerGateRight layer=1 top=6.000 drawn=6.450 height=high tall
+SCAN Base1/Walls/TowerBackLeft layer=1 top=6.000 drawn=6.450 height=high tall
+SCAN Base1/Walls/TowerBackRight layer=1 top=6.000 drawn=6.450 height=high tall
+SCAN Base1/Garage/GarageBack/Panel1 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Garage/GarageBack/Panel2 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Garage/GarageBack/Panel3 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Garage/GarageBack/Panel4 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Garage/GarageSideLeft/Panel1 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Garage/GarageSideLeft/Panel2 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Garage/GarageSideLeft/Panel3 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Garage/GarageSideRight/Panel1 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Garage/GarageSideRight/Panel2 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Garage/GarageSideRight/Panel3 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/WaterTower/LegGateLeft layer=1 top=8.000 drawn=8.000 height=high tall
+SCAN Base1/WaterTower/LegGateRight layer=1 top=8.000 drawn=8.000 height=high tall
+SCAN Base1/WaterTower/LegGarageLeft layer=1 top=8.000 drawn=8.000 height=high tall
+SCAN Base1/WaterTower/LegGarageRight layer=1 top=8.000 drawn=8.000 height=high tall
+SCAN Base1/Defences/FlagWallGate layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Defences/FlagWallGarage layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Defences/FlagWallLeft layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Defences/FlagWallRight layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base1/Turrets/TurretLeft layer=1 top=3.000 drawn=3.801 height=high tall
+SCAN Base1/Turrets/TurretRight layer=1 top=3.000 drawn=3.801 height=high tall
+SCAN Base2/Walls/WallBack/Panel1 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/WallBack/Panel2 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/WallBack/Panel3 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/WallBack/Panel4 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/WallBack/Panel5 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/WallBack/Panel6 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/WallBack/Panel7 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/WallBack/Panel8 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/WallLeft/Panel1 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/WallLeft/Panel2 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/WallLeft/Panel3 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/WallLeft/Panel4 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/WallLeft/Panel5 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/WallLeft/Panel6 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/WallLeft/Panel7 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/WallLeft/Panel8 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/WallRight/Panel1 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/WallRight/Panel2 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/WallRight/Panel3 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/WallRight/Panel4 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/WallRight/Panel5 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/WallRight/Panel6 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/WallRight/Panel7 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/WallRight/Panel8 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/GateWallLeft/Panel1 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/GateWallLeft/Panel2 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/GateWallLeft/Panel3 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/GateWallRight/Panel1 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/GateWallRight/Panel2 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/GateWallRight/Panel3 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Walls/TowerGateLeft layer=1 top=6.000 drawn=6.450 height=high tall
+SCAN Base2/Walls/TowerGateRight layer=1 top=6.000 drawn=6.450 height=high tall
+SCAN Base2/Walls/TowerBackLeft layer=1 top=6.000 drawn=6.450 height=high tall
+SCAN Base2/Walls/TowerBackRight layer=1 top=6.000 drawn=6.450 height=high tall
+SCAN Base2/Garage/GarageBack/Panel1 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Garage/GarageBack/Panel2 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Garage/GarageBack/Panel3 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Garage/GarageBack/Panel4 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Garage/GarageSideLeft/Panel1 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Garage/GarageSideLeft/Panel2 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Garage/GarageSideLeft/Panel3 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Garage/GarageSideRight/Panel1 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Garage/GarageSideRight/Panel2 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Garage/GarageSideRight/Panel3 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/WaterTower/LegGateLeft layer=1 top=8.000 drawn=8.000 height=high tall
+SCAN Base2/WaterTower/LegGateRight layer=1 top=8.000 drawn=8.000 height=high tall
+SCAN Base2/WaterTower/LegGarageLeft layer=1 top=8.000 drawn=8.000 height=high tall
+SCAN Base2/WaterTower/LegGarageRight layer=1 top=8.000 drawn=8.000 height=high tall
+SCAN Base2/Defences/FlagWallGate layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Defences/FlagWallGarage layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Defences/FlagWallLeft layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Defences/FlagWallRight layer=64 top=2.000 drawn=2.000 height=low
+SCAN Base2/Turrets/TurretLeft layer=1 top=3.000 drawn=3.801 height=high tall
+SCAN Base2/Turrets/TurretRight layer=1 top=3.000 drawn=3.801 height=high tall
+SCAN Cover/Wrecks/WreckWestOuterSouth layer=64 top=1.300 drawn=1.300 height=low
+SCAN Cover/Wrecks/WreckWestMiddleNorth layer=64 top=1.300 drawn=1.300 height=low
+SCAN Cover/Wrecks/WreckWestInnerSouth layer=64 top=1.300 drawn=1.300 height=low
+SCAN Cover/Wrecks/WreckWestInnerNorth layer=64 top=1.300 drawn=1.300 height=low
+SCAN Cover/Wrecks/WreckEastOuterSouth layer=64 top=1.300 drawn=1.300 height=low
+SCAN Cover/Wrecks/WreckEastMiddleNorth layer=64 top=1.300 drawn=1.300 height=low
+SCAN Cover/Wrecks/WreckEastInnerSouth layer=64 top=1.300 drawn=1.300 height=low
+SCAN Cover/Wrecks/WreckEastInnerNorth layer=64 top=1.300 drawn=1.300 height=low
+SCAN Cover/Containers/ContainerWest layer=64 top=2.000 drawn=2.000 height=low
+SCAN Cover/Containers/ContainerEast layer=64 top=2.000 drawn=2.000 height=low
+SCAN FieldWalls/FieldWallWest/Panel1 layer=64 top=2.000 drawn=2.000 height=low
+SCAN FieldWalls/FieldWallWest/Panel2 layer=64 top=2.000 drawn=2.000 height=low
+SCAN FieldWalls/FieldWallWest/Panel3 layer=64 top=2.000 drawn=2.000 height=low
+SCAN FieldWalls/FieldWallWest/Panel4 layer=64 top=2.000 drawn=2.000 height=low
+SCAN FieldWalls/FieldWallEast/Panel1 layer=64 top=2.000 drawn=2.000 height=low
+SCAN FieldWalls/FieldWallEast/Panel2 layer=64 top=2.000 drawn=2.000 height=low
+SCAN FieldWalls/FieldWallEast/Panel3 layer=64 top=2.000 drawn=2.000 height=low
+SCAN FieldWalls/FieldWallEast/Panel4 layer=64 top=2.000 drawn=2.000 height=low
+SCAN Depot/FuelTanks/FuelTankNorthWest/Collider layer=1 top=3.000 drawn=none height=high tall
+SCAN Depot/FuelTanks/FuelTankNorthEast/Collider layer=1 top=3.000 drawn=none height=high tall
+SCAN Depot/FuelTanks/FuelTankSouth/Collider layer=1 top=3.000 drawn=none height=high tall
+CHECK heights scan PASS 169 solid colliders on Map 01, each in exactly one Height by its physics layer alone (low: cliffs_water 32 and cover 64; high: the map layer 1) and none in both: 60 Base wall panel (low, 2.00 to 2.00 m); 20 Garage panel (low, 2.00 to 2.00 m); 8 field panel (low, 2.00 to 2.00 m); 8 Flag Wall (low, 2.00 to 2.00 m); 8 wreck (low, 1.30 to 1.30 m); 2 container (low, 2.00 to 2.00 m); 5 cliff (low, 2.00 to 2.00 m); 2 water channel (low, 1.50 to 1.50 m); 8 corner tower (Tall piece, 6.00 to 6.00 m); 8 water tower leg (Tall piece, 8.00 to 8.00 m); 3 depot tank (Tall piece, 3.00 to 3.00 m); 4 Turret (Tall piece, 3.00 to 3.00 m); 1 Floor (high, 0.00 to 0.00 m); 32 sea edge (high, 3.00 to 3.00 m); no Base wall, Garage wall or scrap wall is on the map layer (all 88 panels are low, on 64); the tallest low piece is 2.000 m, and the 23 Tall pieces (towers, legs, tanks, Turrets) are all taller than 2 m; the Floor and the sea edge are high and no Tall piece
+CHECK heights masks PASS 7 named 3D physics layers (map, units, zones, flags, gyrocopters, cliffs_water, cover), none added; masks (motorbike 99, buggy 99, truck 99, gyrocopter 1), the Shot mask 83, the Turret's sight adds 32 and the Mines' probe reads 97: no mask changed
+CHECK heights tops PASS drawn tops from the mesh files and the Map: ground Units' bodies (motorbike 1.2388, buggy 1.4475, truck 2.2045; thin parts apart: buggy's whip and pennant 2.0000, truck's whip antenna 2.7018), the tallest low piece 2.000 m; the tallest of them (the Truck's pod 2.2045 m, the antenna not counted) plus the 0.25 m clearance is 2.4545 m (story 015 measured 2.454), rounded up to 0.05 m is 2.500 m, the lowest drawn point of the Gyrocopter's model in its scene (2.5000 m); with the antenna (2.7018 m) it would be 2.9518 m, 3.000 m rounded up; the Gyrocopter's drawn band at it is 2.5000 to 4.3016 m, its rotor 3.6984 m under the water towers' platforms (8.000 m); the scene has no rise values; drawn above 2 m with no collider: Dressing/West/ContainerNorth 2.500, Dressing/West/ContainerSouth 2.500, Dressing/East/ContainerNorth 2.500, Dressing/East/ContainerSouth 2.500 (the model's lowest point stands 0.000 m over the top of each: it touches, it is not drawn through them)
+CHECK heights kit_fallback PASS the kit fallback scene (gyrocopter_kit_model.tscn) draws the Gyrocopter with its lowest point at 2.5002 m (the flying height 2.5000), rise_over_cliffs off and no physics tick
+CHECK heights spawn_height PASS the lowest drawn point of the Gyrocopter's model stood at the flying height (2.5000 m, within 1 mm) on the tick it was spawned, read inside the controller's own tick: the Round's first spawn of both Players (the runner's real keys), 4 spawns after a Swap at the own Base on the first and the spare spot of each Garage (the spare taken by the other Player's Unit standing on the first), and 2 after a destruction in the open (first p1 2.5000 m; first p2 2.5000 m; swap Base1 spot 1 2.5000 m; swap Base1 spot 2 2.5000 m; swap Base2 spot 1 2.5000 m; swap Base2 spot 2 2.5000 m; destroyed in the open, p1 2.5000 m; destroyed in the open, p2 2.5000 m)
+CHECK heights flight_heights PASS in the open the Gyrocopter's lowest drawn point holds the flying height (2.5000 m) on every tick it stands, turns on the spot and flies at full throttle: standing (hovering still) 30 ticks 2.50000 to 2.50000 m; turning on the spot 90 ticks 2.50000 to 2.50000 m, turned 1.16 rad; flying at full throttle 240 ticks 2.50000 to 2.50100 m, 16.40 m/s
+CHECK heights explosion_up_there PASS each Gyrocopter destroyed in the open exploded where its model was drawn, in the air: 3.000 m (the model 2.500 to 4.302 m), 3.000 m (the model 2.500 to 4.302 m)
+CHECK heights cross_low PASS seven flights of Player 1's Gyrocopter at full throttle, each judged on every tick against the drawn box of every low piece under its model: no wall contact, its speed never falling over a piece, the top speed reached, its model at least 0.500 m over the top of every piece it was over (the clearance is 0.25 m): the Base's axis (4 Flag Wall (0.500 m over), 2 Garage panel (0.500 m over), 2 Base wall panel (0.500 m over); under the tank for 38 ticks, its body 0.900 m from the legs, its drawn rotor blades reaching 0.416 m into them); a field wall (3 field panel (0.500 m over)); over the rubble of a fallen panel (2 field panel (0.500 m over), 1 fallen panel (2.121 m over)); a container (1 wreck (1.200 m over), 1 container (0.500 m over)); a wreck (1 wreck (1.200 m over)); the ridges and the water (3 cliff (0.500 m over), 2 water channel (2.480 m over)); the canyon's two walls to the sea edge, where it stopped flush (0.001 m off, 0.000 m of travel in 12 more ticks of throttle) (2 cliff (0.500 m over))
+CHECK heights passes_through PASS a motorbike: closest 0.06 m, 1.261 m over its body; a buggy: closest 0.06 m, 1.052 m over its body; a truck: closest 0.06 m, 0.296 m over its body, its thin part drawn 0.202 m into the gear; two Gyrocopters head-on: their drawn models overlapped on 9 ticks (up to 18.23 m3), no contact, both at 16.4 m/s
+CHECK heights air_stops PASS Player 1's Gyrocopter driven at full throttle at each Tall piece from 14 m is stopped by it (a wall contact) flush against its face and goes no further with the throttle held 12 more ticks, as it did before this story (the sea edge is the canyon flight's, in cross_low): a corner tower: gyrocopter stopped flush within 0.001 m at 16.4 m/s; a water tower leg: gyrocopter stopped flush within 0.001 m at 16.4 m/s; a depot tank: gyrocopter stopped flush within 0.000 m at 16.4 m/s; a Turret: gyrocopter stopped flush within 0.001 m at 16.4 m/s
+CHECK heights ground_stops PASS Player 1's Buggy driven at full throttle at 11 kinds, seven low and four Tall, is stopped by each flush against its face (the turned wreck along its own axis) and goes no further: a Flag Wall: buggy stopped flush within 0.000 m at 19.6 m/s; a Base wall panel: buggy stopped flush within 0.000 m at 19.6 m/s; a field panel: buggy stopped flush within 0.000 m at 19.6 m/s; a container: buggy stopped flush within 0.000 m at 19.6 m/s; a wreck: buggy stopped flush within 0.000 m at 19.6 m/s; a cliff: buggy stopped flush within 0.000 m at 19.6 m/s; a water channel: buggy stopped flush within 0.001 m at 9.8 m/s; a corner tower: buggy stopped flush within 0.000 m at 19.6 m/s; a water tower leg: buggy stopped flush within 0.000 m at 19.6 m/s; a depot tank: buggy stopped flush within 0.000 m at 19.6 m/s; a Turret: buggy stopped flush within 0.000 m at 19.6 m/s
+CHECK heights band PASS the Gyrocopter's drawn band at the flying height is 2.5000 to 4.3016 m (story 015 measured 2.454 to 4.256): a corner tower: collider 6.000 m, drawn 6.450 m, 3.950 m above the lowest point; a water tower leg: collider 8.000 m, drawn 8.000 m, 5.500 m above the lowest point; a depot tank: collider 3.000 m, drawn 4.150 m, 1.650 m above the lowest point; a Turret: collider 3.000 m, drawn 3.801 m, 1.301 m above the lowest point; the water tower's tank (bottom 8.300 m) stands 3.998 m above the band, so only its legs meet a Gyrocopter; the Turret's head is drawn 2.200 to 3.801 m and overlaps the band by 1.301 m (barrel 2.530 to 2.770 m wholly inside it, story 015: 2.53 to 2.77; the dome's top 3.000 m stands 0.500 m over the band's lowest point, story 015: 3.00 m, 0.546 m over its 2.454)
+CHECK heights shots_hit PASS every Shot still flies at the one shooting height (0.5 m) and ends on its target's box, with the Gyrocopter's model drawn 2.00 m above it, for the damage matrix's damage (the attacker's damage times its multiplier): motorbike hits the Gyrocopter 5.0; buggy hits the Gyrocopter 6.0; truck hits the Gyrocopter 37.5; the Gyrocopter hits the motorbike 15.0; the Gyrocopter hits the buggy 22.5; the Gyrocopter hits the truck 7.5; the Turret hits the Gyrocopter 12.0; the Gyrocopter hits the Turret 15.0
+CHECK heights shots_stopped PASS a Wall Panel, the Buggy at the Gyrocopter: ended on the face at -10.75, nothing lost; a Wall Panel, the Gyrocopter at the Buggy: ended on the face at -13.25, nothing lost; the panel fallen, the Buggy at the Gyrocopter: took 6.0; the panel fallen, the Gyrocopter at the Buggy: took 22.5; a container, the Buggy at the Gyrocopter: ended on the face at 1.25, nothing lost; a container, the Gyrocopter at the Buggy: ended on the face at -1.25, nothing lost; a Gyrocopter over the middle of a container: its Shot ended at x -56.40, its muzzle (inside the piece)
+CHECK heights tracer PASS a Shot from a high gun is drawn at the shooting height (0.50 m, the tracer 0.35 to 0.65 m) and decided there: the flying Gyrocopter's lowest drawn point (2.500 m) stands 2.000 m over the tracer's line and 1.850 m over its top; the raised Turret's drawn barrel (2.530 to 2.770 m, centre 2.650 m) stands 2.030 m over the line at its bottom, 2.150 m at its middle and 1.880 m over the tracer's top
+CHECK heights views PASS in both views, at 4 headings and for both Players, the whole drawn box of the Player's own Gyrocopter (lowest point 2.500 m, rotor top 4.302 m) is inside its view (least margin: 265.1 px in the view from above, 235.8 px in the chase view, of 640 x 720); the drawn model stands off the Unit's place on the ground along the view direction (farther from the camera, up the screen) by 0.289 m at its lowest point and 0.538 m at its rotor top in the view from above, where the ray through the Unit's pixel is 83.4 degrees below the horizon (at the view's centre, 75 degrees, 1 m of height would be 0.268 m), and by 7.222 m and 20.724 m in the chase view (a ray 19.1 degrees below the horizon), the lowest point drawn 5 px above the Unit's place in the view from above and 76 px in the chase view; each Player sees the other's Gyrocopter at the same height (both lowest points 2.5000 m in one shared world), 6 of 8 of the other's drawn boxes wholly in view in the view from above and 2 in the chase view
+CHECK heights modules_leave_a_fresh_round PASS after each of the 6 modules that ran (scan, spawn, over, tall, shots, views) the Round was on and no Unit carried a Flag, so the next module did not start in a Round that was over (a frozen world, where a Turret that 'does not fire' proves nothing)
+CHECK heights height_every_tick PASS 11286 ticks with a Gyrocopter in play over the whole run: the lowest drawn point of its model stood at 2.5000 m above the floor within 0.00100 m on every one (the Unit's body floats up to its 1 mm safe margin; measured from the Unit's own origin the model stood within 0.000000 m), changed by at most 0.00100 m from one tick to the next (the model alone 0.000000 m), and its model did no physics tick on 0 of them; on the 8 spawn ticks read inside the controller's tick (the Round's first spawn, respawns and the spawns after a Swap) it stood within 0.00000 m of it
+CHECK heights no_engine_noise PASS errors=0 warnings=0 over every Round of the scenario: Gyrocopters spawned, flown over every low kind and into every Tall one, shot at and shot, swapped, destroyed and restarted
+RESULT heights ok checks=19 failed=0 t=123.567 flying_height=2.5000 samples=11286 scan=169 low_top=2.000 tall=23 flying_height=2.5000 rule=2.50 body_top=2.2045 rotor=4.3016 spawn_reads=8 cross_low=7 least_clear=0.500 passes_through=4 head_on_ticks=9 air_stops=4 ground_stops=11 band=2.5000..4.3016 turret_head=2.200..3.801 shots_hit=8 shots_stopped=7 tracer_gyro=2.000 tracer_barrel=2.030 views=16 above_shift=0.289 chase_shift=7.222 spawns=8 worst=0.00100 step=0.00100 model=0.000000

@@ -1,0 +1,5 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK ammo_alone alone_keeps_the_lines PASS a scenario that declares AMMO alone keeps both views' Ammo line and notice line (each notice on its own Player's Weapon) and has no Mines line and no Turret
+CHECK ammo_alone alone_says_out_of_ammo PASS the Motorbike's 100 Shots 12 ticks apart ended with one report of an empty gun, the notice line reading 'Out of ammo' inside it, and 'Ammo 0 / 100' on the Ammo line
+RESULT ammo_alone ok checks=2 failed=0 t=21.883 alone=1

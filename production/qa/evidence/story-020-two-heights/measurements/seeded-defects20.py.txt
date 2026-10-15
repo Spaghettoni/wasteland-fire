@@ -1,0 +1,210 @@
+#!/usr/bin/env python3
+"""Seeded defects for Story 020 (two Heights: the Gyrocopter flies high): each one exact text replacement in a scratch copy of
+the repo, run against the scenario that guards it (HEIGHTS_ONLY names the heights modules, which keeps a mutant to the seconds
+its module takes; the whole scenario runs in about 5 s anyway). KILLED when the scenario fails (rc != 0 or a FAIL CHECK) or, for
+the regression kind, when an older scenario's output differs from its baseline (through the story's exact rewrites). A mutant whose
+run prints no RESULT line for its scenario is BROKEN (the replacement made the script unusable, not a verdict) and is counted
+apart. One worker per scratch copy, so no two mutants ever share a file (story 011's lesson).
+
+usage: seeded-defects20.py BASELINE_DIR WORK_DIR [--dry] [--only name,name]
+  BASELINE_DIR holds the baselines of the older scenarios as split-NAME.txt (the regression kind)
+  WORK_DIR gets copy0..copy2 (scratch copies of the repo; they are diffed against the repo at the end)
+  NORMALIZERS (environment) names the story's exact rewrites (normalizers.json), applied to the regression kind
+  STRIP_HEIGHTS (environment) lists the older scenarios the probe found to change with the strip off: each gets a
+  regression mutant of its own
+  --dry only checks that every replacement text occurs exactly once in its file
+"""
+import json
+import os
+import re
+import subprocess
+import sys
+from concurrent.futures import ThreadPoolExecutor
+
+REPO = "/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire"
+BASE = sys.argv[1]
+WORK = sys.argv[2]
+DRY = "--dry" in sys.argv
+WORKERS = 3
+RULES = json.load(open(os.environ["NORMALIZERS"])) if os.environ.get("NORMALIZERS") else {}
+COPIES = [os.path.join(WORK, "copy%d" % i) for i in range(WORKERS)]
+
+MODELS = "src/gameplay/units/models/"
+GYRO_MESH = MODELS + "gyrocopter_mesh_model.tscn"
+GYRO_KIT = MODELS + "gyrocopter_kit_model.tscn"
+UNIT_MODEL = MODELS + "unit_model.gd"
+GYRO_STATS = "src/gameplay/units/data/gyrocopter_stats.tres"
+RULES_TRES = "src/gameplay/match/data/match_rules.tres"
+PANEL_BACK = "src/gameplay/defences/wall_panel_back.tscn"
+FLAG_WALL = "src/gameplay/defences/flag_wall.tscn"
+TURRET = "src/gameplay/defences/turret.tscn"
+MAPS = "src/gameplay/maps/map_01/"
+COVER = MAPS + "map_01_cover.tscn"
+WATER = MAPS + "map_01_water.tscn"
+CLIFFS = MAPS + "map_01_cliffs.tscn"
+TERRAIN = MAPS + "map_01_terrain.tscn"
+COMPOUND = MAPS + "compound_base.tscn"
+SPLIT = "src/gameplay/split_screen/split_screen.gd"
+RUNNER = "tools/evidence/split_screen_harness.gd"
+FROZEN = "tools/evidence/frozen/gyrocopter_model_story_019.tscn"
+H = "heights"
+
+RISE = ("rise_over_cliffs = true\nrise_mask = 32\nrise_body_mask = 64\nrise_clearance = 0.25\nrise_rate = 6.0\nsettle_rate = 2.0\n"
+        "rise_lead_seconds = 0.4\nrise_lead_max = 8.0\nrise_margin = 2.0\n")
+GUARD = ("	if bool(script.get_script_constant_map().get(HEIGHTS_CONSTANT, false)):\n		return\n	var rules: MatchRules = load(MATCH_RULES_PATH)"
+         " as MatchRules\n	if rules == null:\n		push_error(\"split_screen_harness: %s did not load as MatchRules, so the Gyrocopter's rise is not given back.\"")
+# the frozen scene's smoke export, as it was at 73de824 (the model of stories 007 to 016: no smoke)
+SMOKE_BLOCK = ('[ext_resource type="PackedScene" path="res://src/gameplay/effects/badly_damaged_smoke.tscn" id="3_smoke"]\n\n'
+               '[node name="GyrocopterMeshModel" type="Node3D"]\nscript = ExtResource("1_model")\nmesh_scene = ExtResource("2_mesh")\nsmoke_scene = ExtResource("3_smoke")\n')
+NO_SMOKE_BLOCK = ('\n[node name="GyrocopterMeshModel" type="Node3D"]\nscript = ExtResource("1_model")\nmesh_scene = ExtResource("2_mesh")\n')
+# the cliffs' first collision layer and the sea edge's first body (the canyon flight's stop)
+_cliff_lines = open(os.path.join(REPO, CLIFFS)).read().split("\n")
+CLIFF_ANCHOR = "\n".join(_cliff_lines[10:15])
+CLIFF_NEW = CLIFF_ANCHOR.replace("collision_layer = 32", "collision_layer = 1")
+
+M = [
+ # name, file, old, new, scenario, kind, module (HEIGHTS_ONLY; "" for the whole scenario)
+ # the flying height as data (AC-2, AC-3, AC-9)
+ ("hover_left_at_0_78", GYRO_MESH, "hover_height = 2.5\n", "hover_height = 0.78\n", H, "check", "scan"),
+ ("hover_from_the_low_pieces_alone_2_25", GYRO_MESH, "hover_height = 2.5\n", "hover_height = 2.25\n", H, "check", "scan"),
+ ("hover_one_rounding_step_too_high_2_55", GYRO_MESH, "hover_height = 2.5\n", "hover_height = 2.55\n", H, "check", "scan"),
+ ("rise_left_on_in_the_shipped_scene", GYRO_MESH, "hover_height = 2.5\n", "hover_height = 2.5\n" + RISE, H, "check", ""),
+ ("old_model_in_the_shipped_scene", GYRO_MESH, "hover_height = 2.5\n", "hover_height = 0.78\n" + RISE, H, "check", "scan"),
+ ("kit_fallback_left_rising", GYRO_KIT, "hover_height = 2.52\n", "hover_height = 2.52\n" + RISE, H, "check", "scan"),
+ ("kit_fallback_hover_left_at_0_8", GYRO_KIT, "hover_height = 2.52\n", "hover_height = 0.8\n", H, "check", "scan"),
+ ("model_rest_position_ignores_the_hover", UNIT_MODEL, "	return offset + Vector3.UP * hover_height", "	return offset", H, "check", "spawn"),
+ ("model_ticks_physics_again", UNIT_MODEL, "	set_physics_process(false)\n	if not _build_meshes():", "	if not _build_meshes():", H, "check", "spawn"),
+ ("explosion_at_the_unit_origin", SPLIT, "	var origin: Vector3 = model.global_position if model != null else unit.global_position", "	var origin: Vector3 = unit.global_position", H, "check", "spawn"),
+ # what stops what (AC-1, AC-5, AC-6)
+ ("gyro_mask_given_the_cover_layer", GYRO_STATS, "collision_layer = 16\ncollision_mask = 1\n", "collision_layer = 16\ncollision_mask = 65\n", H, "check", "over"),
+ ("gyro_mask_given_the_cliffs_layer", GYRO_STATS, "collision_layer = 16\ncollision_mask = 1\n", "collision_layer = 16\ncollision_mask = 33\n", H, "check", "over"),
+ ("gyro_mask_given_the_units_layer", GYRO_STATS, "collision_layer = 16\ncollision_mask = 1\n", "collision_layer = 16\ncollision_mask = 3\n", H, "check", "over"),
+ ("gyro_mask_given_the_gyrocopters_layer", GYRO_STATS, "collision_layer = 16\ncollision_mask = 1\n", "collision_layer = 16\ncollision_mask = 17\n", H, "check", "over"),
+ ("shot_mask_without_the_cover_layer", RULES_TRES, "shot_collision_mask = 83", "shot_collision_mask = 19", H, "check", "shots"),
+ ("shooting_height_raised_to_2_m", RULES_TRES, "shooting_height = 0.5", "shooting_height = 2.0", H, "check", "shots"),
+ # the two Heights by layer (AC-1)
+ ("wall_panel_on_the_map_layer", PANEL_BACK, "collision_layer = 64\ncollision_mask = 0", "collision_layer = 1\ncollision_mask = 0", H, "check", "scan"),
+ ("flag_wall_on_the_map_layer", FLAG_WALL, "collision_layer = 64\ncollision_mask = 0", "collision_layer = 1\ncollision_mask = 0", H, "check", "scan"),
+ ("container_taller_than_2_m", COVER, "size = Vector3(12, 2, 2.5)", "size = Vector3(12, 2.6, 2.5)", H, "check", "scan"),
+ ("channel_on_the_map_layer", WATER, '[node name="ChannelWest" type="StaticBody3D" parent="."]\ntransform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 0, 34)\ncollision_layer = 32', '[node name="ChannelWest" type="StaticBody3D" parent="."]\ntransform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 0, 34)\ncollision_layer = 1', H, "check", "scan"),
+ ("cliff_on_the_map_layer", CLIFFS, CLIFF_ANCHOR, CLIFF_NEW, H, "check", "scan"),
+ ("sea_edge_off_every_layer", TERRAIN, '[node name="ShoreNW1" type="StaticBody3D" parent="ShoreEdge"]\ncollision_mask = 0', '[node name="ShoreNW1" type="StaticBody3D" parent="ShoreEdge"]\ncollision_layer = 0\ncollision_mask = 0', H, "check", "over"),
+ ("turret_collider_1_8_m", TURRET, "height = 3\nradius = 1.0", "height = 1.8\nradius = 1.0", H, "check", "tall"),
+ ("water_tower_leg_2_m_and_off_the_floor", COMPOUND, '[sub_resource type="BoxShape3D" id="BoxShape3D_leg"]\nsize = Vector3(0.6, 8, 0.6)', '[sub_resource type="BoxShape3D" id="BoxShape3D_leg"]\nsize = Vector3(0.6, 2, 0.6)', H, "check", "tall"),
+ ("water_tower_tank_lowered_into_the_band", COMPOUND, "0, 0, 1, 0, 10.8, -7)\nlayers = 2\nmesh = SubResource(\"CylinderMesh_tank\")", "0, 0, 1, 0, 5.0, -7)\nlayers = 2\nmesh = SubResource(\"CylinderMesh_tank\")", H, "check", "tall"),
+ # the runner's strip and the frozen model: the older scenarios keep their outputs
+ ("runner_leaves_the_flying_height_on", RUNNER, GUARD, GUARD.replace("	if bool(", "	if true or bool(", 1), H, "check", "scan"),
+ ("runner_strip_guard_inverted", RUNNER, GUARD, GUARD.replace("	if bool(", "	if not bool(", 1), H, "check", "scan"),
+ ("frozen_model_taken_at_73de824", FROZEN, SMOKE_BLOCK, NO_SMOKE_BLOCK, "badly_damaged", "regress", ""),
+ ("frozen_model_without_the_rise", FROZEN, "hover_height = 0.78\nrise_over_cliffs = true\n", "hover_height = 2.5\n", "gyro_cover", "regress", ""),
+ ("frozen_model_hover_2_5_with_the_rise", FROZEN, "hover_height = 0.78\n", "hover_height = 2.5\n", "gyro_cover", "regress", ""),
+]
+# the regression variants of the strip are added from the probe (the older scenarios whose output changes with the strip off)
+for _name in [a for a in os.environ.get("STRIP_HEIGHTS", "").split(",") if a]:
+    M.append(("runner_leaves_the_flying_height_on_" + _name, RUNNER, GUARD, GUARD.replace("	if bool(", "	if true or bool(", 1), _name, "regress", ""))
+
+# Mutants no output can tell from the build: reported apart, with the reason, when they survive.
+EQUIVALENT = {
+ "runner_leaves_the_flying_height_on": "heights itself declares HEIGHTS, so the strip is skipped for it with or without the defect; the strip's guard is the regression kind below, all killed",
+}
+WINDOWED = {}
+
+
+def prepare(i):
+    d = COPIES[i]
+    os.makedirs(WORK, exist_ok=True)
+    if os.path.exists(d):
+        subprocess.run(["find", d, "-delete"], check=True)
+    subprocess.run(["rsync", "-a", "--exclude", ".git", "--exclude", "production", "--exclude", "design", "--exclude", "docs", REPO + "/", d + "/"], check=True)
+    return d
+
+
+def run(copy, scn, module):
+    env = dict(os.environ)
+    env["HEIGHTS_ONLY"] = module
+    p = subprocess.run(["godot", "--headless", "--fixed-fps", "60", "--path", copy, "res://tools/evidence/split_screen_harness.tscn", "--", "--scenario=" + scn],
+                       capture_output=True, text=True, timeout=1500, env=env)
+    return p.returncode, p.stdout + p.stderr
+
+
+def one(copy, mutant):
+    name, rel, old, new, scn, kind, module = mutant
+    path = os.path.join(copy, rel)
+    orig = open(path).read()          # this worker is the only one that touches this copy
+    if orig.count(old) != 1:
+        return name, None, "NOT APPLIED (text found %d times)" % orig.count(old)
+    open(path, "w").write(orig.replace(old, new))
+    try:
+        rc, out = run(copy, scn, module)
+    finally:
+        open(path, "w").write(orig)
+    if not re.search(r"^RESULT %s " % scn, out, re.M):
+        return name, None, "BROKEN: no RESULT line (rc=%d)" % rc
+    if kind == "check":
+        fails = re.findall(r"^CHECK \S+ (\S+) FAIL", out, re.M)
+        dead = rc != 0 or bool(fails)
+        detail = "%s%s rc=%d fails=%s" % (scn, "[" + module + "]" if module else "", rc, ",".join(fails) or "-")
+    else:
+        if not os.path.exists(os.path.join(BASE, "split-%s.txt" % scn)):
+            return name, None, "BROKEN: no baseline split-%s.txt (the regression kind needs a retained scenario)" % scn
+        base = open(os.path.join(BASE, "split-%s.txt" % scn)).read()
+        for before, after in RULES.get(scn, []):
+            out = out.replace(after, before)
+        keep = lambda t: [l for l in t.splitlines() if l.startswith(("SPLIT ", "CHECK ", "RESULT ", "SCRIPT ERROR", "ERROR:", "WARNING:"))]
+        dead = keep(out) != keep(base) or rc != 0
+        detail = "%s rc=%d output %s the baseline" % (scn, rc, "differs from" if dead else "equals")
+    return name, dead, detail
+
+
+def worker(i, jobs):
+    return [one(COPIES[i], m) for m in jobs[i::WORKERS]]
+
+
+def main():
+    if DRY:
+        bad = 0
+        for name, rel, old, new, scn, kind, module in M:
+            n = open(os.path.join(REPO, rel)).read().count(old)
+            if n != 1 or old == new:
+                bad += 1
+                print("DRY  %-52s text found %d times in %s (or no change)" % (name, n, rel))
+        print("DRY: %d mutants, %d with a replacement text that is not found exactly once" % (len(M), bad))
+        return 1 if bad else 0
+    jobs = M
+    if "--only" in sys.argv:
+        wanted = sys.argv[sys.argv.index("--only") + 1].split(",")
+        jobs = [m for m in M if m[0] in wanted]
+    for i in range(WORKERS):
+        prepare(i)
+    with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+        results = [r for part in pool.map(lambda i: worker(i, jobs), range(WORKERS)) for r in part]
+    order = {m[0]: k for k, m in enumerate(M)}
+    results.sort(key=lambda r: order[r[0]])
+    killed = survived = broken = 0
+    for name, dead, detail in results:
+        if dead is False and name in WINDOWED:
+            print("WINDOWED   %-52s %s | %s" % (name, detail, WINDOWED[name]))
+            killed += 1
+            continue
+        if dead is False and name in EQUIVALENT:
+            print("EQUIVALENT %-52s %s | %s" % (name, detail, EQUIVALENT[name]))
+            killed += 1
+            continue
+        status = "BROKEN " if dead is None else ("KILLED " if dead else "SURVIVED")
+        killed += dead is True
+        survived += dead is False
+        broken += dead is None
+        print("%s %-56s %s" % (status, name, detail))
+    print("-- %d mutants: %d killed or equivalent, %d survived, %d broken or not applied" % (len(jobs), killed, survived, broken))
+    clean = True
+    for i in range(WORKERS):
+        d = subprocess.run(["diff", "-rq", "--exclude=.godot", "--exclude=production", "--exclude=.git", "--exclude=design", "--exclude=docs", REPO, COPIES[i]], capture_output=True, text=True)
+        if d.stdout.strip():
+            clean = False
+            print("COPY %d DIFFERS FROM THE REPO:\n%s" % (i, d.stdout[:600]))
+    print("-- the %d scratch copies %s the repo (apart from .godot, production, design, docs)" % (WORKERS, "equal" if clean else "DIFFER FROM"))
+    return 0 if survived == 0 and broken == 0 and clean else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

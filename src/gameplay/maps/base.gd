@@ -56,10 +56,14 @@ extends Node3D
 ##     Zone (Area3D): a 29.4 x 4 x 27.5 m box over the inside of the walls
 ##     FlagSeat (Marker3D) and Flag: 7 m in front of the Base origin (local -Z), between
 ##       the water tower's four legs
-##     Walls: the back wall, the two side walls, the two gate walls either side of the 11 m gate
-##       and the four corner towers on the wall corners, each a StaticBody3D with its box and Mesh
-##     Garage: its floor (GarageFloor), three walls, open to the gate and roofless, and Marking,
-##       the dashed rectangle on the ground in front of it (Dash01 to Dash14, one shared mesh)
+##     Walls: five runs of Wall Panels (Story 018: WallBack, WallLeft, WallRight, GateWallLeft and
+##       GateWallRight, each a plain Node3D holding its Panel1, Panel2 ... : 8, 8, 8, 3 and 3, each
+##       a Structure 2 m tall listed in structures) either side of the 11 m gate, and the four 6 m
+##       corner towers on the wall corners, each a StaticBody3D with its box and Mesh
+##     Garage: its floor (GarageFloor), three walls (since Story 019 GarageBack, GarageSideLeft and
+##       GarageSideRight, each a plain Node3D holding its Wall Panels: 4, 3 and 3, each a Structure
+##       2 m tall listed in structures), open to the gate and roofless, and Marking, the dashed
+##       rectangle on the ground in front of it (Dash01 to Dash14, one shared mesh)
 ##     WaterTower: four legs (StaticBody3D), the Tank (MeshInstance3D), the beacon, its lowest
 ##       point 8 m or more up, above where the chase camera rides, its Roof (one of color_meshes)
 ##       and a steel platform, band and braces, all with no collision
@@ -74,17 +78,19 @@ extends Node3D
 ## Collision. In base.tscn only the Zone has a shape: a greybox Base is ground a Unit drives over,
 ## not an obstacle, and the Story 001 evidence harness drives on this same field: a solid slab or
 ## pillar in the playfield would change where its runs end. A Unit that drives into the Beacon
-## passes through it: it is a landmark, there only so a Base can be found from anywhere on the
-## 80 x 80 m field. It stands on the front right corner and not at the back edge, because a Unit's
-## chase camera sits behind the Unit and a pillar behind the spawn point would stand between a
-## Player and their own Unit. compound_base.tscn is walled: its walls, corner towers, Garage walls
-## and the water tower's legs are StaticBody3D on physics layer 1 (the Map's) and stop every Unit,
-## the Gyrocopter included, and every shot (Story 007 AC-6), so a Unit comes and goes through the
-## gate; the pad, the tank, the Marking and the Garage floor have no shape, and the tank stands
-## higher than the chase camera rides, so it never comes between a Player and their own Unit. The
-## Flag Walls under Defences are StaticBody3D on physics layer 7 ("cover", value 64), not on the
-## Map's: every ground Unit and every shot stops at one, the Gyrocopter flies over it like the
-## Map's cover, and nothing that watches Units sees it (the zone, the Flag's touch, the spawn test).
+## passes through it: it is a landmark, there only so a Base can be found from anywhere on the 80 x
+## 80 m field. It stands on the front right corner and not at the back edge, because a Unit's chase
+## camera sits behind the Unit and a pillar behind the spawn point would stand between a Player and
+## their own Unit. compound_base.tscn is walled: its corner towers and the water tower's legs are
+## StaticBody3D on physics layer 1 (the Map's) and stop every Unit, the Gyrocopter included, and
+## every shot (Story 007 AC-6), so a Unit comes and goes through the gate; the pad, the tank, the
+## Marking and the Garage floor have no shape, and the tank stands higher than the chase camera
+## rides, so it never comes between a Player and their own Unit. The Flag Walls under Defences,
+## since Story 018 the Wall Panels under Walls and since Story 019 those of the Garage's three walls
+## are Structures on physics layer 7 ("cover", value 64), not on the Map's: every ground Unit and
+## every shot stops at a standing one, the Gyrocopter flies over it like the Map's cover (its model
+## rising), a fallen one is a gap and no Gate (the zone, the Swap and a delivery work as before),
+## and nothing that watches Units sees one (the zone, the Flag's touch, the spawn test).
 ##
 ## Spawn points. A Unit is put down at spawn_point, or, when another Unit stands on spawn_point on
 ## the tick the respawn falls due, at the first free spare spawn point, on that same tick
@@ -201,11 +207,12 @@ extends Node3D
 ## An entry that is not assigned is skipped with a warning.
 @export var color_meshes: Array[MeshInstance3D] = []
 
-## The damageable pieces this Base owns (Story 012): compound_base.tscn lists its four Flag Walls,
-## the Structures under its Defences node. SplitScreen, the composition root, sets each one's
-## player_index to this Base's Player before the Round begins and restores each one when a Round
-## starts again, from this list and with no search of the tree. Optional and empty by default:
-## base.tscn lists none. An entry that is not assigned is skipped with a warning.
+## The damageable pieces this Base owns (Story 012): compound_base.tscn lists its four Flag Walls
+## (Defences), its two Turrets, its 30 Wall Panels (Walls, Story 018) and the 10 of its Garage
+## (Story 019), 46 Structures. SplitScreen, the composition root, sets each one's player_index to
+## this Base's Player before the Round begins and restores each one when a Round starts again, from
+## this list and with no search of the tree. Optional and empty by default: base.tscn lists none. An
+## entry that is not assigned is skipped with a warning.
 @export var structures: Array[Structure] = []
 
 

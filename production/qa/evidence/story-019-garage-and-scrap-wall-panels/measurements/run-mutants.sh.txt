@@ -1,0 +1,6 @@
+#!/bin/sh
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/f989e592-0c99-4f6a-9d66-b271794c14c4/scratchpad
+export STRIP_GARAGE=base_walls,flag_walls,map_layout,mines,turrets STRIP_FIELD=flag_walls,gyro_cover,map_cover,map_layout,turrets NORMALIZERS=$S/rg19/normalizers19.json
+python3 -I $S/w19/seeded-defects19.py $S/rg19/f-base $S/w19/mut "$@" > $S/w19/mutants.txt 2>&1
+echo "rc=$?" >> $S/w19/mutants.txt

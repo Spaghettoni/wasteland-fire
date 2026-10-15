@@ -1,0 +1,6 @@
+#!/bin/sh
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/c295cfaf-3b24-4d21-bd9f-50b14eefa68f/scratchpad
+export STRIP_CRASH=base_walls,depot_tanks,fuel,garage_scrap_walls,gyro,gyro_cover,heights,heights_showcase,map_cover,tokens,turret_looks,turret_looks_showcase,turrets,units_showcase NORMALIZERS=$S/rg21/normalizers21.json
+python3 -I $S/w21/seeded-defects21.py $S/rg21/f-base $S/w21/mut "$@" > $S/w21/mutants.txt 2>&1
+echo "rc=$?" >> $S/w21/mutants.txt

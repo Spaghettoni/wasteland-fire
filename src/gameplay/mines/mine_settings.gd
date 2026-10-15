@@ -11,6 +11,9 @@ extends Resource
 ## "Turrets, Flag Walls and Mines" (the board's card Míny: about 3 s) and its tuning list.
 ## Vocabulary: CONTEXT.md (Mine, Truck, Base, Gate, Unit).
 ##
+## The supply margin (Story 024, production/epics/wasteland-fire/story-024-ammunition-buildings.md
+## AC-4, AC-5): how far a Mine must keep from a supply zone.
+##
 ## Data only. A Mine and a MineLayer read these numbers and never write them. One .tres
 ## (data/mine_settings.tres) is shared by mine.tscn and both MineLayers, so every Mine tunes
 ## together; treat it as read-only at runtime (duplicate() it for a private copy). Every default
@@ -61,6 +64,13 @@ extends Resource
 ## reaches 20 m for the same reason). Must be above probe_floor (first_problem()).
 @export_range(0.0, 100.0, 0.5, "or_greater", "suffix:m") var probe_top: float = 0.0
 
+## How far a Mine must keep from a supply zone, in metres (Story 024): a lay is refused when any
+## part of the Mine would lie in a zone or within this distance of its edge (the MineLayer grows
+## the zone's footprint by this plus the trigger radius, so it is the Mine's nearest edge that
+## stays this far). Zero or more (first_problem()); 3.0 in the shipped data, the developer's
+## "around" (decided 2026-10-10).
+@export_range(0.0, 20.0, 0.1, "or_greater", "suffix:m") var supply_margin: float = 0.0
+
 ## Seconds the flash of a spent Mine stays, before the Mine is gone. Counted in ticks like the
 ## arming time.
 @export_range(0.0, 10.0, 0.05, "or_greater", "suffix:s") var flash_seconds: float = 0.0
@@ -70,8 +80,8 @@ extends Resource
 
 
 ## The reason these settings cannot run a Mine, or an empty String when they can: the trigger's
-## radius and height, the blink period and the probe's height must each be above zero, and the
-## open-ground mask must name a layer.
+## radius and height, the blink period and the probe's height must each be above zero, the
+## open-ground mask must name a layer and the supply margin must not be negative or a NaN.
 ## Mine._ready() and MineLayer._ready() apply it and push one named error when it is not empty.
 func first_problem() -> String:
 	if trigger_radius <= 0.0:
@@ -84,4 +94,6 @@ func first_problem() -> String:
 		return "probe_top is not above probe_floor"
 	if open_ground_mask == 0:
 		return "open_ground_mask names no layer"
+	if not (supply_margin >= 0.0):
+		return "supply_margin is below zero or not a number"
 	return ""

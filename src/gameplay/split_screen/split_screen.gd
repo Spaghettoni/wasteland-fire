@@ -22,7 +22,8 @@ extends Control
 ## views stay here for the same reason: they are how the pieces are laid out and seen on the screen,
 ## which is this scene's business, and none of them depends on the Round. The layout of the scene:
 ##   SplitScreen (this Control, filling the window)
-##     World (Node3D): the Map first (map_01.tscn: its ground, its two Bases and its Fuel Cans),
+##     World (Node3D): the Map first (map_01.tscn: its ground, its two Bases, its Fuel building and its two
+##       ammunition buildings),
 ##       then both Units, both PlayerDriveInputs, both PlayerMatchInputs, both Weapons with their
 ##       PlayerFireInputs, both MineLayers with their PlayerMineInputs, both PlayerChoiceInputs and
 ##       both PlayerCameraInputs
@@ -106,6 +107,12 @@ extends Control
 ## handler is connected after begin(), so it runs at every restart and not at the first Round's
 ## start, whose standing pieces come from each Structure's own _ready().
 ##
+## The Map's own pieces (Story 019). A piece that belongs to no Base, Map 01's scrap walls' Wall
+## Panels, is listed in the field's neutral_structures (MapField). It gets no player_index, so it
+## stays at -1 and a Shot of either Player damages it, and it is restored with the Bases' pieces at
+## every restart, from that list and with no search of the tree. _arm_turrets() stays on the Bases'
+## lists.
+##
 ## Turrets (Story 013). A Turret is a Structure, so it is listed in its Base's structures, gets its
 ## Player index and is restored at every restart like a Flag Wall. Before the Round begins this
 ## scene also arms each one of them with arm(): the other Player's Unit, the node the Shots are
@@ -154,6 +161,25 @@ extends Control
 ## MatchController emits round_started again this scene calls restock() on the whole group: a
 ## Round that starts again has every Can back at its spot
 ## (production/epics/wasteland-fire/story-006-fuel-and-fuel-cans.md AC-6).
+##
+## Fuel zones (Story 023). Map 01 has no Fuel Cans since its depot became the Fuel building: the depot
+## holds two SupplyZones, each of which polls its own box every tick and refuels the Units stopped in
+## it, so this scene hands them nothing to refuel with and a Round that starts again needs no handler for them (a zone
+## keeps only its last tick's list). The Fuel Can code and its group stay, and so does the restock
+## above, for the Cans that remain: the greybox field's, and the nine the evidence runner puts back on
+## Map 01 for the scenarios written before the story (docs/tech-debt-register.md, TD-015).
+## (production/epics/wasteland-fire/story-023-fuel-building.md AC-1, AC-3)
+##
+## Ammunition zones and the Mines (Story 024). Map 01 also has two ammunition buildings, each
+## with an ammunition zone, and lists all four of its supply zones in the field's supply_zones.
+## An ammunition zone polls its own box like a Fuel zone and rearms the Weapon of the Unit it
+## lists, so before the Round begins this scene hands every ammunition zone both Weapons
+## (player_1_weapon and player_2_weapon, in Player order), and hands both MineLayers every zone,
+## which they keep clear of Mines (_hand_supply_zones(): from the field's list, with no search of
+## the tree, and never as a NodePath into the Map, which the evidence runner may rebuild after
+## the exports were resolved). A Round that starts again needs no handler for them: a zone keeps
+## only its last tick's list and the Weapons refill themselves at every spawn.
+## (production/epics/wasteland-fire/story-024-ammunition-buildings.md AC-2, AC-4)
 
 ## The node group every Shot in flight belongs to; _free_shots() frees it at every Round start.
 const SHOT_GROUP: StringName = &"shots"
@@ -165,7 +191,7 @@ const MINE_GROUP: StringName = &"mines"
 const EXPLOSION_GROUP: StringName = &"explosions"
 
 ## The node group every Fuel Can belongs to; _restock_fuel_cans() brings the whole group back
-## whenever a Round starts again.
+## whenever a Round starts again. Empty on the shipped Map 01 since Story 023.
 const FUEL_CAN_GROUP: StringName = &"fuel_cans"
 
 ## The Map both Units drive on, typed MapField so any Map scene can be it (Story 007 AC-9). It
@@ -192,6 +218,13 @@ const FUEL_CAN_GROUP: StringName = &"fuel_cans"
 ## The MineLayer of Player 2's Unit. It sits under World, beside the Weapons.
 @export var player_2_mine_layer: MineLayer
 
+## The Weapon of Player 1's Unit (Story 024). It sits under World, beside the input nodes. An
+## ammunition zone rearms it while Player 1's Unit stands in the zone.
+@export var player_1_weapon: Weapon
+
+## The Weapon of Player 2's Unit. It sits under World, beside the input nodes.
+@export var player_2_weapon: Weapon
+
 ## The node that owns the Round's state: who is alive, the respawn timers and the Flags.
 ## _ready() hands it the Units, the Bases and the cameras. It sits after the views in this scene's
 ## root, with RoundRestartInput after it, and what the screen shows about the Round (the respawn
@@ -214,6 +247,7 @@ func _ready() -> void:
 	_assign_players(units, bases)
 	_arm_turrets(units, bases)
 	_hand_bases_to_mine_layers(bases)
+	_hand_supply_zones()
 	_warm_up_models()
 	_warm_up_explosion()
 	match_controller.begin(units, bases, cameras, field.token_stock)
@@ -227,7 +261,7 @@ func _ready() -> void:
 
 
 ## The name of the first required reference that is not assigned, or an empty string when all
-## ten are: the eight exports and the field's two Bases.
+## twelve are: the ten exports and the field's two Bases.
 func _first_unassigned() -> String:
 	if field == null:
 		return "field"
@@ -249,6 +283,10 @@ func _first_unassigned() -> String:
 		return "player_1_mine_layer"
 	if player_2_mine_layer == null:
 		return "player_2_mine_layer"
+	if player_1_weapon == null:
+		return "player_1_weapon"
+	if player_2_weapon == null:
+		return "player_2_weapon"
 	return ""
 
 
@@ -278,6 +316,19 @@ func _arm_turrets(units: Array[Unit], bases: Array[Base]) -> void:
 func _hand_bases_to_mine_layers(bases: Array[Base]) -> void:
 	for layer: MineLayer in [player_1_mine_layer, player_2_mine_layer]:
 		layer.bases = bases
+
+
+## Hands on the Map's supply zones, in Player order, before the Round begins (Story 024): every
+## ammunition zone gets both Weapons, and it rearms the one whose Unit it lists; both MineLayers
+## get every zone, and refuse a lay in or near any of them. The list is the field's own
+## (MapField.supply_zones), so a Map with none hands nothing.
+func _hand_supply_zones() -> void:
+	var weapons: Array[Weapon] = [player_1_weapon, player_2_weapon]
+	for zone: SupplyZone in field.supply_zones:
+		if zone != null and zone.kind == SupplyZone.Kind.AMMO:
+			zone.weapons = weapons
+	for layer: MineLayer in [player_1_mine_layer, player_2_mine_layer]:
+		layer.supply_zones = field.supply_zones
 
 
 ## Instances each of the match's Unit types' model scenes once and frees it at once, before the
@@ -360,20 +411,25 @@ func _explode(player_index: int) -> void:
 	blast.blast(centre, maxf(unit.stats.collision_size.x, unit.stats.collision_size.z), unit.global_position.y)
 
 
-## Brings every Structure of both Bases back whole when a Round starts again (Story 012 AC-5): the
-## controller has seated every Flag and benched both Units by then, so nothing stands where a
-## piece returns. A piece that is standing is refilled, a fallen one stands again.
+## Brings every Structure of both Bases, and the Map's own (MapField.neutral_structures, Story 019),
+## back whole when a Round starts again (Story 012 AC-5): the controller has seated every Flag and
+## benched both Units by then, so nothing stands where a piece returns. A piece that is standing is
+## refilled, a fallen one stands again.
 func _restore_structures() -> void:
 	for base: Base in [field.player_1_base, field.player_2_base]:
 		for structure: Structure in base.structures:
 			if structure != null:
 				structure.restore()
+	for structure: Structure in field.neutral_structures:
+		if structure != null:
+			structure.restore()
 
 
 ## Brings every Fuel Can (the FUEL_CAN_GROUP nodes) back at its spot when a Round starts again
 ## (Story 006 AC-6): FuelCan.restock() shows a taken Can and makes it available, and leaves an
 ## available one alone. A Can taken late in a Round would otherwise still be away when the next
-## Round starts, until its own delay ran out.
+## Round starts, until its own delay ran out. Since Story 023 the shipped Map 01 has no Can, so
+## this finds none there; it serves the greybox field's Cans and the evidence runner's.
 func _restock_fuel_cans() -> void:
 	for node: Node in get_tree().get_nodes_in_group(FUEL_CAN_GROUP):
 		var fuel_can: FuelCan = node as FuelCan

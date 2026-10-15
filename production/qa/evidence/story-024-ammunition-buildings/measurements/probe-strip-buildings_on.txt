@@ -1,0 +1,96 @@
+STRICT     drive coast                  rc=0
+STRICT     drive showcase               rc=0
+STRICT     drive soak                   rc=0
+STRICT     drive walls                  rc=0
+NORMALIZED split ammo                   rc=0 rewrites=[1, 1]
+STRICT     split ammo_alone             rc=0
+STRICT     split ammo_showcase          rc=0
+NORMALIZED split badly_damaged          rc=0 rewrites=[2]
+STRICT     split badly_damaged_off      rc=0
+STRICT     split badly_damaged_showcase rc=0
+STRICT     split base_walls             rc=0
+STRICT     split base_walls_showcase    rc=0
+STRICT     split bases                  rc=0
+STRICT     split camera_showcase        rc=0
+STRICT     split camera_views           rc=0
+STRICT     split choice                 rc=0
+STRICT     split countdown              rc=0
+STRICT     split crash                  rc=0
+STRICT     split crash_showcase         rc=0
+STRICT     split depot_tanks            rc=0
+STRICT     split destruction            rc=0
+DIFF       split explosions             rc 0->0, lines 73->73, first difference at line 33
+    base: ERROR: Explosion '@Node3D@10': blast() was given a size that is not above zero, so it plays nothing.
+    new : ERROR: Explosion '@Node3D@34': blast() was given a size that is not above zero, so it plays nothing.
+STRICT     split explosions_off         rc=0
+STRICT     split explosions_showcase    rc=0
+STRICT     split flag_run               rc=0
+STRICT     split flag_showcase          rc=0
+DIFF       split flag_walls             rc 0->1, lines 62->62, first difference at line 3
+    base: CHECK flag_walls walls_data PASS Base1 x -115.3..-110.7 z -2.3..2.3 ; Base2 x 110.7..115.3 z -2.3..2.3 | 8 Flag Walls on layer 64, mask 0, flag_wall_stats.tres, 40 hit points | mirror items=125 self=7 worst=0.0000 m | first spots 
+    new : CHECK flag_walls walls_data FAIL Base1 x -115.3..-110.7 z -2.3..2.3 ; Base2 x 110.7..115.3 z -2.3..2.3 | 8 Flag Walls on layer 64, mask 0, flag_wall_stats.tres, 40 hit points | mirror items=129 self=7 worst=0.0000 m | first spots 
+STRICT     split flag_walls_showcase    rc=0
+STRICT     split fuel                   rc=0
+DIFF       split fuel_building          rc 0->1, lines 77->77, first difference at line 5
+    base: CHECK fuel_building zones_are_in_the_scene PASS the depot holds exactly two Fuel zones after its tanks, of kind FUEL and size (6.0, 6.0, 6.0), at (-12.0, 0.0, 0.0) and (12.0, 0.0, 0.0), the east one turned half a round about y and
+    new : CHECK fuel_building zones_are_in_the_scene FAIL the depot holds exactly two Fuel zones after its tanks, of kind FUEL and size (6.0, 6.0, 6.0), at (-12.0, 0.0, 0.0) and (12.0, 0.0, 0.0), the east one turned half a round about y and
+DIFF       split fuel_building_showcase rc 0->1, lines 12->13, first difference at line 11
+    base: RESULT fuel_building_showcase ok checks=0 failed=0 t=28.933 moments=8 errors=0 warnings=0
+    new : CHECK fuel_building_showcase premise FAIL depot_above | zone_chase | filling_early | filling_late | both_at_one_zone | gyro_hover | old_spots_empty | old_spots_parked | PROBLEMS: old_spots_parked: the bars went from [19.9, 19.96] 
+STRICT     split fuel_cans              rc=0
+STRICT     split fuel_hint              rc=0
+STRICT     split fuel_showcase          rc=0
+STRICT     split garage_scrap_walls     rc=0
+STRICT     split garage_scrap_walls_showcase rc=0
+STRICT     split gyro                   rc=0
+DIFF       split gyro_cover             rc 0->0, lines 29->29, first difference at line 12
+    base: SPLIT gyro_cover t=21.717 cross=ContainerWest lane=1 slowest=16.40 model_over_top_min=0.250 over_ticks=18 past=6.10 settled=0.000 judged=true contacts=0
+    new : SPLIT gyro_cover t=21.717 cross=ContainerWest lane=1 slowest=16.40 model_over_top_min=0.250 over_ticks=18 past=6.10 settled=0.000 judged=false contacts=0
+DIFF       split heights                rc 0->1, lines 192->192, first difference at line 172
+    base: CHECK heights scan PASS 169 solid colliders on Map 01, each in exactly one Height by its physics layer alone (low: cliffs_water 32 and cover 64; high: the map layer 1) and none in both: 60 Base wall panel (low, 2.00 to 2.00 m); 20
+    new : CHECK heights scan FAIL 171 solid colliders on Map 01, each in exactly one Height by its physics layer alone (low: cliffs_water 32 and cover 64; high: the map layer 1) and none in both: 60 Base wall panel (low, 2.00 to 2.00 m); 20
+STRICT     split heights_showcase       rc=0
+STRICT     split hud                    rc=0
+STRICT     split idle_burn              rc=0
+STRICT     split isolation              rc=0
+STRICT     split layout                 rc=0
+STRICT     split loss                   rc=0
+STRICT     split map_bases              rc=0
+STRICT     split map_cover              rc=0
+STRICT     split map_edges              rc=0
+STRICT     split map_ford               rc=0
+DIFF       split map_layout             rc 0->1, lines 135->135, first difference at line 133
+    base: CHECK map_layout map_mirror_data PASS mirror items=116 self=6 worst=0.0000 m | tokens motorbike=5 buggy=3 truck=2 gyrocopter=2 (none)=0 | fords=2 sharing one settings=true (ford_settings.tres) fraction=0.50 | SpawnPoint markers Ba
+    new : CHECK map_layout map_mirror_data FAIL mirror items=120 self=6 worst=0.0000 m | tokens motorbike=5 buggy=3 truck=2 gyrocopter=2 (none)=0 | fords=2 sharing one settings=true (ford_settings.tres) fraction=0.50 | SpawnPoint markers Ba
+STRICT     split map_legibility         rc=0
+STRICT     split map_showcase           rc=0
+DIFF       split mines                  rc 0->1, lines 49->58, first difference at line 33
+    base: CHECK mines open_ground_test PASS the open-ground test refuses container, wreck, scrap_wall, depot_tank, water, cliff_face, base_wall, corner_tower, standing_turret, standing_flag_wall, and reads open ground on the flat, in a ford
+    new : CHECK mines open_ground_test FAIL the open-ground test refuses container, wreck, scrap_wall, depot_tank, water, cliff_face, base_wall, corner_tower, standing_turret, standing_flag_wall, and reads open ground on the flat, in a ford
+STRICT     split mines_showcase         rc=0
+STRICT     split quick_fixes_showcase   rc=0
+STRICT     split respawn_showcase       rc=0
+STRICT     split round_over             rc=0
+STRICT     split showcase               rc=0
+STRICT     split simultaneous           rc=0
+STRICT     split spot_turn              rc=0
+STRICT     split token_choice           rc=0
+STRICT     split token_layout           rc=0
+NORMALIZED split token_ui               rc=0 rewrites=[2]
+STRICT     split tokens                 rc=0
+NORMALIZED split tokens_data            rc=0 rewrites=[18, 1]
+STRICT     split tokens_showcase        rc=0
+DIFF       split turret_looks           rc 0->0, lines 96->96, first difference at line 95
+    base: RESULT turret_looks ok checks=17 failed=0 t=277.517 turret_looks=10 exits=motorbike:4.30/buggy:4.10/truck:3.80/gyrocopter:4.20 around=motorbike:3.07/buggy:2.99/truck:3.57/gyrocopter:3.38 across=motorbike:0.76/buggy:0.61/truck:3.72
+    new : RESULT turret_looks ok checks=17 failed=0 t=277.500 turret_looks=10 exits=motorbike:4.30/buggy:4.10/truck:3.80/gyrocopter:4.20 around=motorbike:3.07/buggy:2.99/truck:3.57/gyrocopter:3.38 across=motorbike:0.76/buggy:0.61/truck:3.72
+STRICT     split turret_looks_showcase  rc=0
+DIFF       split turrets                rc 0->1, lines 39->39, first difference at line 3
+    base: CHECK turrets turrets_data PASS 4 Turrets at (-101, -10), (-101, 10), (101, 10), (101, -10), mirrored (mirror items=129 self=7 worst=0.0000 m), on layer 1 with mask 0, turret_stats.tres, the Buggy's weapon with the interval double
+    new : CHECK turrets turrets_data FAIL 4 Turrets at (-101, -10), (-101, 10), (101, 10), (101, -10), mirrored (mirror items=133 self=7 worst=0.0000 m), on layer 1 with mask 0, turret_stats.tres, the Buggy's weapon with the interval double
+STRICT     split turrets_showcase       rc=0
+NORMALIZED split unit_swap              rc=0 rewrites=[1]
+STRICT     split unit_swap_showcase     rc=0
+STRICT     split units                  rc=0
+STRICT     split units_showcase         rc=0
+STRICT     split weapons                rc=0
+-- 60 strict, 5 normalized, 10 bad of 75 compared

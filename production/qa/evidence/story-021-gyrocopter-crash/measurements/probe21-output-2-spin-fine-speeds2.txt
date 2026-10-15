@@ -1,0 +1,338 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+P21 ==== section graze
+P21 graze alpha=8.00 deg to the face (computed arrival 2.282 m/s):
+P21 graze_8.00 ticks=21 first_hit=0 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   graze_8.00 rel=0 ph=go cmd=0.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=8.0 pos=(-100.880,0.000,-7.795) cols=1 [TurretLeft n=(0.139,0.000,0.990) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_8.00 rel=1 ph=go cmd=0.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=8.0 pos=(-100.880,0.000,-7.795) cols=1 [TurretLeft n=(0.139,0.000,0.990) deg=90.0 arr=-0.000 depth=0.0014]
+P21   graze_8.00 rel=2 ph=go cmd=0.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=8.0 pos=(-100.880,0.000,-7.795) cols=1 [TurretLeft n=(0.139,-0.000,0.990) deg=90.0 arr=-0.000 depth=0.0021]
+P21   graze_8.00 rel=3 ph=go cmd=1.000 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=8.0 pos=(-100.880,0.000,-7.795) cols=1 [TurretLeft n=(0.139,-0.000,0.990) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_8.00 rel=4 ph=go cmd=1.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=8.0 pos=(-100.880,0.000,-7.795) cols=1 [TurretLeft n=(0.139,0.000,0.990) deg=90.0 arr=-0.000 depth=0.0014]
+P21   graze_8.00 rel=5 ph=go cmd=1.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=8.0 pos=(-100.880,0.000,-7.795) cols=1 [TurretLeft n=(0.139,0.000,0.990) deg=90.0 arr=-0.000 depth=0.0017]
+P21   graze_8.00 rel=6 ph=go cmd=1.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=8.0 pos=(-100.880,0.000,-7.795) cols=1 [TurretLeft n=(0.139,-0.000,0.990) deg=90.0 arr=-0.000 depth=0.0020]
+P21   graze_8.00 21 ticks after the first contact: alive=true real=0.000 pos=(-100.880,0.000,-7.795); the largest arrival on the later ticks -0.000
+P21 graze alpha=10.00 deg to the face (computed arrival 2.848 m/s):
+P21 graze_10.00 ticks=21 first_hit=0 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   graze_10.00 rel=0 ph=go cmd=0.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=10.0 pos=(-100.656,0.000,-7.827) cols=1 [TurretLeft n=(0.174,-0.000,0.985) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_10.00 rel=1 ph=go cmd=0.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=10.0 pos=(-100.656,0.000,-7.827) cols=1 [TurretLeft n=(0.174,0.000,0.985) deg=90.0 arr=-0.000 depth=0.0014]
+P21   graze_10.00 rel=2 ph=go cmd=0.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=10.0 pos=(-100.656,0.000,-7.827) cols=1 [TurretLeft n=(0.174,-0.000,0.985) deg=90.0 arr=0.000 depth=0.0021]
+P21   graze_10.00 rel=3 ph=go cmd=1.000 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=10.0 pos=(-100.656,0.000,-7.827) cols=1 [TurretLeft n=(0.174,-0.000,0.985) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_10.00 rel=4 ph=go cmd=1.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=10.0 pos=(-100.656,0.000,-7.827) cols=1 [TurretLeft n=(0.174,0.000,0.985) deg=90.0 arr=-0.000 depth=0.0014]
+P21   graze_10.00 rel=5 ph=go cmd=1.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=10.0 pos=(-100.656,0.000,-7.827) cols=1 [TurretLeft n=(0.174,0.000,0.985) deg=90.0 arr=-0.000 depth=0.0017]
+P21   graze_10.00 rel=6 ph=go cmd=1.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=10.0 pos=(-100.656,0.000,-7.827) cols=1 [TurretLeft n=(0.174,-0.000,0.985) deg=90.0 arr=-0.000 depth=0.0020]
+P21   graze_10.00 21 ticks after the first contact: alive=true real=0.000 pos=(-100.656,0.000,-7.827); the largest arrival on the later ticks 0.000
+P21 graze alpha=12.00 deg to the face (computed arrival 3.410 m/s):
+P21 graze_12.00 ticks=21 first_hit=0 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   graze_12.00 rel=0 ph=go cmd=0.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=12.0 pos=(-100.435,0.000,-7.871) cols=1 [TurretLeft n=(0.208,-0.000,0.978) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_12.00 rel=1 ph=go cmd=0.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=12.0 pos=(-100.435,0.000,-7.871) cols=1 [TurretLeft n=(0.208,-0.000,0.978) deg=90.0 arr=-0.000 depth=0.0014]
+P21   graze_12.00 rel=2 ph=go cmd=0.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=12.0 pos=(-100.435,0.000,-7.871) cols=1 [TurretLeft n=(0.208,-0.000,0.978) deg=90.0 arr=-0.000 depth=0.0021]
+P21   graze_12.00 rel=3 ph=go cmd=1.000 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=12.0 pos=(-100.435,0.000,-7.871) cols=1 [TurretLeft n=(0.208,0.000,0.978) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_12.00 rel=4 ph=go cmd=1.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=12.0 pos=(-100.435,0.000,-7.871) cols=1 [TurretLeft n=(0.208,-0.000,0.978) deg=90.0 arr=-0.000 depth=0.0014]
+P21   graze_12.00 rel=5 ph=go cmd=1.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=12.0 pos=(-100.435,0.000,-7.871) cols=1 [TurretLeft n=(0.208,-0.000,0.978) deg=90.0 arr=-0.000 depth=0.0017]
+P21   graze_12.00 rel=6 ph=go cmd=1.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=12.0 pos=(-100.435,0.000,-7.871) cols=1 [TurretLeft n=(0.208,-0.000,0.978) deg=90.0 arr=-0.000 depth=0.0020]
+P21   graze_12.00 21 ticks after the first contact: alive=true real=0.000 pos=(-100.435,0.000,-7.871); the largest arrival on the later ticks -0.000
+P21 graze alpha=13.00 deg to the face (computed arrival 3.689 m/s):
+P21 graze_13.00 ticks=21 first_hit=0 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   graze_13.00 rel=0 ph=go cmd=0.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=13.0 pos=(-100.325,0.000,-7.898) cols=1 [TurretLeft n=(0.225,-0.000,0.974) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_13.00 rel=1 ph=go cmd=0.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=13.0 pos=(-100.325,0.000,-7.898) cols=1 [TurretLeft n=(0.225,-0.000,0.974) deg=90.0 arr=-0.000 depth=0.0014]
+P21   graze_13.00 rel=2 ph=go cmd=0.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=13.0 pos=(-100.325,0.000,-7.898) cols=1 [TurretLeft n=(0.225,0.000,0.974) deg=90.0 arr=-0.000 depth=0.0021]
+P21   graze_13.00 rel=3 ph=go cmd=1.000 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=13.0 pos=(-100.325,0.000,-7.898) cols=1 [TurretLeft n=(0.225,-0.000,0.974) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_13.00 rel=4 ph=go cmd=1.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=13.0 pos=(-100.325,0.000,-7.898) cols=1 [TurretLeft n=(0.225,0.000,0.974) deg=90.0 arr=-0.000 depth=0.0014]
+P21   graze_13.00 rel=5 ph=go cmd=1.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=13.0 pos=(-100.325,0.000,-7.898) cols=1 [TurretLeft n=(0.225,0.000,0.974) deg=90.0 arr=-0.000 depth=0.0017]
+P21   graze_13.00 rel=6 ph=go cmd=1.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=13.0 pos=(-100.325,0.000,-7.898) cols=1 [TurretLeft n=(0.225,0.000,0.974) deg=90.0 arr=-0.000 depth=0.0020]
+P21   graze_13.00 21 ticks after the first contact: alive=true real=0.000 pos=(-100.325,0.000,-7.898); the largest arrival on the later ticks -0.000
+P21 graze alpha=14.00 deg to the face (computed arrival 3.968 m/s):
+P21 graze_14.00 ticks=21 first_hit=0 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   graze_14.00 rel=0 ph=go cmd=0.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.0 pos=(-100.216,0.000,-7.928) cols=1 [TurretLeft n=(0.242,-0.000,0.970) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_14.00 rel=1 ph=go cmd=0.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.0 pos=(-100.216,0.000,-7.928) cols=1 [TurretLeft n=(0.242,-0.000,0.970) deg=90.0 arr=-0.000 depth=0.0014]
+P21   graze_14.00 rel=2 ph=go cmd=0.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.0 pos=(-100.216,0.000,-7.928) cols=1 [TurretLeft n=(0.242,-0.000,0.970) deg=90.0 arr=-0.000 depth=0.0021]
+P21   graze_14.00 rel=3 ph=go cmd=1.000 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.0 pos=(-100.216,0.000,-7.928) cols=1 [TurretLeft n=(0.242,-0.000,0.970) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_14.00 rel=4 ph=go cmd=1.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.0 pos=(-100.216,0.000,-7.928) cols=1 [TurretLeft n=(0.242,-0.000,0.970) deg=90.0 arr=-0.000 depth=0.0014]
+P21   graze_14.00 rel=5 ph=go cmd=1.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.0 pos=(-100.216,0.000,-7.928) cols=1 [TurretLeft n=(0.242,-0.000,0.970) deg=90.0 arr=-0.000 depth=0.0017]
+P21   graze_14.00 rel=6 ph=go cmd=1.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.0 pos=(-100.216,0.000,-7.928) cols=1 [TurretLeft n=(0.242,-0.000,0.970) deg=90.0 arr=-0.000 depth=0.0020]
+P21   graze_14.00 21 ticks after the first contact: alive=true real=0.000 pos=(-100.216,0.000,-7.928); the largest arrival on the later ticks -0.000
+P21 graze alpha=14.10 deg to the face (computed arrival 3.995 m/s):
+P21 graze_14.10 ticks=21 first_hit=0 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   graze_14.10 rel=0 ph=go cmd=0.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.1 pos=(-100.205,0.000,-7.931) cols=1 [TurretLeft n=(0.244,-0.000,0.970) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_14.10 rel=1 ph=go cmd=0.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.1 pos=(-100.205,0.000,-7.931) cols=1 [TurretLeft n=(0.244,-0.000,0.970) deg=90.0 arr=-0.000 depth=0.0014]
+P21   graze_14.10 rel=2 ph=go cmd=0.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.1 pos=(-100.205,0.000,-7.931) cols=1 [TurretLeft n=(0.244,-0.000,0.970) deg=90.0 arr=-0.000 depth=0.0021]
+P21   graze_14.10 rel=3 ph=go cmd=1.000 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.1 pos=(-100.205,0.000,-7.931) cols=1 [TurretLeft n=(0.244,-0.000,0.970) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_14.10 rel=4 ph=go cmd=1.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.1 pos=(-100.205,0.000,-7.931) cols=1 [TurretLeft n=(0.244,-0.000,0.970) deg=90.0 arr=-0.000 depth=0.0014]
+P21   graze_14.10 rel=5 ph=go cmd=1.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.1 pos=(-100.205,0.000,-7.931) cols=1 [TurretLeft n=(0.244,-0.000,0.970) deg=90.0 arr=-0.000 depth=0.0017]
+P21   graze_14.10 rel=6 ph=go cmd=1.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.1 pos=(-100.205,0.000,-7.931) cols=1 [TurretLeft n=(0.244,0.000,0.970) deg=90.0 arr=-0.000 depth=0.0020]
+P21   graze_14.10 21 ticks after the first contact: alive=true real=0.000 pos=(-100.205,0.000,-7.931); the largest arrival on the later ticks -0.000
+P21 graze alpha=14.20 deg to the face (computed arrival 4.023 m/s):
+P21 graze_14.20 ticks=21 first_hit=0 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   graze_14.20 rel=0 ph=go cmd=0.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.2 pos=(-100.195,0.000,-7.934) cols=1 [TurretLeft n=(0.245,0.000,0.969) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_14.20 rel=1 ph=go cmd=0.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.2 pos=(-100.195,0.000,-7.934) cols=1 [TurretLeft n=(0.245,-0.000,0.969) deg=90.0 arr=-0.000 depth=0.0014]
+P21   graze_14.20 rel=2 ph=go cmd=0.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.2 pos=(-100.195,0.000,-7.934) cols=1 [TurretLeft n=(0.245,-0.000,0.969) deg=90.0 arr=-0.000 depth=0.0021]
+P21   graze_14.20 rel=3 ph=go cmd=1.000 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.2 pos=(-100.195,0.000,-7.934) cols=1 [TurretLeft n=(0.245,-0.000,0.969) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_14.20 rel=4 ph=go cmd=1.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.2 pos=(-100.195,0.000,-7.934) cols=1 [TurretLeft n=(0.245,-0.000,0.969) deg=90.0 arr=-0.000 depth=0.0014]
+P21   graze_14.20 rel=5 ph=go cmd=1.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.2 pos=(-100.195,0.000,-7.934) cols=1 [TurretLeft n=(0.245,0.000,0.969) deg=90.0 arr=-0.000 depth=0.0017]
+P21   graze_14.20 rel=6 ph=go cmd=1.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.2 pos=(-100.195,0.000,-7.934) cols=1 [TurretLeft n=(0.245,-0.000,0.969) deg=90.0 arr=-0.000 depth=0.0020]
+P21   graze_14.20 21 ticks after the first contact: alive=true real=0.000 pos=(-100.195,0.000,-7.934); the largest arrival on the later ticks -0.000
+P21 graze alpha=14.50 deg to the face (computed arrival 4.106 m/s):
+P21 graze_14.50 ticks=21 first_hit=0 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   graze_14.50 rel=0 ph=go cmd=0.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.5 pos=(-100.162,0.000,-7.944) cols=1 [TurretLeft n=(0.250,-0.000,0.968) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_14.50 rel=1 ph=go cmd=0.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.5 pos=(-100.162,0.000,-7.944) cols=1 [TurretLeft n=(0.250,-0.000,0.968) deg=90.0 arr=-0.000 depth=0.0014]
+P21   graze_14.50 rel=2 ph=go cmd=0.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.5 pos=(-100.162,0.000,-7.944) cols=1 [TurretLeft n=(0.250,-0.000,0.968) deg=90.0 arr=-0.000 depth=0.0021]
+P21   graze_14.50 rel=3 ph=go cmd=1.000 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.5 pos=(-100.162,0.000,-7.944) cols=1 [TurretLeft n=(0.250,-0.000,0.968) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_14.50 rel=4 ph=go cmd=1.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.5 pos=(-100.162,0.000,-7.944) cols=1 [TurretLeft n=(0.250,-0.000,0.968) deg=90.0 arr=-0.000 depth=0.0014]
+P21   graze_14.50 rel=5 ph=go cmd=1.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.5 pos=(-100.162,0.000,-7.944) cols=1 [TurretLeft n=(0.250,-0.000,0.968) deg=90.0 arr=-0.000 depth=0.0017]
+P21   graze_14.50 rel=6 ph=go cmd=1.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=14.5 pos=(-100.162,0.000,-7.944) cols=1 [TurretLeft n=(0.250,-0.000,0.968) deg=90.0 arr=-0.000 depth=0.0020]
+P21   graze_14.50 21 ticks after the first contact: alive=true real=0.000 pos=(-100.162,0.000,-7.944); the largest arrival on the later ticks -0.000
+P21 graze alpha=15.00 deg to the face (computed arrival 4.245 m/s):
+P21 graze_15.00 ticks=21 first_hit=0 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   graze_15.00 rel=0 ph=go cmd=0.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=15.0 pos=(-100.108,0.000,-7.961) cols=1 [TurretLeft n=(0.259,0.000,0.966) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_15.00 rel=1 ph=go cmd=0.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=15.0 pos=(-100.108,0.000,-7.961) cols=1 [TurretLeft n=(0.259,-0.000,0.966) deg=90.0 arr=-0.000 depth=0.0014]
+P21   graze_15.00 rel=2 ph=go cmd=0.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=15.0 pos=(-100.108,0.000,-7.961) cols=1 [TurretLeft n=(0.259,-0.000,0.966) deg=90.0 arr=-0.000 depth=0.0021]
+P21   graze_15.00 rel=3 ph=go cmd=1.000 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=15.0 pos=(-100.108,0.000,-7.961) cols=1 [TurretLeft n=(0.259,-0.000,0.966) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_15.00 rel=4 ph=go cmd=1.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=15.0 pos=(-100.108,0.000,-7.961) cols=1 [TurretLeft n=(0.259,-0.000,0.966) deg=90.0 arr=-0.000 depth=0.0014]
+P21   graze_15.00 rel=5 ph=go cmd=1.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=15.0 pos=(-100.108,0.000,-7.961) cols=1 [TurretLeft n=(0.259,-0.000,0.966) deg=90.0 arr=-0.000 depth=0.0017]
+P21   graze_15.00 rel=6 ph=go cmd=1.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=15.0 pos=(-100.108,0.000,-7.961) cols=1 [TurretLeft n=(0.259,-0.000,0.966) deg=90.0 arr=-0.000 depth=0.0020]
+P21   graze_15.00 21 ticks after the first contact: alive=true real=0.000 pos=(-100.108,0.000,-7.961); the largest arrival on the later ticks -0.000
+P21 graze alpha=16.00 deg to the face (computed arrival 4.520 m/s):
+P21 graze_16.00 ticks=21 first_hit=0 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   graze_16.00 rel=0 ph=go cmd=0.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=16.0 pos=(-100.002,0.000,-7.998) cols=1 [TurretLeft n=(0.276,0.000,0.961) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_16.00 rel=1 ph=go cmd=0.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=16.0 pos=(-100.002,0.000,-7.998) cols=1 [TurretLeft n=(0.276,0.000,0.961) deg=90.0 arr=0.000 depth=0.0014]
+P21   graze_16.00 rel=2 ph=go cmd=0.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=16.0 pos=(-100.002,0.000,-7.998) cols=1 [TurretLeft n=(0.276,-0.000,0.961) deg=90.0 arr=-0.000 depth=0.0021]
+P21   graze_16.00 rel=3 ph=go cmd=1.000 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=16.0 pos=(-100.002,0.000,-7.998) cols=1 [TurretLeft n=(0.276,0.000,0.961) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_16.00 rel=4 ph=go cmd=1.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=16.0 pos=(-100.002,0.000,-7.998) cols=1 [TurretLeft n=(0.276,0.000,0.961) deg=90.0 arr=-0.000 depth=0.0014]
+P21   graze_16.00 rel=5 ph=go cmd=1.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=16.0 pos=(-100.002,0.000,-7.998) cols=1 [TurretLeft n=(0.276,0.000,0.961) deg=90.0 arr=-0.000 depth=0.0017]
+P21   graze_16.00 rel=6 ph=go cmd=1.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=16.0 pos=(-100.002,0.000,-7.998) cols=1 [TurretLeft n=(0.276,0.000,0.961) deg=90.0 arr=-0.000 depth=0.0020]
+P21   graze_16.00 21 ticks after the first contact: alive=true real=0.000 pos=(-100.002,0.000,-7.998); the largest arrival on the later ticks 0.000
+P21 graze alpha=18.00 deg to the face (computed arrival 5.068 m/s):
+P21 graze_18.00 ticks=21 first_hit=0 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   graze_18.00 rel=0 ph=go cmd=0.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=18.0 pos=(-99.791,0.000,-8.079) cols=1 [TurretLeft n=(0.309,-0.000,0.951) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_18.00 rel=1 ph=go cmd=0.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=18.0 pos=(-99.791,0.000,-8.079) cols=1 [TurretLeft n=(0.309,0.000,0.951) deg=90.0 arr=0.000 depth=0.0014]
+P21   graze_18.00 rel=2 ph=go cmd=0.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=18.0 pos=(-99.791,0.000,-8.079) cols=1 [TurretLeft n=(0.309,-0.000,0.951) deg=90.0 arr=-0.000 depth=0.0021]
+P21   graze_18.00 rel=3 ph=go cmd=1.000 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=18.0 pos=(-99.791,0.000,-8.079) cols=1 [TurretLeft n=(0.309,-0.000,0.951) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_18.00 rel=4 ph=go cmd=1.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=18.0 pos=(-99.791,0.000,-8.079) cols=1 [TurretLeft n=(0.309,0.000,0.951) deg=90.0 arr=-0.000 depth=0.0014]
+P21   graze_18.00 rel=5 ph=go cmd=1.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=18.0 pos=(-99.791,0.000,-8.079) cols=1 [TurretLeft n=(0.309,-0.000,0.951) deg=90.0 arr=-0.000 depth=0.0017]
+P21   graze_18.00 rel=6 ph=go cmd=1.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=18.0 pos=(-99.791,0.000,-8.079) cols=1 [TurretLeft n=(0.309,-0.000,0.951) deg=90.0 arr=-0.000 depth=0.0019]
+P21   graze_18.00 21 ticks after the first contact: alive=true real=0.000 pos=(-99.791,0.000,-8.079); the largest arrival on the later ticks 0.000
+P21 graze alpha=20.00 deg to the face (computed arrival 5.609 m/s):
+P21 graze_20.00 ticks=21 first_hit=0 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   graze_20.00 rel=0 ph=go cmd=0.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=20.0 pos=(-99.586,0.000,-8.173) cols=1 [TurretLeft n=(0.342,-0.000,0.940) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_20.00 rel=1 ph=go cmd=0.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=20.0 pos=(-99.586,0.000,-8.173) cols=1 [TurretLeft n=(0.342,-0.000,0.940) deg=90.0 arr=-0.000 depth=0.0014]
+P21   graze_20.00 rel=2 ph=go cmd=0.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=20.0 pos=(-99.586,0.000,-8.173) cols=1 [TurretLeft n=(0.342,-0.000,0.940) deg=90.0 arr=-0.000 depth=0.0021]
+P21   graze_20.00 rel=3 ph=go cmd=1.000 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=20.0 pos=(-99.586,0.000,-8.173) cols=1 [TurretLeft n=(0.342,-0.000,0.940) deg=90.0 arr=-0.000 depth=0.0012]
+P21   graze_20.00 rel=4 ph=go cmd=1.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=20.0 pos=(-99.586,0.000,-8.173) cols=1 [TurretLeft n=(0.342,-0.000,0.940) deg=90.0 arr=-0.000 depth=0.0014]
+P21   graze_20.00 rel=5 ph=go cmd=1.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=20.0 pos=(-99.586,0.000,-8.173) cols=1 [TurretLeft n=(0.342,-0.000,0.940) deg=90.0 arr=-0.000 depth=0.0017]
+P21   graze_20.00 rel=6 ph=go cmd=1.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=20.0 pos=(-99.586,0.000,-8.173) cols=1 [TurretLeft n=(0.342,0.000,0.940) deg=90.0 arr=-0.000 depth=0.0019]
+P21   graze_20.00 21 ticks after the first contact: alive=true real=0.000 pos=(-99.586,0.000,-8.173); the largest arrival on the later ticks -0.000
+P21 graze alpha=30.00 deg to the face (computed arrival 8.200 m/s):
+P21 graze_30.00 ticks=22 first_hit=1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   graze_30.00 rel=-1 ph=go cmd=0.250 real=0.250 prev=0.000 wall=false floor=true alive=true yaw=30.0 pos=(-98.782,0.000,-9.007) cols=0 []
+P21   graze_30.00 rel=0 ph=go cmd=0.500 real=0.500 prev=0.250 wall=true floor=true alive=true yaw=30.0 pos=(-98.786,0.000,-9.015) cols=1 [TurretLeft n=(0.938,0.000,0.347) deg=90.0 arr=0.192 depth=0.0009]
+P21   graze_30.00 rel=1 ph=go cmd=0.750 real=0.482 prev=0.500 wall=true floor=true alive=true yaw=30.0 pos=(-98.783,0.001,-9.022) cols=1 [TurretLeft n=(0.938,-0.000,0.346) deg=90.0 arr=0.384 depth=0.0016]
+P21   graze_30.00 rel=2 ph=go cmd=1.000 real=0.646 prev=0.482 wall=true floor=true alive=true yaw=30.0 pos=(-98.779,0.001,-9.032) cols=1 [TurretLeft n=(0.941,-0.000,0.338) deg=90.0 arr=-0.049 depth=0.0020]
+P21   graze_30.00 rel=3 ph=go cmd=1.250 real=0.817 prev=0.646 wall=true floor=true alive=true yaw=30.0 pos=(-98.775,0.001,-9.045) cols=1 [TurretLeft n=(0.945,-0.000,0.328) deg=90.0 arr=-0.011 depth=0.0024]
+P21   graze_30.00 rel=4 ph=go cmd=1.500 real=0.995 prev=0.817 wall=true floor=true alive=true yaw=30.0 pos=(-98.769,0.001,-9.061) cols=1 [TurretLeft n=(0.949,-0.000,0.317) deg=90.0 arr=-0.010 depth=0.0011]
+P21   graze_30.00 rel=5 ph=go cmd=1.750 real=1.182 prev=0.995 wall=true floor=true alive=true yaw=30.0 pos=(-98.763,0.001,-9.079) cols=1 [TurretLeft n=(0.954,0.000,0.301) deg=90.0 arr=-0.016 depth=0.0011]
+P21   graze_30.00 rel=6 ph=go cmd=2.000 real=1.379 prev=1.182 wall=true floor=true alive=true yaw=30.0 pos=(-98.757,0.001,-9.101) cols=1 [TurretLeft n=(0.959,-0.000,0.283) deg=90.0 arr=-0.023 depth=0.0011]
+P21   graze_30.00 21 ticks after the first contact: alive=true real=5.479 pos=(-98.844,0.001,-9.871); the largest arrival on the later ticks 0.384
+P21 ==== section spin
+P21 spin tower: drive speed after the decay 0.000, real 0.000
+P21   spin_tower summary pinned: 60 ticks, 60 with a non-floor collision, max arrival along a normal -0.000, max real 0.000, max cmd 16.400, alive throughout=true
+P21   spin_tower summary decay: 150 ticks, 123 with a non-floor collision, max arrival along a normal -0.000, max real 0.000, max cmd 16.267, alive throughout=true
+P21   spin_tower summary spin_left: 120 ticks, 46 with a non-floor collision, max arrival along a normal -0.000, max real 0.563, max cmd 0.000, alive throughout=true
+P21   spin_tower summary spin_right: 240 ticks, 6 with a non-floor collision, max arrival along a normal -0.000, max real 0.000, max cmd 0.000, alive throughout=true
+P21   spin_tower summary spin_left_again: 120 ticks, 3 with a non-floor collision, max arrival along a normal -0.000, max real 0.000, max cmd 0.000, alive throughout=true
+P21   spin_tower end: alive=true pos=(-101.423,0.001,-16.000) yaw=90.0
+P21 spin leg: drive speed after the decay 0.000, real 0.000
+P21   spin_leg summary pinned: 60 ticks, 60 with a non-floor collision, max arrival along a normal -0.000, max real 0.000, max cmd 16.400, alive throughout=true
+P21   spin_leg summary decay: 150 ticks, 123 with a non-floor collision, max arrival along a normal -0.000, max real 0.000, max cmd 16.267, alive throughout=true
+P21   spin_leg summary spin_left: 120 ticks, 46 with a non-floor collision, max arrival along a normal -0.000, max real 0.577, max cmd 0.000, alive throughout=true
+P21   spin_leg summary spin_right: 240 ticks, 6 with a non-floor collision, max arrival along a normal -0.000, max real 0.000, max cmd 0.000, alive throughout=true
+P21   spin_leg summary spin_left_again: 120 ticks, 3 with a non-floor collision, max arrival along a normal -0.000, max real 0.000, max cmd 0.000, alive throughout=true
+P21   spin_leg end: alive=true pos=(-109.273,0.001,-2.048) yaw=90.0
+P21 spin tank: drive speed after the decay 0.000, real 0.000
+P21   spin_tank summary pinned: 60 ticks, 60 with a non-floor collision, max arrival along a normal -0.000, max real 0.000, max cmd 16.400, alive throughout=true
+P21   spin_tank summary decay: 150 ticks, 123 with a non-floor collision, max arrival along a normal -0.000, max real 0.000, max cmd 16.267, alive throughout=true
+P21   spin_tank summary spin_left: 120 ticks, 46 with a non-floor collision, max arrival along a normal -0.000, max real 0.572, max cmd 0.000, alive throughout=true
+P21   spin_tank summary spin_right: 240 ticks, 8 with a non-floor collision, max arrival along a normal 0.000, max real 0.000, max cmd 0.000, alive throughout=true
+P21   spin_tank summary spin_left_again: 120 ticks, 4 with a non-floor collision, max arrival along a normal -0.000, max real 0.000, max cmd 0.000, alive throughout=true
+P21   spin_tank end: alive=true pos=(-0.031,0.001,4.013) yaw=-180.0
+P21 spin turret: drive speed after the decay 0.000, real 0.000
+P21   spin_turret summary pinned: 60 ticks, 60 with a non-floor collision, max arrival along a normal -0.000, max real 0.000, max cmd 16.400, alive throughout=true
+P21   spin_turret summary decay: 150 ticks, 123 with a non-floor collision, max arrival along a normal -0.000, max real 0.000, max cmd 16.267, alive throughout=true
+P21   spin_turret summary spin_left: 120 ticks, 47 with a non-floor collision, max arrival along a normal -0.000, max real 0.572, max cmd 0.000, alive throughout=true
+P21   spin_turret summary spin_right: 240 ticks, 5 with a non-floor collision, max arrival along a normal -0.000, max real 0.000, max cmd 0.000, alive throughout=true
+P21   spin_turret summary spin_left_again: 120 ticks, 2 with a non-floor collision, max arrival along a normal -0.000, max real 0.000, max cmd 0.000, alive throughout=true
+P21   spin_turret end: alive=true pos=(-98.573,0.001,-10.054) yaw=90.0
+P21 ==== section fine
+P21 fine leg 0.00 m off the axis:
+P21 fine_leg_0.00 ticks=92 first_hit=83 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   fine_leg_0.00 rel=0 ph=go cmd=16.400 real=8.520 prev=16.400 wall=true floor=true alive=true yaw=90.0 pos=(-109.499,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=16.400 depth=0.0015]
+P21   fine_leg_0.00 rel=1 ph=go cmd=16.400 real=0.000 prev=8.520 wall=true floor=true alive=true yaw=90.0 pos=(-109.499,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=8.520 depth=0.0011]
+P21   fine_leg_0.00 rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.499,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   fine_leg_0.00 9 ticks after: alive=true real=0.000
+P21 fine leg 0.30 m off the axis:
+P21 fine_leg_0.30 ticks=92 first_hit=83 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   fine_leg_0.30 rel=0 ph=go cmd=16.400 real=8.520 prev=16.400 wall=true floor=true alive=true yaw=90.0 pos=(-109.499,0.000,-1.700) cols=1 [LegGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=16.400 depth=0.0015]
+P21   fine_leg_0.30 rel=1 ph=go cmd=16.400 real=0.000 prev=8.520 wall=true floor=true alive=true yaw=90.0 pos=(-109.499,0.000,-1.700) cols=1 [LegGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=8.520 depth=0.0011]
+P21   fine_leg_0.30 rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.499,0.000,-1.700) cols=1 [LegGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   fine_leg_0.30 9 ticks after: alive=true real=0.000
+P21 fine leg 0.60 m off the axis:
+P21 fine_leg_0.60 ticks=92 first_hit=83 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   fine_leg_0.60 rel=0 ph=go cmd=16.400 real=8.520 prev=16.400 wall=true floor=true alive=true yaw=90.0 pos=(-109.499,0.000,-1.400) cols=1 [LegGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=16.400 depth=0.0015]
+P21   fine_leg_0.60 rel=1 ph=go cmd=16.400 real=0.000 prev=8.520 wall=true floor=true alive=true yaw=90.0 pos=(-109.499,0.000,-1.400) cols=1 [LegGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=8.520 depth=0.0011]
+P21   fine_leg_0.60 rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.499,0.000,-1.400) cols=1 [LegGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   fine_leg_0.60 9 ticks after: alive=true real=0.000
+P21 fine leg 0.90 m off the axis:
+P21 fine_leg_0.90 ticks=92 first_hit=83 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   fine_leg_0.90 rel=0 ph=go cmd=16.400 real=8.520 prev=16.400 wall=true floor=true alive=true yaw=90.0 pos=(-109.499,0.000,-1.100) cols=1 [LegGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=16.400 depth=0.0015]
+P21   fine_leg_0.90 rel=1 ph=go cmd=16.400 real=0.000 prev=8.520 wall=true floor=true alive=true yaw=90.0 pos=(-109.499,0.000,-1.100) cols=1 [LegGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=8.520 depth=0.0011]
+P21   fine_leg_0.90 rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.499,0.000,-1.100) cols=1 [LegGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   fine_leg_0.90 9 ticks after: alive=true real=0.000
+P21 fine leg 1.00 m off the axis:
+P21 fine_leg_1.00 ticks=92 first_hit=83 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   fine_leg_1.00 rel=0 ph=go cmd=16.400 real=8.520 prev=16.400 wall=true floor=true alive=true yaw=90.0 pos=(-109.499,0.000,-1.000) cols=1 [LegGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=16.400 depth=0.0015]
+P21   fine_leg_1.00 rel=1 ph=go cmd=16.400 real=0.000 prev=8.520 wall=true floor=true alive=true yaw=90.0 pos=(-109.499,0.000,-1.000) cols=1 [LegGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=8.520 depth=0.0011]
+P21   fine_leg_1.00 rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.499,0.000,-1.000) cols=1 [LegGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   fine_leg_1.00 9 ticks after: alive=true real=0.000
+P21 fine leg 1.05 m off the axis:
+P21 fine_leg_1.05 ticks=92 first_hit=83 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   fine_leg_1.05 rel=0 ph=go cmd=16.400 real=8.584 prev=16.400 wall=true floor=true alive=true yaw=90.0 pos=(-109.501,0.000,-0.950) cols=1 [LegGateLeft n=(0.976,-0.000,0.219) deg=90.0 arr=16.002 depth=0.0010]
+P21   fine_leg_1.05 rel=1 ph=go cmd=16.400 real=0.000 prev=8.584 wall=true floor=true alive=true yaw=90.0 pos=(-109.501,0.000,-0.950) cols=1 [LegGateLeft n=(0.976,-0.000,0.219) deg=90.0 arr=8.376 depth=0.0010]
+P21   fine_leg_1.05 rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.501,0.000,-0.950) cols=1 [LegGateLeft n=(0.976,-0.000,0.219) deg=90.0 arr=-0.000 depth=0.0010]
+P21   fine_leg_1.05 9 ticks after: alive=true real=0.000
+P21 fine leg 1.10 m off the axis:
+P21 fine_leg_1.10 ticks=130 first_hit=-1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21 fine leg 1.15 m off the axis:
+P21 fine_leg_1.15 ticks=130 first_hit=-1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21 fine leg 1.20 m off the axis:
+P21 fine_leg_1.20 ticks=130 first_hit=-1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21 fine tank 3.24 m off the axis:
+P21 fine_tank_3.24 ticks=99 first_hit=90 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   fine_tank_3.24 rel=0 ph=go cmd=16.400 real=15.664 prev=16.400 wall=true floor=true alive=true yaw=180.0 pos=(3.305,0.001,6.264) cols=1 [Collider n=(0.954,-0.000,-0.300) deg=90.0 arr=4.927 depth=0.0012]
+P21   fine_tank_3.24 rel=1 ph=go cmd=16.400 real=16.064 prev=15.664 wall=true floor=true alive=true yaw=180.0 pos=(3.352,0.001,6.527) cols=1 [Collider n=(0.979,0.000,-0.204) deg=90.0 arr=-0.748 depth=0.0013]
+P21   fine_tank_3.24 rel=2 ph=go cmd=16.400 real=16.353 prev=16.064 wall=true floor=true alive=true yaw=180.0 pos=(3.366,0.001,6.799) cols=1 [Collider n=(0.997,-0.000,-0.080) deg=90.0 arr=-1.492 depth=0.0011]
+P21   fine_tank_3.24 9 ticks after: alive=true real=16.400
+P21 fine tank 3.26 m off the axis:
+P21 fine_tank_3.26 ticks=99 first_hit=90 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   fine_tank_3.26 rel=0 ph=go cmd=16.400 real=15.877 prev=16.400 wall=true floor=true alive=true yaw=180.0 pos=(3.303,0.001,6.272) cols=1 [Collider n=(0.962,0.000,-0.274) deg=90.0 arr=4.501 depth=0.0011]
+P21   fine_tank_3.26 rel=1 ph=go cmd=16.400 real=16.041 prev=15.877 wall=true floor=true alive=true yaw=180.0 pos=(3.354,0.001,6.534) cols=1 [Collider n=(0.978,-0.000,-0.209) deg=90.0 arr=0.769 depth=0.0010]
+P21   fine_tank_3.26 rel=2 ph=go cmd=16.400 real=16.371 prev=16.041 wall=true floor=true alive=true yaw=180.0 pos=(3.364,0.001,6.807) cols=1 [Collider n=(0.998,-0.000,-0.066) deg=90.0 arr=-2.048 depth=0.0010]
+P21   fine_tank_3.26 9 ticks after: alive=true real=16.400
+P21 fine tank 3.28 m off the axis:
+P21 fine_tank_3.28 ticks=99 first_hit=90 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   fine_tank_3.28 rel=0 ph=go cmd=16.400 real=16.130 prev=16.400 wall=true floor=true alive=true yaw=180.0 pos=(3.301,0.001,6.279) cols=1 [Collider n=(0.969,0.000,-0.246) deg=90.0 arr=4.035 depth=0.0012]
+P21   fine_tank_3.28 rel=1 ph=go cmd=16.400 real=16.028 prev=16.130 wall=true floor=true alive=true yaw=180.0 pos=(3.357,0.001,6.540) cols=1 [Collider n=(0.977,-0.000,-0.212) deg=90.0 arr=2.177 depth=0.0011]
+P21   fine_tank_3.28 rel=2 ph=go cmd=16.400 real=16.390 prev=16.028 wall=true floor=true alive=true yaw=180.0 pos=(3.362,0.001,6.813) cols=1 [Collider n=(0.999,-0.000,-0.044) deg=90.0 arr=-2.703 depth=0.0010]
+P21   fine_tank_3.28 9 ticks after: alive=true real=16.400
+P21 fine tank 3.30 m off the axis:
+P21 fine_tank_3.30 ticks=99 first_hit=90 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   fine_tank_3.30 rel=0 ph=go cmd=16.400 real=16.400 prev=16.400 wall=true floor=true alive=true yaw=180.0 pos=(3.300,0.000,6.284) cols=1 [Collider n=(0.977,-0.000,-0.214) deg=90.0 arr=3.506 depth=0.0009]
+P21   fine_tank_3.30 rel=1 ph=go cmd=16.400 real=16.029 prev=16.400 wall=true floor=true alive=true yaw=180.0 pos=(3.357,0.001,6.545) cols=1 [Collider n=(0.977,-0.000,-0.211) deg=90.0 arr=3.468 depth=0.0010]
+P21   fine_tank_3.30 rel=2 ph=go cmd=16.400 real=16.388 prev=16.029 wall=true floor=true alive=true yaw=180.0 pos=(3.363,0.001,6.818) cols=1 [Collider n=(0.999,-0.000,-0.046) deg=90.0 arr=-2.718 depth=0.0010]
+P21   fine_tank_3.30 9 ticks after: alive=true real=16.400
+P21 fine tank 3.32 m off the axis:
+P21 fine_tank_3.32 ticks=100 first_hit=91 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   fine_tank_3.32 rel=0 ph=go cmd=16.400 real=16.180 prev=16.400 wall=true floor=true alive=true yaw=180.0 pos=(3.350,0.001,6.552) cols=1 [Collider n=(0.985,-0.000,-0.174) deg=90.0 arr=2.861 depth=0.0012]
+P21   fine_tank_3.32 rel=1 ph=go cmd=16.400 real=16.342 prev=16.180 wall=true floor=true alive=true yaw=180.0 pos=(3.369,0.001,6.824) cols=1 [Collider n=(0.996,0.000,-0.086) deg=90.0 arr=-0.433 depth=0.0011]
+P21   fine_tank_3.32 rel=2 ph=go cmd=16.400 real=16.400 prev=16.342 wall=false floor=true alive=true yaw=180.0 pos=(3.369,0.001,7.097) cols=0 []
+P21   fine_tank_3.32 9 ticks after: alive=true real=16.400
+P21 fine tank 3.34 m off the axis:
+P21 fine_tank_3.34 ticks=100 first_hit=91 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   fine_tank_3.34 rel=0 ph=go cmd=16.400 real=16.361 prev=16.400 wall=true floor=true alive=true yaw=180.0 pos=(3.346,0.001,6.557) cols=1 [Collider n=(0.992,-0.000,-0.123) deg=90.0 arr=2.023 depth=0.0012]
+P21   fine_tank_3.34 rel=1 ph=go cmd=16.400 real=16.310 prev=16.361 wall=true floor=true alive=true yaw=180.0 pos=(3.374,0.001,6.827) cols=1 [Collider n=(0.995,-0.000,-0.105) deg=90.0 arr=1.372 depth=0.0011]
+P21   fine_tank_3.34 rel=2 ph=go cmd=16.400 real=16.400 prev=16.310 wall=false floor=true alive=true yaw=180.0 pos=(3.374,0.001,7.100) cols=0 []
+P21   fine_tank_3.34 9 ticks after: alive=true real=16.400
+P21 fine tank 3.36 m off the axis:
+P21 fine_tank_3.36 ticks=101 first_hit=92 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   fine_tank_3.36 rel=0 ph=go cmd=16.400 real=16.400 prev=16.400 wall=true floor=true alive=true yaw=180.0 pos=(3.360,0.000,6.831) cols=1 [Collider n=(1.000,-0.000,-0.003) deg=90.0 arr=0.056 depth=0.0010]
+P21   fine_tank_3.36 rel=1 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=180.0 pos=(3.360,0.000,7.104) cols=0 []
+P21   fine_tank_3.36 rel=2 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=180.0 pos=(3.360,0.000,7.377) cols=0 []
+P21   fine_tank_3.36 9 ticks after: alive=true real=16.400
+P21 fine tank 3.38 m off the axis:
+P21 fine_tank_3.38 ticks=130 first_hit=-1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21 fine turret 1.74 m off the axis:
+P21 fine_turret_1.74 ticks=95 first_hit=86 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   fine_turret_1.74 rel=0 ph=go cmd=16.400 real=15.454 prev=16.400 wall=true floor=true alive=true yaw=90.0 pos=(-99.720,0.001,-8.174) cols=1 [TurretLeft n=(0.335,-0.000,0.942) deg=90.0 arr=5.490 depth=0.0011]
+P21   fine_turret_1.74 rel=1 ph=go cmd=16.400 real=16.400 prev=15.454 wall=false floor=true alive=true yaw=90.0 pos=(-99.993,0.001,-8.174) cols=0 []
+P21   fine_turret_1.74 rel=2 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=90.0 pos=(-100.267,0.001,-8.174) cols=0 []
+P21   fine_turret_1.74 9 ticks after: alive=true real=16.400
+P21 fine turret 1.75 m off the axis:
+P21 fine_turret_1.75 ticks=95 first_hit=86 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   fine_turret_1.75 rel=0 ph=go cmd=16.400 real=15.628 prev=16.400 wall=true floor=true alive=true yaw=90.0 pos=(-99.729,0.001,-8.182) cols=1 [TurretLeft n=(0.307,0.000,0.952) deg=90.0 arr=5.029 depth=0.0011]
+P21   fine_turret_1.75 rel=1 ph=go cmd=16.400 real=16.400 prev=15.628 wall=false floor=true alive=true yaw=90.0 pos=(-100.002,0.001,-8.182) cols=0 []
+P21   fine_turret_1.75 rel=2 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=90.0 pos=(-100.276,0.001,-8.182) cols=0 []
+P21   fine_turret_1.75 9 ticks after: alive=true real=16.400
+P21 fine turret 1.76 m off the axis:
+P21 fine_turret_1.76 ticks=95 first_hit=86 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   fine_turret_1.76 rel=0 ph=go cmd=16.400 real=15.819 prev=16.400 wall=true floor=true alive=true yaw=90.0 pos=(-99.736,0.001,-8.187) cols=1 [TurretLeft n=(0.274,-0.000,0.962) deg=90.0 arr=4.491 depth=0.0013]
+P21   fine_turret_1.76 rel=1 ph=go cmd=16.400 real=16.400 prev=15.819 wall=false floor=true alive=true yaw=90.0 pos=(-100.009,0.001,-8.187) cols=0 []
+P21   fine_turret_1.76 rel=2 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=90.0 pos=(-100.282,0.001,-8.187) cols=0 []
+P21   fine_turret_1.76 9 ticks after: alive=true real=16.400
+P21 fine turret 1.77 m off the axis:
+P21 fine_turret_1.77 ticks=95 first_hit=86 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   fine_turret_1.77 rel=0 ph=go cmd=16.400 real=16.008 prev=16.400 wall=true floor=true alive=true yaw=90.0 pos=(-99.742,0.001,-8.192) cols=1 [TurretLeft n=(0.238,-0.000,0.971) deg=90.0 arr=3.899 depth=0.0012]
+P21   fine_turret_1.77 rel=1 ph=go cmd=16.400 real=16.400 prev=16.008 wall=false floor=true alive=true yaw=90.0 pos=(-100.015,0.001,-8.192) cols=0 []
+P21   fine_turret_1.77 rel=2 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=90.0 pos=(-100.288,0.001,-8.192) cols=0 []
+P21   fine_turret_1.77 9 ticks after: alive=true real=16.400
+P21 fine turret 1.78 m off the axis:
+P21 fine_turret_1.78 ticks=95 first_hit=86 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   fine_turret_1.78 rel=0 ph=go cmd=16.400 real=16.188 prev=16.400 wall=true floor=true alive=true yaw=90.0 pos=(-99.746,0.001,-8.197) cols=1 [TurretLeft n=(0.195,-0.000,0.981) deg=90.0 arr=3.192 depth=0.0011]
+P21   fine_turret_1.78 rel=1 ph=go cmd=16.400 real=16.400 prev=16.188 wall=false floor=true alive=true yaw=90.0 pos=(-100.020,0.001,-8.197) cols=0 []
+P21   fine_turret_1.78 rel=2 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=90.0 pos=(-100.293,0.001,-8.197) cols=0 []
+P21   fine_turret_1.78 9 ticks after: alive=true real=16.400
+P21 fine turret 1.79 m off the axis:
+P21 fine_turret_1.79 ticks=95 first_hit=86 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   fine_turret_1.79 rel=0 ph=go cmd=16.400 real=16.338 prev=16.400 wall=true floor=true alive=true yaw=90.0 pos=(-99.750,0.001,-8.202) cols=1 [TurretLeft n=(0.137,-0.000,0.991) deg=90.0 arr=2.255 depth=0.0011]
+P21   fine_turret_1.79 rel=1 ph=go cmd=16.400 real=16.374 prev=16.338 wall=true floor=true alive=true yaw=90.0 pos=(-100.022,0.001,-8.187) cols=1 [TurretLeft n=(0.057,-0.000,0.998) deg=90.0 arr=0.428 depth=0.0010]
+P21   fine_turret_1.79 rel=2 ph=go cmd=16.400 real=16.400 prev=16.374 wall=false floor=true alive=true yaw=90.0 pos=(-100.295,0.001,-8.187) cols=0 []
+P21   fine_turret_1.79 9 ticks after: alive=true real=16.400
+P21 fine turret 1.80 m off the axis:
+P21 fine_turret_1.80 ticks=130 first_hit=-1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21 ==== section speeds2
+P21 speeds2 target=3.50 m/s:
+P21 speed2_3.50 ticks=62 first_hit=57 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   speed2_3.50 rel=-1 ph=go cmd=3.500 real=3.500 prev=3.500 wall=false floor=true alive=true yaw=90.0 pos=(-101.596,0.000,-16.000) cols=0 []
+P21   speed2_3.50 rel=0 ph=go cmd=3.500 real=3.117 prev=3.500 wall=true floor=true alive=true yaw=90.0 pos=(-101.648,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=3.500 depth=0.0016]
+P21   speed2_3.50 rel=1 ph=go cmd=3.500 real=0.000 prev=3.117 wall=true floor=true alive=true yaw=90.0 pos=(-101.648,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=3.117 depth=0.0011]
+P21   speed2_3.50 rel=2 ph=go cmd=3.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.648,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21 speeds2 target=3.90 m/s:
+P21 speed2_3.90 ticks=58 first_hit=53 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   speed2_3.90 rel=-1 ph=go cmd=3.900 real=3.900 prev=3.900 wall=false floor=true alive=true yaw=90.0 pos=(-101.620,0.000,-16.000) cols=0 []
+P21   speed2_3.90 rel=0 ph=go cmd=3.900 real=1.767 prev=3.900 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=3.900 depth=0.0016]
+P21   speed2_3.90 rel=1 ph=go cmd=3.900 real=0.000 prev=1.767 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=1.767 depth=0.0011]
+P21   speed2_3.90 rel=2 ph=go cmd=3.900 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21 speeds2 target=3.95 m/s:
+P21 speed2_3.95 ticks=57 first_hit=52 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   speed2_3.95 rel=-1 ph=go cmd=3.950 real=3.950 prev=3.950 wall=false floor=true alive=true yaw=90.0 pos=(-101.586,0.000,-16.000) cols=0 []
+P21   speed2_3.95 rel=0 ph=go cmd=3.950 real=3.842 prev=3.950 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=3.950 depth=0.0017]
+P21   speed2_3.95 rel=1 ph=go cmd=3.950 real=0.000 prev=3.842 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=3.842 depth=0.0011]
+P21   speed2_3.95 rel=2 ph=go cmd=3.950 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21 speeds2 target=4.00 m/s:
+P21 speed2_4.00 ticks=57 first_hit=52 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   speed2_4.00 rel=-1 ph=go cmd=4.000 real=4.000 prev=4.000 wall=false floor=true alive=true yaw=90.0 pos=(-101.617,0.000,-16.000) cols=0 []
+P21   speed2_4.00 rel=0 ph=go cmd=4.000 real=2.000 prev=4.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=4.000 depth=0.0020]
+P21   speed2_4.00 rel=1 ph=go cmd=4.000 real=0.000 prev=2.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=2.000 depth=0.0012]
+P21   speed2_4.00 rel=2 ph=go cmd=4.000 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0012]
+P21 speeds2 target=4.05 m/s:
+P21 speed2_4.05 ticks=57 first_hit=52 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   speed2_4.05 rel=-1 ph=go cmd=4.050 real=4.050 prev=4.050 wall=false floor=true alive=true yaw=90.0 pos=(-101.647,0.000,-16.000) cols=0 []
+P21   speed2_4.05 rel=0 ph=go cmd=4.050 real=0.000 prev=4.050 wall=true floor=true alive=true yaw=90.0 pos=(-101.647,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=4.050 depth=0.0018]
+P21   speed2_4.05 rel=1 ph=go cmd=4.050 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.647,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0018]
+P21   speed2_4.05 rel=2 ph=go cmd=4.050 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.647,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0018]
+P21 speeds2 target=4.10 m/s:
+P21 speed2_4.10 ticks=56 first_hit=51 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   speed2_4.10 rel=-1 ph=go cmd=4.100 real=4.100 prev=4.100 wall=false floor=true alive=true yaw=90.0 pos=(-101.608,0.000,-16.000) cols=0 []
+P21   speed2_4.10 rel=0 ph=go cmd=4.100 real=2.434 prev=4.100 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=4.100 depth=0.0011]
+P21   speed2_4.10 rel=1 ph=go cmd=4.100 real=0.000 prev=2.434 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=2.434 depth=0.0011]
+P21   speed2_4.10 rel=2 ph=go cmd=4.100 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21 speeds2 target=4.50 m/s:
+P21 speed2_4.50 ticks=53 first_hit=48 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   speed2_4.50 rel=-1 ph=go cmd=4.500 real=4.500 prev=4.500 wall=false floor=true alive=true yaw=90.0 pos=(-101.612,0.000,-16.000) cols=0 []
+P21   speed2_4.50 rel=0 ph=go cmd=4.500 real=2.250 prev=4.500 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=4.500 depth=0.0021]
+P21   speed2_4.50 rel=1 ph=go cmd=4.500 real=0.000 prev=2.250 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=2.250 depth=0.0013]
+P21   speed2_4.50 rel=2 ph=go cmd=4.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0013]
+P21 speeds2 target=8.00 m/s:
+P21 speed2_8.00 ticks=42 first_hit=37 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   speed2_8.00 rel=-1 ph=go cmd=8.000 real=8.000 prev=8.000 wall=false floor=true alive=true yaw=90.0 pos=(-101.517,0.000,-16.000) cols=0 []
+P21   speed2_8.00 rel=0 ph=go cmd=8.000 real=8.000 prev=8.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=8.000 depth=0.0010]
+P21   speed2_8.00 rel=1 ph=go cmd=8.000 real=0.000 prev=8.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=8.000 depth=0.0010]
+P21   speed2_8.00 rel=2 ph=go cmd=8.000 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0010]
+RESULT probe21 ok checks=0 failed=0 t=107.883 probe21

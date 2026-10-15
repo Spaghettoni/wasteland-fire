@@ -1,0 +1,21 @@
+#!/bin/sh
+# The final chain of Story 024: import, parse every .gd the story added or changed, regenerate the exact rewrites from the source,
+# regress the 75 older outputs, run ammo_buildings twice (byte compare), the showcase headless, gdUnit, and the main scene.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/1fd5af27-c781-473f-9fcc-5a3e12baae8e/scratchpad
+F=$S/w24/final
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+date +%H:%M:%S > $F/progress.txt
+godot --headless --path . --import > $F/import.txt 2>&1; echo "import rc=$?"; grep -c -E "ERROR|WARNING" $F/import.txt
+{ for f in src/gameplay/supply/supply_settings.gd src/gameplay/supply/supply_zone.gd src/gameplay/maps/map_field.gd src/gameplay/split_screen/split_screen.gd src/gameplay/mines/mine_layer.gd src/gameplay/mines/mine_settings.gd src/ui/hud/player_notice.gd tools/evidence/split_screen_harness.gd tools/evidence/split_screen/fuel_building_both.gd; do echo $f; done; ls tools/evidence/split_screen/ammo_buildings*.gd; } | sort -u > $F/gd-list.txt
+wc -l < $F/gd-list.txt
+sed 's#^#res://#' $F/gd-list.txt | xargs godot --headless --path . -s res://.claude/scripts/godot-parse-check.gd -- > $F/parse.txt 2>&1; echo "parse rc=$?"; grep -c "^ok:" $F/parse.txt; grep "PARSE FAIL" $F/parse.txt
+sh $S/rg24/mknorm24.sh
+sh $S/rg24/regress.sh final $S/rg24/normalizers24.json 2>&1 | tail -16
+for run in a b; do godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=ammo_buildings > $F/ab-$run.txt 2>&1 & done; wait
+grep -c "^CHECK" $F/ab-a.txt; grep -E "^RESULT|FAIL" $F/ab-a.txt | cut -c1-300
+cmp $F/ab-a.txt $F/ab-b.txt && echo "BYTE-IDENTICAL"
+godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=ammo_buildings_showcase > $F/showcase-headless.txt 2>&1; echo "showcase rc=$?"; grep -E "^RESULT|FAIL" $F/showcase-headless.txt | cut -c1-200
+godot --headless -s -d --remote-debug tcp://127.0.0.1:0 res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a res://tests --ignoreHeadlessMode > $F/gdunit.txt 2>&1; echo "gdunit rc=$?"; grep -a "Overall Summary" $F/gdunit.txt | cut -c1-200
+godot --path . --windowed --resolution 1280x720 --quit-after 600 > $F/main-scene-600-frames.txt 2>&1; echo "main scene rc=$?"; grep -c -E "ERROR|WARNING|SCRIPT" $F/main-scene-600-frames.txt
+echo FINAL_DONE
+echo "done $(date +%H:%M:%S) FINAL_DONE" >> $F/progress.txt

@@ -1,0 +1,47 @@
+"""Write the planned rewrites of story 016 from the SOURCE, never from the outputs.
+
+The retained outputs print script lines in backtraces (`func (res://path.gd:N)`). Every .gd file this story edits that a
+baseline output cites is checked: the cited line's text is read from the copy of the file taken before the first edit
+(BEFORE_DIR, named by its path from the repo), the same text (the same occurrence among identical lines) is found in
+the file as it is now, and where the two line numbers differ an exact rewrite is written for every scenario whose
+baseline cites it. The old numbers are the baseline's printed ones; the new ones come from the sources, so the outputs
+are never the source of a number they are then compared with.
+usage: mk_normalizers16.py REPO BASELINE_DIR BEFORE_DIR OUT.json   (BEFORE_DIR holds the pre-edit copies by file name)
+"""
+import json
+import re
+import sys
+from pathlib import Path
+
+repo, base, before, out = (Path(a) for a in sys.argv[1:5])
+old_text = {}
+for copy in before.glob("*.gd"):
+    matches = list(repo.glob(f"**/{copy.name}"))
+    matches = [m for m in matches if ".godot" not in m.parts and "tools/evidence/split_screen/" not in str(m) or m.name == copy.name and "split_screen_harness" in m.name]
+    assert len(matches) == 1, (copy.name, matches)
+    old_text[matches[0].relative_to(repo).as_posix()] = copy.read_text(encoding="utf-8").split("\n")
+pattern = re.compile(r"(\w+) \((res://[\w/]+\.gd):(\d+)\)")
+rules = {}
+moved = {}
+for txt in sorted(base.glob("*.txt")):
+    name = txt.stem.split("-", 1)[1]
+    for func, res, line in sorted(set(pattern.findall(txt.read_text(encoding="utf-8", errors="replace")))):
+        rel = res[len("res://"):]
+        if rel not in old_text:
+            continue
+        old_lines = old_text[rel]
+        number = int(line)
+        text = old_lines[number - 1]
+        rank = sum(1 for l in old_lines[:number - 1] if l == text)
+        new_lines = (repo / rel).read_text(encoding="utf-8").split("\n")
+        hits = [i + 1 for i, l in enumerate(new_lines) if l == text]
+        if len(hits) <= rank:
+            raise SystemExit(f"{rel}:{number} {text!r} has no counterpart in the edited file")
+        new_number = hits[rank]
+        moved[(rel, number)] = new_number
+        if new_number != number:
+            rules.setdefault(name, []).append([f"{func} ({res}:{number})", f"{func} ({res}:{new_number})"])
+out.write_text(json.dumps(rules, indent=1) + "\n", encoding="utf-8")
+for (rel, number), new_number in sorted(moved.items()):
+    print(f"{rel}:{number} -> {new_number}{'' if new_number != number else ' (unchanged)'}")
+print(f"wrote {out}: {sorted(rules)}")

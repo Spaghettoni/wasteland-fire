@@ -1,0 +1,6 @@
+#!/bin/sh
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/5301094e-f58e-4c3b-9847-469cd75c1bca/scratchpad
+export PROBES=zones_on,zones_stay,map_cans_out,depot_cans_out PROBE_DIR=$S/rg23 NORMALIZERS=$S/rg23/normalizers23.json
+python3 -I $S/w23/seeded-defects23.py $S/rg23/f-a $S/w23/mut "$@" > $S/w23/mutants.txt 2>&1
+echo "rc=$?" >> $S/w23/mutants.txt

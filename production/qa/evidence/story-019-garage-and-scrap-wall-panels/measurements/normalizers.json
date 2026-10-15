@@ -1,0 +1,50 @@
+{
+ "badly_damaged": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1209)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1352)"
+  ]
+ ],
+ "explosions": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1209)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1352)"
+  ]
+ ],
+ "flag_walls": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1209)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1352)"
+  ]
+ ],
+ "token_ui": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1209)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1352)"
+  ]
+ ],
+ "tokens_data": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1209)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1352)"
+  ]
+ ],
+ "turret_looks": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1209)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1352)"
+  ]
+ ],
+ "turrets": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1209)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1352)"
+  ]
+ ],
+ "unit_swap": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1209)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1352)"
+  ]
+ ]
+}

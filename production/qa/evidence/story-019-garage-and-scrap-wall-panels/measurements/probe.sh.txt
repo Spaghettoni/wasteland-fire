@@ -1,0 +1,9 @@
+#!/bin/sh
+# usage: probe.sh REPO TAG   Captures the 64 retained outputs inside REPO into rg19/TAG (3 at a time), compares them with the baseline.
+W=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/f989e592-0c99-4f6a-9d66-b271794c14c4/scratchpad/rg19
+REPO="$1"; TAG="$2"
+mkdir -p $W/$TAG
+xargs -P 3 -L 1 $W/run_one_in.sh "$REPO" $W/$TAG < $W/jobs.txt
+sh $W/filter.sh $W/$TAG $W/f-$TAG
+python3 -I $W/compare.py $W/f-base $W/f-$TAG $W/normalizers19.json > $W/$TAG.txt
+echo "compare exit $?"; grep -v "^STRICT\|^NORMALIZED" $W/$TAG.txt | grep -E "^DIFF|^MISSING|^--"

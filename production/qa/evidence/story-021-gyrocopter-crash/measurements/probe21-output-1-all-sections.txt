@@ -1,0 +1,469 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+P21 ==== section info
+P21 unit: floor_max_angle=45.00 deg, wall_min_slide_angle=15.00 deg, safe_margin=0.0010, max_slides=6, up=(0.0, 1.0, 0.0), motion_mode=0, platform_on_leave=0, floor_snap=0.100, layer=16 mask=1, collision_size=(1.6, 1.0, 2.4)
+P21 engine: physics_ticks_per_second=60, 3d engine=Jolt Physics
+P21 piece tower Base1/Walls/TowerGateLeft box pos=(-107.150,0.000,-18.150) size=(4.300,6.000,4.300) | BoxShape3D size=(4.300,6.000,4.300) at (-105.000,3.000,-16.000) yaw=-90.0
+P21 piece leg Base1/WaterTower/LegGateLeft box pos=(-111.300,0.000,-2.300) size=(0.600,8.000,0.600) | BoxShape3D size=(0.600,8.000,0.600) at (-111.000,4.000,-2.000) yaw=-90.0
+P21 piece tank Depot/FuelTanks/FuelTankSouth/Collider box pos=(-2.560,0.000,5.440) size=(5.120,3.000,5.120) | CylinderShape3D r=2.560 h=3.000 at (0.000,1.500,8.000) yaw=0.0
+P21 piece turret Base1/Turrets/TurretLeft box pos=(-102.000,0.000,-11.000) size=(2.000,3.000,2.000) | CylinderShape3D r=1.000 h=3.000 at (-101.000,1.500,-10.000) yaw=-90.0
+P21 ==== section floor
+P21 floor_flight_open ticks=120 first_hit=-1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   floor_flight_open peak real speed 16.400; the first 3 rows:
+P21   floor_flight_open rel=0 ph=go cmd=0.250 real=0.250 prev=0.000 wall=false floor=true alive=true yaw=-90.0 pos=(-94.996,0.000,-12.000) cols=0 []
+P21   floor_flight_open rel=1 ph=go cmd=0.500 real=0.500 prev=0.250 wall=false floor=true alive=true yaw=-90.0 pos=(-94.988,0.000,-12.000) cols=0 []
+P21   floor_flight_open rel=2 ph=go cmd=0.750 real=0.750 prev=0.500 wall=false floor=true alive=true yaw=-90.0 pos=(-94.975,0.000,-12.000) cols=0 []
+P21 floor_standing_still ticks=60 first_hit=-1 | before it: 60 ticks with a slide collision of 60, deg 0.00..0.00, colliders ["Floor"]
+P21 floor_spot_turn_open ticks=90 first_hit=-1 | before it: 90 ticks with a slide collision of 90, deg 0.00..0.00, colliders ["Floor"]
+P21 ==== section heads
+P21 head_on_tower ticks=88 first_hit=83 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   head_on_tower rel=-2 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=90.0 pos=(-101.234,0.000,-16.000) cols=0 []
+P21   head_on_tower rel=-1 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=90.0 pos=(-101.507,0.000,-16.000) cols=0 []
+P21   head_on_tower rel=0 ph=go cmd=16.400 real=8.520 prev=16.400 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=16.400 depth=0.0015]
+P21   head_on_tower rel=1 ph=go cmd=16.400 real=0.000 prev=8.520 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=8.520 depth=0.0011]
+P21   head_on_tower rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   head_on_tower rel=3 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   head_on_tower rel=4 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   head_on_tower summary go: 5 ticks, 5 with a non-floor collision, max arrival along a normal 16.400, max real 8.520, max cmd 16.400, alive throughout=true
+P21   head_on_tower summary pinned: 180 ticks, 180 with a non-floor collision, max arrival along a normal -0.000, max real 0.000, max cmd 16.400, alive throughout=true
+P21   head_on_tower summary spin_left: 90 ticks, 30 with a non-floor collision, max arrival along a normal -0.000, max real 12.267, max cmd 16.267, alive throughout=true
+P21   head_on_tower summary spin_right: 90 ticks, 0 with a non-floor collision, max arrival along a normal 0.000, max real 4.267, max cmd 4.267, alive throughout=true
+P21   head_on_tower summary spin_left_throttle: 60 ticks, 0 with a non-floor collision, max arrival along a normal 0.000, max real 15.000, max cmd 15.000, alive throughout=true
+P21   head_on_tower end: alive=true pos=(-109.879,0.001,0.309)
+P21   head_on_tower pinned+0 rel=0 ph=pinned cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   head_on_tower pinned+1 rel=1 ph=pinned cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   head_on_tower pinned+2 rel=2 ph=pinned cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   head_on_tower pinned+30 rel=30 ph=pinned cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   head_on_tower pinned+90 rel=90 ph=pinned cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   head_on_tower pinned+179 rel=179 ph=pinned cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21 head_on_leg ticks=88 first_hit=83 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   head_on_leg rel=-2 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=90.0 pos=(-109.084,0.000,-2.000) cols=0 []
+P21   head_on_leg rel=-1 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=90.0 pos=(-109.357,0.000,-2.000) cols=0 []
+P21   head_on_leg rel=0 ph=go cmd=16.400 real=8.520 prev=16.400 wall=true floor=true alive=true yaw=90.0 pos=(-109.499,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=16.400 depth=0.0015]
+P21   head_on_leg rel=1 ph=go cmd=16.400 real=0.000 prev=8.520 wall=true floor=true alive=true yaw=90.0 pos=(-109.499,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=8.520 depth=0.0011]
+P21   head_on_leg rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.499,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   head_on_leg rel=3 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.499,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   head_on_leg rel=4 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.499,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   head_on_leg summary go: 5 ticks, 5 with a non-floor collision, max arrival along a normal 16.400, max real 8.520, max cmd 16.400, alive throughout=true
+P21   head_on_leg summary pinned: 180 ticks, 180 with a non-floor collision, max arrival along a normal -0.000, max real 0.000, max cmd 16.400, alive throughout=true
+P21   head_on_leg summary spin_left: 90 ticks, 22 with a non-floor collision, max arrival along a normal 0.000, max real 13.333, max cmd 16.267, alive throughout=true
+P21   head_on_leg summary spin_right: 90 ticks, 0 with a non-floor collision, max arrival along a normal 0.000, max real 4.267, max cmd 4.267, alive throughout=true
+P21   head_on_leg summary spin_left_throttle: 60 ticks, 0 with a non-floor collision, max arrival along a normal 0.000, max real 15.000, max cmd 15.000, alive throughout=true
+P21   head_on_leg end: alive=true pos=(-119.148,0.001,13.708)
+P21 head_on_tank ticks=88 first_hit=83 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   head_on_tank rel=-2 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=180.0 pos=(-0.000,0.000,3.824) cols=0 []
+P21   head_on_tank rel=-1 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=180.0 pos=(-0.000,0.000,4.097) cols=0 []
+P21   head_on_tank rel=0 ph=go cmd=16.400 real=8.520 prev=16.400 wall=true floor=true alive=true yaw=180.0 pos=(-0.000,0.000,4.240) cols=1 [Collider n=(0.000,-0.000,-1.000) deg=90.0 arr=16.400 depth=0.0016]
+P21   head_on_tank rel=1 ph=go cmd=16.400 real=0.000 prev=8.520 wall=true floor=true alive=true yaw=180.0 pos=(-0.000,0.000,4.240) cols=1 [Collider n=(0.000,-0.000,-1.000) deg=90.0 arr=8.520 depth=0.0011]
+P21   head_on_tank rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=180.0 pos=(-0.000,0.000,4.240) cols=1 [Collider n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   head_on_tank rel=3 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=180.0 pos=(-0.000,0.000,4.240) cols=1 [Collider n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   head_on_tank rel=4 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=180.0 pos=(-0.000,0.000,4.240) cols=1 [Collider n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   head_on_tank summary go: 5 ticks, 5 with a non-floor collision, max arrival along a normal 16.400, max real 8.520, max cmd 16.400, alive throughout=true
+P21   head_on_tank summary pinned: 180 ticks, 180 with a non-floor collision, max arrival along a normal -0.000, max real 0.000, max cmd 16.400, alive throughout=true
+P21   head_on_tank summary spin_left: 90 ticks, 29 with a non-floor collision, max arrival along a normal 0.682, max real 12.400, max cmd 16.267, alive throughout=true
+P21   head_on_tank summary spin_right: 90 ticks, 0 with a non-floor collision, max arrival along a normal 0.000, max real 4.267, max cmd 4.267, alive throughout=true
+P21   head_on_tank summary spin_left_throttle: 60 ticks, 0 with a non-floor collision, max arrival along a normal 0.000, max real 15.000, max cmd 15.000, alive throughout=true
+P21   head_on_tank end: alive=true pos=(16.138,0.001,13.386)
+P21 head_on_turret ticks=88 first_hit=83 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   head_on_turret rel=-2 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=90.0 pos=(-98.384,0.000,-10.000) cols=0 []
+P21   head_on_turret rel=-1 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=90.0 pos=(-98.657,0.000,-10.000) cols=0 []
+P21   head_on_turret rel=0 ph=go cmd=16.400 real=8.520 prev=16.400 wall=true floor=true alive=true yaw=90.0 pos=(-98.799,0.000,-10.000) cols=1 [TurretLeft n=(1.000,0.000,-0.000) deg=90.0 arr=16.400 depth=0.0015]
+P21   head_on_turret rel=1 ph=go cmd=16.400 real=0.000 prev=8.520 wall=true floor=true alive=true yaw=90.0 pos=(-98.799,0.000,-10.000) cols=1 [TurretLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=8.520 depth=0.0011]
+P21   head_on_turret rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-98.799,0.000,-10.000) cols=1 [TurretLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   head_on_turret rel=3 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-98.799,0.000,-10.000) cols=1 [TurretLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   head_on_turret rel=4 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-98.799,0.000,-10.000) cols=1 [TurretLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   head_on_turret summary go: 5 ticks, 5 with a non-floor collision, max arrival along a normal 16.400, max real 8.520, max cmd 16.400, alive throughout=true
+P21   head_on_turret summary pinned: 180 ticks, 180 with a non-floor collision, max arrival along a normal -0.000, max real 0.000, max cmd 16.400, alive throughout=true
+P21   head_on_turret summary spin_left: 90 ticks, 26 with a non-floor collision, max arrival along a normal 0.000, max real 12.800, max cmd 16.267, alive throughout=true
+P21   head_on_turret summary spin_right: 90 ticks, 0 with a non-floor collision, max arrival along a normal 0.000, max real 4.267, max cmd 4.267, alive throughout=true
+P21   head_on_turret summary spin_left_throttle: 60 ticks, 0 with a non-floor collision, max arrival along a normal 0.000, max real 15.000, max cmd 15.000, alive throughout=true
+P21   head_on_turret end: alive=true pos=(-108.058,0.001,5.551)
+P21 ==== section speeds
+P21 speeds target=3.00 m/s:
+P21 speed_3.00 ticks=200 first_hit=-1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21 speeds target=3.50 m/s:
+P21 speed_3.50 ticks=200 first_hit=-1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21 speeds target=3.90 m/s:
+P21 speed_3.90 ticks=200 first_hit=-1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21 speeds target=3.95 m/s:
+P21 speed_3.95 ticks=200 first_hit=-1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21 speeds target=4.00 m/s:
+P21 speed_4.00 ticks=200 first_hit=-1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21 speeds target=4.05 m/s:
+P21 speed_4.05 ticks=200 first_hit=-1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21 speeds target=4.10 m/s:
+P21 speed_4.10 ticks=200 first_hit=-1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21 speeds target=4.50 m/s:
+P21 speed_4.50 ticks=200 first_hit=195 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   speed_4.50 rel=-1 ph=go cmd=4.500 real=4.500 prev=4.500 wall=false floor=true alive=true yaw=90.0 pos=(-101.637,0.000,-16.000) cols=0 []
+P21   speed_4.50 rel=0 ph=go cmd=4.500 real=0.000 prev=4.500 wall=true floor=true alive=true yaw=90.0 pos=(-101.637,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=4.500 depth=0.0014]
+P21   speed_4.50 rel=1 ph=go cmd=4.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.637,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0014]
+P21   speed_4.50 rel=2 ph=go cmd=4.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.637,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0014]
+P21   speed_4.50 rel=3 ph=go cmd=4.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.637,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0014]
+P21 keys from rest, contact on tick 15, arrival expected 3.500 m/s:
+P21 keys_from_rest_14 ticks=19 first_hit=14 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   keys_from_rest_14 rel=-1 ph=go cmd=3.500 real=3.500 prev=3.250 wall=false floor=true alive=true yaw=90.0 pos=(-101.619,0.000,-16.000) cols=0 []
+P21   keys_from_rest_14 rel=0 ph=go cmd=3.750 real=1.758 prev=3.500 wall=true floor=true alive=true yaw=90.0 pos=(-101.648,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=3.500 depth=0.0010]
+P21   keys_from_rest_14 rel=1 ph=go cmd=4.000 real=0.000 prev=1.758 wall=true floor=true alive=true yaw=90.0 pos=(-101.648,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=1.758 depth=0.0017]
+P21   keys_from_rest_14 rel=2 ph=go cmd=4.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.648,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0018]
+P21 keys from rest, contact on tick 16, arrival expected 3.750 m/s:
+P21 keys_from_rest_15 ticks=20 first_hit=15 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   keys_from_rest_15 rel=-1 ph=go cmd=3.750 real=3.750 prev=3.500 wall=false floor=true alive=true yaw=90.0 pos=(-101.617,0.000,-16.000) cols=0 []
+P21   keys_from_rest_15 rel=0 ph=go cmd=4.000 real=1.938 prev=3.750 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=3.750 depth=0.0010]
+P21   keys_from_rest_15 rel=1 ph=go cmd=4.250 real=0.000 prev=1.938 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=1.938 depth=0.0011]
+P21   keys_from_rest_15 rel=2 ph=go cmd=4.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21 keys from rest, contact on tick 17, arrival expected 4.000 m/s:
+P21 keys_from_rest_16 ticks=21 first_hit=16 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   keys_from_rest_16 rel=-1 ph=go cmd=4.000 real=4.000 prev=3.750 wall=false floor=true alive=true yaw=90.0 pos=(-101.615,0.000,-16.000) cols=0 []
+P21   keys_from_rest_16 rel=0 ph=go cmd=4.250 real=2.125 prev=4.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=4.000 depth=0.0021]
+P21   keys_from_rest_16 rel=1 ph=go cmd=4.500 real=0.000 prev=2.125 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=2.125 depth=0.0013]
+P21   keys_from_rest_16 rel=2 ph=go cmd=4.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0014]
+P21 keys from rest, contact on tick 18, arrival expected 4.250 m/s:
+P21 keys_from_rest_17 ticks=22 first_hit=17 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   keys_from_rest_17 rel=-1 ph=go cmd=4.250 real=4.250 prev=4.000 wall=false floor=true alive=true yaw=90.0 pos=(-101.612,0.000,-16.000) cols=0 []
+P21   keys_from_rest_17 rel=0 ph=go cmd=4.500 real=2.250 prev=4.250 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=4.250 depth=0.0022]
+P21   keys_from_rest_17 rel=1 ph=go cmd=4.750 real=0.000 prev=2.250 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=2.250 depth=0.0014]
+P21   keys_from_rest_17 rel=2 ph=go cmd=5.000 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0014]
+P21 keys from rest, contact on tick 19, arrival expected 4.500 m/s:
+P21 keys_from_rest_18 ticks=23 first_hit=18 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   keys_from_rest_18 rel=-1 ph=go cmd=4.500 real=4.500 prev=4.250 wall=false floor=true alive=true yaw=90.0 pos=(-101.610,0.000,-16.000) cols=0 []
+P21   keys_from_rest_18 rel=0 ph=go cmd=4.750 real=2.375 prev=4.500 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=4.500 depth=0.0022]
+P21   keys_from_rest_18 rel=1 ph=go cmd=5.000 real=0.000 prev=2.375 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=2.375 depth=0.0014]
+P21   keys_from_rest_18 rel=2 ph=go cmd=5.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.650,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0015]
+P21 ==== section angles
+P21 angles off the normal=0.0 (to the face 90.0 deg):
+P21 angle_0.0 ticks=96 first_hit=83 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   angle_0.0 rel=-1 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=90.0 pos=(-101.507,0.000,-16.000) cols=0 []
+P21   angle_0.0 rel=0 ph=go cmd=16.400 real=8.520 prev=16.400 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=16.400 depth=0.0015]
+P21   angle_0.0 rel=1 ph=go cmd=16.400 real=0.000 prev=8.520 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=8.520 depth=0.0011]
+P21   angle_0.0 rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_0.0 rel=3 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_0.0 rel=4 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_0.0 rel=5 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_0.0 rel=6 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-101.649,0.000,-16.000) cols=1 [TowerGateLeft n=(1.000,-0.000,0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_0.0 after 13 ticks: alive=true real=0.000 pos=(-101.649,0.000,-16.000)
+P21 angles off the normal=30.0 (to the face 60.0 deg):
+P21 angle_30.0 ticks=93 first_hit=80 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   angle_30.0 rel=-1 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=120.0 pos=(-101.265,0.000,-18.156) cols=0 []
+P21   angle_30.0 rel=0 ph=go cmd=16.400 real=11.403 prev=16.400 wall=true floor=true alive=true yaw=120.0 pos=(-101.430,0.000,-18.061) cols=1 [TowerGateLeft n=(0.933,0.000,-0.361) deg=90.0 arr=16.205 depth=0.0010]
+P21   angle_30.0 rel=1 ph=go cmd=16.400 real=0.000 prev=11.403 wall=true floor=true alive=true yaw=120.0 pos=(-101.430,0.000,-18.061) cols=1 [TowerGateLeft n=(0.933,0.000,-0.361) deg=90.0 arr=11.268 depth=0.0010]
+P21   angle_30.0 rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=120.0 pos=(-101.430,0.000,-18.061) cols=1 [TowerGateLeft n=(0.933,0.000,-0.361) deg=90.0 arr=-0.000 depth=0.0010]
+P21   angle_30.0 rel=3 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=120.0 pos=(-101.430,0.000,-18.061) cols=1 [TowerGateLeft n=(0.933,0.000,-0.361) deg=90.0 arr=-0.000 depth=0.0010]
+P21   angle_30.0 rel=4 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=120.0 pos=(-101.430,0.000,-18.061) cols=1 [TowerGateLeft n=(0.933,0.000,-0.361) deg=90.0 arr=-0.000 depth=0.0010]
+P21   angle_30.0 rel=5 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=120.0 pos=(-101.430,0.000,-18.061) cols=1 [TowerGateLeft n=(0.933,0.000,-0.361) deg=90.0 arr=-0.000 depth=0.0010]
+P21   angle_30.0 rel=6 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=120.0 pos=(-101.430,0.000,-18.061) cols=1 [TowerGateLeft n=(0.933,0.000,-0.361) deg=90.0 arr=-0.000 depth=0.0010]
+P21   angle_30.0 after 13 ticks: alive=true real=0.000 pos=(-101.430,0.000,-18.061)
+P21 angles off the normal=60.0 (to the face 30.0 deg):
+P21 angle_60.0 ticks=93 first_hit=80 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   angle_60.0 rel=-1 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=150.0 pos=(-102.844,0.000,-19.735) cols=0 []
+P21   angle_60.0 rel=0 ph=go cmd=16.400 real=11.467 prev=16.400 wall=true floor=true alive=true yaw=150.0 pos=(-102.939,0.000,-19.569) cols=1 [TowerGateLeft n=(0.359,0.000,-0.933) deg=90.0 arr=16.200 depth=0.0020]
+P21   angle_60.0 rel=1 ph=go cmd=16.400 real=0.000 prev=11.467 wall=true floor=true alive=true yaw=150.0 pos=(-102.939,0.000,-19.569) cols=1 [TowerGateLeft n=(0.359,0.000,-0.933) deg=90.0 arr=11.328 depth=0.0012]
+P21   angle_60.0 rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=150.0 pos=(-102.939,0.000,-19.569) cols=1 [TowerGateLeft n=(0.359,0.000,-0.933) deg=90.0 arr=-0.000 depth=0.0012]
+P21   angle_60.0 rel=3 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=150.0 pos=(-102.939,0.000,-19.569) cols=1 [TowerGateLeft n=(0.359,0.000,-0.933) deg=90.0 arr=-0.000 depth=0.0012]
+P21   angle_60.0 rel=4 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=150.0 pos=(-102.939,0.000,-19.569) cols=1 [TowerGateLeft n=(0.359,0.000,-0.933) deg=90.0 arr=-0.000 depth=0.0012]
+P21   angle_60.0 rel=5 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=150.0 pos=(-102.939,0.000,-19.569) cols=1 [TowerGateLeft n=(0.359,0.000,-0.933) deg=90.0 arr=-0.000 depth=0.0012]
+P21   angle_60.0 rel=6 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=150.0 pos=(-102.939,0.000,-19.569) cols=1 [TowerGateLeft n=(0.359,0.000,-0.933) deg=90.0 arr=-0.000 depth=0.0012]
+P21   angle_60.0 after 13 ticks: alive=true real=0.000 pos=(-102.939,0.000,-19.569)
+P21 angles off the normal=70.0 (to the face 20.0 deg):
+P21 angle_70.0 ticks=94 first_hit=81 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   angle_70.0 rel=-1 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=160.0 pos=(-103.618,0.000,-19.796) cols=0 []
+P21   angle_70.0 rel=0 ph=go cmd=16.400 real=16.280 prev=16.400 wall=true floor=true alive=true yaw=160.0 pos=(-103.712,0.001,-19.541) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=15.411 depth=0.0012]
+P21   angle_70.0 rel=1 ph=go cmd=16.400 real=5.609 prev=16.280 wall=true floor=true alive=true yaw=160.0 pos=(-103.805,0.001,-19.541) cols=1 [TowerGateLeft n=(0.000,0.000,-1.000) deg=90.0 arr=15.283 depth=0.0010]
+P21   angle_70.0 rel=2 ph=go cmd=16.400 real=5.609 prev=5.609 wall=true floor=true alive=true yaw=160.0 pos=(-103.899,0.001,-19.541) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.006 depth=0.0010]
+P21   angle_70.0 rel=3 ph=go cmd=16.400 real=5.609 prev=5.609 wall=true floor=true alive=true yaw=160.0 pos=(-103.992,0.001,-19.541) cols=1 [TowerGateLeft n=(0.000,0.000,-1.000) deg=90.0 arr=-0.001 depth=0.0010]
+P21   angle_70.0 rel=4 ph=go cmd=16.400 real=5.609 prev=5.609 wall=true floor=true alive=true yaw=160.0 pos=(-104.086,0.001,-19.541) cols=1 [TowerGateLeft n=(0.000,0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0010]
+P21   angle_70.0 rel=5 ph=go cmd=16.400 real=5.609 prev=5.609 wall=true floor=true alive=true yaw=160.0 pos=(-104.179,0.001,-19.541) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=0.000 depth=0.0010]
+P21   angle_70.0 rel=6 ph=go cmd=16.400 real=5.609 prev=5.609 wall=true floor=true alive=true yaw=160.0 pos=(-104.273,0.001,-19.541) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=0.000 depth=0.0010]
+P21   angle_70.0 after 13 ticks: alive=true real=5.609 pos=(-104.834,0.001,-19.541)
+P21 angles off the normal=74.0 (to the face 16.0 deg):
+P21 angle_74.0 ticks=95 first_hit=82 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   angle_74.0 rel=-1 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=164.0 pos=(-103.962,0.000,-19.620) cols=0 []
+P21   angle_74.0 rel=0 ph=go cmd=16.400 real=7.727 prev=16.400 wall=true floor=true alive=true yaw=164.0 pos=(-104.037,0.001,-19.516) cols=1 [TowerGateLeft n=(0.000,0.000,-1.000) deg=90.0 arr=15.765 depth=0.0013]
+P21   angle_74.0 rel=1 ph=go cmd=16.400 real=4.520 prev=7.727 wall=true floor=true alive=true yaw=164.0 pos=(-104.113,0.001,-19.516) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=6.267 depth=0.0010]
+P21   angle_74.0 rel=2 ph=go cmd=16.400 real=4.520 prev=4.520 wall=true floor=true alive=true yaw=164.0 pos=(-104.188,0.001,-19.516) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.002 depth=0.0010]
+P21   angle_74.0 rel=3 ph=go cmd=16.400 real=4.520 prev=4.520 wall=true floor=true alive=true yaw=164.0 pos=(-104.263,0.001,-19.516) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0010]
+P21   angle_74.0 rel=4 ph=go cmd=16.400 real=4.520 prev=4.520 wall=true floor=true alive=true yaw=164.0 pos=(-104.339,0.001,-19.516) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=0.000 depth=0.0010]
+P21   angle_74.0 rel=5 ph=go cmd=16.400 real=4.520 prev=4.520 wall=true floor=true alive=true yaw=164.0 pos=(-104.414,0.001,-19.516) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=0.000 depth=0.0010]
+P21   angle_74.0 rel=6 ph=go cmd=16.400 real=4.520 prev=4.520 wall=true floor=true alive=true yaw=164.0 pos=(-104.489,0.001,-19.516) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=0.000 depth=0.0010]
+P21   angle_74.0 after 13 ticks: alive=true real=4.520 pos=(-104.941,0.001,-19.516)
+P21 angles off the normal=75.0 (to the face 15.0 deg):
+P21 angle_75.0 ticks=95 first_hit=82 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   angle_75.0 rel=-1 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=165.0 pos=(-104.025,0.000,-19.638) cols=0 []
+P21   angle_75.0 rel=0 ph=go cmd=16.400 real=8.072 prev=16.400 wall=true floor=true alive=true yaw=165.0 pos=(-104.060,0.000,-19.508) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=15.841 depth=0.0016]
+P21   angle_75.0 rel=1 ph=go cmd=16.400 real=0.000 prev=8.072 wall=true floor=true alive=true yaw=165.0 pos=(-104.060,0.000,-19.508) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=7.797 depth=0.0011]
+P21   angle_75.0 rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=165.0 pos=(-104.060,0.000,-19.508) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_75.0 rel=3 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=165.0 pos=(-104.060,0.000,-19.508) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_75.0 rel=4 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=165.0 pos=(-104.060,0.000,-19.508) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_75.0 rel=5 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=165.0 pos=(-104.060,0.000,-19.508) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_75.0 rel=6 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=165.0 pos=(-104.060,0.000,-19.508) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_75.0 after 13 ticks: alive=true real=0.000 pos=(-104.060,0.000,-19.508)
+P21 angles off the normal=76.0 (to the face 14.0 deg):
+P21 angle_76.0 ticks=95 first_hit=82 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   angle_76.0 rel=-1 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=166.0 pos=(-104.089,0.000,-19.654) cols=0 []
+P21   angle_76.0 rel=0 ph=go cmd=16.400 real=9.545 prev=16.400 wall=true floor=true alive=true yaw=166.0 pos=(-104.127,0.000,-19.500) cols=1 [TowerGateLeft n=(0.000,0.000,-1.000) deg=90.0 arr=15.913 depth=0.0018]
+P21   angle_76.0 rel=1 ph=go cmd=16.400 real=0.000 prev=9.545 wall=true floor=true alive=true yaw=166.0 pos=(-104.127,0.000,-19.500) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=9.262 depth=0.0011]
+P21   angle_76.0 rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=166.0 pos=(-104.127,0.000,-19.500) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_76.0 rel=3 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=166.0 pos=(-104.127,0.000,-19.500) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_76.0 rel=4 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=166.0 pos=(-104.127,0.000,-19.500) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_76.0 rel=5 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=166.0 pos=(-104.127,0.000,-19.500) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_76.0 rel=6 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=166.0 pos=(-104.127,0.000,-19.500) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_76.0 after 13 ticks: alive=true real=0.000 pos=(-104.127,0.000,-19.500)
+P21 angles off the normal=80.0 (to the face 10.0 deg):
+P21 angle_80.0 ticks=95 first_hit=82 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   angle_80.0 rel=-1 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=170.0 pos=(-104.346,0.000,-19.709) cols=0 []
+P21   angle_80.0 rel=0 ph=go cmd=16.400 real=14.798 prev=16.400 wall=true floor=true alive=true yaw=170.0 pos=(-104.389,0.000,-19.466) cols=1 [TowerGateLeft n=(0.000,0.000,-1.000) deg=90.0 arr=16.151 depth=0.0012]
+P21   angle_80.0 rel=1 ph=go cmd=16.400 real=0.000 prev=14.798 wall=true floor=true alive=true yaw=170.0 pos=(-104.389,0.000,-19.466) cols=1 [TowerGateLeft n=(0.000,0.000,-1.000) deg=90.0 arr=14.574 depth=0.0011]
+P21   angle_80.0 rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=170.0 pos=(-104.389,0.000,-19.466) cols=1 [TowerGateLeft n=(0.000,0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_80.0 rel=3 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=170.0 pos=(-104.389,0.000,-19.466) cols=1 [TowerGateLeft n=(0.000,0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_80.0 rel=4 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=170.0 pos=(-104.389,0.000,-19.466) cols=1 [TowerGateLeft n=(0.000,0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_80.0 rel=5 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=170.0 pos=(-104.389,0.000,-19.466) cols=1 [TowerGateLeft n=(0.000,0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_80.0 rel=6 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=170.0 pos=(-104.389,0.000,-19.466) cols=1 [TowerGateLeft n=(0.000,0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_80.0 after 13 ticks: alive=true real=0.000 pos=(-104.389,0.000,-19.466)
+P21 angles off the normal=85.0 (to the face 5.0 deg):
+P21 angle_85.0 ticks=96 first_hit=83 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   angle_85.0 rel=-1 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=175.0 pos=(-104.696,0.000,-19.479) cols=0 []
+P21   angle_85.0 rel=0 ph=go cmd=16.400 real=4.004 prev=16.400 wall=true floor=true alive=true yaw=175.0 pos=(-104.701,0.000,-19.413) cols=1 [TowerGateLeft n=(0.000,0.000,-1.000) deg=90.0 arr=16.338 depth=0.0017]
+P21   angle_85.0 rel=1 ph=go cmd=16.400 real=0.000 prev=4.004 wall=true floor=true alive=true yaw=175.0 pos=(-104.701,0.000,-19.413) cols=1 [TowerGateLeft n=(0.000,0.000,-1.000) deg=90.0 arr=3.989 depth=0.0011]
+P21   angle_85.0 rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=175.0 pos=(-104.701,0.000,-19.413) cols=1 [TowerGateLeft n=(0.000,0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_85.0 rel=3 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=175.0 pos=(-104.701,0.000,-19.413) cols=1 [TowerGateLeft n=(0.000,0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_85.0 rel=4 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=175.0 pos=(-104.701,0.000,-19.413) cols=1 [TowerGateLeft n=(0.000,0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_85.0 rel=5 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=175.0 pos=(-104.701,0.000,-19.413) cols=1 [TowerGateLeft n=(0.000,0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_85.0 rel=6 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=175.0 pos=(-104.701,0.000,-19.413) cols=1 [TowerGateLeft n=(0.000,0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_85.0 after 13 ticks: alive=true real=0.000 pos=(-104.701,0.000,-19.413)
+P21 angles off the normal=90.0 (to the face 0.0 deg):
+P21 angle_90.0 ticks=96 first_hit=83 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   angle_90.0 rel=-1 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=-180.0 pos=(-105.000,0.000,-19.493) cols=0 []
+P21   angle_90.0 rel=0 ph=go cmd=16.400 real=8.520 prev=16.400 wall=true floor=true alive=true yaw=-180.0 pos=(-105.000,0.000,-19.351) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=16.400 depth=0.0016]
+P21   angle_90.0 rel=1 ph=go cmd=16.400 real=0.000 prev=8.520 wall=true floor=true alive=true yaw=-180.0 pos=(-105.000,0.000,-19.351) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=8.520 depth=0.0011]
+P21   angle_90.0 rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=-180.0 pos=(-105.000,0.000,-19.351) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_90.0 rel=3 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=-180.0 pos=(-105.000,0.000,-19.351) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_90.0 rel=4 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=-180.0 pos=(-105.000,0.000,-19.351) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_90.0 rel=5 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=-180.0 pos=(-105.000,0.000,-19.351) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_90.0 rel=6 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=-180.0 pos=(-105.000,0.000,-19.351) cols=1 [TowerGateLeft n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   angle_90.0 after 13 ticks: alive=true real=0.000 pos=(-105.000,0.000,-19.351)
+P21 ==== section lateral
+P21 lateral tank 0.00 m off the axis:
+P21 lateral_tank_0.00 ticks=92 first_hit=83 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   lateral_tank_0.00 rel=0 ph=go cmd=16.400 real=8.520 prev=16.400 wall=true floor=true alive=true yaw=180.0 pos=(-0.000,0.000,4.240) cols=1 [Collider n=(0.000,-0.000,-1.000) deg=90.0 arr=16.400 depth=0.0016]
+P21   lateral_tank_0.00 rel=1 ph=go cmd=16.400 real=0.000 prev=8.520 wall=true floor=true alive=true yaw=180.0 pos=(-0.000,0.000,4.240) cols=1 [Collider n=(0.000,-0.000,-1.000) deg=90.0 arr=8.520 depth=0.0011]
+P21   lateral_tank_0.00 rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=180.0 pos=(-0.000,0.000,4.240) cols=1 [Collider n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   lateral_tank_0.00 rel=3 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=180.0 pos=(-0.000,0.000,4.240) cols=1 [Collider n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   lateral_tank_0.00 rel=4 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=180.0 pos=(-0.000,0.000,4.240) cols=1 [Collider n=(0.000,-0.000,-1.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   lateral_tank_0.00 9 ticks after: alive=true real=0.000
+P21 lateral tank 1.00 m off the axis:
+P21 lateral_tank_1.00 ticks=92 first_hit=83 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   lateral_tank_1.00 rel=0 ph=go cmd=16.400 real=9.161 prev=16.400 wall=true floor=true alive=true yaw=180.0 pos=(1.000,0.000,4.250) cols=1 [Collider n=(0.092,-0.000,-0.996) deg=90.0 arr=16.330 depth=0.0011]
+P21   lateral_tank_1.00 rel=1 ph=go cmd=16.400 real=0.000 prev=9.161 wall=true floor=true alive=true yaw=180.0 pos=(1.000,0.000,4.250) cols=1 [Collider n=(0.091,-0.000,-0.996) deg=90.0 arr=9.123 depth=0.0011]
+P21   lateral_tank_1.00 rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=180.0 pos=(1.000,0.000,4.250) cols=1 [Collider n=(0.091,-0.000,-0.996) deg=90.0 arr=-0.000 depth=0.0011]
+P21   lateral_tank_1.00 rel=3 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=180.0 pos=(1.000,0.000,4.250) cols=1 [Collider n=(0.091,-0.000,-0.996) deg=90.0 arr=-0.000 depth=0.0011]
+P21   lateral_tank_1.00 rel=4 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=180.0 pos=(1.000,0.000,4.250) cols=1 [Collider n=(0.091,-0.000,-0.996) deg=90.0 arr=-0.000 depth=0.0011]
+P21   lateral_tank_1.00 9 ticks after: alive=true real=0.000
+P21 lateral tank 2.00 m off the axis:
+P21 lateral_tank_2.00 ticks=93 first_hit=84 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   lateral_tank_2.00 rel=0 ph=go cmd=16.400 real=12.418 prev=16.400 wall=true floor=true alive=true yaw=180.0 pos=(2.038,0.001,4.574) cols=1 [Collider n=(0.477,0.000,-0.879) deg=90.0 arr=14.414 depth=0.0017]
+P21   lateral_tank_2.00 rel=1 ph=go cmd=16.400 real=8.058 prev=12.418 wall=true floor=true alive=true yaw=180.0 pos=(2.155,0.001,4.640) cols=1 [Collider n=(0.491,-0.000,-0.871) deg=90.0 arr=9.515 depth=0.0010]
+P21   lateral_tank_2.00 rel=2 ph=go cmd=16.400 real=8.798 prev=8.058 wall=true floor=true alive=true yaw=180.0 pos=(2.279,0.001,4.719) cols=1 [Collider n=(0.536,0.000,-0.844) deg=90.0 arr=-0.424 depth=0.0013]
+P21   lateral_tank_2.00 rel=3 ph=go cmd=16.400 real=9.580 prev=8.798 wall=true floor=true alive=true yaw=180.0 pos=(2.408,0.001,4.812) cols=1 [Collider n=(0.584,-0.000,-0.812) deg=90.0 arr=-0.506 depth=0.0010]
+P21   lateral_tank_2.00 rel=4 ph=go cmd=16.400 real=10.399 prev=9.580 wall=true floor=true alive=true yaw=180.0 pos=(2.542,0.001,4.922) cols=1 [Collider n=(0.634,-0.000,-0.773) deg=90.0 arr=-0.603 depth=0.0011]
+P21   lateral_tank_2.00 9 ticks after: alive=true real=13.664
+P21 lateral tank 3.00 m off the axis:
+P21 lateral_tank_3.00 ticks=97 first_hit=88 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   lateral_tank_3.00 rel=0 ph=go cmd=16.400 real=14.230 prev=16.400 wall=true floor=true alive=true yaw=180.0 pos=(3.096,0.001,5.681) cols=1 [Collider n=(0.862,-0.000,-0.507) deg=90.0 arr=8.318 depth=0.0017]
+P21   lateral_tank_3.00 rel=1 ph=go cmd=16.400 real=14.732 prev=14.230 wall=true floor=true alive=true yaw=180.0 pos=(3.204,0.001,5.902) cols=1 [Collider n=(0.898,0.000,-0.439) deg=90.0 arr=0.555 depth=0.0010]
+P21   lateral_tank_3.00 rel=2 ph=go cmd=16.400 real=15.446 prev=14.732 wall=true floor=true alive=true yaw=180.0 pos=(3.276,0.001,6.149) cols=1 [Collider n=(0.940,-0.000,-0.341) deg=90.0 arr=-1.566 depth=0.0011]
+P21   lateral_tank_3.00 rel=3 ph=go cmd=16.400 real=15.878 prev=15.446 wall=true floor=true alive=true yaw=180.0 pos=(3.335,0.001,6.407) cols=1 [Collider n=(0.968,-0.000,-0.252) deg=90.0 arr=-0.465 depth=0.0010]
+P21   lateral_tank_3.00 rel=4 ph=go cmd=16.400 real=16.251 prev=15.878 wall=true floor=true alive=true yaw=180.0 pos=(3.363,0.001,6.676) cols=1 [Collider n=(0.990,-0.000,-0.139) deg=90.0 arr=-1.345 depth=0.0010]
+P21   lateral_tank_3.00 9 ticks after: alive=true real=16.400
+P21 lateral tank 3.20 m off the axis:
+P21 lateral_tank_3.20 ticks=98 first_hit=89 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   lateral_tank_3.20 rel=0 ph=go cmd=16.400 real=15.949 prev=16.400 wall=true floor=true alive=true yaw=180.0 pos=(3.223,0.001,6.002) cols=1 [Collider n=(0.938,-0.000,-0.345) deg=90.0 arr=5.664 depth=0.0012]
+P21   lateral_tank_3.20 rel=1 ph=go cmd=16.400 real=15.538 prev=15.949 wall=true floor=true alive=true yaw=180.0 pos=(3.306,0.001,6.248) cols=1 [Collider n=(0.947,-0.000,-0.320) deg=90.0 arr=3.768 depth=0.0012]
+P21   lateral_tank_3.20 rel=2 ph=go cmd=16.400 real=16.078 prev=15.538 wall=true floor=true alive=true yaw=180.0 pos=(3.348,0.001,6.512) cols=1 [Collider n=(0.979,0.000,-0.202) deg=90.0 arr=-1.894 depth=0.0013]
+P21   lateral_tank_3.20 rel=3 ph=go cmd=16.400 real=16.330 prev=16.078 wall=true floor=true alive=true yaw=180.0 pos=(3.367,0.001,6.784) cols=1 [Collider n=(0.995,0.000,-0.095) deg=90.0 arr=-0.997 depth=0.0010]
+P21   lateral_tank_3.20 rel=4 ph=go cmd=16.400 real=16.400 prev=16.330 wall=false floor=true alive=true yaw=180.0 pos=(3.367,0.001,7.057) cols=0 []
+P21   lateral_tank_3.20 9 ticks after: alive=true real=16.400
+P21 lateral tank 3.30 m off the axis:
+P21 lateral_tank_3.30 ticks=99 first_hit=90 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   lateral_tank_3.30 rel=0 ph=go cmd=16.400 real=16.400 prev=16.400 wall=true floor=true alive=true yaw=180.0 pos=(3.300,0.000,6.284) cols=1 [Collider n=(0.977,-0.000,-0.214) deg=90.0 arr=3.506 depth=0.0009]
+P21   lateral_tank_3.30 rel=1 ph=go cmd=16.400 real=16.029 prev=16.400 wall=true floor=true alive=true yaw=180.0 pos=(3.357,0.001,6.545) cols=1 [Collider n=(0.977,-0.000,-0.211) deg=90.0 arr=3.468 depth=0.0010]
+P21   lateral_tank_3.30 rel=2 ph=go cmd=16.400 real=16.388 prev=16.029 wall=true floor=true alive=true yaw=180.0 pos=(3.363,0.001,6.818) cols=1 [Collider n=(0.999,-0.000,-0.046) deg=90.0 arr=-2.718 depth=0.0010]
+P21   lateral_tank_3.30 rel=3 ph=go cmd=16.400 real=16.400 prev=16.388 wall=false floor=true alive=true yaw=180.0 pos=(3.363,0.001,7.092) cols=0 []
+P21   lateral_tank_3.30 rel=4 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=180.0 pos=(3.363,0.001,7.365) cols=0 []
+P21   lateral_tank_3.30 9 ticks after: alive=true real=16.400
+P21 lateral tank 3.40 m off the axis:
+P21 lateral_tank_3.40 ticks=200 first_hit=-1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21 lateral tank 3.50 m off the axis:
+P21 lateral_tank_3.50 ticks=35 first_hit=26 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   lateral_tank_3.50 rel=0 ph=go cmd=6.750 real=6.626 prev=6.500 wall=true floor=true alive=true yaw=180.0 pos=(3.479,0.001,-8.189) cols=1 [Collider n=(-0.982,-0.000,-0.191) deg=90.0 arr=1.242 depth=0.0014]
+P21   lateral_tank_3.50 rel=1 ph=go cmd=7.000 real=6.930 prev=6.626 wall=true floor=true alive=true yaw=180.0 pos=(3.466,0.001,-8.074) cols=1 [Collider n=(-0.990,0.000,-0.144) deg=90.0 arr=-0.315 depth=0.0011]
+P21   lateral_tank_3.50 rel=2 ph=go cmd=7.250 real=7.211 prev=6.930 wall=true floor=true alive=true yaw=180.0 pos=(3.453,0.001,-7.955) cols=1 [Collider n=(-0.995,0.000,-0.104) deg=90.0 arr=-0.070 depth=0.0011]
+P21   lateral_tank_3.50 rel=3 ph=go cmd=7.500 real=7.496 prev=7.211 wall=true floor=true alive=true yaw=180.0 pos=(3.451,0.001,-7.830) cols=1 [Collider n=(-0.999,0.000,-0.036) deg=90.0 arr=-0.495 depth=0.0010]
+P21   lateral_tank_3.50 rel=4 ph=go cmd=7.750 real=7.750 prev=7.496 wall=false floor=true alive=true yaw=180.0 pos=(3.451,0.001,-7.701) cols=0 []
+P21   lateral_tank_3.50 9 ticks after: alive=true real=8.750
+P21 lateral tank 3.60 m off the axis:
+P21 lateral_tank_3.60 ticks=31 first_hit=22 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   lateral_tank_3.60 rel=0 ph=go cmd=5.750 real=5.532 prev=5.500 wall=true floor=true alive=true yaw=180.0 pos=(3.587,0.001,-8.615) cols=1 [Collider n=(-0.943,-0.000,-0.333) deg=90.0 arr=1.829 depth=0.0013]
+P21   lateral_tank_3.60 rel=1 ph=go cmd=6.000 real=5.688 prev=5.532 wall=true floor=true alive=true yaw=180.0 pos=(3.557,0.001,-8.525) cols=1 [Collider n=(-0.948,0.000,-0.318) deg=90.0 arr=1.013 depth=0.0011]
+P21   lateral_tank_3.60 rel=2 ph=go cmd=6.250 real=5.998 prev=5.688 wall=true floor=true alive=true yaw=180.0 pos=(3.529,0.001,-8.429) cols=1 [Collider n=(-0.960,-0.000,-0.281) deg=90.0 arr=-0.221 depth=0.0015]
+P21   lateral_tank_3.60 rel=3 ph=go cmd=6.500 real=6.308 prev=5.998 wall=true floor=true alive=true yaw=180.0 pos=(3.503,0.001,-8.327) cols=1 [Collider n=(-0.970,0.000,-0.241) deg=90.0 arr=-0.249 depth=0.0016]
+P21   lateral_tank_3.60 rel=4 ph=go cmd=6.750 real=6.620 prev=6.308 wall=true floor=true alive=true yaw=180.0 pos=(3.486,0.001,-8.218) cols=1 [Collider n=(-0.980,0.000,-0.199) deg=90.0 arr=-0.272 depth=0.0012]
+P21   lateral_tank_3.60 9 ticks after: alive=true real=7.750
+P21 lateral tank 4.00 m off the axis:
+P21 lateral_tank_4.00 ticks=21 first_hit=12 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   lateral_tank_4.00 rel=0 ph=go cmd=3.250 real=3.250 prev=3.000 wall=true floor=true alive=true yaw=180.0 pos=(4.000,0.000,-9.381) cols=1 [Collider n=(-0.789,0.000,-0.615) deg=90.0 arr=1.844 depth=0.0002]
+P21   lateral_tank_4.00 rel=1 ph=go cmd=3.500 real=2.762 prev=3.250 wall=true floor=true alive=true yaw=180.0 pos=(3.972,0.001,-9.345) cols=1 [Collider n=(-0.789,-0.000,-0.614) deg=90.0 arr=1.996 depth=0.0014]
+P21   lateral_tank_4.00 rel=2 ph=go cmd=3.750 real=2.999 prev=2.762 wall=true floor=true alive=true yaw=180.0 pos=(3.942,0.001,-9.305) cols=1 [Collider n=(-0.800,-0.000,-0.600) deg=90.0 arr=-0.057 depth=0.0011]
+P21   lateral_tank_4.00 rel=3 ph=go cmd=4.000 real=3.246 prev=2.999 wall=true floor=true alive=true yaw=180.0 pos=(3.910,0.001,-9.261) cols=1 [Collider n=(-0.812,0.000,-0.584) deg=90.0 arr=-0.059 depth=0.0012]
+P21   lateral_tank_4.00 rel=4 ph=go cmd=4.250 real=3.501 prev=3.246 wall=true floor=true alive=true yaw=180.0 pos=(3.877,0.001,-9.213) cols=1 [Collider n=(-0.824,-0.000,-0.567) deg=90.0 arr=-0.069 depth=0.0012]
+P21   lateral_tank_4.00 9 ticks after: alive=true real=4.606
+P21 lateral turret 0.00 m off the axis:
+P21 lateral_turret_0.00 ticks=92 first_hit=83 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   lateral_turret_0.00 rel=0 ph=go cmd=16.400 real=8.520 prev=16.400 wall=true floor=true alive=true yaw=90.0 pos=(-98.799,0.000,-10.000) cols=1 [TurretLeft n=(1.000,0.000,-0.000) deg=90.0 arr=16.400 depth=0.0015]
+P21   lateral_turret_0.00 rel=1 ph=go cmd=16.400 real=0.000 prev=8.520 wall=true floor=true alive=true yaw=90.0 pos=(-98.799,0.000,-10.000) cols=1 [TurretLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=8.520 depth=0.0011]
+P21   lateral_turret_0.00 rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-98.799,0.000,-10.000) cols=1 [TurretLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   lateral_turret_0.00 rel=3 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-98.799,0.000,-10.000) cols=1 [TurretLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   lateral_turret_0.00 rel=4 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-98.799,0.000,-10.000) cols=1 [TurretLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   lateral_turret_0.00 9 ticks after: alive=true real=0.000
+P21 lateral turret 0.40 m off the axis:
+P21 lateral_turret_0.40 ticks=92 first_hit=83 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   lateral_turret_0.40 rel=0 ph=go cmd=16.400 real=8.520 prev=16.400 wall=true floor=true alive=true yaw=90.0 pos=(-98.799,0.000,-9.600) cols=1 [TurretLeft n=(1.000,-0.000,0.000) deg=90.0 arr=16.400 depth=0.0015]
+P21   lateral_turret_0.40 rel=1 ph=go cmd=16.400 real=0.000 prev=8.520 wall=true floor=true alive=true yaw=90.0 pos=(-98.799,0.000,-9.600) cols=1 [TurretLeft n=(1.000,0.000,-0.000) deg=90.0 arr=8.520 depth=0.0011]
+P21   lateral_turret_0.40 rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-98.799,0.000,-9.600) cols=1 [TurretLeft n=(1.000,0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   lateral_turret_0.40 rel=3 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-98.799,0.000,-9.600) cols=1 [TurretLeft n=(1.000,0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   lateral_turret_0.40 rel=4 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-98.799,0.000,-9.600) cols=1 [TurretLeft n=(1.000,0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   lateral_turret_0.40 9 ticks after: alive=true real=0.000
+P21 lateral turret 0.80 m off the axis:
+P21 lateral_turret_0.80 ticks=92 first_hit=83 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   lateral_turret_0.80 rel=0 ph=go cmd=16.400 real=8.584 prev=16.400 wall=true floor=true alive=true yaw=90.0 pos=(-98.801,0.000,-9.200) cols=1 [TurretLeft n=(0.999,0.000,0.038) deg=90.0 arr=16.388 depth=0.0018]
+P21   lateral_turret_0.80 rel=1 ph=go cmd=16.400 real=0.000 prev=8.584 wall=true floor=true alive=true yaw=90.0 pos=(-98.801,0.000,-9.200) cols=1 [TurretLeft n=(0.999,-0.000,0.038) deg=90.0 arr=8.578 depth=0.0012]
+P21   lateral_turret_0.80 rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-98.801,0.000,-9.200) cols=1 [TurretLeft n=(0.999,-0.000,0.038) deg=90.0 arr=-0.000 depth=0.0012]
+P21   lateral_turret_0.80 rel=3 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-98.801,0.000,-9.200) cols=1 [TurretLeft n=(0.999,-0.000,0.038) deg=90.0 arr=-0.000 depth=0.0012]
+P21   lateral_turret_0.80 rel=4 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-98.801,0.000,-9.200) cols=1 [TurretLeft n=(0.999,-0.000,0.038) deg=90.0 arr=-0.000 depth=0.0012]
+P21   lateral_turret_0.80 9 ticks after: alive=true real=0.000
+P21 lateral turret 1.20 m off the axis:
+P21 lateral_turret_1.20 ticks=92 first_hit=83 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   lateral_turret_1.20 rel=0 ph=go cmd=16.400 real=14.712 prev=16.400 wall=true floor=true alive=true yaw=90.0 pos=(-98.902,0.001,-8.787) cols=1 [TurretLeft n=(0.906,-0.000,0.423) deg=90.0 arr=14.860 depth=0.0010]
+P21   lateral_turret_1.20 rel=1 ph=go cmd=16.400 real=7.150 prev=14.712 wall=true floor=true alive=true yaw=90.0 pos=(-98.954,0.001,-8.679) cols=1 [TurretLeft n=(0.900,0.000,0.436) deg=90.0 arr=12.873 depth=0.0012]
+P21   lateral_turret_1.20 rel=2 ph=go cmd=16.400 real=8.859 prev=7.150 wall=true floor=true alive=true yaw=90.0 pos=(-99.034,0.001,-8.555) cols=1 [TurretLeft n=(0.842,-0.000,0.540) deg=90.0 arr=-0.853 depth=0.0011]
+P21   lateral_turret_1.20 rel=3 ph=go cmd=16.400 real=10.843 prev=8.859 wall=true floor=true alive=true yaw=90.0 pos=(-99.165,0.001,-8.431) cols=1 [TurretLeft n=(0.753,-0.000,0.658) deg=90.0 arr=-1.307 depth=0.0012]
+P21   lateral_turret_1.20 rel=4 ph=go cmd=16.400 real=12.795 prev=10.843 wall=true floor=true alive=true yaw=90.0 pos=(-99.339,0.001,-8.307) cols=1 [TurretLeft n=(0.627,-0.000,0.779) deg=90.0 arr=-0.895 depth=0.0019]
+P21   lateral_turret_1.20 9 ticks after: alive=true real=16.400
+P21 lateral turret 1.60 m off the axis:
+P21 lateral_turret_1.60 ticks=94 first_hit=85 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   lateral_turret_1.60 rel=0 ph=go cmd=16.400 real=13.275 prev=16.400 wall=true floor=true alive=true yaw=90.0 pos=(-99.390,0.001,-8.280) cols=1 [TurretLeft n=(0.589,0.000,0.808) deg=90.0 arr=9.658 depth=0.0015]
+P21   lateral_turret_1.60 rel=1 ph=go cmd=16.400 real=15.182 prev=13.275 wall=true floor=true alive=true yaw=90.0 pos=(-99.630,0.001,-8.200) cols=1 [TurretLeft n=(0.384,-0.000,0.923) deg=90.0 arr=-2.367 depth=0.0012]
+P21   lateral_turret_1.60 rel=2 ph=go cmd=16.400 real=16.400 prev=15.182 wall=false floor=true alive=true yaw=90.0 pos=(-99.903,0.000,-8.200) cols=0 []
+P21   lateral_turret_1.60 rel=3 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=90.0 pos=(-100.177,0.000,-8.200) cols=0 []
+P21   lateral_turret_1.60 rel=4 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=90.0 pos=(-100.450,0.000,-8.200) cols=0 []
+P21   lateral_turret_1.60 9 ticks after: alive=true real=16.400
+P21 lateral turret 1.70 m off the axis:
+P21 lateral_turret_1.70 ticks=94 first_hit=85 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   lateral_turret_1.70 rel=0 ph=go cmd=16.400 real=15.595 prev=16.400 wall=true floor=true alive=true yaw=90.0 pos=(-99.462,0.001,-8.267) cols=1 [TurretLeft n=(0.428,-0.000,0.904) deg=90.0 arr=7.019 depth=0.0011]
+P21   lateral_turret_1.70 rel=1 ph=go cmd=16.400 real=15.342 prev=15.595 wall=true floor=true alive=true yaw=90.0 pos=(-99.701,0.001,-8.177) cols=1 [TurretLeft n=(0.353,0.000,0.935) deg=90.0 arr=3.631 depth=0.0012]
+P21   lateral_turret_1.70 rel=2 ph=go cmd=16.400 real=16.400 prev=15.342 wall=false floor=true alive=true yaw=90.0 pos=(-99.974,0.001,-8.177) cols=0 []
+P21   lateral_turret_1.70 rel=3 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=90.0 pos=(-100.248,0.001,-8.177) cols=0 []
+P21   lateral_turret_1.70 rel=4 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=90.0 pos=(-100.521,0.001,-8.177) cols=0 []
+P21   lateral_turret_1.70 9 ticks after: alive=true real=16.400
+P21 lateral turret 1.75 m off the axis:
+P21 lateral_turret_1.75 ticks=95 first_hit=86 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   lateral_turret_1.75 rel=0 ph=go cmd=16.400 real=15.628 prev=16.400 wall=true floor=true alive=true yaw=90.0 pos=(-99.729,0.001,-8.182) cols=1 [TurretLeft n=(0.307,0.000,0.952) deg=90.0 arr=5.029 depth=0.0011]
+P21   lateral_turret_1.75 rel=1 ph=go cmd=16.400 real=16.400 prev=15.628 wall=false floor=true alive=true yaw=90.0 pos=(-100.002,0.001,-8.182) cols=0 []
+P21   lateral_turret_1.75 rel=2 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=90.0 pos=(-100.276,0.001,-8.182) cols=0 []
+P21   lateral_turret_1.75 rel=3 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=90.0 pos=(-100.549,0.001,-8.182) cols=0 []
+P21   lateral_turret_1.75 rel=4 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=90.0 pos=(-100.822,0.001,-8.182) cols=0 []
+P21   lateral_turret_1.75 9 ticks after: alive=true real=16.400
+P21 lateral turret 1.80 m off the axis:
+P21 lateral_turret_1.80 ticks=200 first_hit=-1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21 lateral turret 1.85 m off the axis:
+P21 lateral_turret_1.85 ticks=200 first_hit=-1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21 lateral turret 1.90 m off the axis:
+P21 lateral_turret_1.90 ticks=200 first_hit=-1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21 lateral turret 2.00 m off the axis:
+P21 lateral_turret_2.00 ticks=200 first_hit=-1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21 lateral turret 2.30 m off the axis:
+P21 lateral_turret_2.30 ticks=200 first_hit=-1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21 ==== section spawn
+P21 spawn gap=0.00: before the destroy: cmd=10.000 real=10.000
+P21   after destroy(): alive=false real=(-10.000,0.000,0.000) (engine value kept from the last move)
+P21   spawn(): real=(-10.000,0.000,0.000) cmd=0.000 at (-109.500,0.000,-2.000) facing LEFT, flush gap 0.00 to the leg's face at x=-110.700
+P21   spawn gap=0.00 rel=0 ph=life2 cmd=0.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.500,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0012]
+P21   spawn gap=0.00 rel=1 ph=life2 cmd=0.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.500,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0014]
+P21   spawn gap=0.00 rel=2 ph=life2 cmd=0.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.500,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0021]
+P21   spawn gap=0.00 rel=3 ph=life2 cmd=1.000 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.500,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0012]
+P21   spawn gap=0.00 rel=4 ph=life2 cmd=1.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.500,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0014]
+P21   spawn gap=0.00 rel=5 ph=life2 cmd=1.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.500,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0017]
+P21   spawn gap=0.00 rel=6 ph=life2 cmd=1.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.500,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0020]
+P21   spawn gap=0.00 rel=7 ph=life2 cmd=2.000 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.500,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0014]
+P21   spawn gap=0.00 rel=8 ph=life2 cmd=2.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.500,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0016]
+P21   spawn gap=0.00 rel=9 ph=life2 cmd=2.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.500,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0018]
+P21   spawn_gap_0.00 summary : 12 ticks, 12 with a non-floor collision, max arrival along a normal -0.000, max real 0.000, max cmd 3.000, alive throughout=true
+P21 spawn gap=0.05: before the destroy: cmd=10.000 real=10.000
+P21   after destroy(): alive=false real=(-10.000,0.000,0.000) (engine value kept from the last move)
+P21   spawn(): real=(-10.000,0.000,0.000) cmd=0.000 at (-109.450,0.000,-2.000) facing LEFT, flush gap 0.05 to the leg's face at x=-110.700
+P21   spawn gap=0.05 rel=0 ph=life2 cmd=0.250 real=0.250 prev=0.000 wall=false floor=true alive=true yaw=90.0 pos=(-109.454,0.000,-2.000) cols=0 []
+P21   spawn gap=0.05 rel=1 ph=life2 cmd=0.500 real=0.500 prev=0.250 wall=false floor=true alive=true yaw=90.0 pos=(-109.462,0.000,-2.000) cols=0 []
+P21   spawn gap=0.05 rel=2 ph=life2 cmd=0.750 real=0.750 prev=0.500 wall=false floor=true alive=true yaw=90.0 pos=(-109.475,0.000,-2.000) cols=0 []
+P21   spawn gap=0.05 rel=3 ph=life2 cmd=1.000 real=1.000 prev=0.750 wall=false floor=true alive=true yaw=90.0 pos=(-109.492,0.000,-2.000) cols=0 []
+P21   spawn gap=0.05 rel=4 ph=life2 cmd=1.250 real=0.000 prev=1.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.492,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=1.000 depth=0.0018]
+P21   spawn gap=0.05 rel=5 ph=life2 cmd=1.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.492,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0020]
+P21   spawn gap=0.05 rel=6 ph=life2 cmd=1.750 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.492,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0018]
+P21   spawn gap=0.05 rel=7 ph=life2 cmd=2.000 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.492,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0020]
+P21   spawn gap=0.05 rel=8 ph=life2 cmd=2.250 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.492,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0020]
+P21   spawn gap=0.05 rel=9 ph=life2 cmd=2.500 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=90.0 pos=(-109.492,0.000,-2.000) cols=1 [LegGateLeft n=(1.000,-0.000,-0.000) deg=90.0 arr=-0.000 depth=0.0011]
+P21   spawn_gap_0.05 summary : 12 ticks, 8 with a non-floor collision, max arrival along a normal 1.000, max real 1.000, max cmd 3.000, alive throughout=true
+P21 spawn gap=0.50: before the destroy: cmd=10.000 real=10.000
+P21   after destroy(): alive=false real=(-10.000,0.000,0.000) (engine value kept from the last move)
+P21   spawn(): real=(-10.000,0.000,0.000) cmd=0.000 at (-109.000,0.000,-2.000) facing LEFT, flush gap 0.50 to the leg's face at x=-110.700
+P21   spawn gap=0.50 rel=0 ph=life2 cmd=0.250 real=0.250 prev=0.000 wall=false floor=true alive=true yaw=90.0 pos=(-109.004,0.000,-2.000) cols=0 []
+P21   spawn gap=0.50 rel=1 ph=life2 cmd=0.500 real=0.500 prev=0.250 wall=false floor=true alive=true yaw=90.0 pos=(-109.012,0.000,-2.000) cols=0 []
+P21   spawn gap=0.50 rel=2 ph=life2 cmd=0.750 real=0.750 prev=0.500 wall=false floor=true alive=true yaw=90.0 pos=(-109.025,0.000,-2.000) cols=0 []
+P21   spawn gap=0.50 rel=3 ph=life2 cmd=1.000 real=1.000 prev=0.750 wall=false floor=true alive=true yaw=90.0 pos=(-109.042,0.000,-2.000) cols=0 []
+P21   spawn gap=0.50 rel=4 ph=life2 cmd=1.250 real=1.250 prev=1.000 wall=false floor=true alive=true yaw=90.0 pos=(-109.062,0.000,-2.000) cols=0 []
+P21   spawn gap=0.50 rel=5 ph=life2 cmd=1.500 real=1.500 prev=1.250 wall=false floor=true alive=true yaw=90.0 pos=(-109.088,0.000,-2.000) cols=0 []
+P21   spawn gap=0.50 rel=6 ph=life2 cmd=1.750 real=1.750 prev=1.500 wall=false floor=true alive=true yaw=90.0 pos=(-109.117,0.000,-2.000) cols=0 []
+P21   spawn gap=0.50 rel=7 ph=life2 cmd=2.000 real=2.000 prev=1.750 wall=false floor=true alive=true yaw=90.0 pos=(-109.150,0.000,-2.000) cols=0 []
+P21   spawn gap=0.50 rel=8 ph=life2 cmd=2.250 real=2.250 prev=2.000 wall=false floor=true alive=true yaw=90.0 pos=(-109.188,0.000,-2.000) cols=0 []
+P21   spawn gap=0.50 rel=9 ph=life2 cmd=2.500 real=2.500 prev=2.250 wall=false floor=true alive=true yaw=90.0 pos=(-109.229,0.000,-2.000) cols=0 []
+P21   spawn_gap_0.50 summary : 12 ticks, 0 with a non-floor collision, max arrival along a normal 0.000, max real 3.000, max cmd 3.000, alive throughout=true
+P21 garage_Base1_SpareSpawnLeft ticks=150 first_hit=-1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   garage_Base1_SpareSpawnLeft summary : 150 ticks, 0 with a non-floor collision, max arrival along a normal 0.000, max real 16.400, max cmd 16.400, alive throughout=true
+P21 garage_Base1_SpareSpawnRight ticks=150 first_hit=-1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   garage_Base1_SpareSpawnRight summary : 150 ticks, 0 with a non-floor collision, max arrival along a normal 0.000, max real 16.400, max cmd 16.400, alive throughout=true
+P21 garage_Base2_SpareSpawnRight ticks=150 first_hit=-1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   garage_Base2_SpareSpawnRight summary : 150 ticks, 0 with a non-floor collision, max arrival along a normal 0.000, max real 16.400, max cmd 16.400, alive throughout=true
+P21 garage_Base2_SpareSpawnLeft ticks=150 first_hit=-1 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   garage_Base2_SpareSpawnLeft summary : 150 ticks, 0 with a non-floor collision, max arrival along a normal 0.000, max real 16.400, max cmd 16.400, alive throughout=true
+P21 ==== section shores
+P21 shore west: start (-124.796,0.000,-20.018) facing (-0.931,-0.000,-0.366)
+P21 shore_west ticks=100 first_hit=93 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   shore_west rel=-1 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=68.6 pos=(-140.239,0.000,-26.085) cols=0 []
+P21   shore_west rel=0 ph=go cmd=16.400 real=12.492 prev=16.400 wall=true floor=true alive=true yaw=68.6 pos=(-140.432,0.000,-26.161) cols=1 [ShoreNW7 n=(0.931,-0.000,0.366) deg=90.0 arr=16.400 depth=0.0018]
+P21   shore_west rel=1 ph=go cmd=16.400 real=0.000 prev=12.492 wall=true floor=true alive=true yaw=68.6 pos=(-140.432,0.000,-26.161) cols=1 [ShoreNW7 n=(0.931,-0.000,0.366) deg=90.0 arr=12.492 depth=0.0011]
+P21   shore_west rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=68.6 pos=(-140.432,0.000,-26.161) cols=1 [ShoreNW7 n=(0.931,-0.000,0.366) deg=90.0 arr=-0.000 depth=0.0011]
+P21   shore_west rel=3 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=68.6 pos=(-140.432,0.000,-26.161) cols=1 [ShoreNW7 n=(0.931,-0.000,0.366) deg=90.0 arr=-0.000 depth=0.0011]
+P21   shore_west rel=4 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=68.6 pos=(-140.432,0.000,-26.161) cols=1 [ShoreNW7 n=(0.931,-0.000,0.366) deg=90.0 arr=-0.000 depth=0.0011]
+P21 shore north: start (-103.209,0.000,-26.289) facing (-0.100,-0.000,-0.995)
+P21 shore_north ticks=100 first_hit=93 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   shore_north rel=-1 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=5.7 pos=(-104.860,0.000,-42.798) cols=0 []
+P21   shore_north rel=0 ph=go cmd=16.400 real=12.492 prev=16.400 wall=true floor=true alive=true yaw=5.7 pos=(-104.881,0.000,-43.005) cols=1 [ShoreNW4 n=(0.100,-0.000,0.995) deg=90.0 arr=16.400 depth=0.0016]
+P21   shore_north rel=1 ph=go cmd=16.400 real=0.000 prev=12.492 wall=true floor=true alive=true yaw=5.7 pos=(-104.881,0.000,-43.005) cols=1 [ShoreNW4 n=(0.100,-0.000,0.995) deg=90.0 arr=12.492 depth=0.0011]
+P21   shore_north rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=5.7 pos=(-104.881,0.000,-43.005) cols=1 [ShoreNW4 n=(0.100,-0.000,0.995) deg=90.0 arr=-0.000 depth=0.0011]
+P21   shore_north rel=3 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=5.7 pos=(-104.881,0.000,-43.005) cols=1 [ShoreNW4 n=(0.100,-0.000,0.995) deg=90.0 arr=-0.000 depth=0.0011]
+P21   shore_north rel=4 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=5.7 pos=(-104.881,0.000,-43.005) cols=1 [ShoreNW4 n=(0.100,-0.000,0.995) deg=90.0 arr=-0.000 depth=0.0011]
+P21 shore south: start (-102.807,0.000,25.993) facing (-0.122,-0.000,0.993)
+P21 shore_south ticks=100 first_hit=93 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   shore_south rel=-1 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=173.0 pos=(-104.828,0.000,42.460) cols=0 []
+P21   shore_south rel=0 ph=go cmd=16.400 real=12.492 prev=16.400 wall=true floor=true alive=true yaw=173.0 pos=(-104.854,0.000,42.667) cols=1 [ShoreSW4 n=(0.122,0.000,-0.993) deg=90.0 arr=16.400 depth=0.0016]
+P21   shore_south rel=1 ph=go cmd=16.400 real=0.000 prev=12.492 wall=true floor=true alive=true yaw=173.0 pos=(-104.854,0.000,42.667) cols=1 [ShoreSW4 n=(0.122,0.000,-0.993) deg=90.0 arr=12.492 depth=0.0011]
+P21   shore_south rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=173.0 pos=(-104.854,0.000,42.667) cols=1 [ShoreSW4 n=(0.122,0.000,-0.993) deg=90.0 arr=-0.000 depth=0.0011]
+P21   shore_south rel=3 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=173.0 pos=(-104.854,0.000,42.667) cols=1 [ShoreSW4 n=(0.122,0.000,-0.993) deg=90.0 arr=-0.000 depth=0.0011]
+P21   shore_south rel=4 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=173.0 pos=(-104.854,0.000,42.667) cols=1 [ShoreSW4 n=(0.122,0.000,-0.993) deg=90.0 arr=-0.000 depth=0.0011]
+P21 shore east: start (124.796,0.000,-20.018) facing (0.931,-0.000,-0.366)
+P21 shore_east ticks=100 first_hit=93 | before it: 0 ticks with a slide collision of 0, deg 0.00..0.00, colliders []
+P21   shore_east rel=-1 ph=go cmd=16.400 real=16.400 prev=16.400 wall=false floor=true alive=true yaw=-68.6 pos=(140.239,0.000,-26.085) cols=0 []
+P21   shore_east rel=0 ph=go cmd=16.400 real=12.492 prev=16.400 wall=true floor=true alive=true yaw=-68.6 pos=(140.432,0.000,-26.161) cols=1 [ShoreNE7 n=(-0.931,-0.000,0.366) deg=90.0 arr=16.400 depth=0.0018]
+P21   shore_east rel=1 ph=go cmd=16.400 real=0.000 prev=12.492 wall=true floor=true alive=true yaw=-68.6 pos=(140.432,0.000,-26.161) cols=1 [ShoreNE7 n=(-0.931,-0.000,0.366) deg=90.0 arr=12.492 depth=0.0011]
+P21   shore_east rel=2 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=-68.6 pos=(140.432,0.000,-26.161) cols=1 [ShoreNE7 n=(-0.931,-0.000,0.366) deg=90.0 arr=-0.000 depth=0.0011]
+P21   shore_east rel=3 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=-68.6 pos=(140.432,0.000,-26.161) cols=1 [ShoreNE7 n=(-0.931,-0.000,0.366) deg=90.0 arr=-0.000 depth=0.0011]
+P21   shore_east rel=4 ph=go cmd=16.400 real=0.000 prev=0.000 wall=true floor=true alive=true yaw=-68.6 pos=(140.432,0.000,-26.161) cols=1 [ShoreNE7 n=(-0.931,-0.000,0.366) deg=90.0 arr=-0.000 depth=0.0011]
+RESULT probe21 ok checks=0 failed=0 t=156.483 probe21

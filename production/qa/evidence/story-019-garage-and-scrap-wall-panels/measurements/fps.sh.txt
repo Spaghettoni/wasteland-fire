@@ -1,0 +1,10 @@
+#!/bin/sh
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/f989e592-0c99-4f6a-9d66-b271794c14c4/scratchpad/w19
+cd $S/fps/repo || exit 9
+for scn in map_fps turrets_fps; do
+  for state in whole second fallen; do
+    WALLS_STATE=$state godot --path . --windowed --resolution 1280x720 res://tools/evidence/split_screen_harness.tscn -- --scenario=$scn > $S/fps/$scn-$state.txt 2>&1
+    echo "rc=$?" >> $S/fps/$scn-$state.txt
+  done
+done
+echo done > $S/fps/ALL_DONE

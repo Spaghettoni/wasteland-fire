@@ -1,0 +1,45 @@
+KILLED  hover_left_at_0_78                                       heights[scan] rc=1 fails=tops,kit_fallback
+KILLED  hover_from_the_low_pieces_alone_2_25                     heights[scan] rc=1 fails=tops,kit_fallback
+KILLED  hover_one_rounding_step_too_high_2_55                    heights[scan] rc=1 fails=tops,kit_fallback
+KILLED  rise_left_on_in_the_shipped_scene                        heights rc=1 fails=tops,height_every_tick
+KILLED  old_model_in_the_shipped_scene                           heights[scan] rc=1 fails=tops,kit_fallback,height_every_tick
+KILLED  kit_fallback_left_rising                                 heights[scan] rc=1 fails=kit_fallback
+KILLED  kit_fallback_hover_left_at_0_8                           heights[scan] rc=1 fails=kit_fallback
+KILLED  model_rest_position_ignores_the_hover                    heights[spawn] rc=1 fails=spawn_height,flight_heights,height_every_tick
+KILLED  model_ticks_physics_again                                heights[spawn] rc=1 fails=height_every_tick,no_engine_noise
+KILLED  explosion_at_the_unit_origin                             heights[spawn] rc=1 fails=explosion_up_there
+KILLED  gyro_mask_given_the_cover_layer                          heights[over] rc=1 fails=cross_low
+KILLED  gyro_mask_given_the_cliffs_layer                         heights[over] rc=1 fails=cross_low
+KILLED  gyro_mask_given_the_units_layer                          heights[over] rc=1 fails=passes_through
+KILLED  gyro_mask_given_the_gyrocopters_layer                    heights[over] rc=1 fails=passes_through
+KILLED  shot_mask_without_the_cover_layer                        heights[shots] rc=1 fails=shots_stopped
+KILLED  shooting_height_raised_to_2_m                            heights[shots] rc=1 fails=shots_hit,shots_stopped
+KILLED  wall_panel_on_the_map_layer                              heights[scan] rc=1 fails=scan
+KILLED  flag_wall_on_the_map_layer                               heights[scan] rc=1 fails=scan
+KILLED  container_taller_than_2_m                                heights[scan] rc=1 fails=scan
+KILLED  channel_on_the_map_layer                                 heights[scan] rc=1 fails=scan
+KILLED  cliff_on_the_map_layer                                   heights[scan] rc=1 fails=scan
+KILLED  sea_edge_off_every_layer                                 heights[over] rc=1 fails=cross_low,height_every_tick
+KILLED  turret_collider_1_8_m                                    heights[tall] rc=1 fails=band
+KILLED  water_tower_leg_2_m_and_off_the_floor                    heights[tall] rc=1 fails=air_stops
+KILLED  water_tower_tank_lowered_into_the_band                   heights[tall] rc=1 fails=band
+EQUIVALENT runner_leaves_the_flying_height_on                   heights[scan] rc=0 fails=- | heights itself declares HEIGHTS, so the strip is skipped for it with or without the defect; the strip's guard is the regression kind below, all killed
+KILLED  runner_strip_guard_inverted                              heights[scan] rc=1 fails=tops,kit_fallback,height_every_tick
+KILLED  frozen_model_taken_at_73de824                            badly_damaged rc=1 output differs from the baseline
+KILLED  frozen_model_without_the_rise                            gyro_cover rc=1 output differs from the baseline
+KILLED  frozen_model_hover_2_5_with_the_rise                     gyro_cover rc=0 output differs from the baseline
+KILLED  runner_leaves_the_flying_height_on_badly_damaged         badly_damaged rc=0 output differs from the baseline
+KILLED  runner_leaves_the_flying_height_on_badly_damaged_showcase badly_damaged_showcase rc=0 output differs from the baseline
+KILLED  runner_leaves_the_flying_height_on_base_walls            base_walls rc=0 output differs from the baseline
+KILLED  runner_leaves_the_flying_height_on_base_walls_showcase   base_walls_showcase rc=0 output differs from the baseline
+KILLED  runner_leaves_the_flying_height_on_explosions            explosions rc=0 output differs from the baseline
+KILLED  runner_leaves_the_flying_height_on_flag_walls            flag_walls rc=0 output differs from the baseline
+KILLED  runner_leaves_the_flying_height_on_flag_walls_showcase   flag_walls_showcase rc=0 output differs from the baseline
+KILLED  runner_leaves_the_flying_height_on_garage_scrap_walls    garage_scrap_walls rc=1 output differs from the baseline
+KILLED  runner_leaves_the_flying_height_on_garage_scrap_walls_showcase garage_scrap_walls_showcase rc=0 output differs from the baseline
+KILLED  runner_leaves_the_flying_height_on_gyro_cover            gyro_cover rc=1 output differs from the baseline
+KILLED  runner_leaves_the_flying_height_on_quick_fixes_showcase  quick_fixes_showcase rc=0 output differs from the baseline
+KILLED  runner_leaves_the_flying_height_on_turret_looks          turret_looks rc=1 output differs from the baseline
+-- 42 mutants: 42 killed or equivalent, 0 survived, 0 broken or not applied
+-- the 3 scratch copies equal the repo (apart from .godot, production, design, docs)
+rc=0

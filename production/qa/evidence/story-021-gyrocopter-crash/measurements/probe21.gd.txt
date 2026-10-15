@@ -1,0 +1,505 @@
+extends RefCounted
+## Throwaway probe of Story 021 (a scratch copy of the repo, not retained in the build; the script and its output are kept in
+## production/qa/evidence/story-021-gyrocopter-crash/measurements/): what a GROUNDED Gyrocopter (mask 1) reports from
+## move_and_slide() on 4.7.2 with Jolt, tick by tick, before any crash code exists. Reads, on every tick after the Units' tick
+## (a node at physics priority 100): the slide collisions (collider, normal, angle to up), the commanded speed, this tick's
+## real velocity, the previous tick's, is_on_wall() and is_on_floor(). Sections (SECTION=name,name runs a few):
+## info, floor, heads (head-on at top speed into the four Tall kinds, then pinned 3 s and a spot turn flush against each),
+## speeds (3.5 to 4.5 m/s head-on at a tower), angles (top speed at angles to a tower's flat face), lateral (the Turret and the
+## tank on lines off the axis), spawn (the first ticks after spawn(), flush against a leg and out of a Garage spot) and shores
+## (the sea edge head-on).
+
+const Kit20: GDScript = preload("res://tools/evidence/split_screen/heights_kit.gd")
+const Quick: GDScript = preload("res://tools/evidence/split_screen/quick_fix_kit.gd")
+
+const OWN_CHOICE: bool = true
+const OWN_BASE_SWAP: bool = true
+const SHIPPED_CAMERA: bool = true
+const BASE_DEFENCES: bool = true
+const TURRETS: bool = true
+const TURRET_LOOKS: bool = true
+const MINES: bool = true
+const EXPLOSIONS: bool = true
+const BADLY_DAMAGED: bool = true
+const WALL_PANELS: bool = true
+const GARAGE_SCRAP_PANELS: bool = true
+const HEIGHTS: bool = true
+const STOCK_COUNTS: Dictionary = {&"motorbike": 60, &"buggy": 60, &"truck": 60, &"gyrocopter": 60}
+const WATCHDOG_SECONDS: float = 3000.0
+
+const RUN_UP: float = 14.0
+const GYRO: int = Quick.GYROCOPTER
+const TOP: float = 16.4
+## [label, path from the Map, the world direction flown, lateral shift].
+const KINDS: Array = [
+	["tower", "Base1/Walls/TowerGateLeft", Vector3.LEFT],
+	["leg", "Base1/WaterTower/LegGateLeft", Vector3.LEFT],
+	["tank", "Depot/FuelTanks/FuelTankSouth/Collider", Vector3.BACK],
+	["turret", "Base1/Turrets/TurretLeft", Vector3.LEFT]]
+const SHORE_AIMS: Dictionary = {"west": Vector2(-141.55, -26.6), "north": Vector2(-105, -44.2), "south": Vector2(-105, 43.86), "east": Vector2(141.55, -26.6)}
+
+
+## Reads the Unit after its own tick and keeps one row per tick while logging.
+class Watch extends Node:
+	var unit: Unit
+	var rows: Array[Dictionary] = []
+	var logging: bool = false
+	var phase: String = ""
+	var prev_real: Vector3 = Vector3.ZERO
+	var floor_deg: float = 45.0
+
+	func _init() -> void:
+		process_physics_priority = 100
+
+	func _physics_process(_delta: float) -> void:
+		var cols: Array[Dictionary] = []
+		var real: Vector3 = unit.get_real_velocity()
+		if unit.is_alive:
+			for index: int in unit.get_slide_collision_count():
+				var hit: KinematicCollision3D = unit.get_slide_collision(index)
+				var who: Object = hit.get_collider()
+				var name_text: String = str(who.get_path()) if who is Node else str(who)
+				cols.append({"who": name_text, "normal": hit.get_normal(), "deg": rad_to_deg(hit.get_angle()), "at": hit.get_position(), "depth": hit.get_depth()})
+		if logging:
+			rows.append({"tick": Engine.get_physics_frames(), "pos": unit.global_position, "cmd": unit.current_speed, "real": real, "prev": prev_real, "wall": unit.is_on_wall(), "floor": unit.is_on_floor(), "alive": unit.is_alive, "cols": cols, "phase": phase, "yaw": rad_to_deg(unit.rotation.y)})
+		prev_real = real if unit.is_alive else Vector3.ZERO
+
+
+var _k: Kit20
+var _q: Quick
+var _watch: Watch
+var _which: PackedStringArray = []
+
+
+func run(harness: Node) -> void:
+	_k = Kit20.new(harness)
+	_q = _k.q()
+	var swap_kit: Object = _k.k.k.m.w.s
+	for player: int in Kit20.Kit.PLAYERS:
+		await swap_kit.play(player, Quick.GYROCOPTER)
+	await _k.k.k.restore_all(true)
+	_watch = Watch.new()
+	_watch.unit = _q.units.units[0]
+	harness.split.add_child(_watch)
+	_which = OS.get_environment("SECTION").split(",", false)
+	for section: String in ["info", "floor", "heads", "speeds", "angles", "lateral", "spawn", "shores", "graze", "spin", "fine", "speeds2"]:
+		if _which.is_empty() or _which.has(section):
+			print("P21 ==== section %s" % section)
+			match section:
+				"info": await _s_info()
+				"floor": await _s_floor()
+				"heads": await _s_heads()
+				"speeds": await _s_speeds()
+				"angles": await _s_angles()
+				"lateral": await _s_lateral()
+				"spawn": await _s_spawn()
+				"shores": await _s_shores()
+				"graze": await _s_graze()
+				"spin": await _s_spin()
+				"fine": await _s_fine()
+				"speeds2": await _s_speeds2()
+	_watch.queue_free()
+	_k.close()
+	harness.finish("probe21")
+
+
+# ---------------------------------------------------------------- helpers
+
+static func _v(v: Vector3) -> String:
+	return "(%.3f,%.3f,%.3f)" % [v.x, v.y, v.z]
+
+
+static func _h(v: Vector3) -> float:
+	return Vector2(v.x, v.z).length()
+
+
+func _box(path: String) -> AABB:
+	for row: Dictionary in _k.solid_rows(_k.map()):
+		if row["path"] == path:
+			return row["shape_box"]
+	return AABB()
+
+
+func _shape_text(path: String) -> String:
+	var body: Node = _k.map().get_node(path)
+	var out: PackedStringArray = []
+	for child: Node in body.get_children():
+		var shape_node: CollisionShape3D = child as CollisionShape3D
+		if shape_node != null and shape_node.shape != null:
+			var shape: Shape3D = shape_node.shape
+			var text: String = shape.get_class()
+			if shape is BoxShape3D:
+				text += " size=%s" % _v((shape as BoxShape3D).size * shape_node.global_basis.get_scale())
+			elif shape is CylinderShape3D:
+				text += " r=%.3f h=%.3f" % [(shape as CylinderShape3D).radius * shape_node.global_basis.get_scale().x, (shape as CylinderShape3D).height]
+			out.append("%s at %s yaw=%.1f" % [text, _v(shape_node.global_position), rad_to_deg(shape_node.global_rotation.y)])
+	return "; ".join(out)
+
+
+## Stages Player 1's Gyrocopter and flies it: `throttle` 1.0 holds the real key, a share in between presses the action with
+## that strength, `ticks` ticks, logging every tick. Returns the rows.
+func _go(start: Vector3, dir: Vector3, ticks: int, throttle: float = 1.0, steer: int = 0, stop: Callable = Callable()) -> Array[Dictionary]:
+	await _k.k.k.stage(0, GYRO, start, dir)
+	_watch.rows.clear()
+	_watch.logging = true
+	_watch.phase = "go"
+	_watch.prev_real = Vector3.ZERO
+	await _drive(ticks, throttle, steer, stop)
+	_watch.logging = false
+	var out: Array[Dictionary] = []
+	out.append_array(_watch.rows)
+	return out
+
+
+## Holds the controls for `ticks` ticks, the rows go on being logged.
+func _drive(ticks: int, throttle: float, steer: int, stop: Callable = Callable()) -> void:
+	if throttle > 0.0 and throttle < 1.0:
+		Input.action_press(&"p1_throttle", throttle)
+	for _tick: int in ticks:
+		_q.harness.drive(0, 1 if throttle >= 1.0 else 0, steer)
+		await _q.kit.tick()
+		if stop.is_valid() and stop.call():
+			break
+	if throttle > 0.0 and throttle < 1.0:
+		Input.action_release(&"p1_throttle")
+	_q.harness.release_all()
+
+
+func _first_hit(rows: Array[Dictionary]) -> int:
+	for index: int in rows.size():
+		for hit: Dictionary in rows[index]["cols"]:
+			if float(hit["deg"]) > _watch.floor_deg:
+				return index
+	return -1
+
+
+func _row_text(row: Dictionary, rel: int) -> String:
+	var parts: PackedStringArray = []
+	for hit: Dictionary in row["cols"]:
+		var arrival: float = -(row["prev"] as Vector3).dot(hit["normal"])
+		parts.append("%s n=%s deg=%.1f arr=%.3f depth=%.4f" % [str(hit["who"]).get_file(), _v(hit["normal"]), hit["deg"], arrival, hit["depth"]])
+	return "rel=%d ph=%s cmd=%.3f real=%.3f prev=%.3f wall=%s floor=%s alive=%s yaw=%.1f pos=%s cols=%d [%s]" % [rel, row["phase"], row["cmd"], _h(row["real"]), _h(row["prev"]), row["wall"], row["floor"], row["alive"], row["yaw"], _v(row["pos"]), (row["cols"] as Array).size(), " | ".join(parts)]
+
+
+## The ticks of a flight around its first non-floor contact, and what the whole flight reported before it.
+func _report(label: String, rows: Array[Dictionary], before: int = 2, after: int = 5) -> int:
+	var first: int = _first_hit(rows)
+	var floor_ticks: int = 0
+	var floor_hits: int = 0
+	var max_floor_deg: float = 0.0
+	var min_floor_deg: float = 180.0
+	var who: Dictionary = {}
+	var stop_at: int = first if first >= 0 else rows.size()
+	for index: int in stop_at:
+		var any: bool = false
+		for hit: Dictionary in rows[index]["cols"]:
+			any = true
+			floor_hits += 1
+			max_floor_deg = maxf(max_floor_deg, hit["deg"])
+			min_floor_deg = minf(min_floor_deg, hit["deg"])
+			who[str(hit["who"]).get_file()] = true
+		floor_ticks += 1 if any else 0
+	print("P21 %s ticks=%d first_hit=%d | before it: %d ticks with a slide collision of %d, deg %.2f..%.2f, colliders %s" % [label, rows.size(), first, floor_ticks, floor_hits, min_floor_deg if floor_hits > 0 else 0.0, max_floor_deg, str(who.keys())])
+	if first >= 0:
+		for index: int in range(maxi(first - before, 0), mini(first + after + 1, rows.size())):
+			print("P21   %s %s" % [label, _row_text(rows[index], index - first)])
+	return first
+
+
+func _summary(label: String, rows: Array[Dictionary], from: int, phase: String = "") -> void:
+	var hit_ticks: int = 0
+	var max_arrival: float = 0.0
+	var max_real: float = 0.0
+	var max_cmd: float = 0.0
+	var alive: bool = true
+	var count: int = 0
+	for index: int in range(maxi(from, 0), rows.size()):
+		var row: Dictionary = rows[index]
+		if phase != "" and row["phase"] != phase:
+			continue
+		count += 1
+		alive = alive and bool(row["alive"])
+		max_real = maxf(max_real, _h(row["real"]))
+		max_cmd = maxf(max_cmd, absf(row["cmd"]))
+		var any: bool = false
+		for hit: Dictionary in row["cols"]:
+			if float(hit["deg"]) > _watch.floor_deg:
+				any = true
+				max_arrival = maxf(max_arrival, -(row["prev"] as Vector3).dot(hit["normal"]))
+		hit_ticks += 1 if any else 0
+	print("P21   %s summary %s: %d ticks, %d with a non-floor collision, max arrival along a normal %.3f, max real %.3f, max cmd %.3f, alive throughout=%s" % [label, phase, count, hit_ticks, max_arrival, max_real, max_cmd, alive])
+
+
+## The start of a head-on run at a piece: RUN_UP before its near face (and the Unit's half length), on the line through the
+## centre shifted by `lateral` (perpendicular to dir), at angle `turn` degrees off dir (aimed at the centre of the face).
+func _start(path: String, dir: Vector3, lateral: float = 0.0, turn: float = 0.0, gap: float = RUN_UP) -> Dictionary:
+	var box: AABB = _box(path)
+	var half: float = _q.units.stats(GYRO).collision_size.z / 2.0
+	var reach: float = (absf(dir.x) * box.size.x + absf(dir.z) * box.size.z) / 2.0
+	var centre: Vector3 = Vector3(box.get_center().x, 0.0, box.get_center().z)
+	var perp: Vector3 = Vector3.UP.cross(dir)
+	var heading: Vector3 = dir.rotated(Vector3.UP, deg_to_rad(turn))
+	var aim: Vector3 = centre + perp * lateral
+	var start: Vector3 = aim - heading * (reach + gap + half)
+	return {"start": start, "dir": heading, "face": dir.dot(centre) - reach, "box": box}
+
+
+# ---------------------------------------------------------------- sections
+
+func _s_info() -> void:
+	var unit: Unit = _q.units.units[0]
+	await _k.k.k.stage(0, GYRO, Vector3(-95, 0, -12), Vector3.RIGHT)
+	print("P21 unit: floor_max_angle=%.2f deg, wall_min_slide_angle=%.2f deg, safe_margin=%.4f, max_slides=%d, up=%s, motion_mode=%d, platform_on_leave=%d, floor_snap=%.3f, layer=%d mask=%d, collision_size=%s" % [rad_to_deg(unit.floor_max_angle), rad_to_deg(unit.wall_min_slide_angle), unit.safe_margin, unit.max_slides, unit.up_direction, unit.motion_mode, unit.platform_on_leave, unit.floor_snap_length, unit.collision_layer, unit.collision_mask, _q.units.stats(GYRO).collision_size])
+	print("P21 engine: physics_ticks_per_second=%d, 3d engine=%s" % [Engine.physics_ticks_per_second, ProjectSettings.get_setting("physics/3d/physics_engine")])
+	for kind: Array in KINDS:
+		var box: AABB = _box(kind[1])
+		print("P21 piece %s %s box pos=%s size=%s | %s" % [kind[0], kind[1], _v(box.position), _v(box.size), _shape_text(kind[1])])
+
+
+func _s_floor() -> void:
+	var rows: Array[Dictionary] = await _go(Vector3(-95, 0, -12), Vector3.RIGHT, 120)
+	_report("floor_flight_open", rows)
+	var peak: float = 0.0
+	for row: Dictionary in rows:
+		peak = maxf(peak, _h(row["real"]))
+	print("P21   floor_flight_open peak real speed %.3f; the first 3 rows:" % peak)
+	for index: int in range(0, 3):
+		print("P21   floor_flight_open %s" % _row_text(rows[index], index))
+	rows = await _go(Vector3(-95, 0, -12), Vector3.RIGHT, 60, 0.0)
+	_report("floor_standing_still", rows)
+	rows = await _go(Vector3(-95, 0, -12), Vector3.RIGHT, 90, 0.0, 1)
+	_report("floor_spot_turn_open", rows)
+
+
+func _s_heads() -> void:
+	for kind: Array in KINDS:
+		var setup: Dictionary = _start(kind[1], kind[2])
+		var rows: Array[Dictionary] = await _go(setup["start"], setup["dir"], 200, 1.0, 0, func() -> bool: return _first_hit(_watch.rows) >= 0 and _watch.rows.size() > _first_hit(_watch.rows) + 4)
+		var first: int = _report("head_on_" + kind[0], rows)
+		# Hold the throttle 3 s against it (pinned), then release and spin on the spot each way.
+		_watch.phase = "pinned"
+		_watch.logging = true
+		await _drive(180, 1.0, 0)
+		_watch.phase = "spin_left"
+		await _drive(90, 0.0, 1)
+		_watch.phase = "spin_right"
+		await _drive(90, 0.0, -1)
+		_watch.phase = "spin_left_throttle"
+		await _drive(60, 1.0, 1)
+		_watch.logging = false
+		var all: Array[Dictionary] = []
+		all.append_array(_watch.rows)
+		for phase: String in ["go", "pinned", "spin_left", "spin_right", "spin_left_throttle"]:
+			_summary("head_on_" + kind[0], all, first, phase)
+		var last: Dictionary = all[all.size() - 1]
+		print("P21   head_on_%s end: alive=%s pos=%s" % [kind[0], last["alive"], _v(last["pos"])])
+		if kind[0] == "tower":
+			# The pinned phase's rows around the 60th tick.
+			var pinned_start: int = 0
+			for index: int in all.size():
+				if all[index]["phase"] == "pinned":
+					pinned_start = index
+					break
+			for offset: int in [0, 1, 2, 30, 90, 179]:
+				print("P21   head_on_tower pinned+%d %s" % [offset, _row_text(all[pinned_start + offset], offset)])
+
+
+func _s_speeds() -> void:
+	var kind: Array = KINDS[0]
+	for speed: float in [3.0, 3.5, 3.9, 3.95, 4.0, 4.05, 4.1, 4.5]:
+		var setup: Dictionary = _start(kind[1], kind[2])
+		var rows: Array[Dictionary] = await _go(setup["start"], setup["dir"], 200, speed / TOP, 0, func() -> bool: return _first_hit(_watch.rows) >= 0 and _watch.rows.size() > _first_hit(_watch.rows) + 4)
+		print("P21 speeds target=%.2f m/s:" % speed)
+		_report("speed_%.2f" % speed, rows, 1, 3)
+	# Keys from rest: the nose starts a distance from the face so that the first contact is on tick k + 1 and the arrival is the
+	# real velocity of tick k, k times the acceleration step (0.25 m/s: 15 m/s^2 over a 1/60 s tick).
+	var step: float = _q.units.stats(GYRO).acceleration / float(Engine.physics_ticks_per_second)
+	for k: int in [14, 15, 16, 17, 18]:
+		var travelled: float = 0.0
+		for j: int in range(1, k + 1):
+			travelled += step * j / float(Engine.physics_ticks_per_second)
+		var next_step: float = step * (k + 1) / float(Engine.physics_ticks_per_second)
+		var setup: Dictionary = _start(kind[1], kind[2], 0.0, 0.0, travelled + 0.5 * next_step)
+		var rows: Array[Dictionary] = await _go(setup["start"], setup["dir"], 60, 1.0, 0, func() -> bool: return _first_hit(_watch.rows) >= 0 and _watch.rows.size() > _first_hit(_watch.rows) + 4)
+		print("P21 keys from rest, contact on tick %d, arrival expected %.3f m/s:" % [k + 1, step * k])
+		_report("keys_from_rest_%d" % k, rows, 1, 2)
+
+
+func _s_angles() -> void:
+	var kind: Array = KINDS[0]
+	for turn: float in [0.0, 30.0, 60.0, 70.0, 74.0, 75.0, 76.0, 80.0, 85.0, 90.0]:
+		# `turn` degrees off the face normal (0 head-on), so the angle to the face is 90 - turn.
+		var setup: Dictionary = _start(kind[1], kind[2], 0.0, turn)
+		var rows: Array[Dictionary] = await _go(setup["start"], setup["dir"], 200, 1.0, 0, func() -> bool: return _first_hit(_watch.rows) >= 0 and _watch.rows.size() > _first_hit(_watch.rows) + 12)
+		print("P21 angles off the normal=%.1f (to the face %.1f deg):" % [turn, 90.0 - turn])
+		var first: int = _report("angle_%.1f" % turn, rows, 1, 6)
+		if first >= 0:
+			var last: Dictionary = rows[rows.size() - 1]
+			print("P21   angle_%.1f after %d ticks: alive=%s real=%.3f pos=%s" % [turn, rows.size() - first, last["alive"], _h(last["real"]), _v(last["pos"])])
+
+
+func _s_lateral() -> void:
+	var sweeps: Dictionary = {"turret": [0.0, 0.4, 0.8, 1.2, 1.6, 1.7, 1.75, 1.8, 1.85, 1.9, 2.0, 2.3], "tank": [0.0, 1.0, 2.0, 3.0, 3.2, 3.3, 3.4, 3.5, 3.6, 4.0]}
+	for kind: Array in KINDS:
+		if not sweeps.has(kind[0]):
+			continue
+		for lateral: float in sweeps[kind[0]]:
+			var setup: Dictionary = _start(kind[1], kind[2], lateral)
+			var rows: Array[Dictionary] = await _go(setup["start"], setup["dir"], 200, 1.0, 0, func() -> bool: return _first_hit(_watch.rows) >= 0 and _watch.rows.size() > _first_hit(_watch.rows) + 8)
+			print("P21 lateral %s %.2f m off the axis:" % [kind[0], lateral])
+			var first: int = _report("lateral_%s_%.2f" % [kind[0], lateral], rows, 0, 4)
+			if first >= 0:
+				var last: Dictionary = rows[rows.size() - 1]
+				print("P21   lateral_%s_%.2f %d ticks after: alive=%s real=%.3f" % [kind[0], lateral, rows.size() - first, last["alive"], _h(last["real"])])
+
+
+func _s_spawn() -> void:
+	var unit: Unit = _q.units.units[0]
+	# Flush against the leg, the throttle held from before the spawn (a Player holding the key as the Unit appears).
+	var setup: Dictionary = _start(KINDS[1][1], KINDS[1][2])
+	var half: float = _q.units.stats(GYRO).collision_size.z / 2.0
+	for gap: float in [0.0, 0.05, 0.5]:
+		await _k.k.k.stage(0, GYRO, setup["start"], setup["dir"])
+		# Fly at it first so the previous life carries motion, then destroy it in the air.
+		_watch.rows.clear()
+		_watch.logging = true
+		_watch.phase = "life1"
+		await _drive(40, 1.0, 0)
+		print("P21 spawn gap=%.2f: before the destroy: cmd=%.3f real=%.3f" % [gap, unit.current_speed, _h(unit.get_real_velocity())])
+		unit.destroy()
+		await _q.kit.tick()
+		print("P21   after destroy(): alive=%s real=%s (engine value kept from the last move)" % [unit.is_alive, _v(unit.get_real_velocity())])
+		var leg_box: AABB = setup["box"]
+		var face_x: float = leg_box.end.x
+		var spot: Vector3 = Vector3(face_x + half + gap, 0.0, leg_box.get_center().z)
+		_watch.rows.clear()
+		_watch.phase = "life2"
+		_watch.prev_real = Vector3.ZERO
+		_q.harness.drive(0, 1, 0)
+		unit.spawn(_q.units.pose(spot, Vector3.LEFT), _q.units.stats(GYRO))
+		_q.units.cameras[0].snap_to_target()
+		print("P21   spawn(): real=%s cmd=%.3f at %s facing LEFT, flush gap %.2f to the leg's face at x=%.3f" % [_v(unit.get_real_velocity()), unit.current_speed, _v(spot), gap, face_x])
+		for tick: int in 12:
+			_q.harness.drive(0, 1, 0)
+			await _q.kit.tick()
+		_q.harness.release_all()
+		_watch.logging = false
+		for index: int in mini(10, _watch.rows.size()):
+			print("P21   spawn gap=%.2f %s" % [gap, _row_text(_watch.rows[index], index)])
+		_summary("spawn_gap_%.2f" % gap, _watch.rows, 0)
+		_watch.rows.clear()
+	# Straight out of the Garage spots of both Bases at full throttle.
+	for base_index: int in 2:
+		var base: Base = _k.k.k.m.w.bases[base_index]
+		var spots: Array[Marker3D] = [base.spawn_point]
+		spots.append_array(base.spare_spawn_points)
+		for spot_node: Marker3D in spots:
+			var at: Vector3 = spot_node.global_position
+			var out: Vector3 = -spot_node.global_transform.basis.z
+			var rows: Array[Dictionary] = await _go(at, out, 150)
+			var first: int = _report("garage_%s_%s" % [base.name, spot_node.name], rows)
+			_summary("garage_%s_%s" % [base.name, spot_node.name], rows, 0)
+
+
+func _s_shores() -> void:
+	var outline: PackedVector2Array = _q.map.outline()
+	for aim: String in ["west", "north", "south", "east"]:
+		var at: Vector2 = SHORE_AIMS[aim]
+		var facing: Vector3 = Vector3.FORWARD
+		var spot: Vector3 = Vector3.ZERO
+		var nearest: float = INF
+		for index: int in outline.size():
+			var a: Vector2 = outline[index]
+			var b: Vector2 = outline[(index + 1) % outline.size()]
+			var foot: Vector2 = Geometry2D.get_closest_point_to_segment(at, a, b)
+			if foot.distance_to(at) < nearest:
+				nearest = foot.distance_to(at)
+				var normal: Vector2 = (b - a).orthogonal().normalized()
+				facing = Vector3(normal.x, 0.0, normal.y) * signf(normal.dot(foot))
+				spot = Vector3(foot.x, 0.0, foot.y) - facing * 18.0
+		var rows: Array[Dictionary] = await _go(spot, facing, 200, 1.0, 0, func() -> bool: return _first_hit(_watch.rows) >= 0 and _watch.rows.size() > _first_hit(_watch.rows) + 6)
+		print("P21 shore %s: start %s facing %s" % [aim, _v(spot), _v(facing)])
+		_report("shore_" + aim, rows, 1, 4)
+
+
+## A graze: the tower's north face (normal -Z, the open side) flown along from its east end, the heading `alpha` degrees off the
+## face's plane (leaning into the face), at full throttle. The arrival along the normal on the first contact should be
+## 16.4 m/s * sin(alpha). (The first version aimed at the east face and started inside the Turret: its rows were discarded.)
+func _s_graze() -> void:
+	var box: AABB = _box(KINDS[0][1])
+	var face_z: float = box.position.z
+	var east_end: float = box.end.x
+	var alphas: Array[float] = [8.0, 10.0, 12.0, 13.0, 14.0, 14.1, 14.2, 14.5, 15.0, 16.0, 18.0, 20.0, 30.0]
+	if not OS.get_environment("ALPHAS").is_empty():
+		alphas.clear()
+		for part: String in OS.get_environment("ALPHAS").split(","):
+			alphas.append(float(part))
+	var after_rows: int = int(OS.get_environment("AFTER")) if not OS.get_environment("AFTER").is_empty() else 6
+	for alpha: float in alphas:
+		var lean: float = deg_to_rad(alpha)
+		var run: float = 14.0
+		var start: Vector3 = Vector3(east_end - 0.35 + run * cos(lean), 0.0, face_z - 1.07 - run * sin(lean))
+		var heading: Vector3 = Vector3(-cos(lean), 0.0, sin(lean))
+		var rows: Array[Dictionary] = await _go(start, heading, 140, 1.0, 0, func() -> bool: return _first_hit(_watch.rows) >= 0 and _watch.rows.size() > _first_hit(_watch.rows) + 20)
+		print("P21 graze alpha=%.2f deg to the face (computed arrival %.3f m/s):" % [alpha, TOP * sin(lean)])
+		var first: int = _report("graze_%.2f" % alpha, rows, 1, after_rows)
+		if first >= 0:
+			var last: Dictionary = rows[rows.size() - 1]
+			var later_max: float = 0.0
+			for index: int in range(first + 1, rows.size()):
+				for hit: Dictionary in rows[index]["cols"]:
+					later_max = maxf(later_max, -(rows[index]["prev"] as Vector3).dot(hit["normal"]))
+			print("P21   graze_%.2f %d ticks after the first contact: alive=%s real=%.3f pos=%s; the largest arrival on the later ticks %.3f" % [alpha, rows.size() - first, last["alive"], _h(last["real"]), _v(last["pos"]), later_max])
+
+
+## A clean turn on the spot flush against each kind: pinned 1 s, the throttle let go for 2.5 s so the drive speed is zero, then
+## steering one way, back through the flush pose and on, and back.
+func _s_spin() -> void:
+	var unit: Unit = _q.units.units[0]
+	for kind: Array in KINDS:
+		var setup: Dictionary = _start(kind[1], kind[2])
+		await _go(setup["start"], setup["dir"], 200, 1.0, 0, func() -> bool: return _first_hit(_watch.rows) >= 0 and _watch.rows.size() > _first_hit(_watch.rows) + 4)
+		_watch.logging = true
+		_watch.phase = "pinned"
+		await _drive(60, 1.0, 0)
+		_watch.phase = "decay"
+		await _drive(150, 0.0, 0)
+		print("P21 spin %s: drive speed after the decay %.3f, real %.3f" % [kind[0], unit.current_speed, _h(unit.get_real_velocity())])
+		_watch.phase = "spin_left"
+		await _drive(120, 0.0, 1)
+		_watch.phase = "spin_right"
+		await _drive(240, 0.0, -1)
+		_watch.phase = "spin_left_again"
+		await _drive(120, 0.0, 1)
+		_watch.logging = false
+		var all: Array[Dictionary] = []
+		all.append_array(_watch.rows)
+		for phase: String in ["pinned", "decay", "spin_left", "spin_right", "spin_left_again"]:
+			_summary("spin_" + kind[0], all, 0, phase)
+		var last: Dictionary = all[all.size() - 1]
+		print("P21   spin_%s end: alive=%s pos=%s yaw=%.1f" % [kind[0], last["alive"], _v(last["pos"]), last["yaw"]])
+
+
+## Finer offsets: the Turret and the tank near their grazing offset, and the leg across its width.
+func _s_fine() -> void:
+	var sweeps: Dictionary = {"turret": [1.74, 1.75, 1.76, 1.77, 1.78, 1.79, 1.80], "tank": [3.24, 3.26, 3.28, 3.30, 3.32, 3.34, 3.36, 3.38], "leg": [0.0, 0.3, 0.6, 0.9, 1.0, 1.05, 1.1, 1.15, 1.2]}
+	for kind: Array in KINDS:
+		if not sweeps.has(kind[0]):
+			continue
+		for lateral: float in sweeps[kind[0]]:
+			var setup: Dictionary = _start(kind[1], kind[2], lateral)
+			var rows: Array[Dictionary] = await _go(setup["start"], setup["dir"], 130, 1.0, 0, func() -> bool: return _first_hit(_watch.rows) >= 0 and _watch.rows.size() > _first_hit(_watch.rows) + 8)
+			print("P21 fine %s %.2f m off the axis:" % [kind[0], lateral])
+			var first: int = _report("fine_%s_%.2f" % [kind[0], lateral], rows, 0, 2)
+			if first >= 0:
+				var last: Dictionary = rows[rows.size() - 1]
+				print("P21   fine_%s_%.2f %d ticks after: alive=%s real=%.3f" % [kind[0], lateral, rows.size() - first, last["alive"], _h(last["real"])])
+
+
+## The speed edges with a short run-up so the analog throttle reaches the tower inside the run.
+func _s_speeds2() -> void:
+	for speed: float in [3.5, 3.9, 3.95, 4.0, 4.05, 4.1, 4.5, 8.0]:
+		var setup: Dictionary = _start(KINDS[0][1], KINDS[0][2], 0.0, 0.0, 3.0)
+		var rows: Array[Dictionary] = await _go(setup["start"], setup["dir"], 140, speed / TOP, 0, func() -> bool: return _first_hit(_watch.rows) >= 0 and _watch.rows.size() > _first_hit(_watch.rows) + 4)
+		print("P21 speeds2 target=%.2f m/s:" % speed)
+		_report("speed2_%.2f" % speed, rows, 1, 2)

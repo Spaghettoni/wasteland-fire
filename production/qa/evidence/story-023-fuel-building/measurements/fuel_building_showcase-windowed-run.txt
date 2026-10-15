@@ -1,0 +1,20 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+Movie Maker mode enabled, recording movie in 1280×720 @ 60 FPS...
+SPLIT fuel_building_showcase t=3.917 frame=234 moment=depot_above p1_zone0=true p1_zone1=true p2_zone0=true p2_zone1=true
+SPLIT fuel_building_showcase t=7.150 frame=428 moment=zone_chase p1_zone_on_screen=true p2_zone_on_screen=true
+SPLIT fuel_building_showcase t=11.067 frame=663 moment=filling_early bar_p1=40.2 bar_p2=38.1 listed_p1=true listed_p2=true
+SPLIT fuel_building_showcase t=13.067 frame=783 moment=filling_late bar_p1=88.7 bar_p2=86.7 listed_p1=true listed_p2=true
+SPLIT fuel_building_showcase t=17.500 frame=1049 moment=both_at_one_zone bar_p1=51.8 bar_p2=51.2 listed_both=true
+SPLIT fuel_building_showcase t=21.633 frame=1297 moment=gyro_hover model_p1=2.50 model_p2=2.50 bar_p1=40.9 bar_p2=38.9 listed_p1=true listed_p2=true
+SPLIT fuel_building_showcase t=25.967 frame=1557 moment=old_spots_empty cans=0 p1_canyon_on_screen=true p2_flat_on_screen=true
+SPLIT fuel_building_showcase t=28.933 frame=1735 moment=old_spots_parked bar_p1=17.8(was 19.9) bar_p2=17.9(was 20.0) cans=0
+RESULT fuel_building_showcase ok checks=0 failed=0 t=28.933 moments=8 errors=0 warnings=0
+--------------------------------------------------------------------------------
+Done recording movie at path: /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/5301094e-f58e-4c3b-9847-469cd75c1bca/scratchpad/rec4/fb.png
+1736 frames at 60 FPS (movie length: 00:00:28:56), recorded in 00:05:34 (8% of real-time speed).
+CPU render time: 0.02 seconds (average: 0.01 ms/frame)
+GPU render time: 0.00 seconds (average: 0.00 ms/frame)
+Encoding time: 316.59 seconds (average: 182.37 ms/frame)
+--------------------------------------------------------------------------------

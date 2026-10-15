@@ -1,0 +1,51 @@
+"""Patches the scratch copy of the repo for the frame-rate runs of Story 019 AC-7: map_fps and turrets_fps get the
+opt-ins of Stories 015 to 019 and a WALLS_STATE switch (whole, second, fallen) applied to every Wall Panel (the Base
+walls', the Garages' and the field's) once the choice is made. The retained scripts are untouched."""
+import sys
+from pathlib import Path
+
+repo = Path(sys.argv[1])
+STATE = '''
+
+## Scratch only (Story 019 AC-7): the Wall Panels' state this run is measured in, from the environment variable
+## WALLS_STATE: whole (nothing done), second (every panel at its second damaged look) or fallen (every panel destroyed,
+## its rubble shown). Called once the choice is made. Counts the 60 Base-wall panels, the 20 Garage panels and the 8 field
+## panels.
+func _walls_state() -> void:
+	var state: String = OS.get_environment("WALLS_STATE")
+	var count: int = 0
+	var pieces: Array[Structure] = []
+	for base: Base in [_harness.split.field.player_1_base, _harness.split.field.player_2_base]:
+		for piece: Structure in base.structures:
+			var path: String = String(piece.get_path())
+			if path.contains("/Walls/") or path.contains("/Garage/"):
+				pieces.append(piece)
+	pieces.append_array(_harness.split.field.neutral_structures)
+	for piece: Structure in pieces:
+		count += 1
+		if state == "fallen":
+			piece.destroy()
+		elif state == "second":
+			piece.apply_damage(28.0)
+	print("WALLS_STATE %s on %d panels" % [state if not state.is_empty() else "whole", count])
+'''
+OPT_INS = '''const TURRET_LOOKS: bool = true
+const EXPLOSIONS: bool = true
+const BADLY_DAMAGED: bool = true
+const WALL_PANELS: bool = true
+const GARAGE_SCRAP_PANELS: bool = true
+'''
+
+
+def patch(path, anchor_const, extra_const, anchor_call, name):
+    p = repo / "tools/evidence/split_screen" / name
+    t = p.read_text(encoding="utf-8")
+    assert t.count(anchor_const) == 1 and t.count(anchor_call) == 1, name
+    t = t.replace(anchor_const, anchor_const + extra_const).replace(anchor_call, anchor_call + "\n\t_walls_state()")
+    t = t.rstrip("\n") + "\n" + STATE
+    p.write_text(t, encoding="utf-8")
+
+
+patch(None, "const SHIPPED_CAMERA: bool = true\n", "const BASE_DEFENCES: bool = true\n" + OPT_INS, "\tawait _harness.confirm_choices()", "map_fps.gd")
+patch(None, "const TURRETS: bool = true\n", OPT_INS, "\tawait _k.w.s.play(1, Quick.TRUCK)", "turrets_fps.gd")
+print("patched map_fps.gd and turrets_fps.gd in", repo)

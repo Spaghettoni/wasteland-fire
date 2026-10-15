@@ -1,0 +1,215 @@
+#!/usr/bin/env python3
+"""Seeded defects for Story 019 (the Garage walls and the scrap walls become Wall Panels): each one exact text replacement in a
+scratch copy of the repo, run against the scenario that guards it (GARAGE_ONLY names the garage_scrap_walls module, which keeps a
+mutant to the seconds its module takes; panels_data always runs, so a data defect is also read by it). KILLED when the scenario
+fails (rc != 0 or a FAIL CHECK) or, for the regression kind, when an older scenario's output differs from its baseline (through
+the story's exact rewrites). A mutant whose run prints no RESULT line for its scenario is BROKEN (the replacement made the script
+unusable, not a verdict) and is counted apart. One worker per scratch copy, so no two mutants ever share a file (story 011's
+lesson).
+
+usage: seeded-defects19.py BASELINE_DIR WORK_DIR [--dry] [--only name,name]
+  BASELINE_DIR holds the baselines of the older scenarios as split-NAME.txt (the regression kind)
+  WORK_DIR gets copy0..copy2 (scratch copies of the repo; they are diffed against the repo at the end)
+  NORMALIZERS (environment) names the story's exact rewrites (normalizers.json), applied to the regression kind
+  STRIP_GARAGE, STRIP_FIELD (environment) list the older scenarios the probe found to change with the Garage strip or the
+  field strip off: each gets a regression mutant of its own
+  --dry only checks that every replacement text occurs exactly once in its file
+"""
+import json
+import os
+import re
+import subprocess
+import sys
+from concurrent.futures import ThreadPoolExecutor
+
+REPO = "/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire"
+BASE = sys.argv[1]
+WORK = sys.argv[2]
+DRY = "--dry" in sys.argv
+WORKERS = 3
+RULES = json.load(open(os.environ["NORMALIZERS"])) if os.environ.get("NORMALIZERS") else {}
+COPIES = [os.path.join(WORK, "copy%d" % i) for i in range(WORKERS)]
+
+DEF = "src/gameplay/defences/"
+PANEL_GARAGE_SIDE = DEF + "wall_panel_garage_side.tscn"
+PANEL_SCRAP = DEF + "wall_panel_scrap.tscn"
+STATS = DEF + "data/flag_wall_stats.tres"
+STRUCTURE = DEF + "structure.gd"
+COMPOUND = "src/gameplay/maps/map_01/compound_base.tscn"
+COVER = "src/gameplay/maps/map_01/map_01_cover.tscn"
+MATRIX = "src/gameplay/combat/data/damage_matrix.tres"
+SHOT = "src/gameplay/combat/shot.gd"
+RULES_TRES = "src/gameplay/match/data/match_rules.tres"
+GYRO = "src/gameplay/units/models/gyrocopter_mesh_model.tscn"
+MOTORBIKE = "src/gameplay/units/data/motorbike_stats.tres"
+MINE_LAYER = "src/gameplay/mines/mine_layer.gd"
+MINE_SET = "src/gameplay/mines/data/mine_settings.tres"
+SPLIT = "src/gameplay/split_screen/split_screen.gd"
+RUNNER = "tools/evidence/split_screen_harness.gd"
+FROZEN_GARAGE = "tools/evidence/frozen/garage_walls_story_007.tscn"
+FROZEN_SCRAP = "tools/evidence/frozen/scrap_walls_story_007.tscn"
+W = "garage_scrap_walls"
+
+# The structures line of the Base scene without the Garage's panels (the panels left out of the Base's list).
+_line = next(l for l in open(os.path.join(REPO, COMPOUND)).read().split("\n") if l.startswith("structures = ["))
+_entries = re.findall(r'NodePath\("[^"]*"\)', _line)
+_without = "structures = [" + ", ".join(e for e in _entries if "Garage/" not in e) + "]"
+
+GARAGE_STRIP = "	if bool(script.get_script_constant_map().get(GARAGE_SCRAP_PANELS_CONSTANT, false)) or root.field == null:\n		return\n	for base: Base in"
+FIELD_STRIP = "	if bool(script.get_script_constant_map().get(GARAGE_SCRAP_PANELS_CONSTANT, false)) or root.field == null:\n		return\n	var map: MapField"
+CALLS = "	_apply_field_panels_off(split, SCENARIOS[scenario])\n	if PRE_009_MAP_SCENARIOS.has(scenario):\n		_apply_pre_009_map(split)\n"
+
+M = [
+ # name, file, old, new, scenario, kind, module (GARAGE_ONLY; "" for the whole scenario)
+ # the panels as data (AC-1, AC-3, AC-4, AC-5, AC-8)
+ ("garage_panel_on_the_map_layer", PANEL_GARAGE_SIDE, "collision_layer = 64\ncollision_mask = 0\nscript", "collision_layer = 1\ncollision_mask = 0\nscript", W, "check", "over"),
+ ("field_panel_with_a_mask", PANEL_SCRAP, "collision_layer = 64\ncollision_mask = 0\nscript", "collision_layer = 64\ncollision_mask = 99\nscript", W, "check", "moves"),
+ ("garage_panels_left_out_of_structures", COMPOUND, _line, _without, W, "check", "round"),
+ ("garage_panel_0_1_m_short", PANEL_GARAGE_SIDE, "[sub_resource type=\"BoxShape3D\" id=\"BoxShape3D_panel\"]\nsize = Vector3(1, 2, 3.3333333)", "[sub_resource type=\"BoxShape3D\" id=\"BoxShape3D_panel\"]\nsize = Vector3(1, 2, 3.2333333)", W, "check", "breach"),
+ ("field_panel_0_1_m_short", PANEL_SCRAP, "[sub_resource type=\"BoxShape3D\" id=\"BoxShape3D_panel\"]\nsize = Vector3(2.5, 2, 3)", "[sub_resource type=\"BoxShape3D\" id=\"BoxShape3D_panel\"]\nsize = Vector3(2.5, 2, 2.9)", W, "check", "field"),
+ ("garage_panel_moved_0_1_m_leaving_a_gap", COMPOUND, "[node name=\"Panel2\" parent=\"Garage/GarageSideLeft\" instance=ExtResource(\"16_panel_garage_side\")]\ntransform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)", "[node name=\"Panel2\" parent=\"Garage/GarageSideLeft\" instance=ExtResource(\"16_panel_garage_side\")]\ntransform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.1)", W, "check", "moves"),
+ ("stats_with_another_type_id_and_no_matrix_row", STATS, 'type_id = &"flag_wall"', 'type_id = &"wall_panel"', W, "check", "damage"),
+ ("hit_points_45", STATS, "max_hit_points = 40.0", "max_hit_points = 45.0", W, "check", "damage"),
+ ("second_look_below_40_percent", STATS, "damaged_below = Array[float]([0.8, 0.35])", "damaged_below = Array[float]([0.8, 0.4])", W, "check", "damage"),
+ ("field_damaged_looks_swapped", PANEL_SCRAP, 'damaged_looks = [NodePath("MeshDamaged1"), NodePath("MeshDamaged2")]', 'damaged_looks = [NodePath("MeshDamaged2"), NodePath("MeshDamaged1")]', W, "check", "damage"),
+ ("container_on_the_map_layer", COVER, '[node name="ContainerEast" type="StaticBody3D" parent="Containers"]\ntransform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, 1, 0)\ncollision_layer = 64', '[node name="ContainerEast" type="StaticBody3D" parent="Containers"]\ntransform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, 1, 0)\ncollision_layer = 1', W, "check", "cover"),
+ ("spot_test_counts_the_cover_layer", MOTORBIKE, "spot_mask = 18", "spot_mask = 82", W, "check", "moves"),
+ # who owns the panels (AC-3, AC-5, AC-6)
+ ("field_panels_given_a_player", SPLIT, "		for structure: Structure in bases[player].structures:\n			if structure != null:\n				structure.player_index = player\n", "		for structure: Structure in bases[player].structures:\n			if structure != null:\n				structure.player_index = player\n		for structure: Structure in field.neutral_structures:\n			structure.player_index = player\n", W, "check", "damage"),
+ ("map_list_not_restored_at_r", SPLIT, "	for structure: Structure in field.neutral_structures:\n		if structure != null:\n			structure.restore()\n", "", W, "check", "round"),
+ # what a panel does (AC-2 to AC-4, AC-6)
+ ("fallen_panel_keeps_its_layer", STRUCTURE, "	collision_layer = 0\n	collision_mask = 0\n	_show_look()\n	hit_points_changed.emit(_hit_points, stats.max_hit_points)\n	destroyed.emit()\n", "	collision_mask = 0\n	_show_look()\n	hit_points_changed.emit(_hit_points, stats.max_hit_points)\n	destroyed.emit()\n", W, "check", "breach"),
+ ("restore_leaves_a_fallen_panel_fallen", STRUCTURE, "	if not _usable:\n		return\n	_standing = true\n", "	if not _usable or not _standing:\n		return\n	_standing = true\n", W, "check", "round"),
+ ("restart_does_not_restore_structures", SPLIT, "	match_controller.round_started.connect(_restore_structures)\n", "", W, "check", "round"),
+ ("motorbike_breaks_panels", MATRIX, '&"motorbike>flag_wall": 0.0,', '&"motorbike>flag_wall": 0.2,', W, "check", "damage"),
+ ("own_shots_hurt_own_panels", SHOT, "	if _shooter_player_index >= 0 and target_player == _shooter_player_index:\n		return\n", "", W, "check", "damage"),
+ ("shots_fly_through_standing_panels", RULES_TRES, "shot_collision_mask = 83", "shot_collision_mask = 19", W, "check", "moves"),
+ ("gyrocopter_model_does_not_rise_over_panels", GYRO, "rise_body_mask = 64", "rise_body_mask = 0", W, "check", "over"),
+ # the Mines (AC-1, AC-4)
+ ("mine_probe_ignores_the_cover_layer", MINE_SET, "open_ground_mask = 97", "open_ground_mask = 33", W, "check", "field"),
+ ("no_mine_area_ends_inside_the_garage", MINE_LAYER, "local.z <= half.z + reach:\n", "local.z <= 5.0:\n", W, "check", "moves"),
+ # the runner's strips and the frozen walls: the older scenarios keep their outputs
+ ("runner_leaves_the_garage_panels_on", RUNNER, GARAGE_STRIP, GARAGE_STRIP.replace("if bool(", "if true or bool("), W, "check", "moves"),
+ ("runner_leaves_the_field_panels_on", RUNNER, FIELD_STRIP, FIELD_STRIP.replace("if bool(", "if true or bool("), W, "check", "moves"),
+ ("garage_strip_guard_inverted", RUNNER, GARAGE_STRIP, GARAGE_STRIP.replace("if bool(", "if not bool("), W, "check", "moves"),
+ ("field_strip_guard_inverted", RUNNER, FIELD_STRIP, FIELD_STRIP.replace("if bool(", "if not bool("), W, "check", "moves"),
+ ("field_strip_after_the_pre_009_map", RUNNER, CALLS, "	if PRE_009_MAP_SCENARIOS.has(scenario):\n		_apply_pre_009_map(split)\n	_apply_field_panels_off(split, SCENARIOS[scenario])\n", "map_cover", "regress", ""),
+ ("frozen_garage_back_wall_on_the_cover_layer", FROZEN_GARAGE, '[node name="GarageBack" type="StaticBody3D" parent="."]\ntransform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 12.5)\ncollision_mask = 0', '[node name="GarageBack" type="StaticBody3D" parent="."]\ntransform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 12.5)\ncollision_layer = 64\ncollision_mask = 0', "base_walls", "regress", ""),
+ ("frozen_scrap_walls_on_the_map_layer", FROZEN_SCRAP, 'transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 1, 12)\ncollision_layer = 64', 'transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 1, 12)\ncollision_layer = 1', "gyro_cover", "regress", ""),
+]
+# the regression variants of the strips are added from the probe (the older scenarios whose output changes with a strip off)
+for _name in [a for a in os.environ.get("STRIP_GARAGE", "").split(",") if a]:
+    M.append(("runner_leaves_the_garage_panels_on_" + _name, RUNNER, GARAGE_STRIP, GARAGE_STRIP.replace("if bool(", "if true or bool("), _name, "regress", ""))
+    M.append(("garage_strip_keeps_the_panels_listed_" + _name, RUNNER, "		if not under_a_run:\n			kept.append(structure)\n	base.structures = kept\n", "		if not under_a_run:\n			kept.append(structure)\n	pass\n", _name, "regress", ""))
+for _name in [a for a in os.environ.get("STRIP_FIELD", "").split(",") if a]:
+    M.append(("runner_leaves_the_field_panels_on_" + _name, RUNNER, FIELD_STRIP, FIELD_STRIP.replace("if bool(", "if true or bool("), _name, "regress", ""))
+    M.append(("field_strip_keeps_the_map_list_" + _name, RUNNER, "	var none: Array[Structure] = []\n	map.neutral_structures = none\n", "	pass\n	pass\n", _name, "regress", ""))
+
+# Mutants no output can tell from the build: reported apart, with the reason, when they survive.
+EQUIVALENT = {
+ "runner_leaves_the_garage_panels_on": "garage_scrap_walls itself declares GARAGE_SCRAP_PANELS, so both strips are skipped for it with or without the defect; the strips' guard is the regression kind below, all killed",
+ "runner_leaves_the_field_panels_on": "garage_scrap_walls itself declares GARAGE_SCRAP_PANELS, so both strips are skipped for it with or without the defect; the strips' guard is the regression kind below, all killed",
+ "field_panel_with_a_mask": "a static body never moves, so its mask is never read (the story's note); panels_data reads the mask as data and still kills it",
+}
+# Mutants only a window that renders between two physics ticks can tell from the build.
+WINDOWED = {}
+
+
+def prepare(i):
+    d = COPIES[i]
+    os.makedirs(WORK, exist_ok=True)
+    if os.path.exists(d):
+        subprocess.run(["find", d, "-delete"], check=True)
+    subprocess.run(["rsync", "-a", "--exclude", ".git", "--exclude", "production", "--exclude", "design", "--exclude", "docs", REPO + "/", d + "/"], check=True)
+    return d
+
+
+def run(copy, scn, module):
+    env = dict(os.environ)
+    env["GARAGE_ONLY"] = module
+    p = subprocess.run(["godot", "--headless", "--fixed-fps", "60", "--path", copy, "res://tools/evidence/split_screen_harness.tscn", "--", "--scenario=" + scn],
+                       capture_output=True, text=True, timeout=1500, env=env)
+    return p.returncode, p.stdout + p.stderr
+
+
+def one(copy, mutant):
+    name, rel, old, new, scn, kind, module = mutant
+    path = os.path.join(copy, rel)
+    orig = open(path).read()          # this worker is the only one that touches this copy
+    if orig.count(old) != 1:
+        return name, None, "NOT APPLIED (text found %d times)" % orig.count(old)
+    open(path, "w").write(orig.replace(old, new))
+    try:
+        rc, out = run(copy, scn, module)
+    finally:
+        open(path, "w").write(orig)
+    if not re.search(r"^RESULT %s " % scn, out, re.M):
+        return name, None, "BROKEN: no RESULT line (rc=%d)" % rc
+    if kind == "check":
+        fails = re.findall(r"^CHECK \S+ (\S+) FAIL", out, re.M)
+        dead = rc != 0 or bool(fails)
+        detail = "%s%s rc=%d fails=%s" % (scn, "[" + module + "]" if module else "", rc, ",".join(fails) or "-")
+    else:
+        if not os.path.exists(os.path.join(BASE, "split-%s.txt" % scn)):
+            return name, None, "BROKEN: no baseline split-%s.txt (the regression kind needs a retained scenario)" % scn
+        base = open(os.path.join(BASE, "split-%s.txt" % scn)).read()
+        for before, after in RULES.get(scn, []):
+            out = out.replace(after, before)
+        keep = lambda t: [l for l in t.splitlines() if l.startswith(("SPLIT ", "CHECK ", "RESULT ", "SCRIPT ERROR", "ERROR:", "WARNING:"))]
+        dead = keep(out) != keep(base) or rc != 0
+        detail = "%s rc=%d output %s the baseline" % (scn, rc, "differs from" if dead else "equals")
+    return name, dead, detail
+
+
+def worker(i, jobs):
+    return [one(COPIES[i], m) for m in jobs[i::WORKERS]]
+
+
+def main():
+    if DRY:
+        bad = 0
+        for name, rel, old, new, scn, kind, module in M:
+            n = open(os.path.join(REPO, rel)).read().count(old)
+            if n != 1 or old == new:
+                bad += 1
+                print("DRY  %-52s text found %d times in %s (or no change)" % (name, n, rel))
+        print("DRY: %d mutants, %d with a replacement text that is not found exactly once" % (len(M), bad))
+        return 1 if bad else 0
+    jobs = M
+    if "--only" in sys.argv:
+        wanted = sys.argv[sys.argv.index("--only") + 1].split(",")
+        jobs = [m for m in M if m[0] in wanted]
+    for i in range(WORKERS):
+        prepare(i)
+    with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+        results = [r for part in pool.map(lambda i: worker(i, jobs), range(WORKERS)) for r in part]
+    order = {m[0]: k for k, m in enumerate(M)}
+    results.sort(key=lambda r: order[r[0]])
+    killed = survived = broken = 0
+    for name, dead, detail in results:
+        if dead is False and name in WINDOWED:
+            print("WINDOWED   %-52s %s | %s" % (name, detail, WINDOWED[name]))
+            killed += 1
+            continue
+        if dead is False and name in EQUIVALENT:
+            print("EQUIVALENT %-52s %s | %s" % (name, detail, EQUIVALENT[name]))
+            killed += 1
+            continue
+        status = "BROKEN " if dead is None else ("KILLED " if dead else "SURVIVED")
+        killed += dead is True
+        survived += dead is False
+        broken += dead is None
+        print("%s %-56s %s" % (status, name, detail))
+    print("-- %d mutants: %d killed or equivalent, %d survived, %d broken or not applied" % (len(jobs), killed, survived, broken))
+    clean = True
+    for i in range(WORKERS):
+        d = subprocess.run(["diff", "-rq", "--exclude=.godot", "--exclude=production", "--exclude=.git", "--exclude=design", "--exclude=docs", REPO, COPIES[i]], capture_output=True, text=True)
+        if d.stdout.strip():
+            clean = False
+            print("COPY %d DIFFERS FROM THE REPO:\n%s" % (i, d.stdout[:600]))
+    print("-- the %d scratch copies %s the repo (apart from .godot, production, design, docs)" % (WORKERS, "equal" if clean else "DIFFER FROM"))
+    return 0 if survived == 0 and broken == 0 and clean else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

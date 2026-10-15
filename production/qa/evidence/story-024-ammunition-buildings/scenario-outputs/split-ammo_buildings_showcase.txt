@@ -1,0 +1,11 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+SPLIT ammo_buildings_showcase t=3.917 frame=234 moment=building_above p1_zone=true p1_building=true p2_zone=true p2_building=true
+SPLIT ammo_buildings_showcase t=7.317 frame=438 moment=building_chase p1_zone=true p1_building=true p2_zone=true p2_building=true
+SPLIT ammo_buildings_showcase t=11.383 frame=682 moment=rearm_early line_p1='Ammo 18 / 100' line_p2='Ammo 9 / 50' listed_p1=true listed_p2=true
+SPLIT ammo_buildings_showcase t=13.383 frame=802 moment=rearm_late line_p1='Ammo 68 / 100' line_p2='Ammo 34 / 50' listed_p1=true listed_p2=true
+SPLIT ammo_buildings_showcase t=17.450 frame=1046 moment=gyro_hover model_p1=2.50 model_p2=2.50 line_p1='Ammo 7 / 40' line_p2='Ammo 7 / 40'
+SPLIT ammo_buildings_showcase t=18.117 frame=1086 moment=gyro_over_building model_p1=2.50 model_p2=2.50 building_on_screen_p1=true building_on_screen_p2=true
+SPLIT ammo_buildings_showcase t=21.650 frame=1298 moment=refusals note_p1='No Mines at a supply building' note_p2='No Mines at a supply building' mines_p1=5 mines_p2=5
+SPLIT ammo_buildings_showcase t=25.983 frame=1558 moment=kinds_above p1_fuel_zone_on_screen=true p2_ammo_zone_on_screen=true p2_building_on_screen=true
+RESULT ammo_buildings_showcase ok checks=0 failed=0 t=26.083 moments=8 errors=0 warnings=0

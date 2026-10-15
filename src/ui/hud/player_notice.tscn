@@ -32,5 +32,7 @@ script = ExtResource("1_notice")
 message = "Destroy the turrets first"
 none_left_text = "No Mines left"
 near_base_text = "No Mines in or near a Base"
+near_supply_text = "No Mines at a supply building"
 no_room_text = "No room for a Mine here"
+out_of_ammo_text = "Out of ammo"
 refusal_seconds = 1.5

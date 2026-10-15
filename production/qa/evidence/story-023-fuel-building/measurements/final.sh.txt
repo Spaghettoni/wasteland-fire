@@ -1,0 +1,19 @@
+#!/bin/sh
+# The final chain of Story 023: import, parse every .gd the story added or changed, regenerate the exact rewrites from the source
+# lines, regress the 73 older outputs, run fuel_building twice (byte compare) and the showcase headless, gdUnit, and the main scene.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/5301094e-f58e-4c3b-9847-469cd75c1bca/scratchpad
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+godot --headless --path . --import > $S/w23/import.txt 2>&1; echo "import rc=$?"; grep -c -E "ERROR|WARNING" $S/w23/import.txt
+{ for f in src/gameplay/supply/supply_settings.gd src/gameplay/supply/supply_zone.gd src/gameplay/split_screen/split_screen.gd src/gameplay/units/unit_stats.gd src/gameplay/units/unit.gd src/ui/hud/player_hud.gd src/ui/hud/self_destruct_hint.gd tools/evidence/split_screen_harness.gd; do echo $f; done; git ls-files --others --exclude-standard -- 'tools/evidence/split_screen/fuel_building*.gd' | grep '\.gd$'; } | sort -u > $S/w23/gd-list.txt
+wc -l < $S/w23/gd-list.txt
+sed 's#^#res://#' $S/w23/gd-list.txt | xargs godot --headless --path . -s res://.claude/scripts/godot-parse-check.gd -- > $S/w23/parse.txt 2>&1; echo "parse rc=$?"; grep -c "^ok:" $S/w23/parse.txt; grep "PARSE FAIL" $S/w23/parse.txt
+python3 -I $S/rg23/mk_normalizers.py /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire $S/rg23/f-a $S/rg23/before $S/rg23/normalizers23.json | tail -3
+python3 -I $S/rg23/mk_lint_rewrites.py $S/pre23 /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire $S/rg23/normalizers23.json
+sh $S/rg23/regress.sh final $S/rg23/normalizers23.json 2>&1 | tail -14
+for run in a b; do godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=fuel_building > $S/w23/final-$run.txt 2>&1 & done; wait
+grep -c "^CHECK" $S/w23/final-a.txt; grep -E "^RESULT|FAIL" $S/w23/final-a.txt | cut -c1-300
+cmp $S/w23/final-a.txt $S/w23/final-b.txt && echo "BYTE-IDENTICAL"
+godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=fuel_building_showcase > $S/w23/showcase-headless.txt 2>&1; echo "showcase rc=$?"; grep -E "^RESULT|FAIL" $S/w23/showcase-headless.txt | cut -c1-200
+godot --headless -s -d --remote-debug tcp://127.0.0.1:0 res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a res://tests --ignoreHeadlessMode > $S/w23/gdunit.txt 2>&1; echo "gdunit rc=$?"; grep -a "Overall Summary" $S/w23/gdunit.txt | cut -c1-200
+godot --path . --windowed --resolution 1280x720 --quit-after 600 > $S/w23/main-scene-600-frames.txt 2>&1; echo "main scene rc=$?"; grep -c -E "ERROR|WARNING|SCRIPT" $S/w23/main-scene-600-frames.txt
+echo FINAL_DONE

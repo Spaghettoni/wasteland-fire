@@ -1,0 +1,250 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+UNIT motorbike  file y -0.0002..1.2388  body_top 1.2388  thin {  }  hover=0.000 hull_top=inf scale=1.000 offset=(0.0, 0.0, 0.0)
+UNIT buggy      file y 0.0024..2.0000  body_top 1.4475  thin { "whip and pennant": 2.0 }  hover=0.000 hull_top=inf scale=1.000 offset=(0.0, 0.0, 0.0)
+UNIT truck      file y 0.0041..2.7018  body_top 2.2045  thin { "whip antenna": 2.70184230804443 }  hover=0.000 hull_top=inf scale=1.000 offset=(0.0, 0.0, 0.0)
+UNIT gyrocopter file y -0.0000..1.8016  body_top 1.8016  thin {  }  hover=0.780 hull_top=1.4 scale=1.000 offset=(0.0, 0.0, 0.0)
+  gyrocopter body hull (y <= hull_top 1.40): y -0.0000..1.3889 x -0.690..0.690 z -1.160..1.259 ; rotor top 1.8016
+kit scene loads: true
+--- COLLIDERS of Map 01 (layer, shape top, drawn top) ---
+COLLIDER layer=1   kind=other  shape_top=  0.000 drawn_top=   -inf path=/root/Map/Floor
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreNW1
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreNW2
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreNW3
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreNW4
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreNW5
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreNW6
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreNW7
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreNW8
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreSW8
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreSW7
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreSW6
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreSW5
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreSW4
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreSW3
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreSW2
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreSW1
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreSE1
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreSE2
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreSE3
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreSE4
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreSE5
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreSE6
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreSE7
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreSE8
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreNE8
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreNE7
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreNE6
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreNE5
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreNE4
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreNE3
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreNE2
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Terrain/ShoreEdge/ShoreNE1
+COLLIDER layer=32  kind=water  shape_top=  1.500 drawn_top=  0.020 path=/root/Map/Water/ChannelWest
+COLLIDER layer=32  kind=water  shape_top=  1.500 drawn_top=  0.020 path=/root/Map/Water/ChannelEast
+COLLIDER layer=32  kind=csg    shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Cliffs/RockCanyonNorth
+COLLIDER layer=32  kind=csg    shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Cliffs/RockCanyonSouth
+COLLIDER layer=32  kind=csg    shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Cliffs/RidgeWest
+COLLIDER layer=32  kind=csg    shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Cliffs/RidgeCentre
+COLLIDER layer=32  kind=csg    shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Cliffs/RidgeEast
+COLLIDER layer=0   kind=other  shape_top=  3.000 drawn_top=  0.020 path=/root/Map/FordWest
+COLLIDER layer=0   kind=other  shape_top=  3.000 drawn_top=  0.020 path=/root/Map/FordEast
+COLLIDER layer=4   kind=other  shape_top=  4.000 drawn_top=   -inf path=/root/Map/Base1/Zone
+COLLIDER layer=8   kind=other  shape_top=  1.600 drawn_top=   -inf path=/root/Map/Base1/Flag/PickupZone
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallBack/Panel1
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallBack/Panel2
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallBack/Panel3
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallBack/Panel4
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallBack/Panel5
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallBack/Panel6
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallBack/Panel7
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallBack/Panel8
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallLeft/Panel1
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallLeft/Panel2
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallLeft/Panel3
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallLeft/Panel4
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallLeft/Panel5
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallLeft/Panel6
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallLeft/Panel7
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallLeft/Panel8
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallRight/Panel1
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallRight/Panel2
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallRight/Panel3
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallRight/Panel4
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallRight/Panel5
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallRight/Panel6
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallRight/Panel7
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/WallRight/Panel8
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/GateWallLeft/Panel1
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/GateWallLeft/Panel2
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/GateWallLeft/Panel3
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/GateWallRight/Panel1
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/GateWallRight/Panel2
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Walls/GateWallRight/Panel3
+COLLIDER layer=1   kind=panel  shape_top=  6.000 drawn_top=  6.450 path=/root/Map/Base1/Walls/TowerGateLeft
+COLLIDER layer=1   kind=panel  shape_top=  6.000 drawn_top=  6.450 path=/root/Map/Base1/Walls/TowerGateRight
+COLLIDER layer=1   kind=panel  shape_top=  6.000 drawn_top=  6.450 path=/root/Map/Base1/Walls/TowerBackLeft
+COLLIDER layer=1   kind=panel  shape_top=  6.000 drawn_top=  6.450 path=/root/Map/Base1/Walls/TowerBackRight
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Garage/GarageBack/Panel1
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Garage/GarageBack/Panel2
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Garage/GarageBack/Panel3
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Garage/GarageBack/Panel4
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Garage/GarageSideLeft/Panel1
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Garage/GarageSideLeft/Panel2
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Garage/GarageSideLeft/Panel3
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Garage/GarageSideRight/Panel1
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Garage/GarageSideRight/Panel2
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Garage/GarageSideRight/Panel3
+COLLIDER layer=1   kind=water  shape_top=  8.000 drawn_top=  8.000 path=/root/Map/Base1/WaterTower/LegGateLeft
+COLLIDER layer=1   kind=water  shape_top=  8.000 drawn_top=  8.000 path=/root/Map/Base1/WaterTower/LegGateRight
+COLLIDER layer=1   kind=water  shape_top=  8.000 drawn_top=  8.000 path=/root/Map/Base1/WaterTower/LegGarageLeft
+COLLIDER layer=1   kind=water  shape_top=  8.000 drawn_top=  8.000 path=/root/Map/Base1/WaterTower/LegGarageRight
+COLLIDER layer=64  kind=flagw  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Defences/FlagWallGate
+COLLIDER layer=64  kind=flagw  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Defences/FlagWallGarage
+COLLIDER layer=64  kind=flagw  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Defences/FlagWallLeft
+COLLIDER layer=64  kind=flagw  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base1/Defences/FlagWallRight
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Base1/Turrets/TurretLeft
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Base1/Turrets/TurretRight
+COLLIDER layer=4   kind=other  shape_top=  4.000 drawn_top=   -inf path=/root/Map/Base2/Zone
+COLLIDER layer=8   kind=other  shape_top=  1.600 drawn_top=   -inf path=/root/Map/Base2/Flag/PickupZone
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallBack/Panel1
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallBack/Panel2
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallBack/Panel3
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallBack/Panel4
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallBack/Panel5
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallBack/Panel6
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallBack/Panel7
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallBack/Panel8
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallLeft/Panel1
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallLeft/Panel2
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallLeft/Panel3
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallLeft/Panel4
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallLeft/Panel5
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallLeft/Panel6
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallLeft/Panel7
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallLeft/Panel8
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallRight/Panel1
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallRight/Panel2
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallRight/Panel3
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallRight/Panel4
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallRight/Panel5
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallRight/Panel6
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallRight/Panel7
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/WallRight/Panel8
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/GateWallLeft/Panel1
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/GateWallLeft/Panel2
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/GateWallLeft/Panel3
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/GateWallRight/Panel1
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/GateWallRight/Panel2
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Walls/GateWallRight/Panel3
+COLLIDER layer=1   kind=panel  shape_top=  6.000 drawn_top=  6.450 path=/root/Map/Base2/Walls/TowerGateLeft
+COLLIDER layer=1   kind=panel  shape_top=  6.000 drawn_top=  6.450 path=/root/Map/Base2/Walls/TowerGateRight
+COLLIDER layer=1   kind=panel  shape_top=  6.000 drawn_top=  6.450 path=/root/Map/Base2/Walls/TowerBackLeft
+COLLIDER layer=1   kind=panel  shape_top=  6.000 drawn_top=  6.450 path=/root/Map/Base2/Walls/TowerBackRight
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Garage/GarageBack/Panel1
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Garage/GarageBack/Panel2
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Garage/GarageBack/Panel3
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Garage/GarageBack/Panel4
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Garage/GarageSideLeft/Panel1
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Garage/GarageSideLeft/Panel2
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Garage/GarageSideLeft/Panel3
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Garage/GarageSideRight/Panel1
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Garage/GarageSideRight/Panel2
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Garage/GarageSideRight/Panel3
+COLLIDER layer=1   kind=water  shape_top=  8.000 drawn_top=  8.000 path=/root/Map/Base2/WaterTower/LegGateLeft
+COLLIDER layer=1   kind=water  shape_top=  8.000 drawn_top=  8.000 path=/root/Map/Base2/WaterTower/LegGateRight
+COLLIDER layer=1   kind=water  shape_top=  8.000 drawn_top=  8.000 path=/root/Map/Base2/WaterTower/LegGarageLeft
+COLLIDER layer=1   kind=water  shape_top=  8.000 drawn_top=  8.000 path=/root/Map/Base2/WaterTower/LegGarageRight
+COLLIDER layer=64  kind=flagw  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Defences/FlagWallGate
+COLLIDER layer=64  kind=flagw  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Defences/FlagWallGarage
+COLLIDER layer=64  kind=flagw  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Defences/FlagWallLeft
+COLLIDER layer=64  kind=flagw  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Base2/Defences/FlagWallRight
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Base2/Turrets/TurretLeft
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Base2/Turrets/TurretRight
+COLLIDER layer=64  kind=cover  shape_top=  1.300 drawn_top=  1.300 path=/root/Map/Cover/Wrecks/WreckWestOuterSouth
+COLLIDER layer=64  kind=cover  shape_top=  1.300 drawn_top=  1.300 path=/root/Map/Cover/Wrecks/WreckWestMiddleNorth
+COLLIDER layer=64  kind=cover  shape_top=  1.300 drawn_top=  1.300 path=/root/Map/Cover/Wrecks/WreckWestInnerSouth
+COLLIDER layer=64  kind=cover  shape_top=  1.300 drawn_top=  1.300 path=/root/Map/Cover/Wrecks/WreckWestInnerNorth
+COLLIDER layer=64  kind=cover  shape_top=  1.300 drawn_top=  1.300 path=/root/Map/Cover/Wrecks/WreckEastOuterSouth
+COLLIDER layer=64  kind=cover  shape_top=  1.300 drawn_top=  1.300 path=/root/Map/Cover/Wrecks/WreckEastMiddleNorth
+COLLIDER layer=64  kind=cover  shape_top=  1.300 drawn_top=  1.300 path=/root/Map/Cover/Wrecks/WreckEastInnerSouth
+COLLIDER layer=64  kind=cover  shape_top=  1.300 drawn_top=  1.300 path=/root/Map/Cover/Wrecks/WreckEastInnerNorth
+COLLIDER layer=64  kind=cover  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Cover/Containers/ContainerWest
+COLLIDER layer=64  kind=cover  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/Cover/Containers/ContainerEast
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/FieldWalls/FieldWallWest/Panel1
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/FieldWalls/FieldWallWest/Panel2
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/FieldWalls/FieldWallWest/Panel3
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/FieldWalls/FieldWallWest/Panel4
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/FieldWalls/FieldWallEast/Panel1
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/FieldWalls/FieldWallEast/Panel2
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/FieldWalls/FieldWallEast/Panel3
+COLLIDER layer=64  kind=panel  shape_top=  2.000 drawn_top=  2.000 path=/root/Map/FieldWalls/FieldWallEast/Panel4
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Depot/FuelTanks/FuelTankNorthWest/Collider
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Depot/FuelTanks/FuelTankNorthEast/Collider
+COLLIDER layer=1   kind=other  shape_top=  3.000 drawn_top=   -inf path=/root/Map/Depot/FuelTanks/FuelTankSouth/Collider
+COLLIDER layer=0   kind=other  shape_top=  2.200 drawn_top=   -inf path=/root/Map/Depot/FuelCanDepot1/PickupZone
+COLLIDER layer=0   kind=other  shape_top=  2.200 drawn_top=   -inf path=/root/Map/Depot/FuelCanDepot2/PickupZone
+COLLIDER layer=0   kind=other  shape_top=  2.200 drawn_top=   -inf path=/root/Map/Depot/FuelCanDepot3/PickupZone
+COLLIDER layer=0   kind=other  shape_top=  2.200 drawn_top=   -inf path=/root/Map/Depot/FuelCanDepot4/PickupZone
+COLLIDER layer=0   kind=other  shape_top=  2.200 drawn_top=   -inf path=/root/Map/Depot/FuelCanDepot5/PickupZone
+COLLIDER layer=0   kind=other  shape_top=  2.200 drawn_top=   -inf path=/root/Map/FuelCanCanyonWest/PickupZone
+COLLIDER layer=0   kind=other  shape_top=  2.200 drawn_top=   -inf path=/root/Map/FuelCanCanyonEast/PickupZone
+COLLIDER layer=0   kind=other  shape_top=  2.200 drawn_top=   -inf path=/root/Map/FuelCanFlatWest/PickupZone
+COLLIDER layer=0   kind=other  shape_top=  2.200 drawn_top=   -inf path=/root/Map/FuelCanFlatEast/PickupZone
+--- DRAWN ABOVE 2.0 m with no collider (dressing and others) ---
+DRAWN top=  2.200 layers=1 path=/root/Map/Base1/Turrets/TurretLeft/Look/Pedestal
+DRAWN top=  2.200 layers=1 path=/root/Map/Base1/Turrets/TurretLeft/Look/Pedestal/Trim
+DRAWN top=  2.200 layers=1 path=/root/Map/Base1/Turrets/TurretLeft/Look/PedestalDamaged1
+DRAWN top=  2.200 layers=1 path=/root/Map/Base1/Turrets/TurretLeft/Look/PedestalDamaged1/Trim
+DRAWN top=  2.200 layers=1 path=/root/Map/Base1/Turrets/TurretLeft/Look/PedestalDamaged2
+DRAWN top=  2.200 layers=1 path=/root/Map/Base1/Turrets/TurretLeft/Look/PedestalDamaged2/Trim
+DRAWN top=  3.000 layers=1 path=/root/Map/Base1/Turrets/TurretLeft/Look/Head/Dome
+DRAWN top=  2.400 layers=1 path=/root/Map/Base1/Turrets/TurretLeft/Look/Head/Band
+DRAWN top=  2.770 layers=1 path=/root/Map/Base1/Turrets/TurretLeft/Look/Head/Barrel
+DRAWN top=  3.801 layers=1 path=/root/Map/Base1/Turrets/TurretLeft/Look/Head/Trim
+DRAWN top=  2.200 layers=1 path=/root/Map/Base1/Turrets/TurretRight/Look/Pedestal
+DRAWN top=  2.200 layers=1 path=/root/Map/Base1/Turrets/TurretRight/Look/Pedestal/Trim
+DRAWN top=  2.200 layers=1 path=/root/Map/Base1/Turrets/TurretRight/Look/PedestalDamaged1
+DRAWN top=  2.200 layers=1 path=/root/Map/Base1/Turrets/TurretRight/Look/PedestalDamaged1/Trim
+DRAWN top=  2.200 layers=1 path=/root/Map/Base1/Turrets/TurretRight/Look/PedestalDamaged2
+DRAWN top=  2.200 layers=1 path=/root/Map/Base1/Turrets/TurretRight/Look/PedestalDamaged2/Trim
+DRAWN top=  3.000 layers=1 path=/root/Map/Base1/Turrets/TurretRight/Look/Head/Dome
+DRAWN top=  2.400 layers=1 path=/root/Map/Base1/Turrets/TurretRight/Look/Head/Band
+DRAWN top=  2.770 layers=1 path=/root/Map/Base1/Turrets/TurretRight/Look/Head/Barrel
+DRAWN top=  3.801 layers=1 path=/root/Map/Base1/Turrets/TurretRight/Look/Head/Trim
+DRAWN top=  2.200 layers=1 path=/root/Map/Base2/Turrets/TurretLeft/Look/Pedestal
+DRAWN top=  2.200 layers=1 path=/root/Map/Base2/Turrets/TurretLeft/Look/Pedestal/Trim
+DRAWN top=  2.200 layers=1 path=/root/Map/Base2/Turrets/TurretLeft/Look/PedestalDamaged1
+DRAWN top=  2.200 layers=1 path=/root/Map/Base2/Turrets/TurretLeft/Look/PedestalDamaged1/Trim
+DRAWN top=  2.200 layers=1 path=/root/Map/Base2/Turrets/TurretLeft/Look/PedestalDamaged2
+DRAWN top=  2.200 layers=1 path=/root/Map/Base2/Turrets/TurretLeft/Look/PedestalDamaged2/Trim
+DRAWN top=  3.000 layers=1 path=/root/Map/Base2/Turrets/TurretLeft/Look/Head/Dome
+DRAWN top=  2.400 layers=1 path=/root/Map/Base2/Turrets/TurretLeft/Look/Head/Band
+DRAWN top=  2.770 layers=1 path=/root/Map/Base2/Turrets/TurretLeft/Look/Head/Barrel
+DRAWN top=  3.801 layers=1 path=/root/Map/Base2/Turrets/TurretLeft/Look/Head/Trim
+DRAWN top=  2.200 layers=1 path=/root/Map/Base2/Turrets/TurretRight/Look/Pedestal
+DRAWN top=  2.200 layers=1 path=/root/Map/Base2/Turrets/TurretRight/Look/Pedestal/Trim
+DRAWN top=  2.200 layers=1 path=/root/Map/Base2/Turrets/TurretRight/Look/PedestalDamaged1
+DRAWN top=  2.200 layers=1 path=/root/Map/Base2/Turrets/TurretRight/Look/PedestalDamaged1/Trim
+DRAWN top=  2.200 layers=1 path=/root/Map/Base2/Turrets/TurretRight/Look/PedestalDamaged2
+DRAWN top=  2.200 layers=1 path=/root/Map/Base2/Turrets/TurretRight/Look/PedestalDamaged2/Trim
+DRAWN top=  3.000 layers=1 path=/root/Map/Base2/Turrets/TurretRight/Look/Head/Dome
+DRAWN top=  2.400 layers=1 path=/root/Map/Base2/Turrets/TurretRight/Look/Head/Band
+DRAWN top=  2.770 layers=1 path=/root/Map/Base2/Turrets/TurretRight/Look/Head/Barrel
+DRAWN top=  3.801 layers=1 path=/root/Map/Base2/Turrets/TurretRight/Look/Head/Trim
+DRAWN top=  3.000 layers=1 path=/root/Map/Depot/FuelTanks/FuelTankNorthWest
+DRAWN top=  3.600 layers=1 path=/root/Map/Depot/FuelTanks/FuelTankNorthWest/Dome
+DRAWN top=  3.800 layers=1 path=/root/Map/Depot/FuelTanks/FuelTankNorthWest/Hatch
+DRAWN top=  4.150 layers=1 path=/root/Map/Depot/FuelTanks/FuelTankNorthWest/Trim
+DRAWN top=  3.000 layers=1 path=/root/Map/Depot/FuelTanks/FuelTankNorthEast
+DRAWN top=  3.600 layers=1 path=/root/Map/Depot/FuelTanks/FuelTankNorthEast/Dome
+DRAWN top=  3.800 layers=1 path=/root/Map/Depot/FuelTanks/FuelTankNorthEast/Hatch
+DRAWN top=  4.150 layers=1 path=/root/Map/Depot/FuelTanks/FuelTankNorthEast/Trim
+DRAWN top=  3.000 layers=1 path=/root/Map/Depot/FuelTanks/FuelTankSouth
+DRAWN top=  3.600 layers=1 path=/root/Map/Depot/FuelTanks/FuelTankSouth/Dome
+DRAWN top=  3.800 layers=1 path=/root/Map/Depot/FuelTanks/FuelTankSouth/Hatch
+DRAWN top=  4.150 layers=1 path=/root/Map/Depot/FuelTanks/FuelTankSouth/Trim
+DRAWN top=  2.500 layers=1 path=/root/Map/Dressing/West/ContainerNorth
+DRAWN top=  2.500 layers=1 path=/root/Map/Dressing/West/ContainerSouth
+DRAWN top=  2.500 layers=1 path=/root/Map/Dressing/East/ContainerNorth
+DRAWN top=  2.500 layers=1 path=/root/Map/Dressing/East/ContainerSouth

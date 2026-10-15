@@ -13,5 +13,6 @@ approach_past_zone = 11.0
 open_ground_mask = 97
 probe_floor = 0.1
 probe_top = 20.0
+supply_margin = 3.0
 flash_seconds = 0.3
 flash_radius = 1.6

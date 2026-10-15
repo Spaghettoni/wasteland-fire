@@ -7,12 +7,12 @@ extends CharacterBody3D
 ##
 ## Unit is the one body for every type, the Gyrocopter included (decided 2026-10-01): it drives on
 ## the floor in GROUNDED mode like the ground types, with the movement model below, and its model
-## draws it hovering. What sets it apart is data alone, the collision layer and mask in its
-## UnitStats: it crosses the cliffs_water and the cover layers (the cover since Story 009) that stop
-## the ground types and passes through them (and they through it), so nothing here names a type.
-## The one branch on can_fly is Fuel (Story 006, movement model step 5): a flying Unit whose tank
-## runs dry crashes, while a ground Unit stops and can still turn on the spot. The separate
-## movement model and the subclass this doc once left open to Story 005 were not needed.
+## draws it at the flying height in the high Height (Story 020). What sets it apart is data alone,
+## the collision layer and mask in its UnitStats: it crosses the cliffs_water and the cover layers
+## (the low Height's pieces) that stop the ground types and passes through them (and they through
+## it), so nothing here names a type. The one branch on can_fly is Fuel (Story 006, movement model
+## step 5): a flying Unit whose tank runs dry crashes, while a ground Unit stops and can still turn
+## on the spot. The separate movement model and the subclass once left open were not needed.
 ##
 ## Implements: design/game-brief.md build-order item 1 (Driving toy), MVP feature 3 (Bases,
 ## destruction and respawn) and MVP item 5 (the four Units);
@@ -32,7 +32,7 @@ extends CharacterBody3D
 ## their maximum come from the chosen type's data);
 ## production/epics/wasteland-fire/story-006-fuel-and-fuel-cans.md AC-1 to AC-5 and AC-8 (the
 ## tank from the type's data, burned only while moving; an empty ground Unit stops but turns and
-## fires, an empty Gyrocopter crashes through destroy(), a spawn gives a fixed partial tank, and
+## fires, an empty Gyrocopter crashes through destroy(), a spawn gives the starting tank, and
 ## destroy() works at zero Fuel), AC-6 (refuel()) and AC-7 (fuel_changed, what the HUD shows);
 ## production/epics/wasteland-fire/story-007-the-map.md AC-5 (a ford holds a ground Unit to a
 ## fraction of its top speed through limit_speed(), movement model step 6);
@@ -41,7 +41,10 @@ extends CharacterBody3D
 ## (is_stranded, what the Self-destruct hint reads);
 ## production/epics/wasteland-fire/story-017-badly-damaged-units.md AC-1 to AC-3 (the badly damaged
 ## state: is_badly_damaged, badly_damaged_changed and the share of the top speed, step 1, which the
-## ford's cap, step 6, still clamps); design/rules.md "Units", "Destruction and respawn" and
+## ford's cap, step 6, still clamps);
+## production/epics/wasteland-fire/story-021-gyrocopter-crash.md AC-1 to AC-7 (the crash into a Tall
+## piece, step 7: a Unit of a type with a crash speed that flies straight into one at or above it is
+## destroyed in that tick); design/rules.md "Units", "Heights", "Destruction and respawn" and
 ## "Resources". Vocabulary: CONTEXT.md.
 ##
 ## Driven by command, not by input: the Unit never reads a key or an Input action and keeps no
@@ -99,6 +102,25 @@ extends CharacterBody3D
 ##      Units. In a ford the lower of two caps holds, whichever node ticks first (Story 017
 ##      AC-3): the badly damaged share lowers the target in step 1 and the ford's fraction
 ##      clamps the result here.
+##   7. The crash (Story 021, design/rules.md "Heights"), right after move_and_slide() in step 3. A
+##      Unit whose type has a crash speed (stats.crash_speed above zero; zero, the default, means
+##      the type never crashes) is destroyed in this tick, and the rest of the tick does not run,
+##      when one slide collision of this move meets it at or above that speed. A collision counts
+##      when its normal is not a floor's (within the body's floor angle of the up direction, so the
+##      Floor never counts while the Map's slopes stay under it) and its collider is not in
+##      MAP_EDGE_GROUP (the Map's invisible sea edge only stops a Unit). The speed is the Unit's
+##      real velocity of the previous tick along the normal into the piece, get_real_velocity() read
+##      at the end of that tick: never the command (step 4: a Unit pinned against a piece with the
+##      throttle held commands its top speed and moves at zero) and never this tick's own, which the
+##      contact has already cut short. So a graze, a slow nudge and a turn on the spot only stop the
+##      Unit, and a spawn is never an arrival: reset_motion() zeroes the stored velocity, where the
+##      engine's own real velocity keeps the last life's. What is tall is left to the collision mask
+##      as everywhere: the Gyrocopter's is the map layer alone, so it meets no low piece. Measured
+##      on 4.7.2 with Jolt (production/qa/evidence/story-021-gyrocopter-crash-evidence.md): a
+##      head-on hit at top speed reads the piece, its face's normal and the whole speed as the
+##      arrival on the first contact tick; a graze reads the top speed times the sine of its angle
+##      to the face, 4 m/s at 14.12 degrees for the Gyrocopter; the Floor is reported only while the
+##      Unit stands, with its normal up.
 ##
 ## Ground handling: the body stays in the default GROUNDED motion mode with every other
 ## CharacterBody3D setting at its default except floor_snap_length and wall_min_slide_angle,
@@ -134,7 +156,7 @@ extends CharacterBody3D
 ## is alive with full hit points at _ready(), so the Story 001 sandbox needs no spawn(). One that
 ## refused to drive in _ready() is never alive: destroy() and apply_damage() ignore it and spawn()
 ## leaves it alone. destroy() and leave_play() empty the tank and spawn() gives the type's starting
-## share of it (step 5), so dying is never a free refuel (Story 006 AC-5).
+## share of it (step 5: all of it since Story 022, so dying costs a Token and no more).
 ##
 ## Badly damaged (Story 017, design/rules.md "Units"): a live Unit whose hit points are at or
 ## below stats.badly_damaged_fraction of stats.max_hit_points is badly damaged, the edge
@@ -252,6 +274,12 @@ const TEAM_COLOUR_GROUP: StringName = &"team_colour"
 
 ## Name of the child spawn() instances from UnitStats.model.
 const MODEL_NODE_NAME: StringName = &"Model"
+
+## The node group the Map puts the bodies of its invisible sea edge in (map_01_terrain.tscn, Story
+## 021 AC-4 and AC-7): a collision with one never crashes a Unit, whatever its speed, because the
+## edge is a boundary and not an obstacle a Player can see. A scene convention like
+## TEAM_COLOUR_GROUP, and the one place the name is written in code.
+const MAP_EDGE_GROUP: StringName = &"map_edge"
 
 ## Feel values, controller settings and hit points for this Unit type (a UnitStats .tres, for
 ## example motorbike_stats.tres). Required: the Unit will not drive without it, or with max_speed,
@@ -385,6 +413,10 @@ var _steer: float = 0.0
 ## True after a physics tick in which the Unit touched a wall and its real speed along its facing
 ## was under stats.blocked_speed; read by the next tick's _next_speed().
 var _blocked: bool = false
+## The Unit's real velocity at the end of its last tick, what a crash is measured from (movement
+## model step 7, Story 021): the motion it arrived at the piece with. Zero in a new life
+## (reset_motion()).
+var _arrival_velocity: Vector3 = Vector3.ZERO
 var _hit_points: float = 0.0
 var _is_alive: bool = false
 ## True once _ready() accepted the stats. A Unit that refused to drive never becomes alive, and
@@ -447,6 +479,10 @@ func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 	move_and_slide()
+	if _has_crashed():
+		destroy()
+		return
+	_arrival_velocity = get_real_velocity()
 	_blocked = is_on_wall() and absf(get_real_velocity().dot(facing)) < stats.blocked_speed
 
 
@@ -474,15 +510,17 @@ func limit_speed(fraction: float) -> void:
 	_speed_cap_frame = Engine.get_physics_frames()
 
 
-## Stops the Unit dead after a teleport: zeroes speed, velocity, the held command and the blocked
-## flag, and resets physics interpolation so the render does not streak across the map. Set the
-## new global_transform FIRST and call this second; the other order streaks. Use it for spawn,
-## respawn and every other jump.
+## Stops the Unit dead after a teleport: zeroes speed, velocity, the held command, the blocked flag
+## and the velocity a crash is measured from (Story 021: a new life arrives at nothing with its last
+## life's motion), and resets physics interpolation so the render does not streak across the map.
+## Set the new global_transform FIRST and call this second; the other order streaks. Use it for
+## spawn, respawn and every other jump.
 func reset_motion() -> void:
 	_speed = 0.0
 	_throttle = 0.0
 	_steer = 0.0
 	_blocked = false
+	_arrival_velocity = Vector3.ZERO
 	velocity = Vector3.ZERO
 	if is_inside_tree():
 		reset_physics_interpolation()
@@ -516,7 +554,7 @@ func apply_damage(amount: float) -> void:
 
 
 ## Adds Fuel up to the type's fuel_capacity and returns the amount added, emitting fuel_changed once
-## (Story 006 AC-6: a Fuel Can calls it and is taken only when this is above zero). Returns 0.0 and
+## (a Fuel zone calls it each tick, Story 023; a Fuel Can did, Story 006). Returns 0.0 and
 ## does nothing for a Unit that is not alive, an amount not above zero (or NaN), a Unit without a
 ## tank and a full tank. Fuel above zero lets an empty Unit drive again at once, on this call. Call
 ## it from a tick; it changes no physics state.
@@ -533,8 +571,9 @@ func refuel(amount: float) -> float:
 
 
 ## Destroys a live Unit at once, whatever its hit points: Self-destruct (Story 003 AC-5; it works
-## at zero Fuel, Story 006 AC-8), the last hit of apply_damage() and the Fuel crash of a flying
-## Unit, called from its own tick (Story 006 AC-4), take this same path. The Unit leaves play (see
+## at zero Fuel, Story 006 AC-8), the last hit of apply_damage(), the Fuel crash of a flying Unit
+## (Story 006 AC-4) and the crash into a Tall piece (Story 021, movement model step 7), both
+## called from its own tick, take this same path. The Unit leaves play (see
 ## the class doc) with its hit points and Fuel at zero, then hit_points_changed and fuel_changed
 ## are emitted once each, with zero, then badly_damaged_changed(false) when the Unit was badly
 ## damaged (Story 017 AC-1, AC-4: its smoke is off before anything that answers the destruction
@@ -599,7 +638,7 @@ func leave_play() -> void:
 ## 005. The spawn proper sets global_transform first and then calls reset_motion() (the teleport
 ## order), refills hit_points to stats.max_hit_points, gives the Unit its tank (Story 006 AC-5)
 ## with stats.fuel_capacity times spawn_fuel_fraction clamped to 0..1, whatever it held before (a
-## fixed partial tank in the shipped data, so dying is never a free refuel), shows the Unit, puts
+## full tank in the shipped data since Story 022, a half before), shows the Unit, puts
 ## the play collision layer and mask back after the teleport (a mask that changes while the body
 ## overlaps a cliff pushes it under the floor; the Story 005 evidence doc keeps the run) and turns
 ## its physics tick on. It works on a destroyed Unit, on a benched one (leave_play()) and on one
@@ -748,6 +787,26 @@ func _burn_fuel(delta: float) -> void:
 		fuel_changed.emit(_fuel, stats.fuel_capacity)
 	if stats.can_fly and _fuel <= 0.0:
 		destroy()
+
+
+## True when this tick's move flew the Unit into a Tall piece fast enough to destroy it (movement
+## model step 7, Story 021): the type has a crash speed and one slide collision of the move is not
+## a floor's, not the sea edge's (MAP_EDGE_GROUP) and was met at or above that speed, measured along
+## its normal from the previous tick's real velocity (_arrival_velocity). The Floor is told apart by
+## its normal and the body's floor angle, not by name, while the Map's slopes stay under it.
+func _has_crashed() -> bool:
+	if not (stats.crash_speed > 0.0):
+		return false
+	for index: int in get_slide_collision_count():
+		var hit: KinematicCollision3D = get_slide_collision(index)
+		if hit.get_angle(0, up_direction) <= floor_max_angle:
+			continue
+		var collider: Node = hit.get_collider() as Node
+		if collider != null and collider.is_in_group(MAP_EDGE_GROUP):
+			continue
+		if -_arrival_velocity.dot(hit.get_normal()) >= stats.crash_speed:
+			return true
+	return false
 
 
 ## True while the Unit has a tank (Story 006): spawn() has run and its fuel_capacity is above zero.

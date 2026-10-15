@@ -1,0 +1,68 @@
+{
+ "badly_damaged": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1430)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1485)"
+  ]
+ ],
+ "explosions": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1430)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1485)"
+  ]
+ ],
+ "flag_walls": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1430)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1485)"
+  ]
+ ],
+ "token_ui": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1430)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1485)"
+  ]
+ ],
+ "tokens_data": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1430)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1485)"
+  ],
+  [
+   "lint: 15 files, 1380 code lines",
+   "lint: 16 files, 1416 code lines"
+  ],
+  [
+   "lint_files=15",
+   "lint_files=16"
+  ]
+ ],
+ "turret_looks": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1430)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1485)"
+  ]
+ ],
+ "turrets": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1430)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1485)"
+  ]
+ ],
+ "unit_swap": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1430)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1485)"
+  ]
+ ],
+ "mines": [
+  [
+   "PASS 359 code lines of the Mines' scripts",
+   "PASS 369 code lines of the Mines' scripts"
+  ],
+  [
+   "lint_lines=359",
+   "lint_lines=369"
+  ]
+ ]
+}

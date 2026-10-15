@@ -1,0 +1,34 @@
+"""The strip probe of Story 022: for each runner strip, copy the project, take that strip out with a SAME-LINE-COUNT patch of the
+runner (so the printed advance_ticks frame does not move and the normalizers stay valid), capture the 70 retained outputs there and
+compare them with the baseline. The outputs that differ are the regression's detectors for that strip.
+usage: probes22.py NAME [NAME...]   (names below)"""
+import subprocess
+import sys
+from pathlib import Path
+
+REPO = "/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire"
+SP = "/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/12ce1e2b-c78d-4d9e-a4b5-6a970ab10612/scratchpad"
+W = f"{SP}/rg22"
+RUNNER = "tools/evidence/split_screen_harness.gd"
+PROBES = {
+    "ammo_data_on": ("\t\t\tstats.ammo_capacity = 0\n", "\t\t\tstats.ammo_capacity = stats.ammo_capacity\n"),
+    "full_tank_on": ("\t\t\tstats.spawn_fuel_fraction = LEGACY_SPAWN_FUEL_FRACTION\n", "\t\t\tstats.spawn_fuel_fraction = stats.spawn_fuel_fraction\n"),
+    "ammo_lines_on": ('\tfor node: Node in root.find_children("*", "AmmoCount", true, false):\n', '\tfor node: Node in root.find_children("*", "AmmoCountX", true, false):\n'),
+}
+for name in sys.argv[1:]:
+    old, new = PROBES[name]
+    assert old.count("\n") == new.count("\n")
+    root = f"{SP}/probes/{name}"
+    Path(root).mkdir(parents=True, exist_ok=True)
+    subprocess.run(["rsync", "-a", "--delete", "--exclude", ".git", "--exclude", "production", "--exclude", "docs", "--exclude", "design",
+                    "--exclude", "assets/art/svaty_jur", REPO + "/", root + "/"], check=True)
+    runner = Path(root) / RUNNER
+    text = runner.read_text(encoding="utf-8")
+    assert text.count(old) == 1, (name, text.count(old))
+    runner.write_text(text.replace(old, new), encoding="utf-8")
+    out = f"{W}/probe-{name}"
+    subprocess.run(["sh", f"{W}/capture_in.sh", root, out, f"{W}/jobs.txt", "3"], check=True)
+    subprocess.run(["sh", f"{W}/filter.sh", out, f"{W}/f-probe-{name}"], check=True)
+    result = subprocess.run(["python3", "-I", f"{W}/compare.py", f"{W}/f-base", f"{W}/f-probe-{name}", f"{W}/normalizers22.json"], capture_output=True, text=True)
+    Path(f"{W}/probe-{name}.txt").write_text(result.stdout, encoding="utf-8")
+    print(name, "->", [l for l in result.stdout.split("\n") if l.startswith("DIFF") or l.startswith("MISSING") or l.startswith("--")])

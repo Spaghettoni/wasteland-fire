@@ -18,7 +18,58 @@ friends at home.
 - Four Units. The Motorbike is fast, weak and the only one that can carry a
   Flag. The Buggy beats the Truck, the Truck beats the Gyrocopter and the
   Gyrocopter beats the Buggy. Only the Gyrocopter crosses cliffs and water.
-- Every Unit burns Fuel while moving. Fuel Cans on the Map refill it.
+- The Gyrocopter flies high. Its model is drawn at one height, its lowest point
+  2.5 m over the ground, from the tick it appears in its Garage until it is
+  destroyed or put away: it never rises, settles, takes off or lands. It flies
+  over every low piece (every Wall Panel and Flag Wall, the wrecks, the
+  containers, the cliffs and the water) and over every Unit, and only the Tall
+  pieces stop it: the corner towers, the water towers' legs, the depot's Fuel
+  tanks and the Turrets, besides the sea's edge. The tank on top of a water
+  tower is above it, so it can fly between the legs under it. Shots still fly
+  at one height, 0.5 m, so it is hit and hits there, 2 m under its model, and a
+  wall or a piece of cover between it and its target stops the Shot. Right over
+  a Truck it is drawn with the Truck's antenna through its gear.
+- A Gyrocopter that flies straight into a Tall piece at speed crashes: at 4 m/s
+  or more into the piece's face (a quarter of its top speed, which full
+  throttle reaches in about half a metre) it is destroyed on the tick it meets
+  the piece and explodes, which costs a Gyrocopter Token like any destruction.
+  Backing into one at its full reverse speed (6 m/s) crashes it too. Eased in
+  with taps, grazing a face at under about 14 degrees, turning on the spot or
+  pinned with the throttle held against one, it only stops or slides. The
+  sea's edge only stops it, the piece takes no damage, and a ground Unit
+  never crashes.
+- Every Unit burns Fuel while moving, and a little while it stands. Fuel is
+  refilled only in the two amber Fuel zones on the ground at the sides of the
+  depot in the middle of the Map, one facing each Base, each marked with a
+  dashed edge: a Unit that has stopped in one is topped up, from empty to full
+  in about 4 seconds, and both Players can fill at once. A Unit rolling
+  through, or setting off, gets nothing, and a Gyrocopter hovering over a zone
+  counts as stopped. The zones give Fuel only (no hit points, ammo or Mines),
+  and the Fuel Cans are gone from the Map.
+- Every Unit's gun holds a load of ammo, counted in Shots: a Motorbike 100, a
+  Buggy 50, a Truck 25 and a Gyrocopter 40, which is 20 seconds of continuous
+  fire at its own rate. Each Shot spends one. Your count shows as "Ammo 100 /
+  100" under the HUD band on the left of your view (a Truck's reads beside its
+  "Mines 5 / 5"), and the last Shot says "Out of ammo" for a second and a half,
+  as does every new press of the fire key after it. An empty gun fires
+  nothing, but the Unit still drives, carries the Flag and lays Mines. Ammo
+  comes back with a new Unit and in the ammunition buildings' zones (next
+  bullet). The Turrets never run out.
+- Ammo is refilled in the two ammunition buildings, one low building of crates
+  on each half of the Map, on the salt flat beside where the Fuel Cans used to
+  be (about 64 m either side of the middle). Each has a pale yellow zone on the
+  ground on the side that faces the centre, edged with a dashed line. A Unit
+  that has stopped in the zone is rearmed, from an empty gun to a full load in
+  about 4 seconds, a whole Shot at a time with your Ammo line counting up; both
+  Players can rearm at once, either Player can use either building, and a
+  Gyrocopter hovering over a zone counts as stopped. A Unit rolling through, or
+  setting off, gets nothing. A zone gives ammo only (no Fuel, hit points or
+  Mines; a Truck's Mines come back only with a new Truck). A building is about
+  1.8 m tall: ground Units and every Shot stop at it, as at cover, nothing
+  destroys it, and the Gyrocopter flies over it. No Mine can be laid in or
+  within about 3 m of any supply zone, a Fuel zone included: the press lays
+  nothing, keeps your count and the notice line says
+  "No Mines at a supply building" for a second and a half.
 - Each Base keeps its Flag in a box of four Flag Walls under its water tower.
   A Buggy, a Truck or a Gyrocopter breaks one with its Shots (the Motorbike's
   Shots do nothing to it); a hit wall looks damaged, darker and cracked with
@@ -26,6 +77,31 @@ friends at home.
   falls, and both Turrets of that Base are down, a Motorbike can drive in and
   take the Flag. The Gyrocopter flies over the walls but cannot carry. A broken
   Flag Wall stays down until the Round is played again.
+- Each Base's own walls are Wall Panels of the same kind: 30 panels about 2 m
+  tall (8 along the back, 8 along each side and 3 in each Gate wall) between the
+  four corner towers, which stay 6 m tall and solid. A standing panel stops
+  every ground Unit and every Shot and has 40 hit points like a Flag Wall: a
+  Buggy, a Truck or a Gyrocopter breaks one (the Motorbike's Shots do nothing),
+  a Player's own Shots and own Turrets' Shots never hurt that Player's own
+  walls, and a hit panel looks damaged as a Flag Wall does. A fallen panel is
+  low rubble and a gap, a breach that every ground Unit drives through (a Truck
+  just fits the one a Gate-wall panel leaves); it is not a Gate: the yard, the
+  Base zone, the Swap at home, a delivery and the Turrets' hold on the Flag
+  work as before, and a Turret sees through it. The Gyrocopter flies over every
+  panel. A fallen panel stays down until the Round is played again. Mines are
+  still refused in or near a Base, but a Truck can lay one in the outer part of
+  a breach in a side or back wall.
+- Each Garage's three walls are Wall Panels of its Base too: 10 panels about 2 m
+  tall and 1 m thick (4 along the back, 3 along each side), dark like the Base
+  walls, with the same 40 hit points and looks. Only the other Player breaks
+  them. A side panel broken beside a spawn spot lets the other Player's Shots
+  hit a Unit standing on it and lets ground Units drive in and out; a broken
+  back panel opens only the 0.7 m gap before the Base's back wall. The
+  Gyrocopter flies over them. The two walls in the field are Wall Panels as
+  well, four 3 m panels each and 2.5 m thick, but they belong to nobody: both
+  Players' Shots break them (never a Motorbike's), a Truck can lay a Mine in a
+  gap, and R stands them again. Only the wrecks and the containers are Cover
+  now, and nothing destroys them.
 - Two Turrets stand outside each Gate, one on each side. They shoot only at the
   other Player's Unit, aim ahead of it where it will be, and need a clear line
   of sight; every Unit's Shots hurt them (20 Motorbike Shots break one) and
@@ -44,8 +120,10 @@ friends at home.
   Unit that drives onto it at once, a full Truck and its owner's own Unit
   included, in a short flash. The Gyrocopter flies over Mines and Shots never
   set them off. A Mine cannot be laid in or near a Base (the yard, and about
-  10 m in front of each Gate) or where it would not lie on open ground (a wall,
-  the cover, a tank, a cliff, water): the Player's view says why for a moment.
+  10 m in front of each Gate), in or within about 3 m of a supply zone (the
+  Fuel zones and the ammunition zones), or where it would not lie on open
+  ground (a wall, the cover, a tank, a cliff, water): the Player's view says
+  why for a moment.
   A Mine stays when its Truck is destroyed, and a Round played again starts
   with none.
 - A destroyed Unit explodes: a flash, a fireball, a few dark chunks and some
@@ -96,12 +174,19 @@ The rules of record are in `design/rules.md`, the one-page brief in
 | 015 | Turrets show their damage: a darker, cracked drum with chunks at its foot and a darker head below 80% of their hit points, worse below 35%, and they stand about 3 m tall | Done |
 | 016 | A destroyed Unit explodes: a flash, a fireball, six dark chunks and grey smoke for about 2 s at every destruction, in both views; a Swap and the start of a Round never do | Done |
 | 017 | Badly damaged Units smoke and slow down: at or below a fifth of its hit points a Unit smokes (thin dark grey, a column standing and a trail moving, in both views) and drives at half speed until it is destroyed or put away | Done |
+| 018 | The Base walls become Wall Panels: thirty 2 m panels a Base, dark like the Flag Walls, with 40 hit points and the Flag Walls' damaged looks; a fallen one is a breach (a gap with rubble, no Gate) until R brings it back; the corner towers stay | Done |
+| 019 | The Garage walls and the scrap walls become Wall Panels: ten 2 m panels a Garage (4 along the back, 3 along each side), owned by that Base's Player, and two walls of four 3 m panels in the field that belong to nobody; the same 40 hit points and damaged looks; Cover is now only the wrecks and the containers; a Gyrocopter on a Garage spot is drawn risen to 2.25 m until story 020 | Done |
+| 020 | Two Heights: the Gyrocopter flies at one height, its lowest point 2.5 m up from the tick it appears in its Garage, over every wall, piece of cover, cliff, channel and ground Unit; only the Tall pieces (the corner towers, the water towers' legs, the depot's Fuel tanks and the Turrets) stop it; every Shot still flies at 0.5 m, so a Shot from a Gyrocopter is drawn about 2 m under its wheels | Done |
+| 021 | A Gyrocopter that flies into a Tall piece crashes: flown straight into a corner tower, a water tower leg, a depot Fuel tank or a Turret at 4 m/s or more it is destroyed in that tick and explodes, and costs a Token like any other destruction; a graze, a slow nudge, a turn on the spot or the throttle held against a piece only stop it, the sea edge only stops it, and the piece takes no damage | Done |
+| 022 | Ammo, and full supplies for every new Unit: every Unit's gun holds a load of ammo (a Motorbike 100 Shots, a Buggy 50, a Truck 25, a Gyrocopter 40: 20 s of continuous fire at the type's own rate), each Shot spends one, and an empty gun fires nothing while the Unit still drives, carries the Flag and lays Mines; your count shows as "Ammo n / max" under the HUD band and "Out of ammo" shows on the notice line for 1.5 s; every new Unit, at the first spawn, every respawn and every Swap, starts with a full tank and a full load of ammo, so a Self-destruct trades a Token for full supplies and a Swap at your own Base is a free resupply; the Turrets never run out and the Truck's Mines stay a count of their own | Done |
+| 023 | The Fuel building replaces the Fuel Cans: the depot at the centre of Map 01 is the one Fuel building, with an amber Fuel zone (6 x 6 m, edged with dark dashes, drawn on the ground in both views of both Players) on each of its two sides that face a Base; a Unit that has stopped in a zone (its real speed about zero: held against a tank with the throttle on still counts, a Gyrocopter hovering still counts, rolling through at any speed does not) is refuelled gradually, from empty to full in about 4 s while it stands there, both Players at once if need be, with Fuel only (no hit points, ammo or Mines), and a zone never runs dry; the nine Fuel Cans are gone from the Map, so a ground Unit that runs dry anywhere else stays stranded until it Self-destructs (in its own Base, swaps) | Done |
+| 024 | The ammunition buildings, and no Mines at the supply zones: each half of Map 01's salt flat has an ammunition building about 64 m from the middle (a low store of crates on a plinth, 1.8 m tall, with pale yellow stripes: the Gyrocopter flies over it, ground Units and every Shot stop at it, and nothing destroys it) with a pale yellow zone (6 x 6 m, edged with dark dashes, drawn on the ground in both views of both Players) on its side that faces the centre; a Unit that has stopped in one (the same test as the Fuel zones: held against the building with the throttle on still counts, a Gyrocopter hovering still counts, rolling through at any speed does not) has its gun filled gradually, from empty to a full load in about 4 s while it stands there, both Players at once if need be, with ammo only (no Fuel, Mines or hit points), and a zone never runs dry; no Mine can be laid in or within 3 m of any of the four supply zones, the Fuel zones included: the press lays nothing, keeps the count, and shows "No Mines at a supply building" for a second and a half on that Player's line | Done |
 
 Map 01 and the four Units have their low-poly look, lit by a low warm sun
 under a desert sky with ambient occlusion and anti-aliasing. The ground is a
 shader over noise textures generated in code: sand with patches of gravel, the
 salt flat's cracked crust, the canyon road's packed dirt. The rocks, the
-wrecks, containers and scrap walls, the Bases' steel trim, the fuel tanks and
+wrecks and containers, the Bases' steel trim, the fuel tanks and
 the Turrets' detail are models built in Blender by the scripts in
 `tools/blender/`, and so are the Units, from the concept sheet (since
 2026-10-10; the concept kit under `assets/art/` they replaced stays as a
@@ -123,7 +208,7 @@ greybox field.
 
 Each Player chooses a Unit type at the start of a Round and after every
 destruction, with the choice panel at the bottom of their own view. R restarts
-from the round-over screen.
+from the round-over screen and stands every broken wall panel again.
 
 A Round starts in the view from above: the camera stands high over your Unit,
 tilted a little forward so you see more ground ahead than behind, and turns
@@ -135,33 +220,41 @@ stay in sight.
 
 Each Player has a stock of Tokens for every Unit type; Map 01 gives both of
 them Motorbike 5, Buggy 3, Truck 2 and Gyrocopter 2. A destroyed Unit costs one
-Token of its type, taken when it is destroyed: enemy fire, a Self-destruct and
-a Gyrocopter's empty-tank crash all count. The choice panel shows how many
-Tokens each type has left and dims a type with none, which the cursor skips;
-the HUD shows your Motorbike Tokens, counting the Motorbike you are driving. A
-Round ends when a Player delivers the other's Flag, or when a Player's last
-Motorbike Token is gone: that Player loses. If both lose their last one on the
-same tick, nobody wins and the screen says so. R starts the Round again with
-full stocks.
+Token of its type, taken when it is destroyed: enemy fire, a Self-destruct, a
+Gyrocopter's empty-tank crash and its crash into a Tall piece all count. The
+choice panel shows how many Tokens each type has left and dims a type with
+none, which the cursor skips; the HUD shows your Motorbike Tokens, counting the
+Motorbike you are driving. A Round ends when a Player delivers the other's
+Flag, or when a Player's last Motorbike Token is gone: that Player loses. If
+both lose their last one on the same tick, nobody wins and the screen says so.
+R starts the Round again with full stocks.
 
 Keys 1 and 2 used to damage each Player's own Unit for testing; they are off
 now that weapons exist, and `debug_damage` in
 `src/gameplay/match/data/match_rules.tres` brings them back.
 
-Every Unit spawns with half a tank. The amber Fuel gauge beside the hit points
-empties while the Unit moves and holds while it stands still. Drive over an amber
-Fuel Can to refill from it; the Can comes back at the same spot after about 20
-seconds. A ground Unit with no Fuel stops but can still turn and fire, and a
-Gyrocopter with no Fuel crashes. Self-destruct still works with an empty tank.
+Every new Unit, at the first spawn, after every destruction and after every
+Swap, starts with a full tank and a full load of ammo, so a Self-destruct trades
+a Token for full supplies and a Swap at home is a free resupply. The amber Fuel
+gauge beside the hit points empties while the Unit moves and holds while it
+stands still. Stop in one of the two amber Fuel zones beside the depot to refill
+(about 4 seconds from empty), and in a pale yellow ammunition zone to rearm
+(about 4 seconds from empty). A ground Unit with no Fuel stops but can still
+turn and fire, and a Gyrocopter with no Fuel crashes. Self-destruct still works
+with an empty tank, and at home it swaps the Unit.
 
-Map 01 is an island about 300 by 100 metres. Orange is Player 1 at the west
-Base and Teal is Player 2 at the east Base; each Base is a walled compound with
-one gate facing the centre, a roofless Garage and a water tower over the Flag.
-A canyon road runs along the north and a cracked salt flat fills the middle,
-with a Fuel depot of five Cans at its centre and wrecks, containers and scrap
-walls for cover. Two shallow fords across the flat slow ground Units to half
-speed. A rocky ridge in the south, cut by two channels, is crossed only by the
-Gyrocopter, and the sea around the island stops every Unit.
+Map 01 is an island about 300 by 100 metres. Orange is Player 1 at the west Base
+and Teal is Player 2 at the east Base; each Base is a compound walled by 2 m
+Wall Panels between four 6 m corner towers, with one gate facing the centre, a
+Garage walled by Wall Panels (roofless) and a water tower over the Flag. A
+canyon road runs along the north and a cracked salt flat fills the middle, with
+the Fuel depot at its centre (three tanks and a Fuel zone each side of them),
+an ammunition building with its zone on each half, wrecks and containers for
+cover and a short wall of Wall Panels each side of the middle. Two shallow
+fords across the
+flat slow ground Units to half speed. A rocky ridge in the south, cut by two
+channels, is crossed only by the Gyrocopter, and the sea around the island stops
+every Unit.
 
 ## Running it
 

@@ -1,0 +1,6 @@
+#!/bin/sh
+# usage: run_ammo.sh OUTFILE [MODULES]   Runs the ammo scenario headless (AMMO_ONLY=MODULES when given).
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+if [ -n "$2" ]; then export AMMO_ONLY="$2"; fi
+godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=ammo > "$1" 2>&1
+echo "rc=$?" >> "$1"

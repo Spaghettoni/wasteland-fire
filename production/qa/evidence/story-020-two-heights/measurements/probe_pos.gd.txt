@@ -1,0 +1,26 @@
+extends SceneTree
+func _initialize() -> void:
+	var map: Node3D = (load("res://src/gameplay/maps/map_01/map_01.tscn") as PackedScene).instantiate() as Node3D
+	root.add_child(map)
+	await process_frame
+	await process_frame
+	for path: String in ["Floor", "Cover/Wrecks/WreckWestOuterSouth", "Cover/Wrecks/WreckWestMiddleNorth", "Cover/Wrecks/WreckWestInnerSouth", "Cover/Wrecks/WreckWestInnerNorth", "Cover/Containers/ContainerWest", "Cliffs/RockCanyonNorth", "Cliffs/RockCanyonSouth", "Cliffs/RidgeWest", "Cliffs/RidgeCentre", "Cliffs/RidgeEast", "Water/ChannelWest", "Water/ChannelEast", "Depot/FuelTanks/FuelTankNorthWest/Collider", "Depot/FuelTanks/FuelTankSouth/Collider", "Base1", "Base2", "Base1/Turrets/TurretLeft", "Base1/Turrets/TurretRight", "Base1/Walls/TowerGateLeft", "Base1/Walls/TowerBackLeft", "Terrain/ShoreEdge/ShoreNW1", "Terrain/ShoreEdge/ShoreSW1"]:
+		var node: Node3D = map.get_node_or_null(path) as Node3D
+		if node == null:
+			print("MISSING ", path)
+			continue
+		var line: String = "%-48s pos=%s yaw=%.1f" % [path, node.global_position, rad_to_deg(node.global_rotation.y)]
+		var box: AABB = AABB()
+		var first: bool = true
+		if node is CSGShape3D:
+			box = node.global_transform * (node as CSGShape3D).get_aabb()
+			first = false
+		for child: Node in node.get_children():
+			if child is CollisionShape3D and (child as CollisionShape3D).shape != null:
+				var part: AABB = (child as CollisionShape3D).global_transform * (child as CollisionShape3D).shape.get_debug_mesh().get_aabb()
+				box = part if first else box.merge(part)
+				first = false
+		if not first:
+			line += "  box x %.2f..%.2f y %.2f..%.2f z %.2f..%.2f" % [box.position.x, box.end.x, box.position.y, box.end.y, box.position.z, box.end.z]
+		print(line)
+	quit()

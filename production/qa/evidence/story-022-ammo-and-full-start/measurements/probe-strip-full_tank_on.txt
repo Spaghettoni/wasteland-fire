@@ -1,0 +1,91 @@
+STRICT     drive coast                  rc=0
+STRICT     drive showcase               rc=0
+STRICT     drive soak                   rc=0
+STRICT     drive walls                  rc=0
+NORMALIZED split badly_damaged          rc=0 rewrites=[2]
+STRICT     split badly_damaged_off      rc=0
+STRICT     split badly_damaged_showcase rc=0
+DIFF       split base_walls             rc 0->0, lines 23->23, first difference at line 22
+    base: RESULT base_walls ok checks=19 failed=0 t=431.700 panels=60 falls=261 panels_data=60 worst_gap=0.000008 truck_gaps=0.300/0.500 stops=60 gyro_crossings=20 rise_min=0.250 speed_min=16.00 panel_falls=3 look_steps=300 ray_after_destro
+    new : RESULT base_walls ok checks=19 failed=0 t=429.950 panels=60 falls=261 panels_data=60 worst_gap=0.000008 truck_gaps=0.300/0.500 stops=60 gyro_crossings=20 rise_min=0.250 speed_min=16.00 panel_falls=3 look_steps=300 ray_after_destro
+STRICT     split base_walls_showcase    rc=0
+STRICT     split bases                  rc=0
+STRICT     split camera_showcase        rc=0
+STRICT     split camera_views           rc=0
+STRICT     split choice                 rc=0
+STRICT     split countdown              rc=0
+STRICT     split crash                  rc=0
+STRICT     split crash_showcase         rc=0
+STRICT     split depot_tanks            rc=0
+STRICT     split destruction            rc=0
+NORMALIZED split explosions             rc=0 rewrites=[3]
+STRICT     split explosions_off         rc=0
+STRICT     split explosions_showcase    rc=0
+STRICT     split flag_run               rc=0
+STRICT     split flag_showcase          rc=0
+NORMALIZED split flag_walls             rc=0 rewrites=[4]
+STRICT     split flag_walls_showcase    rc=0
+DIFF       split fuel                   rc 0->1, lines 49->54, first difference at line 20
+    base: CHECK fuel fuel_burn PASS data(capacity/use/share) motorbike=100.0/2.0/0.50 buggy=100.0/2.5/0.50 truck=100.0/3.0/0.50 gyrocopter=100.0/5.0/0.50 spawns(said x Fuel/capacity) round p1=1x50.0 p2=1x50.0 motorbike=1x50.00/100.0 buggy=1
+    new : CHECK fuel fuel_burn FAIL data(capacity/use/share) motorbike=100.0/2.0/1.00 buggy=100.0/2.5/1.00 truck=100.0/3.0/1.00 gyrocopter=100.0/5.0/1.00 spawns(said x Fuel/capacity) round p1=1x100.0 p2=1x100.0 motorbike=1x100.00/100.0 bugg
+DIFF       split fuel_cans              rc 0->0, lines 33->33, first difference at line 30
+    base: CHECK fuel_cans can_cycle PASS start: FuelCan1=(0,0) AVAILABLE FuelCan2=(-16,-8) AVAILABLE FuelCan3=(16,8) AVAILABLE FuelCan4=(-16,8) AVAILABLE FuelCan5=(16,-8) AVAILABLE | take: FuelCan4 by p1 motorbike after 116 ticks: +40.0000 
+    new : CHECK fuel_cans can_cycle PASS start: FuelCan1=(0,0) AVAILABLE FuelCan2=(-16,-8) AVAILABLE FuelCan3=(16,8) AVAILABLE FuelCan4=(-16,8) AVAILABLE FuelCan5=(16,-8) AVAILABLE | take: FuelCan4 by p1 motorbike after 116 ticks: +2.7333 (
+STRICT     split fuel_hint              rc=0
+DIFF       split fuel_showcase          rc 0->1, lines 108->203, first difference at line 13
+    base: SPLIT fuel_showcase t=3.567 frame=215 phase=both_choose p1_type=motorbike p1_x=0.00 p1_z=20.00 p1_fuel=50.00 p1_hp=40 p1_alive=true p2_type=truck p2_x=0.00 p2_z=-20.00 p2_fuel=50.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNING
+    new : SPLIT fuel_showcase t=3.567 frame=215 phase=both_choose p1_type=motorbike p1_x=0.00 p1_z=20.00 p1_fuel=100.00 p1_hp=40 p1_alive=true p2_type=truck p2_x=0.00 p2_z=-20.00 p2_fuel=100.00 p2_hp=220 p2_alive=true cans=AAAAA round=RUNNI
+DIFF       split garage_scrap_walls     rc 0->0, lines 20->20, first difference at line 19
+    base: RESULT garage_scrap_walls ok checks=16 failed=0 t=475.100 panels=28 falls=132 panels_data=28 worst_gap=0.000015 spawns=16 refusals=4 truck_gaps=0.300/0.500 stops=54 drawn_height=4 low=0.780->2.250 gyro_crossings=18 rise_min=0.250 
+    new : RESULT garage_scrap_walls ok checks=16 failed=0 t=475.033 panels=28 falls=132 panels_data=28 worst_gap=0.000015 spawns=16 refusals=4 truck_gaps=0.300/0.500 stops=54 drawn_height=4 low=0.780->2.250 gyro_crossings=18 rise_min=0.250 
+STRICT     split garage_scrap_walls_showcase rc=0
+STRICT     split gyro                   rc=0
+STRICT     split gyro_cover             rc=0
+STRICT     split heights                rc=0
+STRICT     split heights_showcase       rc=0
+DIFF       split hud                    rc 0->0, lines 10->10, first difference at line 7
+    base: CHECK hud fits_view PASS window=1280x720 margin_min=8 px | player_1: view=(0,0 640x720) root=(0,0 640x720) root_is_view=true HitPointsBar=(16,16 300x24) inside_margin=true HitPointsLabel=(16,16 300x26) inside_margin=true widest_te
+    new : CHECK hud fits_view PASS window=1280x720 margin_min=8 px | player_1: view=(0,0 640x720) root=(0,0 640x720) root_is_view=true HitPointsBar=(16,16 300x24) inside_margin=true HitPointsLabel=(16,16 300x26) inside_margin=true widest_te
+DIFF       split idle_burn              rc 0->0, lines 13->13, first difference at line 4
+    base: SPLIT idle_burn t=5.767 burn=1 type=motorbike standing_ticks=171 standing_rate=0.5000 moving_ticks=159 moving_rate=2.0000 worst=0.00000000 emits=330 fuel_end=43.2250
+    new : SPLIT idle_burn t=5.767 burn=1 type=motorbike standing_ticks=171 standing_rate=0.5000 moving_ticks=159 moving_rate=2.0000 worst=0.00000000 emits=330 fuel_end=93.2250
+STRICT     split isolation              rc=0
+STRICT     split layout                 rc=0
+DIFF       split loss                   rc 0->1, lines 11->11, first difference at line 9
+    base: CHECK loss T24_other_ends_unchanged PASS Player 2's Motorbike pinned, throttle held: 50.0 Fuel burned out in 1501 ticks, then 10 s empty: alive, no unit_destroyed, Tokens [[5, 0, 0, 0], [5, 3, 2, 2]] unchanged, Round running | del
+    new : CHECK loss T24_other_ends_unchanged FAIL Player 2's Motorbike pinned, throttle held: 100.0 Fuel burned out in 2400 ticks, then 10 s empty: alive, no unit_destroyed, Tokens [[5, 0, 0, 0], [5, 3, 2, 2]] unchanged, Round running | de
+STRICT     split map_bases              rc=0
+STRICT     split map_cover              rc=0
+STRICT     split map_edges              rc=0
+STRICT     split map_ford               rc=0
+STRICT     split map_layout             rc=0
+STRICT     split map_legibility         rc=0
+STRICT     split map_showcase           rc=0
+NORMALIZED split mines                  rc=0 rewrites=[1, 1]
+STRICT     split mines_showcase         rc=0
+STRICT     split quick_fixes_showcase   rc=0
+STRICT     split respawn_showcase       rc=0
+STRICT     split round_over             rc=0
+STRICT     split showcase               rc=0
+STRICT     split simultaneous           rc=0
+STRICT     split spot_turn              rc=0
+STRICT     split token_choice           rc=0
+STRICT     split token_layout           rc=0
+NORMALIZED split token_ui               rc=0 rewrites=[2]
+DIFF       split tokens                 rc 0->0, lines 12->12, first difference at line 8
+    base: CHECK tokens T08_fuel_crash PASS Fuel crash: p2 [5, 3, 1, 2] -> [5, 3, 1, 1] | throttle held 601 ticks (50.0 Fuel at 5.0/s = 600 ticks +-2), 0 Shots fired; the Round runs: round over false
+    new : CHECK tokens T08_fuel_crash PASS Fuel crash: p2 [5, 3, 1, 2] -> [5, 3, 1, 1] | throttle held 1201 ticks (100.0 Fuel at 5.0/s = 1200 ticks +-2), 0 Shots fired; the Round runs: round over false
+NORMALIZED split tokens_data            rc=0 rewrites=[18, 1, 1]
+STRICT     split tokens_showcase        rc=0
+NORMALIZED split turret_looks           rc=0 rewrites=[5]
+STRICT     split turret_looks_showcase  rc=0
+NORMALIZED split turrets                rc=0 rewrites=[1]
+STRICT     split turrets_showcase       rc=0
+NORMALIZED split unit_swap              rc=0 rewrites=[1]
+DIFF       split unit_swap_showcase     rc 0->0, lines 8->8, first difference at line 5
+    base: SPLIT unit_swap_showcase t=1.967 frame=117 moment=new_unit p1=buggy hp=100 fuel=49.7 at_spawn_point=true
+    new : SPLIT unit_swap_showcase t=1.967 frame=117 moment=new_unit p1=buggy hp=100 fuel=99.7 at_spawn_point=true
+STRICT     split units                  rc=0
+STRICT     split units_showcase         rc=0
+STRICT     split weapons                rc=0
+-- 51 strict, 9 normalized, 10 bad of 70 compared

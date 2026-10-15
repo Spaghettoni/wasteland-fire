@@ -1,0 +1,37 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+Movie Maker mode enabled, recording movie in 1280×720 @ 60 FPS...
+SPLIT base_walls_showcase t=1.117 frame=66 moment=whole_gate_above panels=60 looks=whole views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT base_walls_showcase t=1.617 frame=96 moment=whole_yard_above panels=60 looks=whole views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT base_walls_showcase t=2.667 frame=159 moment=first_look_above back-wall panels 2 and 7 at the first look beside whole ones: looks 1 1 beside 0 0 views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT base_walls_showcase t=3.717 frame=222 moment=second_look_above back-wall panels 2 and 7 at the second look views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT base_walls_showcase t=4.767 frame=285 moment=back_breach_above back-wall panels 2 and 7 fallen (rubble) with the first look beside them views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT base_walls_showcase t=5.267 frame=315 moment=side_breach_above the left side wall's lane panel fallen at both Bases views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT base_walls_showcase t=5.767 frame=345 moment=gate_breach_above the middle panel of each Gate wall fallen at both Bases, a Turret to be seen through each views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT base_walls_showcase t=8.550 frame=512 moment=truck_through_gate_breach_above both Trucks at the middle of the wall's thickness (14.35 m from the axis) at 10.9 m/s
+SPLIT base_walls_showcase t=11.317 frame=678 moment=gyro_over_side_wall_above both Gyrocopters over the wall, models 0.25 m over its top
+SPLIT base_walls_showcase t=14.417 frame=864 moment=turret_shot_through_breach_above a Turret's Shot 2.3 m inside the yard face, through the fallen panel, toward the Truck
+SPLIT base_walls_showcase t=18.633 frame=1117 moment=mine_in_side_breach_above a live Mine in the outer part of the left side wall's breach at each Base: 2 Mines views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT base_walls_showcase t=20.750 frame=1244 moment=whole_gate_chase panels=60 looks=whole views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT base_walls_showcase t=21.250 frame=1274 moment=whole_yard_chase panels=60 looks=whole views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT base_walls_showcase t=22.300 frame=1337 moment=first_look_chase back-wall panels 2 and 7 at the first look beside whole ones: looks 1 1 beside 0 0 views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT base_walls_showcase t=23.350 frame=1400 moment=second_look_chase back-wall panels 2 and 7 at the second look views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT base_walls_showcase t=24.400 frame=1463 moment=back_breach_chase back-wall panels 2 and 7 fallen (rubble) with the first look beside them views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT base_walls_showcase t=24.900 frame=1493 moment=side_breach_chase the left side wall's lane panel fallen at both Bases views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT base_walls_showcase t=25.400 frame=1523 moment=gate_breach_chase the middle panel of each Gate wall fallen at both Bases, a Turret to be seen through each views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT base_walls_showcase t=28.183 frame=1690 moment=truck_through_gate_breach_chase both Trucks at the middle of the wall's thickness (14.35 m from the axis) at 10.9 m/s
+SPLIT base_walls_showcase t=30.950 frame=1856 moment=gyro_over_side_wall_chase both Gyrocopters over the wall, models 0.25 m over its top
+SPLIT base_walls_showcase t=34.050 frame=2042 moment=turret_shot_through_breach_chase a Turret's Shot 2.3 m inside the yard face, through the fallen panel, toward the Truck
+SPLIT base_walls_showcase t=38.267 frame=2295 moment=mine_in_side_breach_chase a live Mine in the outer part of the left side wall's breach at each Base: 2 Mines views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT base_walls_showcase t=42.300 frame=2537 moment=round_over_panels_kept Round over, 10 panels fallen
+SPLIT base_walls_showcase t=42.917 frame=2574 moment=after_r_chase panels whole: 60 of 60 views=chase_camera_settings.tres, chase_camera_settings.tres
+RESULT base_walls_showcase ok checks=0 failed=0 t=42.917 moments=24
+--------------------------------------------------------------------------------
+Done recording movie at path: /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/e4457e7a-2740-444a-b8a5-9e1f571391e9/scratchpad/w18/shots3/walls.png
+2576 frames at 60 FPS (movie length: 00:00:42:56), recorded in 00:08:14 (8% of real-time speed).
+CPU render time: 0.04 seconds (average: 0.02 ms/frame)
+GPU render time: 0.00 seconds (average: 0.00 ms/frame)
+Encoding time: 471.31 seconds (average: 182.96 ms/frame)
+--------------------------------------------------------------------------------
+rc=0

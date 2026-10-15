@@ -1,0 +1,92 @@
+{
+ "badly_damaged": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1541)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1577)"
+  ]
+ ],
+ "explosions": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1541)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1577)"
+  ]
+ ],
+ "flag_walls": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1541)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1577)"
+  ]
+ ],
+ "fuel_building": [
+  [
+   "_ready (res://src/gameplay/supply/supply_zone.gd:123)",
+   "_ready (res://src/gameplay/supply/supply_zone.gd:148)"
+  ],
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1541)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1577)"
+  ],
+  [
+   "27 numbers in the code lines of the zone and its settings",
+   "29 numbers in the code lines of the zone and its settings"
+  ],
+  [
+   "and the zone's script keeps no variable besides its exports but _listed_before",
+   "and the zone's script keeps no variable besides its exports and the Weapons handed to it but _listed_before"
+  ]
+ ],
+ "token_ui": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1541)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1577)"
+  ]
+ ],
+ "tokens_data": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1541)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1577)"
+  ],
+  [
+   "lint: 16 files, 1416 code lines",
+   "lint: 16 files, 1419 code lines"
+  ]
+ ],
+ "turret_looks": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1541)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1577)"
+  ]
+ ],
+ "turrets": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1541)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1577)"
+  ]
+ ],
+ "unit_swap": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1541)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1577)"
+  ]
+ ],
+ "mines": [
+  [
+   "PASS 369 code lines of the Mines' scripts",
+   "PASS 389 code lines of the Mines' scripts"
+  ],
+  [
+   "lint_lines=369",
+   "lint_lines=389"
+  ]
+ ],
+ "ammo": [
+  [
+   "222 code lines of the Weapon, the Ammo line and the notice",
+   "225 code lines of the Weapon, the Ammo line and the notice"
+  ],
+  [
+   "ammo_lint_lines=222",
+   "ammo_lint_lines=225"
+  ]
+ ]
+}

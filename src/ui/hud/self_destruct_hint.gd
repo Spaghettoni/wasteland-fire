@@ -41,7 +41,7 @@ extends Label
 ##                     empty) while the Round runs: fuel_changed with zero, on the tick the tank
 ##                     runs dry
 ##   shown  -> hidden  the Unit is no longer stranded: refuelled (fuel_changed with Fuel, from a
-##                     Fuel Can under it), destroyed by its Self-destruct or by a hit, or benched
+##                     Fuel zone under it), destroyed by its Self-destruct or by a hit, or benched
 ##                     (each emits fuel_changed with zero once the Unit has left play)
 ##   shown  -> hidden  the controller emitted round_over: the Round-over screen takes the view
 ##   hidden -> hidden  everything else: a Unit with Fuel, a Gyrocopter (it crashes when it runs dry

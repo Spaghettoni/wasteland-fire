@@ -1,0 +1,37 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+SPLIT fuel_building_fps t=1.200 phase=window_1 staging=1 fps=64.0 frame_ms_max=11.89 draw_calls=234 primitives=298630 objects=665 fuel_p1=19.3 fuel_p2=19.3
+SPLIT fuel_building_fps t=2.200 phase=window_1 staging=1 fps=120.0 frame_ms_max=12.21 draw_calls=234 primitives=298630 objects=665 fuel_p1=18.5 fuel_p2=18.6
+SPLIT fuel_building_fps t=3.200 phase=window_1 staging=1 fps=120.0 frame_ms_max=12.40 draw_calls=234 primitives=298630 objects=665 fuel_p1=17.8 fuel_p2=17.8
+SPLIT fuel_building_fps t=4.200 phase=window_1 staging=0 fps=120.0 frame_ms_max=11.93 draw_calls=234 primitives=298630 objects=665 fuel_p1=17.0 fuel_p2=17.1
+SPLIT fuel_building_fps t=5.200 phase=window_1 staging=0 fps=120.0 frame_ms_max=12.29 draw_calls=234 primitives=298630 objects=665 fuel_p1=16.3 fuel_p2=16.3
+SPLIT fuel_building_fps t=6.200 phase=window_1 staging=0 fps=120.0 frame_ms_max=11.55 draw_calls=234 primitives=298630 objects=665 fuel_p1=15.5 fuel_p2=15.6
+SPLIT fuel_building_fps t=7.200 phase=window_1 staging=0 fps=120.0 frame_ms_max=12.74 draw_calls=234 primitives=298630 objects=665 fuel_p1=14.8 fuel_p2=14.8
+SPLIT fuel_building_fps t=8.200 phase=window_1 staging=0 fps=120.0 frame_ms_max=11.87 draw_calls=234 primitives=298630 objects=665 fuel_p1=14.0 fuel_p2=14.1
+SPLIT fuel_building_fps t=9.200 phase=window_1 staging=0 fps=120.0 frame_ms_max=11.62 draw_calls=234 primitives=298630 objects=665 fuel_p1=13.3 fuel_p2=13.3
+SPLIT fuel_building_fps t=10.200 phase=window_2 staging=1 fps=120.0 frame_ms_max=11.89 draw_calls=248 primitives=340574 objects=682 fuel_p1=12.5 fuel_p2=12.6
+SPLIT fuel_building_fps t=11.200 phase=window_2 staging=1 fps=120.0 frame_ms_max=12.10 draw_calls=264 primitives=383660 objects=702 fuel_p1=11.8 fuel_p2=11.8
+SPLIT fuel_building_fps t=12.200 phase=window_2 staging=1 fps=120.0 frame_ms_max=12.33 draw_calls=265 primitives=383674 objects=704 fuel_p1=11.0 fuel_p2=11.1
+SPLIT fuel_building_fps t=13.200 phase=window_2 staging=0 fps=120.0 frame_ms_max=12.09 draw_calls=287 primitives=405436 objects=902 fuel_p1=36.5 fuel_p2=34.5
+SPLIT fuel_building_fps t=14.200 phase=window_2 staging=0 fps=120.0 frame_ms_max=12.40 draw_calls=287 primitives=405436 objects=902 fuel_p1=60.8 fuel_p2=58.8
+SPLIT fuel_building_fps t=15.200 phase=window_2 staging=0 fps=120.0 frame_ms_max=11.94 draw_calls=287 primitives=405436 objects=902 fuel_p1=85.0 fuel_p2=83.0
+SPLIT fuel_building_fps t=16.200 phase=window_2 staging=0 fps=120.0 frame_ms_max=11.92 draw_calls=287 primitives=405444 objects=906 fuel_p1=100.0 fuel_p2=100.0
+SPLIT fuel_building_fps t=17.200 phase=window_2 staging=0 fps=120.0 frame_ms_max=12.16 draw_calls=287 primitives=405444 objects=906 fuel_p1=100.0 fuel_p2=100.0
+SPLIT fuel_building_fps t=18.200 phase=window_2 staging=0 fps=120.0 frame_ms_max=11.59 draw_calls=287 primitives=405444 objects=906 fuel_p1=100.0 fuel_p2=100.0
+SPLIT fuel_building_fps t=19.200 phase=window_3 staging=0 fps=120.0 frame_ms_max=12.11 draw_calls=272 primitives=353584 objects=851 fuel_p1=32.6 fuel_p2=30.6
+SPLIT fuel_building_fps t=20.200 phase=window_3 staging=0 fps=120.0 frame_ms_max=12.01 draw_calls=272 primitives=353584 objects=851 fuel_p1=56.4 fuel_p2=54.4
+SPLIT fuel_building_fps t=21.200 phase=window_3 staging=0 fps=120.0 frame_ms_max=12.06 draw_calls=272 primitives=353584 objects=851 fuel_p1=80.1 fuel_p2=78.1
+SPLIT fuel_building_fps t=22.200 phase=window_3 staging=0 fps=120.0 frame_ms_max=12.11 draw_calls=272 primitives=353592 objects=855 fuel_p1=100.0 fuel_p2=100.0
+SPLIT fuel_building_fps t=23.200 phase=window_3 staging=0 fps=120.0 frame_ms_max=11.77 draw_calls=272 primitives=353592 objects=855 fuel_p1=100.0 fuel_p2=100.0
+SPLIT fuel_building_fps t=24.200 phase=window_3 staging=0 fps=120.0 frame_ms_max=11.45 draw_calls=272 primitives=353592 objects=855 fuel_p1=100.0 fuel_p2=100.0
+SPLIT fuel_building_fps t=25.200 phase=window_4 staging=1 fps=120.0 frame_ms_max=11.65 draw_calls=242 primitives=338248 objects=732 fuel_p1=100.0 fuel_p2=100.0
+SPLIT fuel_building_fps t=26.200 phase=window_4 staging=1 fps=120.0 frame_ms_max=12.57 draw_calls=241 primitives=337364 objects=731 fuel_p1=100.0 fuel_p2=100.0
+SPLIT fuel_building_fps t=27.200 phase=window_4 staging=1 fps=120.0 frame_ms_max=12.50 draw_calls=244 primitives=315090 objects=656 fuel_p1=100.0 fuel_p2=100.0
+SPLIT fuel_building_fps t=28.200 phase=window_4 staging=0 fps=120.0 frame_ms_max=17.57 draw_calls=251 primitives=380934 objects=659 fuel_p1=27.3 fuel_p2=26.9
+SPLIT fuel_building_fps t=29.200 phase=window_4 staging=0 fps=119.0 frame_ms_max=12.83 draw_calls=251 primitives=380934 objects=659 fuel_p1=51.8 fuel_p2=51.2
+SPLIT fuel_building_fps t=30.200 phase=window_4 staging=0 fps=120.0 frame_ms_max=12.09 draw_calls=251 primitives=380934 objects=659 fuel_p1=76.3 fuel_p2=75.6
+SPLIT fuel_building_fps t=31.200 phase=window_4 staging=0 fps=120.0 frame_ms_max=14.71 draw_calls=251 primitives=380942 objects=663 fuel_p1=100.0 fuel_p2=100.0
+SPLIT fuel_building_fps t=32.200 phase=window_4 staging=0 fps=120.0 frame_ms_max=11.52 draw_calls=251 primitives=380942 objects=663 fuel_p1=100.0 fuel_p2=100.0
+SPLIT fuel_building_fps t=33.200 phase=window_4 staging=0 fps=120.0 frame_ms_max=11.34 draw_calls=251 primitives=380942 objects=663 fuel_p1=100.0 fuel_p2=100.0
+RESULT fuel_building_fps ok checks=0 failed=0 t=33.883 fps_avg=118.3 fps_avg_steady=120.0 fps_min=64.0 fps_min_steady=119.0 frame_ms_max=17.57 frame_ms_max_steady=17.57 refresh_hz=120.0 draw_calls_max=287 primitives_max=405444 samples=33 steady_samples=24 windows=4 display=macOS

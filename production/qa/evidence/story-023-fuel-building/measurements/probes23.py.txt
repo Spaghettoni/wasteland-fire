@@ -1,0 +1,38 @@
+"""The strip probe of Story 023: for each strip rule of the runner's _apply_fuel_building_off(), copy the project, take that rule out with a
+SAME-LINE-COUNT patch of the runner (so the printed advance_ticks frame does not move and the normalizers stay valid), capture the 73 retained
+outputs there and compare them with the baseline. The outputs that differ are the regression's detectors for that rule.
+usage: probes23.py NAME [NAME...]   (names below)"""
+import subprocess
+import sys
+from pathlib import Path
+
+REPO = "/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire"
+SP = "/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/5301094e-f58e-4c3b-9847-469cd75c1bca/scratchpad"
+W = f"{SP}/rg23"
+RUNNER = "tools/evidence/split_screen_harness.gd"
+OPT = 'bool(script.get_script_constant_map().get(FUEL_BUILDING_CONSTANT, false)) or root.field == null:'
+PROBES = {
+    "zones_on": [("\tif " + OPT + "\n", "\tif true or " + OPT + "\n")],
+    "zones_stay": [('\tfor zone: Node in map.find_children("*", "SupplyZone", true, false):\n', '\tfor zone: Node in ([] as Array[Node]):\n')],
+    "map_cans_out": [("\tfor can_name: StringName in MAP_FUEL_CAN_NAMES:\n", "\tfor can_name: StringName in ([] as Array[StringName]):\n")],
+    "depot_cans_out": [("\tfor can_name: StringName in DEPOT_FUEL_CAN_NAMES:\n", "\tfor can_name: StringName in ([] as Array[StringName]):\n")],
+}
+for name in sys.argv[1:]:
+    pairs = PROBES[name]
+    root = f"{SP}/probes23/{name}"
+    Path(root).mkdir(parents=True, exist_ok=True)
+    subprocess.run(["rsync", "-a", "--delete", "--exclude", ".git", "--exclude", "production", "--exclude", "docs", "--exclude", "design",
+                    "--exclude", "tests", "--exclude", "assets/art/svaty_jur", REPO + "/", root + "/"], check=True)
+    runner = Path(root) / RUNNER
+    text = runner.read_text(encoding="utf-8")
+    for old, new in pairs:
+        assert old.count("\n") == new.count("\n")
+        assert text.count(old) == 1, (name, old, text.count(old))
+        text = text.replace(old, new)
+    runner.write_text(text, encoding="utf-8")
+    out = f"{W}/probe-{name}"
+    subprocess.run(["sh", f"{W}/capture_in.sh", root, out, f"{W}/jobs.txt", "3"], check=True)
+    subprocess.run(["sh", f"{W}/filter.sh", out, f"{W}/f-probe-{name}"], check=True)
+    result = subprocess.run(["python3", "-I", f"{W}/compare.py", f"{W}/f-a", f"{W}/f-probe-{name}", f"{W}/normalizers23.json"], capture_output=True, text=True)
+    Path(f"{W}/probe-{name}.txt").write_text(result.stdout, encoding="utf-8")
+    print(name, "->", [l for l in result.stdout.split("\n") if l.startswith("DIFF") or l.startswith("MISSING") or l.startswith("--")], flush=True)

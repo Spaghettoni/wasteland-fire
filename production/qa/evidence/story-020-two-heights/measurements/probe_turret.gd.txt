@@ -1,0 +1,13 @@
+extends SceneTree
+func _initialize() -> void:
+	var map: Node3D = (load("res://src/gameplay/maps/map_01/map_01.tscn") as PackedScene).instantiate() as Node3D
+	root.add_child(map)
+	await process_frame
+	await process_frame
+	for path: String in ["Base1/Turrets/TurretLeft", "Depot/FuelTanks/FuelTankSouth", "Base1/Walls/TowerBackLeft"]:
+		var turret: Node = map.get_node(path)
+		for part: Node in turret.find_children("*", "GeometryInstance3D", true, false):
+			var g: GeometryInstance3D = part as GeometryInstance3D
+			var b: AABB = g.global_transform * g.get_aabb()
+			print("%-70s visible=%s y %.3f..%.3f  x %.2f..%.2f z %.2f..%.2f" % [map.get_path_to(part), g.is_visible_in_tree(), b.position.y, b.end.y, b.position.x, b.end.x, b.position.z, b.end.z])
+	quit()

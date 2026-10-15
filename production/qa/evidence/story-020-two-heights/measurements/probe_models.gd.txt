@@ -1,0 +1,23 @@
+extends SceneTree
+## Scratch probe (never in the repo): the lowest and highest drawn point of the shipped Gyrocopter model, the frozen one
+## (when given) and the kit fallback, as the game draws them under a Unit at the origin.
+
+func _initialize() -> void:
+	var paths: Array[String] = ["res://src/gameplay/units/models/gyrocopter_mesh_model.tscn", "res://src/gameplay/units/models/gyrocopter_kit_model.tscn"]
+	for extra: String in OS.get_cmdline_user_args():
+		paths.append(extra)
+	for path: String in paths:
+		var unit: Node3D = Node3D.new()
+		root.add_child(unit)
+		var model: Node3D = (load(path) as PackedScene).instantiate() as Node3D
+		unit.add_child(model)
+		await process_frame
+		var low: float = INF
+		var high: float = -INF
+		for mesh: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
+			var box: AABB = mesh.global_transform * mesh.get_aabb()
+			low = minf(low, box.position.y)
+			high = maxf(high, box.end.y)
+		print("MODEL %s lowest=%.4f highest=%.4f hover=%s rise=%s physics_processing=%s" % [path.get_file(), low, high, model.get("hover_height"), model.get("rise_over_cliffs"), model.is_physics_processing()])
+		unit.queue_free()
+	quit()

@@ -1,0 +1,21 @@
+#!/bin/sh
+# usage: filter.sh SRC DST  Copies a capture, dropping the Jolt job-system load warning (two lines).
+python3 -I - "$1" "$2" <<'PY'
+import shutil, sys
+from pathlib import Path
+src, dst = Path(sys.argv[1]), Path(sys.argv[2])
+dst.mkdir(exist_ok=True)
+for f in src.iterdir():
+    if f.suffix == ".rc":
+        shutil.copy(f, dst / f.name); continue
+    lines = f.read_bytes().split(b"\n"); out = []; skip = False
+    for line in lines:
+        if skip:
+            skip = False
+            if line.lstrip().startswith(b"at: CreateJob"):
+                continue
+        if line.startswith(b"WARNING: Jolt Physics job system exceeded"):
+            skip = True; continue
+        out.append(line)
+    (dst / f.name).write_bytes(b"\n".join(out))
+PY

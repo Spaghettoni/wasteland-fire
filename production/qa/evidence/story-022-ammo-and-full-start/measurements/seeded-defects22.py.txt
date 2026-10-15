@@ -1,0 +1,237 @@
+#!/usr/bin/env python3
+"""Seeded defects for Story 022 (ammo, and full supplies for every new Unit): each one exact text replacement in a scratch copy of
+the repo, run against the scenario that guards it (the whole `ammo` scenario takes about 20 s headless; AMMO_ONLY names modules where a
+mutant is aimed at one). KILLED when the scenario fails (rc != 0 or a FAIL CHECK) or, for the regression kind, when an older scenario's
+output differs from its baseline (through the story's exact rewrites). A mutant whose run prints no RESULT line for its scenario is BROKEN
+(the replacement made the script unusable, not a verdict) and is counted apart. One worker per scratch copy, so no two mutants ever
+share a file (story 011's lesson). Template: story 021's seeded-defects21.py.
+
+usage: seeded-defects22.py BASELINE_DIR WORK_DIR [--dry] [--only name,name]
+  BASELINE_DIR holds the baselines of the older scenarios as split-NAME.txt (the regression kind)
+  WORK_DIR gets copy0..copy2 (scratch copies of the repo; they are diffed against the repo at the end)
+  NORMALIZERS (environment) names the story's exact rewrites (normalizers.json), applied to the regression kind
+  STRIP_AMMO, STRIP_TANK, STRIP_LINES (environment) list the older scenarios the strip probe found to change with that strip off: each
+  gets a regression mutant
+  --dry only checks that every replacement text occurs exactly once in its file
+"""
+import json
+import os
+import re
+import subprocess
+import sys
+from concurrent.futures import ThreadPoolExecutor
+
+REPO = "/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire"
+BASE = sys.argv[1]
+WORK = sys.argv[2]
+DRY = "--dry" in sys.argv
+WORKERS = 3
+RULES = json.load(open(os.environ["NORMALIZERS"])) if os.environ.get("NORMALIZERS") else {}
+COPIES = [os.path.join(WORK, "copy%d" % i) for i in range(WORKERS)]
+
+WEAPON = "src/gameplay/combat/weapon.gd"
+COUNT = "src/ui/hud/ammo_count.gd"
+NOTICE = "src/ui/hud/player_notice.gd"
+STATS = "src/gameplay/units/unit_stats.gd"
+DATA = "src/gameplay/units/data/"
+SPLIT = "src/gameplay/split_screen/split_screen.tscn"
+TURRET = "src/gameplay/defences/turret.gd"
+MINE_LAYER = "src/gameplay/mines/mine_layer.gd"
+RUNNER = "tools/evidence/split_screen_harness.gd"
+A = "ammo"
+
+SPEND = "\t_left -= 1\n\tammo_changed.emit(_left, _capacity)\n\tif _left <= 0:\n\t\tout_of_ammo.emit()\n"
+GUARD = "\tif _capacity > 0 and _left <= 0:\n\t\tif pressed:\n\t\t\tout_of_ammo.emit()\n\t\treturn\n"
+FOLLOW = "\tvar load_size: int = maxi(unit.stats.ammo_capacity, 0) if in_play else 0\n\t_report(load_size, load_size)\n"
+HEAD = "func _physics_process(_delta: float) -> void:\n\t_follow_unit()\n"
+OUT_OF_AMMO = "\ttext = tr(out_of_ammo_text)\n\t_refusal_left = refusal_seconds\n\tvisible = true\n"
+OFF_GUARD = "\tif bool(script.get_script_constant_map().get(AMMO_CONSTANT, false)):\n\t\treturn\n"
+STRIP_AMMO_LINE = "\t\t\tstats.ammo_capacity = 0\n"
+STRIP_TANK_LINE = "\t\t\tstats.spawn_fuel_fraction = LEGACY_SPAWN_FUEL_FRACTION\n"
+STRIP_LINES_LINE = '\tfor node: Node in root.find_children("*", "AmmoCount", true, false):\n'
+SCENE_NOTICE2 = '[node name="Player2Notice" parent="Views/Player2View/SubViewport" node_paths=PackedStringArray("match_controller", "mine_layer", "weapon") instance=ExtResource("29_notice")]\nmatch_controller = NodePath("%MatchController")\nmine_layer = NodePath("%Player2MineLayer")\nweapon = NodePath("%Player2Weapon")\n'
+SCENE_COUNT2 = '[node name="Player2AmmoCount" parent="Views/Player2View/SubViewport" node_paths=PackedStringArray("weapon") instance=ExtResource("36_acount")]\nweapon = NodePath("%Player2Weapon")\n'
+SCENE_COUNT1 = '[node name="Player1AmmoCount" parent="Views/Player1View/SubViewport" node_paths=PackedStringArray("weapon") instance=ExtResource("36_acount")]\n'
+TURRET_FIRE = "\t_next_fire = _ticks + maxi(roundi(_data.fire_interval_seconds * Engine.physics_ticks_per_second), 1)\n\tfired.emit(shot)\n"
+LAY = "\tmine.lay(point, unit.player_index, unit.team_material)\n\t_report(_left - 1, _capacity)\n"
+
+
+def count_tail():
+    """The AmmoCount script from `func _ready` to the end of the file, and the same with a line that hides the label while the tree is paused."""
+    text = open(os.path.join(REPO, COUNT)).read()
+    tail = text[text.index("func _ready() -> void:\n"):]
+    changed = tail.replace("\tvisible = false\n\tvar problem", "\tvisible = false\n\tprocess_mode = Node.PROCESS_MODE_ALWAYS\n\tvar problem", 1)
+    return tail, changed.rstrip("\n") + "\n\n\nfunc _process(_delta: float) -> void:\n\tvisible = visible and not get_tree().paused\n"
+
+
+COUNT_OLD, COUNT_NEW = count_tail()
+
+M = [
+ # name, file, old, new, scenario, kind, module (AMMO_ONLY; "" for the whole scenario)
+ # --- the story's seeded defects (Implementation Notes): the count
+ ("shot_spends_nothing", WEAPON, SPEND, SPEND.replace("_left -= 1", "_left -= 0"), A, "check", ""),
+ ("shot_spends_two", WEAPON, SPEND, SPEND.replace("_left -= 1", "_left -= 2"), A, "check", ""),
+ ("shot_fired_at_zero", WEAPON, GUARD, GUARD.replace("if _capacity > 0 and _left <= 0:", "if false:"), A, "check", ""),
+ ("zero_capacity_read_as_an_empty_gun", WEAPON, GUARD, GUARD.replace("if _capacity > 0 and _left <= 0:", "if _left <= 0:"), A, "check", ""),
+ ("no_refill_after_the_first_unit", WEAPON, FOLLOW, "\tif in_play and has_meta(&\"filled\"):\n\t\treturn\n\tif in_play:\n\t\tset_meta(&\"filled\", true)\n" + FOLLOW, A, "check", ""),
+ ("load_of_the_first_type_for_every_type", WEAPON, FOLLOW, FOLLOW.replace("unit.stats.ammo_capacity", "rules.unit_types[0].ammo_capacity"), A, "check", ""),
+ ("count_kept_through_a_destruction", WEAPON, FOLLOW, "\tif not in_play:\n\t\treturn\n\tvar load_size: int = maxi(unit.stats.ammo_capacity, 0)\n\t_report(_left if _left > 0 else load_size, load_size)\n", A, "check", ""),
+ ("refill_after_the_decision_to_fire", WEAPON, HEAD, HEAD.replace("\t_follow_unit()\n", "\t_follow_unit.call_deferred()\n"), A, "check", ""),
+ ("capacity_reported_out_of_play", WEAPON, FOLLOW, FOLLOW.replace(" if in_play else 0", ""), A, "check", ""),
+ ("shot_not_reported", WEAPON, SPEND, SPEND.replace("\tammo_changed.emit(_left, _capacity)\n", ""), A, "check", ""),
+ ("empty_gun_stamps_the_cadence", WEAPON, GUARD, GUARD.replace("\t\treturn\n", "\t\t_next_fire_frame = Engine.get_physics_frames() + maxi(roundi(unit.stats.fire_interval_seconds * Engine.physics_ticks_per_second), 1)\n\t\treturn\n"), A, "check", ""),
+ # --- the notice
+ ("no_notice_at_the_last_shot", WEAPON, SPEND, SPEND.replace("\tif _left <= 0:\n\t\tout_of_ammo.emit()\n", ""), A, "check", ""),
+ ("no_notice_at_a_new_press", WEAPON, GUARD, GUARD.replace("\t\tif pressed:\n", "\t\tif false:\n"), A, "check", ""),
+ ("notice_on_every_held_tick", WEAPON, GUARD, GUARD.replace("\t\tif pressed:\n", "\t\tif true:\n"), A, "check", ""),
+ ("press_edge_never_noted", WEAPON, "\t_was_held = _trigger\n", "", A, "check", ""),
+ ("notice_not_connected", NOTICE, "\tif weapon != null:\n\t\tweapon.out_of_ammo.connect(_on_out_of_ammo)\n", "", A, "check", ""),
+ ("notice_not_shown", NOTICE, OUT_OF_AMMO, OUT_OF_AMMO.replace("\tvisible = true\n", ""), A, "check", ""),
+ ("notice_time_doubled", NOTICE, OUT_OF_AMMO, OUT_OF_AMMO.replace("= refusal_seconds", "= refusal_seconds * 2.0"), A, "check", ""),
+ ("notice_says_the_refusal", NOTICE, OUT_OF_AMMO, OUT_OF_AMMO.replace("tr(out_of_ammo_text)", "tr(none_left_text)"), A, "check", ""),
+ ("notice_stays_when_the_round_ends", NOTICE, "\ttext = tr(message)\n\tvisible = false\n", "\ttext = tr(message)\n", A, "check", ""),
+ ("other_players_notice_hears_player_one", SPLIT, SCENE_NOTICE2, SCENE_NOTICE2.replace("%Player2Weapon", "%Player1Weapon"), A, "check", ""),
+ ("notice_blind_to_ammo_in_the_runner", RUNNER, " and not bool(constants.get(AMMO_CONSTANT, false)):\n", ":\n", "ammo_alone", "check", ""),
+ # --- the Ammo line
+ ("line_shown_at_zero_capacity", COUNT, "\tvisible = capacity > 0\n", "\tvisible = true\n", A, "check", ""),
+ ("line_shows_the_capacity_as_the_count", COUNT, "\t\ttext = tr(format) % _numbers(shots_left, capacity)\n", "\t\ttext = tr(format) % _numbers(capacity, capacity)\n", A, "check", ""),
+ ("line_never_connected", COUNT, "\tweapon.ammo_changed.connect(_on_ammo_changed)\n", "", A, "check", ""),
+ ("line_hidden_under_the_round_over_screen", COUNT, COUNT_OLD, COUNT_NEW, A, "check", ""),
+ ("other_players_line_hears_player_one", SPLIT, SCENE_COUNT2, SCENE_COUNT2.replace("%Player2Weapon", "%Player1Weapon"), A, "check", ""),
+ ("line_put_under_the_hud", SPLIT, SCENE_COUNT1, SCENE_COUNT1.replace('parent="Views/Player1View/SubViewport"', 'parent="Views/Player1View/SubViewport/Player1Hud"'), A, "check", ""),
+ # --- rearm
+ ("rearm_drops_the_fraction", WEAPON, "\t_carry = maxf(_carry - float(whole), 0.0)\n", "\t_carry = 0.0\n", A, "check", ""),
+ ("rearm_keeps_the_carry_at_a_full_load", WEAPON, "\tif _left >= _capacity:\n\t\t_carry = 0.0\n", "\tif false:\n\t\t_carry = 0.0\n", A, "check", ""),
+ ("rearm_past_the_capacity", WEAPON, "\twhole = mini(whole, _capacity - _left)\n", "", A, "check", ""),
+ ("rearm_without_the_float_tolerance", WEAPON, "\tif is_equal_approx(_carry, float(whole + 1)):\n\t\twhole += 1\n", "", A, "check", ""),
+ ("rearm_takes_nan", WEAPON, "or not (shots > 0.0):\n", "or shots <= 0.0:\n", A, "check", ""),
+ ("rearm_out_of_play", WEAPON, "\tif not _in_play or not is_instance_valid(unit) or not unit.is_alive:\n\t\treturn 0\n", "", A, "check", ""),
+ ("rearm_reports_every_call", WEAPON, "\tif whole > 0:\n\t\tammo_changed.emit(_left, _capacity)\n", "\tammo_changed.emit(_left, _capacity)\n", A, "check", ""),
+ ("carry_kept_for_a_new_unit", WEAPON, "\t_in_play = in_play\n\t_carry = 0.0\n", "\t_in_play = in_play\n", A, "check", ""),
+ # --- the data
+ ("truck_half_tank", DATA + "truck_stats.tres", "spawn_fuel_fraction = 1.0\n", "spawn_fuel_fraction = 0.5\n", A, "check", ""),
+ ("gyrocopter_half_tank", DATA + "gyrocopter_stats.tres", "spawn_fuel_fraction = 1.0\n", "spawn_fuel_fraction = 0.5\n", A, "check", ""),
+ ("motorbike_load_101", DATA + "motorbike_stats.tres", "ammo_capacity = 100\n", "ammo_capacity = 101\n", A, "check", ""),
+ ("gyrocopter_load_line_gone", DATA + "gyrocopter_stats.tres", "ammo_capacity = 40\n", "", A, "check", ""),
+ ("truck_given_the_buggys_load", DATA + "truck_stats.tres", "ammo_capacity = 25\n", "ammo_capacity = 50\n", A, "check", ""),
+ ("first_problem_accepts_a_negative_load", STATS, "\tif ammo_capacity < 0:\n", "\tif ammo_capacity < -1000000:\n", A, "check", ""),
+ # --- what stays apart
+ ("turret_given_a_count", TURRET, TURRET_FIRE, TURRET_FIRE.replace("\tfired.emit(shot)\n", "\tset_meta(&\"shots\", int(get_meta(&\"shots\", 0)) + 1)\n\tif int(get_meta(&\"shots\", 0)) >= 25:\n\t\tset_physics_process(false)\n\tfired.emit(shot)\n"), A, "check", ""),
+ ("shot_takes_a_mine", WEAPON, SPEND, SPEND.replace("\t_left -= 1\n", "\t_left -= 1\n\tfor node: Node in get_parent().find_children(\"*\", \"MineLayer\", false, false):\n\t\tif (node as MineLayer).unit == unit:\n\t\t\t(node as MineLayer)._left = maxi((node as MineLayer)._left - 1, 0)\n"), A, "check", ""),
+ ("lay_spends_a_shot", MINE_LAYER, LAY, LAY.replace("\t_report(_left - 1, _capacity)\n", "\tfor node: Node in get_parent().find_children(\"*\", \"Weapon\", false, false):\n\t\tif (node as Weapon).unit == unit:\n\t\t\t(node as Weapon)._left = maxi((node as Weapon)._left - 1, 0)\n\t_report(_left - 1, _capacity)\n"), A, "check", ""),
+ # --- the runner's strips: the older scenarios keep their outputs
+ ("runner_ammo_strip_guard_inverted", RUNNER, OFF_GUARD + "\tvar rules", OFF_GUARD.replace("\tif bool(", "\tif not bool(", 1) + "\tvar rules", A, "check", ""),
+ ("runner_ammo_lines_guard_inverted", RUNNER, OFF_GUARD + "\tfor node: Node in root.find_children", OFF_GUARD.replace("\tif bool(", "\tif not bool(", 1) + "\tfor node: Node in root.find_children", A, "check", ""),
+]
+for _name in [a for a in os.environ.get("STRIP_AMMO", "").split(",") if a]:
+    M.append(("runner_leaves_the_ammo_on_" + _name, RUNNER, STRIP_AMMO_LINE, STRIP_AMMO_LINE.replace("stats.ammo_capacity = 0", "stats.ammo_capacity = stats.ammo_capacity"), _name, "regress", ""))
+for _name in [a for a in os.environ.get("STRIP_TANK", "").split(",") if a]:
+    M.append(("runner_leaves_the_full_tank_on_" + _name, RUNNER, STRIP_TANK_LINE, STRIP_TANK_LINE.replace("= LEGACY_SPAWN_FUEL_FRACTION", "= stats.spawn_fuel_fraction"), _name, "regress", ""))
+for _name in [a for a in os.environ.get("STRIP_LINES", "").split(",") if a]:
+    M.append(("runner_leaves_the_ammo_lines_on_" + _name, RUNNER, STRIP_LINES_LINE, STRIP_LINES_LINE.replace('"AmmoCount"', '"AmmoCountX"'), _name, "regress", ""))
+
+# Mutants no output can tell from the build: reported apart, with the reason, when they survive.
+EQUIVALENT = {}
+WINDOWED = {}
+
+
+def prepare(i):
+    d = COPIES[i]
+    os.makedirs(WORK, exist_ok=True)
+    if os.path.exists(d):
+        subprocess.run(["find", d, "-delete"], check=True)
+    subprocess.run(["rsync", "-a", "--exclude", ".git", "--exclude", "production", "--exclude", "design", "--exclude", "docs",
+                    "--exclude", "tests", "--exclude", "assets/art/svaty_jur", REPO + "/", d + "/"], check=True)
+    return d
+
+
+def run(copy, scn, module):
+    env = dict(os.environ)
+    env["AMMO_ONLY"] = module
+    p = subprocess.run(["godot", "--headless", "--fixed-fps", "60", "--path", copy, "res://tools/evidence/split_screen_harness.tscn", "--", "--scenario=" + scn],
+                       capture_output=True, text=True, timeout=2400, env=env)
+    return p.returncode, p.stdout + p.stderr
+
+
+def one(copy, mutant):
+    name, rel, old, new, scn, kind, module = mutant
+    path = os.path.join(copy, rel)
+    orig = open(path).read()          # this worker is the only one that touches this copy
+    if orig.count(old) != 1:
+        return name, None, "NOT APPLIED (text found %d times)" % orig.count(old)
+    open(path, "w").write(orig.replace(old, new))
+    try:
+        rc, out = run(copy, scn, module)
+    finally:
+        open(path, "w").write(orig)
+    if not re.search(r"^RESULT %s " % scn, out, re.M):
+        return name, None, "BROKEN: no RESULT line (rc=%d) %s" % (rc, " | ".join(l for l in out.splitlines() if "ERROR" in l)[:300])
+    if kind == "check":
+        fails = re.findall(r"^CHECK \S+ (\S+) FAIL", out, re.M)
+        dead = rc != 0 or bool(fails)
+        detail = "%s%s rc=%d fails=%s" % (scn, "[" + module + "]" if module else "", rc, ",".join(fails) or "-")
+    else:
+        if not os.path.exists(os.path.join(BASE, "split-%s.txt" % scn)):
+            return name, None, "BROKEN: no baseline split-%s.txt (the regression kind needs a retained scenario)" % scn
+        base = open(os.path.join(BASE, "split-%s.txt" % scn)).read()
+        for before, after in RULES.get(scn, []):
+            out = out.replace(after, before)
+        keep = lambda t: [l for l in t.splitlines() if l.startswith(("SPLIT ", "CHECK ", "RESULT ", "SCRIPT ERROR", "ERROR:", "WARNING:"))]
+        dead = keep(out) != keep(base) or rc != 0
+        detail = "%s rc=%d output %s the baseline" % (scn, rc, "differs from" if dead else "equals")
+    return name, dead, detail
+
+
+def worker(i, jobs):
+    return [one(COPIES[i], m) for m in jobs[i::WORKERS]]
+
+
+def main():
+    if DRY:
+        bad = 0
+        for name, rel, old, new, scn, kind, module in M:
+            n = open(os.path.join(REPO, rel)).read().count(old)
+            if n != 1 or old == new:
+                bad += 1
+                print("DRY  %-52s text found %d times in %s (or no change)" % (name, n, rel))
+        print("DRY: %d mutants, %d with a replacement text that is not found exactly once" % (len(M), bad))
+        return 1 if bad else 0
+    jobs = M
+    if "--only" in sys.argv:
+        wanted = sys.argv[sys.argv.index("--only") + 1].split(",")
+        jobs = [m for m in M if m[0] in wanted]
+    for i in range(WORKERS):
+        prepare(i)
+    with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+        results = [r for part in pool.map(lambda i: worker(i, jobs), range(WORKERS)) for r in part]
+    order = {m[0]: k for k, m in enumerate(M)}
+    results.sort(key=lambda r: order[r[0]])
+    killed = survived = broken = 0
+    for name, dead, detail in results:
+        if dead is False and name in WINDOWED:
+            print("WINDOWED   %-52s %s | %s" % (name, detail, WINDOWED[name]))
+            killed += 1
+            continue
+        if dead is False and name in EQUIVALENT:
+            print("EQUIVALENT %-52s %s | %s" % (name, detail, EQUIVALENT[name]))
+            killed += 1
+            continue
+        status = "BROKEN " if dead is None else ("KILLED " if dead else "SURVIVED")
+        killed += dead is True
+        survived += dead is False
+        broken += dead is None
+        print("%s %-56s %s" % (status, name, detail))
+    print("-- %d mutants: %d killed or equivalent, %d survived, %d broken or not applied" % (len(jobs), killed, survived, broken))
+    clean = True
+    for i in range(WORKERS):
+        d = subprocess.run(["diff", "-rq", "--exclude=.godot", "--exclude=production", "--exclude=.git", "--exclude=design", "--exclude=docs",
+                            "--exclude=tests", "--exclude=svaty_jur", REPO, COPIES[i]], capture_output=True, text=True)
+        if d.stdout.strip():
+            clean = False
+            print("COPY %d DIFFERS FROM THE REPO:\n%s" % (i, d.stdout[:600]))
+    print("-- the %d scratch copies %s the repo (apart from .godot, production, design, docs, tests, svaty_jur)" % (WORKERS, "equal" if clean else "DIFFER FROM"))
+    return 0 if survived == 0 and broken == 0 and clean else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

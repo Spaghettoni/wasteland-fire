@@ -1,0 +1,5 @@
+#!/bin/sh
+# usage: ab_run.sh ROOT OUT   Runs the fps scenario windowed in the project at ROOT, output to OUT.
+cd "$1" || exit 9
+godot --path . --windowed --resolution 1280x720 res://tools/evidence/split_screen_harness.tscn -- --scenario=fuel_building_fps > "$2" 2>&1
+echo "rc=$?" >> "$2"

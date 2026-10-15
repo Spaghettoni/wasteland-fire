@@ -1,0 +1,37 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+SPLIT ammo_buildings_fps t=1.200 phase=window_1 staging=1 fps=71.0 frame_ms_max=11.48 draw_calls=194 primitives=154754 objects=559 shots_p1=0 shots_p2=0
+SPLIT ammo_buildings_fps t=2.200 phase=window_1 staging=1 fps=120.0 frame_ms_max=11.61 draw_calls=194 primitives=154746 objects=555 shots_p1=0 shots_p2=0
+SPLIT ammo_buildings_fps t=3.200 phase=window_1 staging=1 fps=120.0 frame_ms_max=11.48 draw_calls=194 primitives=154746 objects=555 shots_p1=0 shots_p2=0
+SPLIT ammo_buildings_fps t=4.200 phase=window_1 staging=0 fps=120.0 frame_ms_max=12.36 draw_calls=194 primitives=154746 objects=555 shots_p1=0 shots_p2=0
+SPLIT ammo_buildings_fps t=5.200 phase=window_1 staging=0 fps=120.0 frame_ms_max=11.21 draw_calls=194 primitives=154746 objects=555 shots_p1=0 shots_p2=0
+SPLIT ammo_buildings_fps t=6.200 phase=window_1 staging=0 fps=120.0 frame_ms_max=11.74 draw_calls=194 primitives=154746 objects=555 shots_p1=0 shots_p2=0
+SPLIT ammo_buildings_fps t=7.200 phase=window_1 staging=0 fps=120.0 frame_ms_max=12.03 draw_calls=194 primitives=154746 objects=555 shots_p1=0 shots_p2=0
+SPLIT ammo_buildings_fps t=8.200 phase=window_1 staging=0 fps=120.0 frame_ms_max=12.41 draw_calls=194 primitives=154746 objects=555 shots_p1=0 shots_p2=0
+SPLIT ammo_buildings_fps t=9.200 phase=window_1 staging=0 fps=120.0 frame_ms_max=12.38 draw_calls=194 primitives=154746 objects=555 shots_p1=0 shots_p2=0
+SPLIT ammo_buildings_fps t=10.200 phase=window_2 staging=1 fps=120.0 frame_ms_max=11.74 draw_calls=223 primitives=195179 objects=659 shots_p1=0 shots_p2=0
+SPLIT ammo_buildings_fps t=11.200 phase=window_2 staging=1 fps=120.0 frame_ms_max=12.11 draw_calls=266 primitives=256988 objects=792 shots_p1=0 shots_p2=0
+SPLIT ammo_buildings_fps t=12.200 phase=window_2 staging=1 fps=120.0 frame_ms_max=12.36 draw_calls=263 primitives=250526 objects=790 shots_p1=0 shots_p2=0
+SPLIT ammo_buildings_fps t=13.200 phase=window_2 staging=0 fps=120.0 frame_ms_max=14.19 draw_calls=276 primitives=197838 objects=810 shots_p1=4 shots_p2=3
+SPLIT ammo_buildings_fps t=14.200 phase=window_2 staging=0 fps=120.0 frame_ms_max=12.47 draw_calls=276 primitives=197838 objects=810 shots_p1=10 shots_p2=10
+SPLIT ammo_buildings_fps t=15.200 phase=window_2 staging=0 fps=120.0 frame_ms_max=11.71 draw_calls=276 primitives=197838 objects=810 shots_p1=16 shots_p2=16
+SPLIT ammo_buildings_fps t=16.200 phase=window_2 staging=0 fps=120.0 frame_ms_max=11.74 draw_calls=276 primitives=197838 objects=810 shots_p1=23 shots_p2=22
+SPLIT ammo_buildings_fps t=17.200 phase=window_2 staging=0 fps=120.0 frame_ms_max=12.25 draw_calls=276 primitives=197838 objects=810 shots_p1=25 shots_p2=25
+SPLIT ammo_buildings_fps t=18.200 phase=window_2 staging=0 fps=120.0 frame_ms_max=11.72 draw_calls=276 primitives=197838 objects=810 shots_p1=25 shots_p2=25
+SPLIT ammo_buildings_fps t=19.200 phase=window_3 staging=0 fps=120.0 frame_ms_max=12.59 draw_calls=266 primitives=169126 objects=764 shots_p1=5 shots_p2=4
+SPLIT ammo_buildings_fps t=20.200 phase=window_3 staging=0 fps=120.0 frame_ms_max=11.37 draw_calls=266 primitives=169126 objects=764 shots_p1=15 shots_p2=14
+SPLIT ammo_buildings_fps t=21.200 phase=window_3 staging=0 fps=120.0 frame_ms_max=12.49 draw_calls=266 primitives=169126 objects=764 shots_p1=25 shots_p2=24
+SPLIT ammo_buildings_fps t=22.200 phase=window_3 staging=0 fps=120.0 frame_ms_max=12.11 draw_calls=266 primitives=169126 objects=764 shots_p1=35 shots_p2=34
+SPLIT ammo_buildings_fps t=23.200 phase=window_3 staging=0 fps=120.0 frame_ms_max=12.01 draw_calls=266 primitives=169126 objects=764 shots_p1=40 shots_p2=40
+SPLIT ammo_buildings_fps t=24.200 phase=window_3 staging=0 fps=120.0 frame_ms_max=12.19 draw_calls=266 primitives=169126 objects=764 shots_p1=40 shots_p2=40
+SPLIT ammo_buildings_fps t=25.200 phase=window_4 staging=1 fps=120.0 frame_ms_max=11.57 draw_calls=227 primitives=156492 objects=660 shots_p1=40 shots_p2=40
+SPLIT ammo_buildings_fps t=26.200 phase=window_4 staging=1 fps=120.0 frame_ms_max=12.36 draw_calls=226 primitives=153906 objects=658 shots_p1=40 shots_p2=40
+SPLIT ammo_buildings_fps t=27.200 phase=window_4 staging=1 fps=120.0 frame_ms_max=12.20 draw_calls=178 primitives=125724 objects=522 shots_p1=40 shots_p2=40
+SPLIT ammo_buildings_fps t=28.200 phase=window_4 staging=0 fps=120.0 frame_ms_max=12.66 draw_calls=207 primitives=243768 objects=610 shots_p1=0 shots_p2=1
+SPLIT ammo_buildings_fps t=29.200 phase=window_4 staging=0 fps=120.0 frame_ms_max=12.53 draw_calls=207 primitives=243768 objects=610 shots_p1=0 shots_p2=7
+SPLIT ammo_buildings_fps t=30.200 phase=window_4 staging=0 fps=120.0 frame_ms_max=11.60 draw_calls=207 primitives=243768 objects=610 shots_p1=0 shots_p2=13
+SPLIT ammo_buildings_fps t=31.200 phase=window_4 staging=0 fps=120.0 frame_ms_max=11.94 draw_calls=207 primitives=243768 objects=610 shots_p1=0 shots_p2=20
+SPLIT ammo_buildings_fps t=32.200 phase=window_4 staging=0 fps=120.0 frame_ms_max=11.80 draw_calls=207 primitives=243768 objects=610 shots_p1=0 shots_p2=25
+SPLIT ammo_buildings_fps t=33.200 phase=window_4 staging=0 fps=120.0 frame_ms_max=12.08 draw_calls=207 primitives=243768 objects=610 shots_p1=0 shots_p2=25
+RESULT ammo_buildings_fps ok checks=0 failed=0 t=34.000 fps_avg=118.5 fps_avg_steady=120.0 fps_min=71.0 fps_min_steady=120.0 frame_ms_max=14.19 frame_ms_max_steady=14.19 refresh_hz=120.0 draw_calls_max=276 primitives_max=256988 samples=33 steady_samples=24 windows=4 display=macOS

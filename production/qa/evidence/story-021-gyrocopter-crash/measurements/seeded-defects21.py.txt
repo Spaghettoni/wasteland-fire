@@ -1,0 +1,196 @@
+#!/usr/bin/env python3
+"""Seeded defects for Story 021 (a Gyrocopter that flies into a Tall piece crashes): each one exact text replacement in a scratch copy
+of the repo, run against the scenario that guards it (CRASH_ONLY names the crash modules, which keeps a mutant to the seconds its module
+takes). KILLED when the scenario fails (rc != 0 or a FAIL CHECK) or, for the regression kind, when an older scenario's output differs
+from its baseline (through the story's exact rewrites). A mutant whose run prints no RESULT line for its scenario is BROKEN (the
+replacement made the script unusable, not a verdict) and is counted apart. One worker per scratch copy, so no two mutants ever share a
+file (story 011's lesson). Template: story 020's seeded-defects20.py.
+
+usage: seeded-defects21.py BASELINE_DIR WORK_DIR [--dry] [--only name,name]
+  BASELINE_DIR holds the baselines of the older scenarios as split-NAME.txt (the regression kind)
+  WORK_DIR gets copy0..copy2 (scratch copies of the repo; they are diffed against the repo at the end)
+  NORMALIZERS (environment) names the story's exact rewrites (normalizers.json), applied to the regression kind
+  STRIP_CRASH (environment) lists the older scenarios the probe found to change with the strip off: each gets a regression mutant
+  EXTRA (environment) names a JSON file of more mutants [[name, file, old, new, scenario, kind, module], ...]
+  --dry only checks that every replacement text occurs exactly once in its file
+"""
+import json
+import os
+import re
+import subprocess
+import sys
+from concurrent.futures import ThreadPoolExecutor
+
+REPO = "/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire"
+BASE = sys.argv[1]
+WORK = sys.argv[2]
+DRY = "--dry" in sys.argv
+WORKERS = 3
+RULES = json.load(open(os.environ["NORMALIZERS"])) if os.environ.get("NORMALIZERS") else {}
+COPIES = [os.path.join(WORK, "copy%d" % i) for i in range(WORKERS)]
+
+UNIT = "src/gameplay/units/unit.gd"
+STATS = "src/gameplay/units/unit_stats.gd"
+DATA = "src/gameplay/units/data/"
+GYRO_STATS = DATA + "gyrocopter_stats.tres"
+TERRAIN = "src/gameplay/maps/map_01/map_01_terrain.tscn"
+RUNNER = "tools/evidence/split_screen_harness.gd"
+C = "crash"
+
+TEST = "		if -_arrival_velocity.dot(hit.get_normal()) >= stats.crash_speed:\n			return true\n"
+TICK = "	move_and_slide()\n	if _has_crashed():\n		destroy()\n		return\n	_arrival_velocity = get_real_velocity()\n"
+GUARD = "	if bool(script.get_script_constant_map().get(GYRO_CRASH_CONSTANT, false)):\n		return\n"
+WEST_SHORE = '[node name="ShoreNW7" type="StaticBody3D" parent="ShoreEdge" groups=["map_edge"]]'
+
+M = [
+ # name, file, old, new, scenario, kind, module (CRASH_ONLY; "" for the whole scenario)
+ # --- the story's seeded defects (Implementation Notes)
+ ("commanded_velocity_not_the_real_one", UNIT, TEST, TEST.replace("-_arrival_velocity.dot(", "-(-global_transform.basis.z * _speed).dot("), C, "check", "edges"),
+ ("this_ticks_real_velocity_not_the_last", UNIT, TEST, TEST.replace("-_arrival_velocity.dot(", "-get_real_velocity().dot("), C, "check", "edges"),
+ ("speed_along_the_motion_not_the_normal", UNIT, TEST, TEST.replace("-_arrival_velocity.dot(hit.get_normal())", "_arrival_velocity.length()"), C, "check", "edges"),
+ ("the_floor_counted", UNIT, "		if hit.get_angle(0, up_direction) <= floor_max_angle:\n			continue\n", "		if false:\n			continue\n", C, "check", "never"),
+ ("the_sea_edge_not_told_apart", UNIT, "		if collider != null and collider.is_in_group(MAP_EDGE_GROUP):\n			continue\n", "		if false:\n			continue\n", C, "check", "never"),
+ ("every_type_given_4_truck", DATA + "truck_stats.tres", "spot_mask = 18\n", "spot_mask = 18\ncrash_speed = 4.0\n", C, "check", "never"),
+ ("every_type_given_4_buggy", DATA + "buggy_stats.tres", "spot_mask = 18\n", "spot_mask = 18\ncrash_speed = 4.0\n", C, "check", "never"),
+ ("every_type_given_4_motorbike", DATA + "motorbike_stats.tres", "spot_mask = 18\n", "spot_mask = 18\ncrash_speed = 4.0\n", C, "check", "never"),
+ ("zero_read_as_always", UNIT, "	if not (stats.crash_speed > 0.0):\n		return false\n", "	if false:\n		return false\n", C, "check", "never"),
+ ("stored_velocity_not_reset_at_a_spawn", UNIT, "	_blocked = false\n	_arrival_velocity = Vector3.ZERO\n", "	_blocked = false\n", C, "check", "spawn"),
+ ("destroy_deferred_past_the_frame", UNIT, TICK, TICK.replace("		destroy()\n", "		destroy.call_deferred()\n"), C, "check", "tall"),
+ ("unit_ticks_after_the_controller", UNIT, "	_is_alive = true\n	_can_drive = true\n", "	_is_alive = true\n	_can_drive = true\n	process_physics_priority = 1\n", C, "check", "frame"),
+ ("damage_dealt_to_the_piece", UNIT, TEST, TEST.replace("			return true\n", "			if collider is Structure:\n				(collider as Structure).apply_damage(10.0)\n			return true\n"), C, "check", "tall"),
+ # --- more: the test itself
+ ("arrival_never_stored", UNIT, TICK, TICK.replace("	_arrival_velocity = get_real_velocity()\n", ""), C, "check", "tall"),
+ ("arrival_stored_before_the_test", UNIT, TICK, "	move_and_slide()\n	_arrival_velocity = get_real_velocity()\n	if _has_crashed():\n		destroy()\n		return\n", C, "check", "edges"),
+ ("test_before_the_move", UNIT, TICK, "	if _has_crashed():\n		destroy()\n		return\n	move_and_slide()\n	_arrival_velocity = get_real_velocity()\n", C, "check", "tall"),
+ ("normal_sign_flipped", UNIT, TEST, TEST.replace("-_arrival_velocity.dot(", "_arrival_velocity.dot("), C, "check", "tall"),
+ ("floor_test_against_the_wrong_axis", UNIT, "		if hit.get_angle(0, up_direction) <= floor_max_angle:\n", "		if hit.get_angle(0, Vector3.FORWARD) <= floor_max_angle:\n", C, "check", "tall"),
+ ("floor_test_inverted", UNIT, "		if hit.get_angle(0, up_direction) <= floor_max_angle:\n", "		if hit.get_angle(0, up_direction) > floor_max_angle:\n", C, "check", "tall"),
+ ("strictly_above_the_crash_speed", UNIT, TEST, TEST.replace(">= stats.crash_speed", "> stats.crash_speed"), C, "check", "edges"),
+ ("crash_speed_halved_in_the_test", UNIT, TEST, TEST.replace(">= stats.crash_speed", ">= stats.crash_speed * 0.5"), C, "check", "edges"),
+ ("edge_group_name_misspelt", UNIT, 'const MAP_EDGE_GROUP: StringName = &"map_edge"', 'const MAP_EDGE_GROUP: StringName = &"map_edges"', C, "check", "never"),
+ ("west_shore_body_left_out_of_the_group", TERRAIN, WEST_SHORE, WEST_SHORE.replace(' groups=["map_edge"]', ""), C, "check", "never"),
+ ("crash_without_a_return", UNIT, TICK, TICK.replace("		destroy()\n		return\n", "		destroy()\n"), C, "check", "spawn"),
+ ("reverse_never_crashes", UNIT, "\tfor index: int in get_slide_collision_count():\n\t\tvar hit: KinematicCollision3D = get_slide_collision(index)\n", "\tif _arrival_velocity.dot(-global_transform.basis.z) < 0.0:\n\t\treturn false\n\tfor index: int in get_slide_collision_count():\n\t\tvar hit: KinematicCollision3D = get_slide_collision(index)\n", C, "check", "tall"),
+ # --- the data
+ ("script_default_4", STATS, '@export_range(0.0, 100.0, 0.1, "or_greater", "suffix:m/s") var crash_speed: float = 0.0', '@export_range(0.0, 100.0, 0.1, "or_greater", "suffix:m/s") var crash_speed: float = 4.0', C, "check", "never"),
+ ("first_problem_accepts_a_negative", STATS, "	if not (crash_speed >= 0.0):\n", "	if crash_speed < -1000.0:\n", C, "check", "data"),
+ ("first_problem_lets_nan_through", STATS, "	if not (crash_speed >= 0.0):\n", "	if crash_speed < 0.0:\n", C, "check", "data"),
+ ("gyrocopter_crash_speed_8", GYRO_STATS, "crash_speed = 4.0\n", "crash_speed = 8.0\n", C, "check", "edges"),
+ ("gyrocopter_crash_speed_line_gone", GYRO_STATS, "crash_speed = 4.0\n", "", C, "check", "tall"),
+ # --- the runner's strip: the older scenarios keep their outputs
+ ("runner_strip_guard_inverted", RUNNER, GUARD, GUARD.replace("	if bool(", "	if not bool(", 1), C, "check", "tall"),
+]
+for _name in [a for a in os.environ.get("STRIP_CRASH", "").split(",") if a]:
+    M.append(("runner_leaves_the_crash_on_" + _name, RUNNER, GUARD, GUARD.replace("	if bool(", "	if true or bool(", 1), _name, "regress", ""))
+if os.environ.get("EXTRA"):
+    M.extend(tuple(m) for m in json.load(open(os.environ["EXTRA"])))
+
+# Mutants no output can tell from the build: reported apart, with the reason, when they survive.
+EQUIVALENT = {
+ "the_floor_counted": "the Floor's normal is up and a Gyrocopter never moves into it at the crash speed (the probe: no Floor collision at all while it flies, the normal up and no motion while it stands), so its arrival along that normal is about zero",
+ "strictly_above_the_crash_speed": "no arrival lands exactly on the crash speed in any check (the edges are 0.1 m/s and 0.1 degree either side); the story's word is 'reaches', the build uses >=",
+ "crash_without_a_return": "after destroy() the rest of the tick only stores a velocity and the blocked flag on an out-of-play Unit, and the next spawn's reset_motion() zeroes both: nothing a run can read",
+}
+WINDOWED = {}
+
+
+def prepare(i):
+    d = COPIES[i]
+    os.makedirs(WORK, exist_ok=True)
+    if os.path.exists(d):
+        subprocess.run(["find", d, "-delete"], check=True)
+    subprocess.run(["rsync", "-a", "--exclude", ".git", "--exclude", "production", "--exclude", "design", "--exclude", "docs",
+                    "--exclude", "tests", "--exclude", "assets/art/svaty_jur", REPO + "/", d + "/"], check=True)
+    return d
+
+
+def run(copy, scn, module):
+    env = dict(os.environ)
+    env["CRASH_ONLY"] = module
+    p = subprocess.run(["godot", "--headless", "--fixed-fps", "60", "--path", copy, "res://tools/evidence/split_screen_harness.tscn", "--", "--scenario=" + scn],
+                       capture_output=True, text=True, timeout=2400, env=env)
+    return p.returncode, p.stdout + p.stderr
+
+
+def one(copy, mutant):
+    name, rel, old, new, scn, kind, module = mutant
+    path = os.path.join(copy, rel)
+    orig = open(path).read()          # this worker is the only one that touches this copy
+    if orig.count(old) != 1:
+        return name, None, "NOT APPLIED (text found %d times)" % orig.count(old)
+    open(path, "w").write(orig.replace(old, new))
+    try:
+        rc, out = run(copy, scn, module)
+    finally:
+        open(path, "w").write(orig)
+    if not re.search(r"^RESULT %s " % scn, out, re.M):
+        return name, None, "BROKEN: no RESULT line (rc=%d) %s" % (rc, " | ".join(l for l in out.splitlines() if "ERROR" in l)[:300])
+    if kind == "check":
+        fails = re.findall(r"^CHECK \S+ (\S+) FAIL", out, re.M)
+        dead = rc != 0 or bool(fails)
+        detail = "%s%s rc=%d fails=%s" % (scn, "[" + module + "]" if module else "", rc, ",".join(fails) or "-")
+    else:
+        if not os.path.exists(os.path.join(BASE, "split-%s.txt" % scn)):
+            return name, None, "BROKEN: no baseline split-%s.txt (the regression kind needs a retained scenario)" % scn
+        base = open(os.path.join(BASE, "split-%s.txt" % scn)).read()
+        for before, after in RULES.get(scn, []):
+            out = out.replace(after, before)
+        keep = lambda t: [l for l in t.splitlines() if l.startswith(("SPLIT ", "CHECK ", "RESULT ", "SCRIPT ERROR", "ERROR:", "WARNING:"))]
+        dead = keep(out) != keep(base) or rc != 0
+        detail = "%s rc=%d output %s the baseline" % (scn, rc, "differs from" if dead else "equals")
+    return name, dead, detail
+
+
+def worker(i, jobs):
+    return [one(COPIES[i], m) for m in jobs[i::WORKERS]]
+
+
+def main():
+    if DRY:
+        bad = 0
+        for name, rel, old, new, scn, kind, module in M:
+            n = open(os.path.join(REPO, rel)).read().count(old)
+            if n != 1 or old == new:
+                bad += 1
+                print("DRY  %-52s text found %d times in %s (or no change)" % (name, n, rel))
+        print("DRY: %d mutants, %d with a replacement text that is not found exactly once" % (len(M), bad))
+        return 1 if bad else 0
+    jobs = M
+    if "--only" in sys.argv:
+        wanted = sys.argv[sys.argv.index("--only") + 1].split(",")
+        jobs = [m for m in M if m[0] in wanted]
+    for i in range(WORKERS):
+        prepare(i)
+    with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+        results = [r for part in pool.map(lambda i: worker(i, jobs), range(WORKERS)) for r in part]
+    order = {m[0]: k for k, m in enumerate(M)}
+    results.sort(key=lambda r: order[r[0]])
+    killed = survived = broken = 0
+    for name, dead, detail in results:
+        if dead is False and name in WINDOWED:
+            print("WINDOWED   %-52s %s | %s" % (name, detail, WINDOWED[name]))
+            killed += 1
+            continue
+        if dead is False and name in EQUIVALENT:
+            print("EQUIVALENT %-52s %s | %s" % (name, detail, EQUIVALENT[name]))
+            killed += 1
+            continue
+        status = "BROKEN " if dead is None else ("KILLED " if dead else "SURVIVED")
+        killed += dead is True
+        survived += dead is False
+        broken += dead is None
+        print("%s %-56s %s" % (status, name, detail))
+    print("-- %d mutants: %d killed or equivalent, %d survived, %d broken or not applied" % (len(jobs), killed, survived, broken))
+    clean = True
+    for i in range(WORKERS):
+        d = subprocess.run(["diff", "-rq", "--exclude=.godot", "--exclude=production", "--exclude=.git", "--exclude=design", "--exclude=docs",
+                            "--exclude=tests", "--exclude=svaty_jur", REPO, COPIES[i]], capture_output=True, text=True)
+        if d.stdout.strip():
+            clean = False
+            print("COPY %d DIFFERS FROM THE REPO:\n%s" % (i, d.stdout[:600]))
+    print("-- the %d scratch copies %s the repo (apart from .godot, production, design, docs, tests, svaty_jur)" % (WORKERS, "equal" if clean else "DIFFER FROM"))
+    return 0 if survived == 0 and broken == 0 and clean else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

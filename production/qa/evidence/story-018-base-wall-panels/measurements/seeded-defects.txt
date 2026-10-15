@@ -1,0 +1,36 @@
+KILLED  panel_on_the_map_layer                                   base_walls[over] rc=1 fails=panels_data,gyro_over
+KILLED  panel_with_a_mask                                        base_walls[moves] rc=1 fails=panels_data
+KILLED  run_left_out_of_structures                               base_walls[round] rc=1 fails=panels_data,restore
+KILLED  panel_0_1_m_short                                        base_walls[breach] rc=1 fails=panels_data
+KILLED  panel_moved_0_1_m_leaving_a_gap                          base_walls[moves] rc=1 fails=panels_data
+KILLED  stats_with_another_type_id_and_no_matrix_row             base_walls[damage] rc=1 fails=panels_data,damage
+KILLED  hit_points_45                                            base_walls[damage] rc=1 fails=panels_data,damage,looks
+KILLED  second_look_below_40_percent                             base_walls[damage] rc=1 fails=panels_data,damage,looks
+KILLED  damaged_looks_swapped                                    base_walls[damage] rc=1 fails=damage,looks
+KILLED  fallen_panel_keeps_its_layer                             base_walls[breach] rc=1 fails=layer_timing,breach
+KILLED  restore_leaves_a_fallen_panel_fallen                     base_walls[round] rc=1 fails=restore
+KILLED  restart_does_not_restore_structures                      base_walls[round] rc=1 fails=restore
+KILLED  motorbike_breaks_panels                                  base_walls[damage] rc=1 fails=panels_data,damage
+KILLED  own_shots_hurt_own_panels                                base_walls[damage] rc=1 fails=damage,turret_shots
+KILLED  shots_fly_through_standing_panels                        base_walls[damage] rc=1 fails=damage,turret_shots
+KILLED  gyrocopter_model_does_not_rise_over_panels               base_walls[over] rc=1 fails=gyro_over
+KILLED  turret_sight_ignores_the_cover_layer                     base_walls[sight] rc=1 fails=turret_sight
+KILLED  no_mine_area_grown_to_the_walls_outer_faces              base_walls[mines] rc=1 fails=mines_at_the_walls,no_engine_noise
+KILLED  mine_probe_ignores_the_cover_layer                       base_walls[mines] rc=1 fails=mines_at_the_walls
+EQUIVALENT runner_leaves_the_panels_on                          base_walls[moves] rc=0 fails=- | base_walls itself declares WALL_PANELS, so the strip is skipped for it with or without the defect; the strip's guard is the regression kind below (flag_walls, gyro_cover, map_layout, mines, turret_looks, turrets), all killed
+KILLED  frozen_walls_on_the_cover_layer                          gyro_cover rc=1 output differs from the baseline
+KILLED  runner_leaves_the_panels_on_flag_walls                   flag_walls rc=1 output differs from the baseline
+KILLED  strip_keeps_the_panels_listed_flag_walls                 flag_walls rc=1 output differs from the baseline
+KILLED  runner_leaves_the_panels_on_gyro_cover                   gyro_cover rc=1 output differs from the baseline
+KILLED  strip_keeps_the_panels_listed_gyro_cover                 gyro_cover rc=0 output differs from the baseline
+KILLED  runner_leaves_the_panels_on_map_layout                   map_layout rc=1 output differs from the baseline
+KILLED  strip_keeps_the_panels_listed_map_layout                 map_layout rc=0 output differs from the baseline
+KILLED  runner_leaves_the_panels_on_mines                        mines rc=0 output differs from the baseline
+KILLED  strip_keeps_the_panels_listed_mines                      mines rc=1 output differs from the baseline
+KILLED  runner_leaves_the_panels_on_turret_looks                 turret_looks rc=1 output differs from the baseline
+KILLED  strip_keeps_the_panels_listed_turret_looks               turret_looks rc=1 output differs from the baseline
+KILLED  runner_leaves_the_panels_on_turrets                      turrets rc=1 output differs from the baseline
+KILLED  strip_keeps_the_panels_listed_turrets                    turrets rc=1 output differs from the baseline
+-- 33 mutants: 33 killed or equivalent, 0 survived, 0 broken or not applied
+-- the 3 scratch copies equal the repo (apart from .godot, production, design, docs)
+rc=0

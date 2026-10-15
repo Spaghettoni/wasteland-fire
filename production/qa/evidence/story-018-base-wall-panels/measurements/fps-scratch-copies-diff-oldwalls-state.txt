@@ -1,0 +1,51 @@
+30a31,35
+> const BASE_DEFENCES: bool = true
+> const TURRET_LOOKS: bool = true
+> const EXPLOSIONS: bool = true
+> const BADLY_DAMAGED: bool = true
+> const WALL_PANELS: bool = false
+73a79
+> 	_walls_state()
+170a177,193
+> 
+> 
+> ## Scratch only (Story 018 AC-8): the Wall Panels' state this run is measured in, from the environment
+> ## variable WALLS_STATE: whole (nothing done), second (every panel at its second damaged look) or fallen
+> ## (every panel destroyed, its rubble shown). Called once the choice is made.
+> func _walls_state() -> void:
+> 	var state: String = OS.get_environment("WALLS_STATE")
+> 	var count: int = 0
+> 	for base: Base in [_harness.split.field.player_1_base, _harness.split.field.player_2_base]:
+> 		for piece: Structure in base.structures:
+> 			if String(piece.get_path()).contains("/Walls/"):
+> 				count += 1
+> 				if state == "fallen":
+> 					piece.destroy()
+> 				elif state == "second":
+> 					piece.apply_damage(28.0)
+> 	print("WALLS_STATE %s on %d panels" % [state if not state.is_empty() else "whole", count])
+35a36,39
+> const TURRET_LOOKS: bool = true
+> const EXPLOSIONS: bool = true
+> const BADLY_DAMAGED: bool = true
+> const WALL_PANELS: bool = false
+65a70
+> 	_walls_state()
+130a136,152
+> 
+> 
+> ## Scratch only (Story 018 AC-8): the Wall Panels' state this run is measured in, from the environment
+> ## variable WALLS_STATE: whole (nothing done), second (every panel at its second damaged look) or fallen
+> ## (every panel destroyed, its rubble shown). Called once the choice is made.
+> func _walls_state() -> void:
+> 	var state: String = OS.get_environment("WALLS_STATE")
+> 	var count: int = 0
+> 	for base: Base in [_harness.split.field.player_1_base, _harness.split.field.player_2_base]:
+> 		for piece: Structure in base.structures:
+> 			if String(piece.get_path()).contains("/Walls/"):
+> 				count += 1
+> 				if state == "fallen":
+> 					piece.destroy()
+> 				elif state == "second":
+> 					piece.apply_damage(28.0)
+> 	print("WALLS_STATE %s on %d panels" % [state if not state.is_empty() else "whole", count])

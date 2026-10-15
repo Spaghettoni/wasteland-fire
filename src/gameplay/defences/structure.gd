@@ -2,7 +2,7 @@ class_name Structure
 extends StaticBody3D
 ## A damageable piece of the Map that is not a Unit: solid while it stands, rubble that blocks
 ## nothing once its hit points are gone, and back with all of them when the Round is played again.
-## A Flag Wall is one (Story 012); so is a Turret (Story 013), which extends it.
+## A Flag Wall is one (Story 012), a Wall Panel too (Story 018); a Turret (Story 013) extends it.
 ##
 ## Implements: production/epics/wasteland-fire/story-012-flag-walls.md AC-2 to AC-5, AC-8 and
 ## AC-9; design/rules.md "Turrets, Flag Walls and Mines". Vocabulary: CONTEXT.md (Flag Wall).

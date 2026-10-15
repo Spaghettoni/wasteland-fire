@@ -1,0 +1,38 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/props/prop_mesh.gd" id="4_prop_mesh"]
+[ext_resource type="PackedScene" path="res://assets/art/map_01/props/map_01_props.glb" id="5_props"]
+[ext_resource type="Material" path="res://src/gameplay/props/materials/prop_neutral.tres" id="6_prop_neutral"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_scrap_wall"]
+size = Vector3(2.5, 2, 12)
+
+[node name="FrozenScrapWalls" type="Node3D"]
+
+[node name="ScrapWallWest" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 1, 12)
+collision_layer = 64
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="ScrapWallWest"]
+material_override = ExtResource("6_prop_neutral")
+script = ExtResource("4_prop_mesh")
+mesh_file = ExtResource("5_props")
+mesh_name = &"ScrapWall"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ScrapWallWest"]
+shape = SubResource("BoxShape3D_scrap_wall")
+
+[node name="ScrapWallEast" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1, 12)
+collision_layer = 64
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="ScrapWallEast"]
+material_override = ExtResource("6_prop_neutral")
+script = ExtResource("4_prop_mesh")
+mesh_file = ExtResource("5_props")
+mesh_name = &"ScrapWall"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ScrapWallEast"]
+shape = SubResource("BoxShape3D_scrap_wall")

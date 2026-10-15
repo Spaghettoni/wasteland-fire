@@ -3,8 +3,9 @@ extends Label
 ## One Player's one-line notice, in that Player's own view: "Destroy the turrets first" while that
 ## Player's Unit touches the other Player's Flag and only the other Base's Turrets keep it from
 ## taking it, and, for about a second and a half, the reason a Mine was not laid ("No Mines left",
-## "No Mines in or near a Base", "No room for a Mine here"). Nothing otherwise. It is a plain
-## one-line notice.
+## "No Mines in or near a Base", "No Mines at a supply building", "No room for a Mine here") and,
+## since Story 022, the words "Out of ammo" when its Player's gun fires its last Shot or is pressed
+## while empty. Nothing otherwise. It is a plain one-line notice.
 ##
 ## Implements: production/epics/wasteland-fire/story-013-turrets.md AC-5 (the line shows in the view
 ## of the Player whose Motorbike touches a locked Flag and in no other, is gone when the lock lifts
@@ -12,18 +13,26 @@ extends Label
 ## the Round-over screen and fits the 640 x 720 view) and AC-9 (the text is data in the scene, read
 ## through tr()); production/epics/wasteland-fire/story-014-truck-mines.md AC-2 and AC-5 (a press
 ## that lays nothing shows that Player alone, for about 1.5 s on this line, why it was refused; the
-## three texts and the time are data in the scene, read through tr(); the line is hidden when the
-## Round ends and when it starts again); design/rules.md "Turrets, Flag Walls and Mines".
-## Vocabulary: CONTEXT.md (Player, Flag, Turret, Mine, Round).
+## texts and the time are data in the scene, read through tr(); the line is hidden when the
+## Round ends and when it starts again); production/epics/wasteland-fire/story-024-ammunition-
+## buildings.md AC-4 (a refused lay at a supply zone shows "No Mines at a supply building" in that
+## Player's view alone, as a refused lay on a Gate approach does); production/epics/wasteland-fire/
+## story-022-ammo-and-full-
+## start.md AC-5 (on the tick a Unit fires its last Shot, and at every new press of the fire key
+## while its gun is empty, that Player's line alone shows "Out of ammo" for about 1.5 s in place of
+## what it showed, a held key says it once, and the line hides when the Round ends and at R; the
+## text and the time are data in the scene, read through tr()); design/rules.md "Turrets, Flag
+## Walls and Mines" and "Resources". Vocabulary: CONTEXT.md (Player, Flag, Turret, Mine, Ammo,
+## Round).
 ##
 ## Display only (.claude/rules/ui-code.md). The lock belongs to the Flag rules, the Round to the
-## MatchController and the refusal to the MineLayer: this label asks the controller
-## is_flag_locked_for(player_index) every frame, connects to its round_started and round_over and,
-## when it has one, to its Player's MineLayer.lay_refused, and that is all it asks of them. It owns
-## no state another node reads, calls nothing that changes the Round and reads no input. Take it out
-## of the scene and the Round plays on unchanged. Unlike SelfDestructHint it keeps _process on
-## whether it is shown or hidden, because nothing signals a touch of a Flag: a notice shown only
-## through signals would never appear.
+## MatchController, the refusal to the MineLayer and the empty gun to the Weapon: this label asks
+## the controller is_flag_locked_for(player_index) every frame, connects to its round_started and
+## round_over and, when it has them, to its Player's MineLayer.lay_refused and Weapon.out_of_ammo,
+## and that is all it asks of them. It owns no state another node reads, calls nothing that changes
+## the Round and reads no input. Take it out of the scene and the Round plays on unchanged. Unlike
+## SelfDestructHint it keeps _process on whether it is shown or hidden, because nothing signals a
+## touch of a Flag: a notice shown only through signals would never appear.
 ##
 ## One instance per Player, directly under that Player's SubViewport after the out-of-Fuel hint
 ## (split_screen.tscn: Player1Notice, Player2Notice), so it is drawn in that Player's view and in no
@@ -33,9 +42,9 @@ extends Label
 ##   hidden  -> lock     the controller says the Player's Unit is kept from the Flag by the lock
 ##   lock    -> hidden   it no longer says so (the last Turret fell, the Unit left the Flag, it took
 ##                       another Flag)
-##   hidden  -> refusal  the MineLayer emitted lay_refused: the reason's text shows for
-##                       refusal_seconds, a new refusal replacing the one showing and restarting
-##                       the time
+##   hidden  -> refusal  the MineLayer emitted lay_refused, or the Weapon emitted out_of_ammo: the
+##                       text of the reason (or "Out of ammo") shows for refusal_seconds, a new one
+##                       replacing the one showing and restarting the time
 ##   refusal -> hidden   the time ran out and the lock does not hold (a Truck lays Mines and never
 ##                       takes a Flag, so the two never meet; the lock text shows again if it did)
 ##   any     -> hidden   the controller emitted round_over (a paused tree stops _process, so the
@@ -47,7 +56,7 @@ extends Label
 ## the text centred at 24 px, white with a dark outline, mouse_filter ignore. It sits at x 40 to 600
 ## and y 128 to 178, under the Team edge (y 8 to 84) and the Mines line (y 92 to 120) and above the
 ## Round-over panel (y 296 to 424), far from the Unit choice panel and the hint at the bottom of the
-## view.
+## view. The Ammo line (x 16 to 316, y 92 to 120) sits above it on the left.
 
 ## The MatchController this label asks. Required: without it the label pushes an error and stays
 ## hidden.
@@ -75,12 +84,24 @@ extends Label
 ## player_notice.tscn. Looked up with tr(). Required while mine_layer is assigned.
 @export var near_base_text: String = ""
 
+## The refusal for a drop point in or near a supply zone, "No Mines at a supply building" in
+## player_notice.tscn (Story 024). Looked up with tr(). Required while mine_layer is assigned.
+@export var near_supply_text: String = ""
+
 ## The refusal for a drop point that is not open ground, "No room for a Mine here" in
 ## player_notice.tscn. Looked up with tr(). Required while mine_layer is assigned.
 @export var no_room_text: String = ""
 
-## Seconds a refusal stays (about 1.5 in player_notice.tscn). Required, above zero, while mine_layer
-## is assigned.
+## This Player's Weapon, whose empty gun the line announces (Story 022). Optional: a scene with none
+## says nothing of ammunition, and then out_of_ammo_text is not read.
+@export var weapon: Weapon
+
+## The notice for an empty gun, "Out of ammo" in player_notice.tscn. Looked up with tr(). Required
+## while weapon is assigned, with no default. It names no key.
+@export var out_of_ammo_text: String = ""
+
+## Seconds a refusal or an "Out of ammo" stays (about 1.5 in player_notice.tscn). Required, above
+## zero, while mine_layer or weapon is assigned.
 @export_range(0.0, 10.0, 0.1, "or_greater", "suffix:s") var refusal_seconds: float = 0.0
 
 ## Seconds of the refusal still to show; zero while none shows.
@@ -99,6 +120,8 @@ func _ready() -> void:
 	match_controller.round_over.connect(_on_round_over)
 	if mine_layer != null:
 		mine_layer.lay_refused.connect(_on_lay_refused)
+	if weapon != null:
+		weapon.out_of_ammo.connect(_on_out_of_ammo)
 	set_process(true)
 	_refresh()
 
@@ -130,10 +153,12 @@ func _first_problem() -> String:
 	if message.is_empty():
 		return "message is not set (store the notice in the scene)"
 	if mine_layer != null:
-		if none_left_text.is_empty() or near_base_text.is_empty() or no_room_text.is_empty():
-			return "a refusal text is not set (store the three texts in the scene)"
-		if refusal_seconds <= 0.0:
-			return "refusal_seconds is not above zero (store the time in the scene)"
+		if none_left_text.is_empty() or near_base_text.is_empty() or near_supply_text.is_empty() or no_room_text.is_empty():
+			return "a refusal text is not set (store the four texts in the scene)"
+	if weapon != null and out_of_ammo_text.is_empty():
+		return "out_of_ammo_text is not set (store the notice in the scene)"
+	if (mine_layer != null or weapon != null) and refusal_seconds <= 0.0:
+		return "refusal_seconds is not above zero (store the time in the scene)"
 	return ""
 
 
@@ -144,12 +169,22 @@ func _refusal_text(reason: MineLayer.Refusal) -> String:
 			return none_left_text
 		MineLayer.Refusal.NEAR_BASE:
 			return near_base_text
+		MineLayer.Refusal.NEAR_SUPPLY:
+			return near_supply_text
 	return no_room_text
 
 
 ## A press laid nothing: show why, in place of whatever the line shows, for refusal_seconds.
 func _on_lay_refused(reason: MineLayer.Refusal) -> void:
 	text = tr(_refusal_text(reason))
+	_refusal_left = refusal_seconds
+	visible = true
+
+
+## The Weapon fired its last Shot, or was pressed while empty: say so, in place of whatever the line
+## shows, for refusal_seconds (the lay refusal's way).
+func _on_out_of_ammo() -> void:
+	text = tr(out_of_ammo_text)
 	_refusal_left = refusal_seconds
 	visible = true
 

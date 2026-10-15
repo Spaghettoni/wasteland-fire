@@ -1,0 +1,7 @@
+RAY from (-135.0, 5.0, -34.35) -> /root/Map/Terrain/ShoreEdge/ShoreNW6 at y=3.000 layer=1
+RAY from (-135.0, 5.0, -33.35) -> /root/Map/Floor at y=0.000 layer=1
+RAY from (-120.0, 5.0, -34.35) -> /root/Map/Floor at y=0.000 layer=1
+RAY from (0.0, 5.0, 0.0) -> /root/Map/Floor at y=0.000 layer=1
+RAY from (-100.0, 5.0, -34.35) -> /root/Map/Floor at y=0.000 layer=1
+RAY from (-148.0, 5.0, 0.0) -> /root/Map/Terrain/ShoreEdge/ShoreSW8 at y=3.000 layer=1
+RAY from (-135.0, 5.0, -30.0) -> /root/Map/Floor at y=0.000 layer=1

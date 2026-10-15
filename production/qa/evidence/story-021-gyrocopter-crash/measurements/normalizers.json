@@ -1,0 +1,62 @@
+{
+ "badly_damaged": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1395)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1430)"
+  ],
+  [
+   "spawn (res://src/gameplay/units/unit.gd:622)",
+   "spawn (res://src/gameplay/units/unit.gd:661)"
+  ]
+ ],
+ "explosions": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1395)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1430)"
+  ],
+  [
+   "destroy (res://src/gameplay/units/unit.gd:559)",
+   "destroy (res://src/gameplay/units/unit.gd:598)"
+  ]
+ ],
+ "flag_walls": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1395)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1430)"
+  ]
+ ],
+ "token_ui": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1395)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1430)"
+  ]
+ ],
+ "tokens_data": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1395)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1430)"
+  ],
+  [
+   "destroy (res://src/gameplay/units/unit.gd:559)",
+   "destroy (res://src/gameplay/units/unit.gd:598)"
+  ]
+ ],
+ "turret_looks": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1395)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1430)"
+  ]
+ ],
+ "turrets": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1395)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1430)"
+  ]
+ ],
+ "unit_swap": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1395)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1430)"
+  ]
+ ]
+}

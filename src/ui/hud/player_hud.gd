@@ -12,7 +12,7 @@ extends Control
 ## fit inside a 640 x 720 viewport with no clipping or overflow);
 ## production/epics/wasteland-fire/story-006-fuel-and-fuel-cans.md AC-7 (each Player's HUD shows a
 ## Fuel gauge beside the hit points in the band Story 004 built, right of the hit-point bar, at
-## x 332 to 624; it visibly empties while the Unit moves, refills on a Fuel Can, and nothing
+## x 332 to 624; it visibly empties while the Unit moves, refills in a Fuel zone, and nothing
 ## clips or overflows); production/epics/wasteland-fire/story-007-the-map.md AC-11 (each Player's
 ## HUD carries that Player's Team colour, here as an edge round the band, and the hit-point green
 ## and the Fuel amber stay; open question 17);
@@ -53,7 +53,7 @@ extends Control
 ## the tick the tank runs dry); the first values are read once in _ready() from the Unit's fuel
 ## and fuel_capacity. The Unit emits on every physics tick it burns Fuel (while its drive speed
 ## is not approximately zero), so the gauge empties while the Unit moves and holds while it
-## stands; once when a Fuel Can refuels it, so the gauge refills; with the starting tank at each
+## stands; on each tick a Fuel zone refuels it, so the gauge refills; with the starting tank at each
 ## spawn; and with zero when it is destroyed or benched, so the gauge reads zero while the Player
 ## waits to respawn or chooses its next Unit. Flag status: the one line is chosen again from
 ## match_controller.flag_status(player_index) whenever the controller emits

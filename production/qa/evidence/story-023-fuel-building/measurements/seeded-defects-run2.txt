@@ -1,0 +1,73 @@
+KILLED  zone_on_the_units_layer_alone                            fuel_building rc=1 fails=settings_are_the_shipped_data,fill_time_every_type_every_zone,one_player_in_each_zone,gyrocopter_from_its_base_to_the_zone_p1,gyrocopter_from_its_base_to_the_zone_p2,hovering_gyrocopter_never_runs_dry
+KILLED  drive_speed_as_the_stopped_test                          fuel_building rc=1 fails=held_against_a_tank_is_stopped,parked_unit_driven_into_is_measured
+KILLED  no_stopped_test                                          fuel_building rc=1 fails=settings_are_followed,rolling_through_gets_nothing,crawl_over_and_under_the_stopped_speed,held_against_a_tank_is_stopped,parked_unit_driven_into_is_measured,moving_off_ends_the_refill,gyrocopter_from_its_base_to_the_zone_p1,gyrocopter_from_its_base_to_the_zone_p2
+KILLED  a_stock_that_runs_dry                                    fuel_building rc=1 fails=no_gameplay_number_in_the_code,zone_latency_is_measured,fill_time_every_type_every_zone,fuel_only,fuel_bar_rises,crawl_over_and_under_the_stopped_speed,held_against_a_tank_is_stopped,parked_unit_driven_into_is_measured,moving_off_ends_the_refill,zone_edge_is_the_box,both_players_in_one_zone,one_player_in_each_zone,zone_never_runs_dry,gyrocopter_from_its_base_to_the_zone_p1,gyrocopter_from_its_base_to_the_zone_p2,hovering_gyrocopter_never_runs_dry,dry_in_a_zone_is_refuelled_and_drives_on,dry_at_the_zone_face,zone_stops_with_the_paused_tree,zone_after_r_is_as_before,a_mine_can_be_laid_in_a_zone
+KILLED  only_the_first_unit_refuelled                            fuel_building rc=1 fails=parked_unit_driven_into_is_measured,both_players_in_one_zone
+KILLED  the_whole_refill_at_once                                 fuel_building rc=1 fails=bad_zones_give_nothing,settings_are_followed,fill_time_every_type_every_zone,fuel_bar_rises,crawl_over_and_under_the_stopped_speed,held_against_a_tank_is_stopped,parked_unit_driven_into_is_measured,moving_off_ends_the_refill,zone_edge_is_the_box,both_players_in_one_zone,one_player_in_each_zone,zone_never_runs_dry,gyrocopter_from_its_base_to_the_zone_p1,gyrocopter_from_its_base_to_the_zone_p2,hovering_gyrocopter_never_runs_dry,zone_stops_with_the_paused_tree,zone_after_r_is_as_before,a_mine_can_be_laid_in_a_zone
+KILLED  the_rate_written_in_code                                 fuel_building rc=1 fails=no_gameplay_number_in_the_code,settings_are_followed
+KILLED  a_can_left_on_the_map                                    fuel_building rc=1 fails=no_fuel_can_on_the_map,old_spots_give_nothing
+KILLED  first_problem_time_le_zero                               fuel_building rc=1 fails=bad_settings_are_refused,bad_zones_give_nothing,no_engine_noise
+KILLED  first_problem_speed_le_zero                              fuel_building rc=1 fails=bad_settings_are_refused
+KILLED  the_rate_per_tick_not_per_second                         fuel_building rc=1 fails=no_gameplay_number_in_the_code
+KILLED  no_two_tick_rule                                         fuel_building rc=1 fails=zone_latency_is_measured,fill_time_every_type_every_zone,both_players_in_one_zone,one_player_in_each_zone,zone_never_runs_dry,hovering_gyrocopter_never_runs_dry,dry_in_a_zone_is_refuelled_and_drives_on,destroyed_in_a_zone_gets_nothing_at_its_base,zone_stops_with_the_paused_tree,zone_after_r_is_as_before
+KILLED  the_list_is_never_noted                                  fuel_building rc=1 fails=bad_zones_give_nothing,settings_are_followed,motorbike_reaches_each_zone_from_its_gate,buggy_reaches_each_zone_from_its_gate,truck_reaches_each_zone_from_its_gate,zone_latency_is_measured,fill_time_every_type_every_zone,fuel_only,fuel_bar_rises,crawl_over_and_under_the_stopped_speed,held_against_a_tank_is_stopped,parked_unit_driven_into_is_measured,moving_off_ends_the_refill,zone_edge_is_the_box,both_players_in_one_zone,one_player_in_each_zone,zone_never_runs_dry,gyrocopter_from_its_base_to_the_zone_p1,gyrocopter_from_its_base_to_the_zone_p2,hovering_gyrocopter_never_runs_dry,dry_in_a_zone_is_refuelled_and_drives_on,dry_at_the_zone_face,zone_stops_with_the_paused_tree,zone_after_r_is_as_before,a_mine_can_be_laid_in_a_zone
+KILLED  the_list_of_this_tick_noted_before_it_is_read            fuel_building rc=1 fails=zone_latency_is_measured,fill_time_every_type_every_zone,both_players_in_one_zone,one_player_in_each_zone,zone_never_runs_dry,hovering_gyrocopter_never_runs_dry,dry_in_a_zone_is_refuelled_and_drives_on,destroyed_in_a_zone_gets_nothing_at_its_base,zone_stops_with_the_paused_tree,zone_after_r_is_as_before
+KILLED  zone_listens_to_nobody                                   fuel_building rc=1 fails=settings_are_the_shipped_data,bad_zones_give_nothing,settings_are_followed,motorbike_reaches_each_zone_from_its_gate,buggy_reaches_each_zone_from_its_gate,truck_reaches_each_zone_from_its_gate,zone_latency_is_measured,fill_time_every_type_every_zone,fuel_only,fuel_bar_rises,rolling_through_gets_nothing,crawl_over_and_under_the_stopped_speed,held_against_a_tank_is_stopped,moving_off_ends_the_refill,zone_edge_is_the_box,both_players_in_one_zone,one_player_in_each_zone,zone_never_runs_dry,gyrocopter_from_its_base_to_the_zone_p1,gyrocopter_from_its_base_to_the_zone_p2,hovering_gyrocopter_never_runs_dry,dry_in_a_zone_is_refuelled_and_drives_on,dry_at_the_zone_face,destroyed_in_a_zone_gets_nothing_at_its_base,zone_stops_with_the_paused_tree,zone_after_r_is_as_before,a_mine_can_be_laid_in_a_zone
+EQUIVALENT real_speed_without_the_ground_plane                  fuel_building rc=0 fails=- | every Unit that is judged stands on the floor or hovers with its body on it: its real vertical velocity is 0.0 in every row
+KILLED  zero_approx_as_the_stopped_test                          fuel_building rc=1 fails=settings_are_followed,crawl_over_and_under_the_stopped_speed,gyrocopter_from_its_base_to_the_zone_p1,gyrocopter_from_its_base_to_the_zone_p2
+EQUIVALENT stopped_means_below                                  fuel_building rc=0 fails=- | no Unit's real speed lands exactly on the stopped speed (the crawl pair is half and 1.1 times it, a standing Unit reads 0.0)
+EQUIVALENT a_unit_out_of_play_is_not_skipped                    fuel_building rc=0 fails=- | Unit.refuel() refuses a Unit that is out of play (the second guard) and the zone's two-tick rule keeps the one stale entry out as well: nothing a run can read
+EQUIVALENT the_list_not_sorted                                  fuel_building rc=0 fails=- | the order the Units are served in changes only the order of two fuel_changed signals inside one tick: no check, HUD or rule reads it
+KILLED  the_zone_ticks_while_the_tree_is_paused                  fuel_building rc=1 fails=zone_stops_with_the_paused_tree
+KILLED  zone_on_the_units_layer                                  fuel_building rc=1 fails=settings_are_the_shipped_data
+KILLED  mask_adds_the_map_layer                                  fuel_building rc=1 fails=settings_are_the_shipped_data
+KILLED  settings_not_validated                                   fuel_building rc=1 fails=bad_zones_give_nothing,no_engine_noise
+KILLED  no_error_for_a_missing_size                              fuel_building rc=1 fails=bad_zones_give_nothing,no_engine_noise
+KILLED  box_half_the_size                                        fuel_building rc=1 fails=motorbike_reaches_each_zone_from_its_gate,buggy_reaches_each_zone_from_its_gate,zone_latency_is_measured,fill_time_every_type_every_zone,fuel_bar_rises,rolling_through_gets_nothing,zone_edge_is_the_box,both_players_in_one_zone,one_player_in_each_zone,gyrocopter_from_its_base_to_the_zone_p1,gyrocopter_from_its_base_to_the_zone_p2,hovering_gyrocopter_never_runs_dry,dry_at_the_zone_face
+EQUIVALENT box_one_metre_tall_from_the_floor                    fuel_building rc=0 fails=- | a Gyrocopter's body is on the floor (its model flies), so a zone 1 m tall from the floor lists it too: the story's own expectation of an equivalent mutant
+EQUIVALENT box_centred_on_the_floor                             fuel_building rc=0 fails=- | a box centred on the floor still reaches 3 m up, and every Unit's body is within 1 m of the floor: the overlap is the same
+KILLED  box_one_metre_tall_in_the_air                            fuel_building rc=1 fails=bad_zones_give_nothing,settings_are_followed,motorbike_reaches_each_zone_from_its_gate,buggy_reaches_each_zone_from_its_gate,truck_reaches_each_zone_from_its_gate,zone_latency_is_measured,fill_time_every_type_every_zone,fuel_only,fuel_bar_rises,rolling_through_gets_nothing,crawl_over_and_under_the_stopped_speed,held_against_a_tank_is_stopped,moving_off_ends_the_refill,zone_edge_is_the_box,both_players_in_one_zone,one_player_in_each_zone,zone_never_runs_dry,gyrocopter_from_its_base_to_the_zone_p1,gyrocopter_from_its_base_to_the_zone_p2,hovering_gyrocopter_never_runs_dry,dry_in_a_zone_is_refuelled_and_drives_on,dry_at_the_zone_face,destroyed_in_a_zone_gets_nothing_at_its_base,zone_stops_with_the_paused_tree,zone_after_r_is_as_before,a_mine_can_be_laid_in_a_zone
+KILLED  slab_scale_ignored                                       fuel_building rc=1 fails=marking_is_drawn_on_the_ground
+KILLED  one_dash_a_side                                          fuel_building rc=1 fails=marking_is_drawn_on_the_ground
+KILLED  a_mesh_of_its_own_for_every_dash                         fuel_building rc=1 fails=marking_is_drawn_on_the_ground
+KILLED  dashes_cast_shadows                                      fuel_building rc=1 fails=marking_is_drawn_on_the_ground
+KILLED  dashes_at_the_slab_height                                fuel_building rc=1 fails=marking_is_drawn_on_the_ground
+KILLED  slab_below_the_ring                                      fuel_building rc=1 fails=marking_is_drawn_on_the_ground
+KILLED  slab_casts_shadows                                       fuel_building rc=1 fails=marking_is_drawn_on_the_ground
+KILLED  slab_not_the_fuel_amber                                  fuel_building rc=1 fails=marking_is_drawn_on_the_ground
+KILLED  slab_hidden_from_the_view_above                          fuel_building rc=1 fails=marking_is_drawn_on_the_ground,zone_is_seen_in_both_players_views
+KILLED  east_zone_mirrored_not_turned                            fuel_building rc=1 fails=zones_are_in_the_scene,marking_is_drawn_on_the_ground
+KILLED  west_zone_one_metre_away                                 fuel_building rc=1 fails=zones_are_in_the_scene,zone_clearances
+KILLED  west_zone_size_smaller                                   fuel_building rc=1 fails=zones_are_in_the_scene,zone_clearances,zone_edge_is_the_box,dry_at_the_zone_face
+KILLED  east_zone_never_declares_its_kind                        fuel_building rc=1 fails=zones_are_in_the_scene
+KILLED  tank_collider_smaller                                    fuel_building rc=1 fails=tanks_are_tall_pieces,tanks_stop_shots_and_stand
+KILLED  settings_time_to_full_5                                  fuel_building rc=1 fails=settings_are_the_shipped_data,truck_reaches_each_zone_from_its_gate,fuel_bar_rises,hovering_gyrocopter_never_runs_dry
+KILLED  settings_stopped_speed_1                                 fuel_building rc=1 fails=settings_are_followed,crawl_over_and_under_the_stopped_speed
+SURVIVED settings_stopped_speed_0_01                              fuel_building rc=0 fails=-
+KILLED  runner_zones_on_camera_showcase                          camera_showcase rc=0 output differs from the baseline
+KILLED  runner_zones_on_depot_tanks                              depot_tanks rc=1 output differs from the baseline
+KILLED  runner_zones_on_explosions                               explosions rc=0 output differs from the baseline
+KILLED  runner_zones_on_flag_walls                               flag_walls rc=1 output differs from the baseline
+KILLED  runner_zones_on_map_cover                                map_cover rc=1 output differs from the baseline
+KILLED  runner_zones_on_map_layout                               map_layout rc=1 output differs from the baseline
+KILLED  runner_zones_on_map_legibility                           map_legibility rc=1 output differs from the baseline
+KILLED  runner_zones_on_mines                                    mines rc=1 output differs from the baseline
+KILLED  runner_zones_on_turrets                                  turrets rc=1 output differs from the baseline
+KILLED  runner_zones_stay_explosions                             explosions rc=0 output differs from the baseline
+KILLED  runner_zones_stay_flag_walls                             flag_walls rc=1 output differs from the baseline
+KILLED  runner_zones_stay_map_layout                             map_layout rc=1 output differs from the baseline
+KILLED  runner_zones_stay_turrets                                turrets rc=1 output differs from the baseline
+KILLED  runner_map_cans_out_flag_walls                           flag_walls rc=0 output differs from the baseline
+KILLED  runner_map_cans_out_map_layout                           map_layout rc=1 output differs from the baseline
+KILLED  runner_map_cans_out_map_legibility                       map_legibility rc=1 output differs from the baseline
+KILLED  runner_map_cans_out_mines                                mines rc=1 output differs from the baseline
+KILLED  runner_map_cans_out_turrets                              turrets rc=0 output differs from the baseline
+KILLED  runner_depot_cans_out_camera_showcase                    camera_showcase rc=0 output differs from the baseline
+KILLED  runner_depot_cans_out_depot_tanks                        depot_tanks rc=1 output differs from the baseline
+KILLED  runner_depot_cans_out_flag_walls                         flag_walls rc=0 output differs from the baseline
+KILLED  runner_depot_cans_out_map_cover                          map_cover rc=1 output differs from the baseline
+KILLED  runner_depot_cans_out_map_layout                         map_layout rc=1 output differs from the baseline
+KILLED  runner_depot_cans_out_turrets                            turrets rc=0 output differs from the baseline
+-- 70 mutants: 69 killed or equivalent, 1 survived, 0 broken or not applied
+-- the 3 scratch copies equal the repo (apart from .godot, production, design, docs, tests, svaty_jur)
+rc=1

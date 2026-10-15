@@ -1,0 +1,26 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+WALLS_STATE whole on 0 panels
+SPLIT turrets_fps t=1.233 phase=window_1 fps=120.0 draw_calls=300 primitives=294695 objects=618 p1_hp=196 p2_hp=196 turret_shots=4
+SPLIT turrets_fps t=2.233 phase=window_1 fps=121.0 draw_calls=300 primitives=294687 objects=614 p1_hp=172 p2_hp=172 turret_shots=8
+SPLIT turrets_fps t=3.233 phase=window_1 fps=119.0 draw_calls=302 primitives=294735 objects=618 p1_hp=148 p2_hp=148 turret_shots=16
+SPLIT turrets_fps t=4.233 phase=window_1 fps=120.0 draw_calls=300 primitives=294687 objects=614 p1_hp=100 p2_hp=100 turret_shots=20
+SPLIT turrets_fps t=5.233 phase=window_1 fps=120.0 draw_calls=300 primitives=294679 objects=610 p1_hp=76 p2_hp=76 turret_shots=24
+SPLIT turrets_fps t=6.233 phase=window_2 fps=121.0 draw_calls=300 primitives=294695 objects=618 p1_hp=196 p2_hp=196 turret_shots=28
+SPLIT turrets_fps t=7.233 phase=window_2 fps=120.0 draw_calls=300 primitives=294687 objects=614 p1_hp=172 p2_hp=172 turret_shots=32
+SPLIT turrets_fps t=8.233 phase=window_2 fps=120.0 draw_calls=300 primitives=294687 objects=614 p1_hp=148 p2_hp=148 turret_shots=36
+SPLIT turrets_fps t=9.233 phase=window_2 fps=119.0 draw_calls=302 primitives=294735 objects=618 p1_hp=124 p2_hp=124 turret_shots=44
+SPLIT turrets_fps t=10.233 phase=window_2 fps=120.0 draw_calls=300 primitives=294679 objects=610 p1_hp=76 p2_hp=76 turret_shots=48
+SPLIT turrets_fps t=11.233 phase=window_3 fps=121.0 draw_calls=300 primitives=294695 objects=618 p1_hp=196 p2_hp=196 turret_shots=52
+SPLIT turrets_fps t=12.233 phase=window_3 fps=120.0 draw_calls=300 primitives=294687 objects=614 p1_hp=172 p2_hp=172 turret_shots=56
+SPLIT turrets_fps t=13.233 phase=window_3 fps=119.0 draw_calls=300 primitives=294687 objects=614 p1_hp=148 p2_hp=148 turret_shots=60
+SPLIT turrets_fps t=14.233 phase=window_3 fps=121.0 draw_calls=302 primitives=294735 objects=618 p1_hp=124 p2_hp=124 turret_shots=68
+SPLIT turrets_fps t=15.233 phase=window_3 fps=120.0 draw_calls=300 primitives=294679 objects=610 p1_hp=76 p2_hp=76 turret_shots=72
+SPLIT turrets_fps t=16.233 phase=window_4 fps=119.0 draw_calls=302 primitives=294743 objects=622 p1_hp=220 p2_hp=220 turret_shots=76
+SPLIT turrets_fps t=17.233 phase=window_4 fps=121.0 draw_calls=300 primitives=294687 objects=614 p1_hp=172 p2_hp=172 turret_shots=80
+SPLIT turrets_fps t=18.233 phase=window_4 fps=119.0 draw_calls=300 primitives=294687 objects=614 p1_hp=148 p2_hp=148 turret_shots=84
+SPLIT turrets_fps t=19.233 phase=window_4 fps=120.0 draw_calls=300 primitives=294687 objects=614 p1_hp=124 p2_hp=124 turret_shots=88
+SPLIT turrets_fps t=20.233 phase=window_4 fps=121.0 draw_calls=302 primitives=294735 objects=618 p1_hp=100 p2_hp=100 turret_shots=96
+RESULT turrets_fps ok checks=0 failed=0 t=20.633 fps_avg=120.0 fps_avg_steady=120.1 fps_min=119.0 fps_min_steady=119.0 refresh_hz=120.0 draw_calls_max=302 primitives_max=294743 samples=20 windows=4 turret_shots=96 display=macOS
+rc=0

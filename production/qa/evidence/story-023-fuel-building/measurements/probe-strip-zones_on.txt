@@ -1,0 +1,92 @@
+STRICT     drive coast                  rc=0
+STRICT     drive showcase               rc=0
+STRICT     drive soak                   rc=0
+STRICT     drive walls                  rc=0
+STRICT     split ammo                   rc=0
+STRICT     split ammo_alone             rc=0
+STRICT     split ammo_showcase          rc=0
+NORMALIZED split badly_damaged          rc=0 rewrites=[2]
+STRICT     split badly_damaged_off      rc=0
+STRICT     split badly_damaged_showcase rc=0
+STRICT     split base_walls             rc=0
+STRICT     split base_walls_showcase    rc=0
+STRICT     split bases                  rc=0
+DIFF       split camera_showcase        rc 0->0, lines 11->19, first difference at line 8
+    base: SPLIT camera_showcase t=10.717 frame=645 moment=depot p1=above p2=above
+    new : SCRIPT ERROR: Invalid access to property or key 'global_position' on a base object of type 'null instance'.
+STRICT     split camera_views           rc=0
+STRICT     split choice                 rc=0
+STRICT     split countdown              rc=0
+STRICT     split crash                  rc=0
+STRICT     split crash_showcase         rc=0
+DIFF       split depot_tanks            rc 0->1, lines 24->19, first difference at line 17
+    base: SPLIT depot_tanks t=22.233 depot=FuelCanDepot1 from=(0.0,-12.0) taken_after=1.15 clearance=1.00
+    new : CHECK depot_tanks depot_cans FAIL  | PROBLEMS: the depot has no FuelCanDepot1; the depot has no FuelCanDepot2; the depot has no FuelCanDepot3; the depot has no FuelCanDepot4; the depot has no FuelCanDepot5
+STRICT     split destruction            rc=0
+DIFF       split explosions             rc 0->0, lines 73->73, first difference at line 33
+    base: ERROR: Explosion '@Node3D@10': blast() was given a size that is not above zero, so it plays nothing.
+    new : ERROR: Explosion '@Node3D@34': blast() was given a size that is not above zero, so it plays nothing.
+STRICT     split explosions_off         rc=0
+STRICT     split explosions_showcase    rc=0
+STRICT     split flag_run               rc=0
+STRICT     split flag_showcase          rc=0
+DIFF       split flag_walls             rc 0->1, lines 62->62, first difference at line 3
+    base: CHECK flag_walls walls_data PASS Base1 x -115.3..-110.7 z -2.3..2.3 ; Base2 x 110.7..115.3 z -2.3..2.3 | 8 Flag Walls on layer 64, mask 0, flag_wall_stats.tres, 40 hit points | mirror items=125 self=7 worst=0.0000 m | first spots 
+    new : CHECK flag_walls walls_data FAIL Base1 x -115.3..-110.7 z -2.3..2.3 ; Base2 x 110.7..115.3 z -2.3..2.3 | 8 Flag Walls on layer 64, mask 0, flag_wall_stats.tres, 40 hit points | mirror items=109 self=5 worst=0.0000 m | first spots 
+STRICT     split flag_walls_showcase    rc=0
+STRICT     split fuel                   rc=0
+STRICT     split fuel_cans              rc=0
+STRICT     split fuel_hint              rc=0
+STRICT     split fuel_showcase          rc=0
+STRICT     split garage_scrap_walls     rc=0
+STRICT     split garage_scrap_walls_showcase rc=0
+STRICT     split gyro                   rc=0
+STRICT     split gyro_cover             rc=0
+STRICT     split heights                rc=0
+STRICT     split heights_showcase       rc=0
+STRICT     split hud                    rc=0
+STRICT     split idle_burn              rc=0
+STRICT     split isolation              rc=0
+STRICT     split layout                 rc=0
+STRICT     split loss                   rc=0
+STRICT     split map_bases              rc=0
+DIFF       split map_cover              rc 0->1, lines 34->29, first difference at line 27
+    base: SPLIT map_cover t=18.267 depot=FuelCanDepot1 taken_after=1.38 wall_contacts=0
+    new : CHECK map_cover cover_stops FAIL WreckWestOuterSouth and WreckEastOuterSouth: 4 runs met the face at >= 1.000 of top speed, stop ticks <= 1, gap off the half-length <= 0.000 m, end speed <= 0.00 m/s; 4 shots ended <= 0.000 m off t
+STRICT     split map_edges              rc=0
+STRICT     split map_ford               rc=0
+DIFF       split map_layout             rc 0->1, lines 135->135, first difference at line 19
+    base: SPLIT map_layout t=0.167 entry=FuelCanCanyonWest group=place table=(-88.00,-26.00) built=(-88.00,-26.00) off=0.000
+    new : SPLIT map_layout t=0.167 entry=FuelCanCanyonWest group=place table=(-88.00,-26.00) built=(inf,inf) off=inf
+DIFF       split map_legibility         rc 0->1, lines 10->11, first difference at line 3
+    base: SPLIT map_legibility t=1.100 frame=68 phase=channel_p1_gyrocopter moment=channel_p1_gyrocopter cam1_to_p2=40.0 cam1_to_can=41.9 cam1_to_flag=88.2 cam2_to_p1=40.0 cam2_to_can=103.7 cam2_to_flag=153.2 p1_type=gyrocopter p1_x=-40.00 
+    new : SPLIT map_legibility t=1.100 frame=68 phase=channel_p1_gyrocopter moment=channel_p1_gyrocopter cam1_to_p2=40.0 cam1_to_can=inf cam1_to_flag=88.2 cam2_to_p1=40.0 cam2_to_can=inf cam2_to_flag=153.2 p1_type=gyrocopter p1_x=-40.00 p1_
+STRICT     split map_showcase           rc=0
+DIFF       split mines                  rc 0->1, lines 49->64, first difference at line 37
+    base: CHECK mines mine_on_a_fuel_can_spot PASS a Truck laid a Mine on a Fuel Can's spot (the Can has no body: the ground stays open); a Truck with 20 Fuel driven over both was refuelled by the Can 4 ticks before the Mine destroyed it
+    new : ERROR: Node not found: "FuelCanFlatWest" (relative to "/root/SplitScreenHarness/SplitScreen/World/Map").
+STRICT     split mines_showcase         rc=0
+STRICT     split quick_fixes_showcase   rc=0
+STRICT     split respawn_showcase       rc=0
+STRICT     split round_over             rc=0
+STRICT     split showcase               rc=0
+STRICT     split simultaneous           rc=0
+STRICT     split spot_turn              rc=0
+STRICT     split token_choice           rc=0
+STRICT     split token_layout           rc=0
+NORMALIZED split token_ui               rc=0 rewrites=[2]
+STRICT     split tokens                 rc=0
+NORMALIZED split tokens_data            rc=0 rewrites=[18]
+STRICT     split tokens_showcase        rc=0
+NORMALIZED split turret_looks           rc=0 rewrites=[5]
+STRICT     split turret_looks_showcase  rc=0
+DIFF       split turrets                rc 0->1, lines 39->39, first difference at line 3
+    base: CHECK turrets turrets_data PASS 4 Turrets at (-101, -10), (-101, 10), (101, 10), (101, -10), mirrored (mirror items=129 self=7 worst=0.0000 m), on layer 1 with mask 0, turret_stats.tres, the Buggy's weapon with the interval double
+    new : CHECK turrets turrets_data FAIL 4 Turrets at (-101, -10), (-101, 10), (101, 10), (101, -10), mirrored (mirror items=113 self=5 worst=0.0000 m), on layer 1 with mask 0, turret_stats.tres, the Buggy's weapon with the interval double
+STRICT     split turrets_showcase       rc=0
+NORMALIZED split unit_swap              rc=0 rewrites=[1]
+STRICT     split unit_swap_showcase     rc=0
+STRICT     split units                  rc=0
+STRICT     split units_showcase         rc=0
+STRICT     split weapons                rc=0
+-- 59 strict, 5 normalized, 9 bad of 73 compared

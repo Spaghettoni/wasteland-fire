@@ -1,0 +1,248 @@
+#!/usr/bin/env python3
+"""Seeded defects for Story 024 (the ammunition buildings and no Mines at the supply zones): each one exact text replacement in a
+scratch copy of the repo, run against the scenario that guards it (the whole ammo_buildings scenario: about thirty seconds headless).
+KILLED when the scenario fails (rc != 0 or a FAIL CHECK) or, for the regression kind, when an older scenario's output differs from its
+baseline (through the story's exact rewrites). A mutant whose run prints no RESULT line for its scenario is BROKEN (the replacement made
+the script unusable, not a verdict) and is counted apart. One worker per scratch copy, so no two mutants ever share a file (story 011's
+lesson). Template: story 023's seeded-defects23.py.
+
+usage: seeded-defects24.py BASELINE_DIR WORK_DIR [--dry] [--only name,name]
+  BASELINE_DIR holds the baselines of the older scenarios as split-NAME.txt (the regression kind)
+  WORK_DIR gets copy0..copy2 (scratch copies of the repo; they are diffed against the repo at the end)
+  NORMALIZERS (environment) names the story's exact rewrites (normalizers.json), applied to the regression kind
+  PROBES (environment) names the probe result files (probe-NAME.txt of PROBE_DIR): every older scenario a probe found to differ gets a
+  regression mutant for that probe's strip rule
+  --dry only checks that every replacement text occurs exactly once in its file
+"""
+import json
+import os
+import re
+import subprocess
+import sys
+from concurrent.futures import ThreadPoolExecutor
+
+REPO = "/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire"
+BASE = sys.argv[1]
+WORK = sys.argv[2]
+DRY = "--dry" in sys.argv
+WORKERS = 3
+RULES = json.load(open(os.environ["NORMALIZERS"])) if os.environ.get("NORMALIZERS") else {}
+COPIES = [os.path.join(WORK, "copy%d" % i) for i in range(WORKERS)]
+
+ZONE = "src/gameplay/supply/supply_zone.gd"
+SETTINGS = "src/gameplay/supply/supply_settings.gd"
+SETTINGS_DATA = "src/gameplay/supply/data/supply_settings.tres"
+BUILDING = "src/gameplay/supply/ammo_building.tscn"
+MAP = "src/gameplay/maps/map_01/map_01.tscn"
+MINES = "src/gameplay/mines/mine_layer.gd"
+MINE_DATA = "src/gameplay/mines/data/mine_settings.tres"
+MINE_SETTINGS = "src/gameplay/mines/mine_settings.gd"
+NOTICE = "src/ui/hud/player_notice.gd"
+NOTICE_SCENE = "src/ui/hud/player_notice.tscn"
+SPLIT = "src/gameplay/split_screen/split_screen.gd"
+MAP_FIELD = "src/gameplay/maps/map_field.gd"
+GYRO = "src/gameplay/units/data/gyrocopter_stats.tres"
+RUNNER = "tools/evidence/split_screen_harness.gd"
+A = "ammo_buildings"
+
+LOOP = "\tfor unit: Unit in listed:\n\t\tif before.has(unit) and unit.is_alive and _is_stopped(unit):\n\t\t\t_give(unit, delta)\n"
+AMMO_BRANCH = "\t\tKind.AMMO:\n\t\t\tfor weapon: Weapon in weapons:\n\t\t\t\tif weapon.unit == unit:\n\t\t\t\t\tweapon.rearm(float(weapon.capacity) / settings.ammo_seconds_to_full * delta)\n"
+FUEL_LINE = "\t\t\tunit.refuel(unit.fuel_capacity / settings.fuel_seconds_to_full * delta)\n"
+LAY_ORDER = "\tif is_near_supply_zone(point):\n\t\tlay_refused.emit(Refusal.NEAR_SUPPLY)\n\t\treturn\n\tif not is_open_ground(point):\n\t\tlay_refused.emit(Refusal.NO_ROOM)\n\t\treturn\n"
+SUPPLY_LIST = 'supply_zones = [NodePath("Depot/FuelZoneWest"), NodePath("Depot/FuelZoneEast"), NodePath("AmmoBuildingWest/AmmoZone"), NodePath("AmmoBuildingEast/AmmoZone")]\n'
+STRIP_GUARD = "bool(script.get_script_constant_map().get(AMMO_BUILDINGS_CONSTANT, false)) or root.field == null:"
+ZONE_POSITION = "[node name=\"AmmoZone\" parent=\".\" instance=ExtResource(\"1_zone\")]\ntransform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 0)\nkind = 1\n"
+PAINT = "[sub_resource type=\"StandardMaterial3D\" id=\"StandardMaterial3D_paint\"]\nalbedo_color = Color(1, 0.95, 0.55, 1)\n"
+SLAB_OVERRIDE = "[node name=\"Slab\" parent=\"AmmoZone/Marking\" index=\"0\"]\nmesh = SubResource(\"BoxMesh_slab_ammo\")\n"
+
+M = [
+ # name, file, old, new, scenario, kind, module ("" for the whole scenario); old and new may be lists of equal length
+ # --- the story's seeded defects (Implementation Notes)
+ ("ammunition_zone_refuels", ZONE, AMMO_BRANCH, "\t\tKind.AMMO:\n" + FUEL_LINE, A, "check", ""),
+ ("fuel_zone_rearms", [ZONE, SPLIT], [FUEL_LINE + "\t\tKind.AMMO:\n", "if zone != null and zone.kind == SupplyZone.Kind.AMMO:"],
+  [FUEL_LINE + "\t\t\tfor weapon: Weapon in weapons:\n\t\t\t\tif weapon.unit == unit:\n\t\t\t\t\tweapon.rearm(float(weapon.capacity) / settings.ammo_seconds_to_full * delta)\n\t\tKind.AMMO:\n", "if zone != null:"], A, "check", ""),
+ ("weapons_not_handed", SPLIT, "\t\t\tzone.weapons = weapons\n", "\t\t\tzone.weapons = []\n", A, "check", ""),
+ ("other_players_weapon_rearmed", ZONE, "if weapon.unit == unit:", "if weapon.unit != unit:", A, "check", ""),
+ ("the_whole_load_at_once", ZONE, "weapon.rearm(float(weapon.capacity) / settings.ammo_seconds_to_full * delta)", "weapon.rearm(float(weapon.capacity))", A, "check", ""),
+ ("the_ammo_rate_written_in_code", ZONE, "float(weapon.capacity) / settings.ammo_seconds_to_full * delta", "float(weapon.capacity) / 4.0 * delta", A, "check", ""),
+ ("only_the_first_unit_rearmed", ZONE, LOOP, LOOP + "\t\t\tbreak\n", A, "check", ""),
+ ("no_stopped_test_for_ammo", ZONE, "if before.has(unit) and unit.is_alive and _is_stopped(unit):", "if before.has(unit) and unit.is_alive and (_is_stopped(unit) or kind == Kind.AMMO):", A, "check", ""),
+ ("no_mine_refusal_at_a_zone", MINES, "\tif is_near_supply_zone(point):\n\t\tlay_refused.emit(Refusal.NEAR_SUPPLY)\n", "\tif false:\n\t\tlay_refused.emit(Refusal.NEAR_SUPPLY)\n", A, "check", ""),
+ ("margin_without_the_trigger_radius", MINES, "var grown: float = settings.supply_margin + settings.trigger_radius\n", "var grown: float = settings.supply_margin\n", A, "check", ""),
+ ("supply_test_after_the_open_ground_test", MINES, LAY_ORDER,
+  "\tif not is_open_ground(point):\n\t\tlay_refused.emit(Refusal.NO_ROOM)\n\t\treturn\n\tif is_near_supply_zone(point):\n\t\tlay_refused.emit(Refusal.NEAR_SUPPLY)\n\t\treturn\n", A, "check", ""),
+ ("fuel_zones_left_out_of_supply_zones", MAP, SUPPLY_LIST, 'supply_zones = [NodePath("AmmoBuildingWest/AmmoZone"), NodePath("AmmoBuildingEast/AmmoZone")]\n', A, "check", ""),
+ ("building_on_the_map_layer", BUILDING, "collision_layer = 64\n", "collision_layer = 1\n", A, "check", ""),
+ ("building_off_the_cover_layer", BUILDING, "collision_layer = 64\n", "collision_layer = 0\n", A, "check", ""),
+ ("notice_text_missing_from_the_scene", NOTICE_SCENE, 'near_supply_text = "No Mines at a supply building"\n', "", A, "check", ""),
+ # --- the data
+ ("ammo_time_8_s", SETTINGS_DATA, "ammo_seconds_to_full = 4.0\n", "ammo_seconds_to_full = 8.0\n", A, "check", ""),
+ ("supply_margin_2_m", MINE_DATA, "supply_margin = 3.0\n", "supply_margin = 2.0\n", A, "check", ""),
+ ("supply_margin_zero", MINE_DATA, "supply_margin = 3.0\n", "supply_margin = 0.0\n", A, "check", ""),
+ ("ammo_zone_declares_the_fuel_kind", BUILDING, ZONE_POSITION, ZONE_POSITION.replace("kind = 1\n", "kind = 0\n"), A, "check", ""),
+ ("ammo_zone_one_metre_off_the_building", BUILDING, ZONE_POSITION, ZONE_POSITION.replace("1, 5, 0, 0)", "1, 6, 0, 0)"), A, "check", ""),
+ ("building_3_m_tall", BUILDING, "[sub_resource type=\"BoxShape3D\" id=\"BoxShape3D_building\"]\nsize = Vector3(4, 1.8, 6)\n", "[sub_resource type=\"BoxShape3D\" id=\"BoxShape3D_building\"]\nsize = Vector3(4, 3, 6)\n", A, "check", ""),
+ ("marking_in_the_fuel_amber", BUILDING, PAINT, PAINT.replace("Color(1, 0.95, 0.55, 1)", "Color(0.96, 0.7, 0.18, 1)"), A, "check", ""),
+ ("slab_not_overridden", BUILDING, SLAB_OVERRIDE, "", A, "check", ""),
+ ("west_building_one_metre_off", MAP, 'transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -64, 0, 14)\n', 'transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -65, 0, 14)\n', A, "check", ""),
+ ("east_building_mirrored_not_turned", MAP, 'transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 64, 0, 14)\n', 'transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 64, 0, 14)\n', A, "check", ""),
+ ("gyrocopter_mask_holds_the_cover_layer", GYRO, "collision_mask = 1\n", "collision_mask = 65\n", A, "check", ""),
+ ("first_problem_ammo_time_le_zero", SETTINGS, "	if not (ammo_seconds_to_full > 0.0):\n", "	if ammo_seconds_to_full <= 0.0:\n", A, "check", ""),
+ ("first_problem_margin_lt_zero", MINE_SETTINGS, "	if not (supply_margin >= 0.0):\n", "	if supply_margin < 0.0:\n", A, "check", ""),
+ # --- the rules
+ ("ammunition_zone_gives_fuel_too", ZONE, AMMO_BRANCH, "\t\tKind.AMMO:\n" + FUEL_LINE + AMMO_BRANCH.split("Kind.AMMO:\n")[1], A, "check", ""),
+ ("the_zone_ticks_while_the_tree_is_paused", BUILDING, "kind = 1\n", "kind = 1\nprocess_mode = 3\n", A, "check", ""),
+ ("area_test_ignores_z", MINES, "and absf(local.z) <= zone.size.z / 2.0 + grown", "and true", A, "check", ""),
+ ("area_test_ignores_x", MINES, "if absf(local.x) <= zone.size.x / 2.0 + grown and", "if true and", A, "check", ""),
+ ("supply_refusal_reads_as_a_base", MINES, "lay_refused.emit(Refusal.NEAR_SUPPLY)", "lay_refused.emit(Refusal.NEAR_BASE)", A, "check", ""),
+ ("supply_refusal_text_is_the_room_text", NOTICE, "\t\tMineLayer.Refusal.NEAR_SUPPLY:\n\t\t\treturn near_supply_text\n", "\t\tMineLayer.Refusal.NEAR_SUPPLY:\n\t\t\treturn no_room_text\n", A, "check", ""),
+ ("zones_not_handed_to_the_mine_layers", SPLIT, "\t\tlayer.supply_zones = field.supply_zones\n", "\t\tlayer.supply_zones = []\n", A, "check", ""),
+ ("weapons_handed_in_the_wrong_order", SPLIT, "var weapons: Array[Weapon] = [player_1_weapon, player_2_weapon]", "var weapons: Array[Weapon] = [player_2_weapon, player_1_weapon]", A, "check", ""),
+ ("no_two_tick_rule", ZONE, "if before.has(unit) and unit.is_alive and _is_stopped(unit):", "if unit.is_alive and _is_stopped(unit):", A, "check", ""),
+ ("a_unit_out_of_play_is_not_skipped", ZONE, "if before.has(unit) and unit.is_alive and _is_stopped(unit):", "if before.has(unit) and _is_stopped(unit):", A, "check", ""),
+ ("capacity_from_the_type_not_the_weapon", ZONE, "float(weapon.capacity)", "float(unit.stats.ammo_capacity)", A, "check", ""),
+ ("an_unlisted_weapon_is_skipped_by_none", ZONE, "\t\t\tfor weapon: Weapon in weapons:\n\t\t\t\tif weapon.unit == unit:\n", "\t\t\tfor weapon: Weapon in weapons.slice(0, 1):\n\t\t\t\tif weapon.unit == unit:\n", A, "check", ""),
+ ("the_zone_ticks_after_the_weapons", "src/gameplay/supply/supply_zone.tscn", "collision_layer = 0\ncollision_mask = 18\n", "collision_layer = 0\ncollision_mask = 18\nprocess_physics_priority = 200\n", A, "check", ""),
+ ("readme_silent_about_the_refusal", "README.md", '"No Mines at a supply building" for a second and a half', '"Not here" for a second and a half', A, "check", ""),
+ ("map_field_does_not_warn_for_a_null_zone", MAP_FIELD, "\t\t\tpush_warning(\"MapField '%s': supply_zones entry %d is not assigned, so that zone is skipped.\" % [name, index])\n", "\t\t\tpass\n", A, "check", ""),
+]
+# --- the runner's strip: the older scenarios keep their outputs (one regression mutant per older output a probe found to change)
+for _probe in [a for a in os.environ.get("PROBES", "").split(",") if a]:
+    _text = open(os.path.join(os.environ["PROBE_DIR"], "probe-%s.txt" % _probe)).read()
+    _rule = {"buildings_on": [("\tif " + STRIP_GUARD + "\n", "\tif true or " + STRIP_GUARD + "\n")],
+             "list_kept": [("\troot.field.supply_zones = []\n\tfor building_name", "\troot.field.supply_zones = _probe_fuel_zones_of(root.field)\n\tfor building_name")]}[_probe]
+    _tail = "" if _probe == "buildings_on" else open(os.path.join(os.environ["PROBE_DIR"], "helper-%s.txt" % _probe)).read()
+    for _scn in re.findall(r"^DIFF\s+split\s+(\S+)", _text, re.M):
+        M.append(("runner_%s_%s" % (_probe, _scn), [RUNNER] * len(_rule) + ([RUNNER] if _tail else []), [o for o, _ in _rule] + (["\n"] if _tail else []), [n for _, n in _rule] + ([_tail] if _tail else []), _scn, "regress", ""))
+
+# Mutants no output can tell from the build: reported apart, with the reason, when they survive.
+EQUIVALENT = {
+ "a_unit_out_of_play_is_not_skipped": "Weapon.rearm() refuses a Unit out of play (the second guard, the story expects this one) and the zone's two-tick rule keeps the one stale entry out as well: nothing a run can read",
+ "capacity_from_the_type_not_the_weapon": "the Weapon's capacity is the type's ammo_capacity at the refill and a type's load is data that no scenario changes mid-life: the two numbers are the same in every run",
+ "weapons_handed_in_the_wrong_order": "",
+}
+WINDOWED = {}
+
+
+def prepare(i):
+    d = COPIES[i]
+    os.makedirs(WORK, exist_ok=True)
+    if os.path.exists(d):
+        subprocess.run(["find", d, "-delete"], check=True)
+    subprocess.run(["rsync", "-a", "--exclude", ".git", "--exclude", "production", "--exclude", "design", "--exclude", "docs",
+                    "--exclude", "tests", "--exclude", "assets/art/svaty_jur", REPO + "/", d + "/"], check=True)
+    return d
+
+
+def run(copy, scn, module):
+    env = dict(os.environ)
+    env["AMMOB_ONLY"] = module
+    p = subprocess.run(["godot", "--headless", "--fixed-fps", "60", "--path", copy, "res://tools/evidence/split_screen_harness.tscn", "--", "--scenario=" + scn],
+                       capture_output=True, text=True, timeout=2400, env=env)
+    return p.returncode, p.stdout + p.stderr
+
+
+def pairs_of(rel, old, new):
+    """The (file, old text, new text) replacements of a mutant: one, or several when the three are lists of equal length."""
+    if isinstance(old, list):
+        assert len(old) == len(new)
+        rels = rel if isinstance(rel, list) else [rel] * len(old)
+        return list(zip(rels, old, new))
+    return [(rel, old, new)]
+
+
+def one(copy, mutant):
+    name, rel, old, new, scn, kind, module = mutant
+    pairs = pairs_of(rel, old, new)
+    origs = {}
+    for file, _, _ in pairs:
+        origs[file] = open(os.path.join(copy, file)).read()   # this worker is the only one that touches this copy
+    work = dict(origs)
+    for file, before, after in pairs:
+        if before == "\n" and after.startswith("\n"):         # an appended helper: at the end of the file
+            work[file] = work[file] + after
+            continue
+        if work[file].count(before) != 1:
+            return name, None, "NOT APPLIED (text found %d times in %s)" % (work[file].count(before), file)
+        work[file] = work[file].replace(before, after)
+    for file, text in work.items():
+        open(os.path.join(copy, file), "w").write(text)
+    try:
+        rc, out = run(copy, scn, module)
+    finally:
+        for file, text in origs.items():
+            open(os.path.join(copy, file), "w").write(text)
+    if not re.search(r"^RESULT %s " % scn, out, re.M):
+        return name, None, "BROKEN: no RESULT line (rc=%d) %s" % (rc, " | ".join(l for l in out.splitlines() if "ERROR" in l)[:300])
+    if kind == "check":
+        fails = re.findall(r"^CHECK \S+ (\S+) FAIL", out, re.M)
+        dead = rc != 0 or bool(fails)
+        detail = "%s%s rc=%d fails=%s" % (scn, "[" + module + "]" if module else "", rc, ",".join(fails) or "-")
+    else:
+        if not os.path.exists(os.path.join(BASE, "split-%s.txt" % scn)):
+            return name, None, "BROKEN: no baseline split-%s.txt (the regression kind needs a retained scenario)" % scn
+        base = open(os.path.join(BASE, "split-%s.txt" % scn)).read()
+        for before, after in RULES.get(scn, []):
+            out = out.replace(after, before)
+        keep = lambda t: [l for l in t.splitlines() if l.startswith(("SPLIT ", "CHECK ", "RESULT ", "SCRIPT ERROR", "ERROR:", "WARNING:"))]
+        dead = keep(out) != keep(base) or rc != 0
+        detail = "%s rc=%d output %s the baseline" % (scn, rc, "differs from" if dead else "equals")
+    return name, dead, detail
+
+
+def worker(i, jobs):
+    return [one(COPIES[i], m) for m in jobs[i::WORKERS]]
+
+
+def main():
+    if DRY:
+        bad = 0
+        for name, rel, old, new, scn, kind, module in M:
+            for file, before, after in pairs_of(rel, old, new):
+                if before == "\n" and after.startswith("\n"):
+                    continue
+                n = open(os.path.join(REPO, file)).read().count(before)
+                if n != 1 or before == after:
+                    bad += 1
+                    print("DRY  %-52s text found %d times in %s (or no change)" % (name, n, file))
+        print("DRY: %d mutants, %d with a replacement text that is not found exactly once" % (len(M), bad))
+        return 1 if bad else 0
+    jobs = M
+    if "--only" in sys.argv:
+        wanted = sys.argv[sys.argv.index("--only") + 1].split(",")
+        jobs = [m for m in M if m[0] in wanted]
+    for i in range(WORKERS):
+        prepare(i)
+    with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+        results = [r for part in pool.map(lambda i: worker(i, jobs), range(WORKERS)) for r in part]
+    order = {m[0]: k for k, m in enumerate(M)}
+    results.sort(key=lambda r: order[r[0]])
+    killed = survived = broken = 0
+    for name, dead, detail in results:
+        if dead is False and name in WINDOWED:
+            print("WINDOWED   %-52s %s | %s" % (name, detail, WINDOWED[name]))
+            killed += 1
+            continue
+        if dead is False and EQUIVALENT.get(name):
+            print("EQUIVALENT %-52s %s | %s" % (name, detail, EQUIVALENT[name]))
+            killed += 1
+            continue
+        status = "BROKEN " if dead is None else ("KILLED " if dead else "SURVIVED")
+        killed += dead is True
+        survived += dead is False
+        broken += dead is None
+        print("%s %-56s %s" % (status, name, detail))
+    print("-- %d mutants: %d killed or equivalent, %d survived, %d broken or not applied" % (len(jobs), killed, survived, broken))
+    clean = True
+    for i in range(WORKERS):
+        d = subprocess.run(["diff", "-rq", "--exclude=.godot", "--exclude=production", "--exclude=.git", "--exclude=design", "--exclude=docs",
+                            "--exclude=tests", "--exclude=svaty_jur", REPO, COPIES[i]], capture_output=True, text=True)
+        if d.stdout.strip():
+            clean = False
+            print("COPY %d DIFFERS FROM THE REPO:\n%s" % (i, d.stdout[:600]))
+    print("-- the %d scratch copies %s the repo (apart from .godot, production, design, docs, tests, svaty_jur)" % (WORKERS, "equal" if clean else "DIFFER FROM"))
+    return 0 if survived == 0 and broken == 0 and clean else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
