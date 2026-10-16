@@ -1,0 +1,51 @@
+The read-only engine review of Story 026 by godot-gdscript-specialist (launched 2026-10-16 about 02:19 with a closed file list, a limit
+of 12 tool calls and a report of 450 words; it stopped at the API limit after 8 calls, was resumed at 08:07 after the reset and reported
+at 08:19; 158,411 tokens). Its report, verbatim:
+
+All paths below are under /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire/src/gameplay/maps/. I made no edits and ran no further tools.
+
+**1. Strokes are lost in any frame with two or more physics ticks** (tyre_tracks.gd:151-154; tyre_track_painter.gd:57-58)
+- **Scenario:**
+  - Deferred calls flush after each physics step, so `_draw()` runs once per tick, and every redraw starts with `canvas_item_clear`.
+  - The SubViewport renders once per frame, so tick 1's quads are recorded, dropped from the list, then wiped by tick 2's redraw.
+  - At 30 fps every second stroke never reaches the map, so the tracks come out dashed. `--fixed-fps 60` cannot show this.
+  - This comes from my memory of the 4.x main loop, not from source. Confirm with a windowed `--fixed-fps 30` readback.
+- **Fix:** keep `painter.add` in the tick. Move `queue_redraw()` and `UPDATE_ONCE` into `_process`, guarded by `painter.waiting() > 0`.
+
+**2. `_exit_tree` zeroes a process-wide global unconditionally, and only `_ready` sets it back** (tyre_tracks.gd:137-142)
+- **Scenario:**
+  - If a replacement Map enters before the old one leaves (add the new scene, then free the old), the old exit publishes strength 0 after the new `_ready` published 1.
+  - Match two then has no tracks and no error.
+  - A node removed and re-added also stays off.
+  - I did not read the scene-swap code.
+- **Fix:** re-publish on `NOTIFICATION_ENTER_TREE` when `_usable`. In `_exit_tree`, reset only if `RenderingServer.global_shader_parameter_get(MAP_GLOBAL) == track_viewport.get_texture()`.
+
+**3. Old marks show at full strength for one frame after a restart** (tyre_tracks.gd:165-174; spatial_env_ground.gdshader:184-185). This needs a windowed check.
+- **Scenario:**
+  - `clear()` publishes clock 0 at once, but the map clears only when the TrackMap next renders.
+  - Godot defines no draw order between sibling viewports, so a view drawn first reads the old texels with clock 0. Age goes negative and `left` becomes 1.
+- **Fix:** publish LOOK with w = 0 in `clear()`. Restore w = 1 in the next `_physics_process`.
+
+**4. Hardening: tick order rests on tree order alone** (tyre_tracks.gd:21-25)
+- **Scenario:**
+  - The claim holds. `global_transform` in `_physics_process` is the true tick transform, so the interpolated tyre never trails the stroke end.
+  - A mover that ticks earlier (I did not read Unit) would put the stroke end up to one step ahead of the drawn tyre.
+- **Fix:** set `process_physics_priority = -100` on TyreTracks.
+
+**None found**
+- **Area 2, unset global:**
+  - The engine binds a finite default texture, denominators are floored, and `reach` is finite (clock.w defaults to 1).
+  - Every term is multiplied by look.w = 0, so the effect is exactly nothing, with no NaN or Inf path.
+  - A freed viewport's proxy is reset by the engine, which is harmless at strength 0.
+  - The declarations match the shader.
+- **Area 3, shader math:**
+  - Bilinear G/R holds, and hold and fade match `strength_at`.
+  - The rut sign is right. `slope` is N.xz/N.y, which is minus the height gradient, so +depth x gradient digs a groove. The units are metres.
+  - `textureSize` and the hints are legal in 4.7.
+- **Area 4, canvas shader:**
+  - Four-point `draw_primitive` is the documented quad.
+  - UV is float32 and affine over each parallelogram, so interpolation is exact.
+  - `blend_disabled` is valid.
+- **Area 1 apart from finding 1, and area 5 (GDScript):** none found.
+
+What was done with each finding: the evidence document's "Review" section and the decision log (2026-10-16, four entries).

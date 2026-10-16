@@ -2,6 +2,17 @@
 
 [ext_resource type="Script" path="res://src/gameplay/units/unit_stats.gd" id="1_g7j1u"]
 [ext_resource type="PackedScene" path="res://src/gameplay/units/models/motorbike_mesh_model.tscn" id="2_model"]
+[ext_resource type="Script" path="res://src/gameplay/units/tyre_contact.gd" id="3_tyre"]
+
+[sub_resource type="Resource" id="Resource_front"]
+script = ExtResource("3_tyre")
+offset = Vector2(0, -0.76)
+width = 0.2
+
+[sub_resource type="Resource" id="Resource_rear"]
+script = ExtResource("3_tyre")
+offset = Vector2(0, 0.72)
+width = 0.25
 
 [resource]
 script = ExtResource("1_g7j1u")
@@ -39,3 +50,4 @@ spawn_fuel_fraction = 1.0
 empty_turn_rate = 1.4
 badly_damaged_fraction = 0.2
 badly_damaged_speed_share = 0.5
+tyres = Array[ExtResource("3_tyre")]([SubResource("Resource_front"), SubResource("Resource_rear")])

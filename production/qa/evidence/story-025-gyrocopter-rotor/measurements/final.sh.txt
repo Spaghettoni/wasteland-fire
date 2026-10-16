@@ -1,0 +1,24 @@
+#!/bin/sh
+# The final chain of Story 025: import, parse every .gd the story added or changed, regenerate the exact rewrites from the source,
+# regress the 77 older outputs, run rotors twice (byte compare), the showcase headless, gdUnit, and the main scene.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad
+F=$S/final
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+date +%H:%M:%S > $F/progress.txt
+sh $S/rg25/manifest.sh $F/manifest-before-chain.txt
+godot --headless --path . --import > $F/import.txt 2>&1; echo "import rc=$?"; grep -c -E "ERROR|WARNING" $F/import.txt
+{ for f in src/gameplay/units/models/rotor_part.gd src/gameplay/units/models/rotor_settings.gd src/gameplay/units/models/rotor_pivot.gd src/gameplay/units/models/mesh_unit_model.gd src/gameplay/units/models/unit_model.gd tools/evidence/split_screen_harness.gd; do echo $f; done; ls tools/evidence/split_screen/rotors*.gd; } | sort -u > $F/gd-list.txt
+wc -l < $F/gd-list.txt
+sed 's#^#res://#' $F/gd-list.txt | xargs godot --headless --path . -s res://.claude/scripts/godot-parse-check.gd -- > $F/parse.txt 2>&1; echo "parse rc=$?"; grep -c "^ok:" $F/parse.txt; grep "PARSE FAIL" $F/parse.txt
+sh $S/rg25/mknorm25.sh
+sh $S/rg25/regress.sh final $S/rg25/normalizers25.json 2>&1 | tail -16
+for run in a b; do godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=rotors > $F/rotors-$run.txt 2>&1 & done; wait
+grep -c "^CHECK" $F/rotors-a.txt; grep -E "^RESULT|FAIL" $F/rotors-a.txt | cut -c1-300
+cmp $F/rotors-a.txt $F/rotors-b.txt && echo "BYTE-IDENTICAL"
+godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=rotors_showcase > $F/showcase-headless.txt 2>&1; echo "showcase rc=$?"; grep -E "^RESULT|FAIL" $F/showcase-headless.txt | cut -c1-200
+godot --headless -s -d --remote-debug tcp://127.0.0.1:0 res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a res://tests --ignoreHeadlessMode > $F/gdunit.txt 2>&1; echo "gdunit rc=$?"; grep -a "Overall Summary" $F/gdunit.txt | cut -c1-200
+godot --path . --windowed --resolution 1280x720 --quit-after 600 > $F/main-scene-600-frames.txt 2>&1; echo "main scene rc=$?"; grep -c -E "ERROR|WARNING|SCRIPT" $F/main-scene-600-frames.txt
+sh $S/rg25/manifest.sh $F/manifest-after-chain.txt
+cmp $F/manifest-before-chain.txt $F/manifest-after-chain.txt && echo "TREE UNCHANGED BY THE CHAIN"
+echo FINAL_DONE
+echo "done $(date +%H:%M:%S) FINAL_DONE" >> $F/progress.txt

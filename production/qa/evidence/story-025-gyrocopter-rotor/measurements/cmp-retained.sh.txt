@@ -1,0 +1,10 @@
+#!/bin/bash
+# Which recorded frame each retained full-size frame is a byte copy of (rec/final is the recording of the final tree).
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+E=production/qa/evidence/story-025-gyrocopter-rotor
+for pair in "01-standing-from-above-both-views.png f00000099.png" "02-flying-at-full-speed-from-above-both-views.png f00000235.png" "03a-rotor-consecutive-frame-1-of-4-from-above.png f00000322.png" "03b-rotor-consecutive-frame-2-of-4-from-above.png f00000323.png" "03c-rotor-consecutive-frame-3-of-4-from-above.png f00000324.png" "03d-rotor-consecutive-frame-4-of-4-from-above.png f00000325.png" "04-between-the-water-tower-legs-from-above-both-views.png f00000411.png" "05-standing-chase-view-both-views.png f00000562.png" "06-flying-at-full-speed-chase-view-both-views.png f00000698.png" "07-between-the-water-tower-legs-chase-view-both-views.png f00000784.png"; do
+  set -- $pair
+  if cmp -s "$E/$1" "$S/rec/final/$2"; then echo "SAME  $1 = recorded $2"; else echo "DIFF  $1 vs $2"; fi
+done
+cmp -s $E/00-launch-both-players-choosing.png $S/rec/launch/f00000089.png && echo "SAME  00-launch = launch f00000089.png" || echo "DIFF 00-launch"

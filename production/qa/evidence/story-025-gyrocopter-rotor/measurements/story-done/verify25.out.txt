@@ -1,0 +1,30 @@
+     918
+parse rc=0
+18
+22
+RESULT rotors ok checks=22 failed=0 t=41.533 rates=4.0/2.0/5.0 arc=90.0 strength=0.65 strobe=0.35 rotor_reach=2.2995 propeller_reach=0.5015 refusals=21 lint_lines=248 file_vertices=13231 keys=13199 triangles=7402 rest_pose_error=0.0000000 box_error=0.0000000 rotor_step_deg=24.000000 rotor_step_share
+rotors a/b BYTE-IDENTICAL
+showcase rc=0
+RESULT rotors_showcase ok checks=0 failed=0 t=13.583 moments=11
+compare exit 1
+NORMALIZED split ammo_buildings         rc=0 rewrites=[1, 3]
+NORMALIZED split badly_damaged          rc=0 rewrites=[2]
+NORMALIZED split explosions             rc=0 rewrites=[3]
+NORMALIZED split flag_walls             rc=0 rewrites=[4]
+NORMALIZED split fuel_building          rc=0 rewrites=[3, 1]
+NORMALIZED split rotors                 rc=0 rewrites=[2, 1]
+NORMALIZED split token_ui               rc=0 rewrites=[2]
+NORMALIZED split tokens_data            rc=0 rewrites=[18]
+DIFF       split turret_looks           rc 0->1, lines 96->96, first difference at line 94
+    base: CHECK turret_looks no_engine_noise PASS errors=5 warnings=0 over every Round of the scenario, the 5 of them that bad_looks causes on purpose (a Turret built with a drum or a steel short or empty, and stats with the fractions out o
+    new : CHECK turret_looks no_engine_noise FAIL errors=5 warnings=1 over every Round of the scenario, the 5 of them that bad_looks causes on purpose (a Turret built with a drum or a steel short or empty, and stats with the fractions out o
+DIFF       split turrets                rc 0->1, lines 39->39, first difference at line 37
+    base: CHECK turrets no_engine_noise PASS errors=1 warnings=0 over every Round of the scenario, the 1 of them that refusals() causes on purpose (a Turret armed with rules that have no damage matrix) accounted for: the Turrets armed, dest
+    new : CHECK turrets no_engine_noise FAIL errors=1 warnings=1 over every Round of the scenario, the 1 of them that refusals() causes on purpose (a Turret armed with rules that have no damage matrix) accounted for: the Turrets armed, dest
+NORMALIZED split unit_swap              rc=0 rewrites=[1]
+-- 68 strict, 9 normalized, 2 bad of 79 compared
+gdunit rc=0
+[38;2;30;144;255mOverall Summary:[0m[38;2;255;255;255m 1 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans |[0m
+     918
+TREE UNCHANGED BY THE CHECK
+VERIFY_DONE

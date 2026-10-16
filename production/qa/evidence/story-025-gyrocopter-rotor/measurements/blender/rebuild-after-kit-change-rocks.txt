@@ -1,0 +1,32 @@
+00:03.504  render           | Saved: '/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad/bl/rocks/previews/canyon_oblique.png'
+00:03.886  render           | Saved: '/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad/bl/rocks/previews/canyon_close.png'
+00:04.166  render           | Saved: '/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad/bl/rocks/previews/canyon_from_above.png'
+00:04.536  render           | Saved: '/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad/bl/rocks/previews/ridge.png'
+OBJECT RidgeCentre triangles=3231
+OBJECT RidgeEast triangles=2594
+OBJECT RidgeWest triangles=2574
+OBJECT RockCanyonNorth triangles=7110
+OBJECT RockCanyonSouth triangles=6221
+PREVIEW /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad/bl/rocks/previews/canyon_oblique.png
+PREVIEW /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad/bl/rocks/previews/canyon_close.png
+PREVIEW /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad/bl/rocks/previews/canyon_from_above.png
+PREVIEW /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad/bl/rocks/previews/ridge.png
+INFO Draco is available, use library at /Applications/Blender.app/Contents/Resources/5.2/scripts/addons_core/io_scene_gltf2/libbf_intern_draco_bridge.dylib
+INFO MeshOptimizer is available, use library at /Applications/Blender.app/Contents/Resources/5.2/scripts/addons_core/io_scene_gltf2/libbf_intern_meshopt_bridge.dylib
+19:16:21 | INFO: Starting glTF 2.0 export
+19:16:21 | INFO: Extracting primitive: RidgeCentre
+19:16:21 | INFO: Primitives created: 1
+19:16:21 | INFO: Extracting primitive: RidgeEast
+19:16:21 | INFO: Primitives created: 1
+19:16:21 | INFO: Extracting primitive: RidgeWest
+19:16:21 | INFO: Primitives created: 1
+19:16:21 | INFO: Extracting primitive: RockCanyonNorth
+19:16:21 | INFO: Primitives created: 1
+19:16:21 | INFO: Extracting primitive: RockCanyonSouth
+19:16:21 | INFO: Primitives created: 1
+19:16:21 | INFO: Finished glTF 2.0 export in 0.06386494636535645 s
+
+EXPORTED /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad/bl/rocks/map_01_rocks.glb
+Blender 5.2.2 LTS (hash d13f752e3b9c built 2026-09-15 01:49:19)
+
+Blender quit

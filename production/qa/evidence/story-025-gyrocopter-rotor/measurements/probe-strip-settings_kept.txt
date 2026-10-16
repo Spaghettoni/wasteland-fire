@@ -1,0 +1,98 @@
+STRICT     drive coast                  rc=0
+STRICT     drive showcase               rc=0
+STRICT     drive soak                   rc=0
+STRICT     drive walls                  rc=0
+DIFF       split ammo                   rc 0->1, lines 45->162, first difference at line 3
+    base: CHECK ammo first_spawn_is_full PASS at the Round's first spawn Player 1's Truck and Player 2's Gyrocopter each started with 100 of 100 Fuel and whole hit points, and each Weapon reported its full load (25 and 40, 'Ammo 25 / 25' an
+    new : ERROR: MeshUnitModel 'GyrocopterMeshModel': rotor_settings is unusable (the mesh file 'res://tools/evidence/frozen/wasteland_gyrocopter_story_024.glb' has no mesh 'RotorAccent'), so its turning parts stand still.
+STRICT     split ammo_alone             rc=0
+DIFF       split ammo_buildings         rc 0->1, lines 95->284, first difference at line 3
+    base: CHECK ammo_buildings settings_are_the_shipped_data PASS all four zones share data/supply_settings.tres, whose ammo time from empty to full is 4.0 s, and both MineLayers read data/mine_settings.tres, whose supply margin is 3.0 m; b
+    new : ERROR: MeshUnitModel 'GyrocopterMeshModel': rotor_settings is unusable (the mesh file 'res://tools/evidence/frozen/wasteland_gyrocopter_story_024.glb' has no mesh 'RotorAccent'), so its turning parts stand still.
+DIFF       split ammo_buildings_showcase rc 0->0, lines 12->47, first difference at line 3
+    base: SPLIT ammo_buildings_showcase t=3.917 frame=234 moment=building_above p1_zone=true p1_building=true p2_zone=true p2_building=true
+    new : ERROR: MeshUnitModel 'GyrocopterMeshModel': rotor_settings is unusable (the mesh file 'res://tools/evidence/frozen/wasteland_gyrocopter_story_024.glb' has no mesh 'RotorAccent'), so its turning parts stand still.
+DIFF       split ammo_showcase          rc 0->0, lines 12->21, first difference at line 3
+    base: SPLIT ammo_showcase t=1.033 frame=61 moment=rows line_p1='Ammo 100 / 100' line_p2='Ammo 25 / 25' mines_p2='Mines 5 / 5'
+    new : ERROR: MeshUnitModel 'GyrocopterMeshModel': rotor_settings is unusable (the mesh file 'res://tools/evidence/frozen/wasteland_gyrocopter_story_024.glb' has no mesh 'RotorAccent'), so its turning parts stand still.
+NORMALIZED split badly_damaged          rc=0 rewrites=[2]
+STRICT     split badly_damaged_off      rc=0
+STRICT     split badly_damaged_showcase rc=0
+STRICT     split base_walls             rc=0
+STRICT     split base_walls_showcase    rc=0
+STRICT     split bases                  rc=0
+STRICT     split camera_showcase        rc=0
+STRICT     split camera_views           rc=0
+STRICT     split choice                 rc=0
+STRICT     split countdown              rc=0
+DIFF       split crash                  rc 0->1, lines 31->1785, first difference at line 3
+    base: CHECK crash spawn_never PASS a Gyrocopter that appeared with the Player already holding the throttle (the Round's first spawn, the respawn after a crash, the spawn after a Swap) or was put down flush against a leg by a tool did no
+    new : ERROR: MeshUnitModel 'GyrocopterMeshModel': rotor_settings is unusable (the mesh file 'res://tools/evidence/frozen/wasteland_gyrocopter_story_024.glb' has no mesh 'RotorAccent'), so its turning parts stand still.
+DIFF       split crash_showcase         rc 0->0, lines 29->488, first difference at line 3
+    base: SPLIT crash_showcase t=0.183 frame=10 moment=launch_above both Gyrocopters spawned in their Garages by the choice keys, the models' lowest points 2.500 and 2.500 m
+    new : ERROR: MeshUnitModel 'GyrocopterMeshModel': rotor_settings is unusable (the mesh file 'res://tools/evidence/frozen/wasteland_gyrocopter_story_024.glb' has no mesh 'RotorAccent'), so its turning parts stand still.
+STRICT     split depot_tanks            rc=0
+STRICT     split destruction            rc=0
+NORMALIZED split explosions             rc=0 rewrites=[3]
+STRICT     split explosions_off         rc=0
+STRICT     split explosions_showcase    rc=0
+STRICT     split flag_run               rc=0
+STRICT     split flag_showcase          rc=0
+NORMALIZED split flag_walls             rc=0 rewrites=[4]
+STRICT     split flag_walls_showcase    rc=0
+STRICT     split fuel                   rc=0
+DIFF       split fuel_building          rc 0->1, lines 77->190, first difference at line 3
+    base: CHECK fuel_building settings_are_the_shipped_data PASS both zones share data/supply_settings.tres: 4.0 s from empty to full and a stopped speed of 0.10 m/s; each zone is on no layer and watches the units and gyrocopters layers (ma
+    new : ERROR: MeshUnitModel 'GyrocopterMeshModel': rotor_settings is unusable (the mesh file 'res://tools/evidence/frozen/wasteland_gyrocopter_story_024.glb' has no mesh 'RotorAccent'), so its turning parts stand still.
+DIFF       split fuel_building_showcase rc 0->0, lines 12->47, first difference at line 3
+    base: SPLIT fuel_building_showcase t=3.917 frame=234 moment=depot_above p1_zone0=true p1_zone1=true p2_zone0=true p2_zone1=true
+    new : ERROR: MeshUnitModel 'GyrocopterMeshModel': rotor_settings is unusable (the mesh file 'res://tools/evidence/frozen/wasteland_gyrocopter_story_024.glb' has no mesh 'RotorAccent'), so its turning parts stand still.
+STRICT     split fuel_cans              rc=0
+STRICT     split fuel_hint              rc=0
+STRICT     split fuel_showcase          rc=0
+STRICT     split garage_scrap_walls     rc=0
+STRICT     split garage_scrap_walls_showcase rc=0
+STRICT     split gyro                   rc=0
+STRICT     split gyro_cover             rc=0
+DIFF       split heights                rc 0->1, lines 192->830, first difference at line 3
+    base: SCAN Floor layer=1 top=0.000 drawn=none height=high
+    new : ERROR: MeshUnitModel 'GyrocopterMeshModel': rotor_settings is unusable (the mesh file 'res://tools/evidence/frozen/wasteland_gyrocopter_story_024.glb' has no mesh 'RotorAccent'), so its turning parts stand still.
+DIFF       split heights_showcase       rc 0->0, lines 42->987, first difference at line 3
+    base: SPLIT heights_showcase t=0.183 frame=10 moment=garage_spawn_above both Gyrocopters spawned in their Garages by the choice keys, the models' lowest points 2.500 and 2.500 m
+    new : ERROR: MeshUnitModel 'GyrocopterMeshModel': rotor_settings is unusable (the mesh file 'res://tools/evidence/frozen/wasteland_gyrocopter_story_024.glb' has no mesh 'RotorAccent'), so its turning parts stand still.
+STRICT     split hud                    rc=0
+STRICT     split idle_burn              rc=0
+STRICT     split isolation              rc=0
+STRICT     split layout                 rc=0
+STRICT     split loss                   rc=0
+STRICT     split map_bases              rc=0
+STRICT     split map_cover              rc=0
+STRICT     split map_edges              rc=0
+STRICT     split map_ford               rc=0
+STRICT     split map_layout             rc=0
+STRICT     split map_legibility         rc=0
+STRICT     split map_showcase           rc=0
+STRICT     split mines                  rc=0
+STRICT     split mines_showcase         rc=0
+STRICT     split quick_fixes_showcase   rc=0
+STRICT     split respawn_showcase       rc=0
+STRICT     split round_over             rc=0
+STRICT     split showcase               rc=0
+STRICT     split simultaneous           rc=0
+STRICT     split spot_turn              rc=0
+STRICT     split token_choice           rc=0
+STRICT     split token_layout           rc=0
+NORMALIZED split token_ui               rc=0 rewrites=[2]
+STRICT     split tokens                 rc=0
+NORMALIZED split tokens_data            rc=0 rewrites=[18]
+STRICT     split tokens_showcase        rc=0
+NORMALIZED split turret_looks           rc=0 rewrites=[5]
+STRICT     split turret_looks_showcase  rc=0
+NORMALIZED split turrets                rc=0 rewrites=[1]
+STRICT     split turrets_showcase       rc=0
+NORMALIZED split unit_swap              rc=0 rewrites=[1]
+STRICT     split unit_swap_showcase     rc=0
+STRICT     split units                  rc=0
+STRICT     split units_showcase         rc=0
+STRICT     split weapons                rc=0
+-- 59 strict, 8 normalized, 10 bad of 77 compared

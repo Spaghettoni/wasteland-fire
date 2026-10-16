@@ -1,0 +1,27 @@
+#!/bin/sh
+# usage: final26.sh TAG   The final chain of Story 026: import, parse every .gd that stories 025 and 026 added or changed, regenerate the
+# exact rewrites from the source, regress the 79 older outputs, run tyre_tracks twice (byte compare), the showcase headless, gdUnit,
+# and the main scene for 600 frames; a SHA manifest before and after shows the chain changed nothing in the tree.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/903467d6-8576-4a19-ad15-5c4b7052d4e0/scratchpad
+TAG="$1"
+F=$S/final26/$TAG
+mkdir -p $F
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+date +%H:%M:%S > $F/progress.txt
+sh $S/rg26/manifest.sh $F/manifest-before-chain.txt
+godot --headless --path . --import > $F/import.txt 2>&1; echo "import rc=$?"; grep -c -E "ERROR|WARNING" $F/import.txt
+{ for f in src/gameplay/units/tyre_contact.gd src/gameplay/units/unit_stats.gd src/gameplay/maps/tyre_track_settings.gd src/gameplay/maps/tyre_tracks.gd src/gameplay/maps/tyre_track_painter.gd src/gameplay/maps/map_field.gd src/gameplay/split_screen/split_screen.gd src/gameplay/units/models/rotor_part.gd src/gameplay/units/models/rotor_settings.gd src/gameplay/units/models/rotor_pivot.gd src/gameplay/units/models/mesh_unit_model.gd src/gameplay/units/models/unit_model.gd tools/evidence/split_screen_harness.gd; do echo $f; done; ls tools/evidence/split_screen/rotors*.gd tools/evidence/split_screen/tyre_tracks*.gd; } | LC_ALL=C sort -u > $F/gd-list.txt
+wc -l < $F/gd-list.txt
+sed 's#^#res://#' $F/gd-list.txt | xargs godot --headless --path . -s res://.claude/scripts/godot-parse-check.gd -- > $F/parse.txt 2>&1; echo "parse rc=$?"; grep -c "^ok:" $F/parse.txt; grep "PARSE FAIL" $F/parse.txt
+sh $S/rg26/mknorm26.sh
+sh $S/rg26/regress.sh $TAG $S/rg26/normalizers26.json 2>&1 | tail -16
+for run in a b; do godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=tyre_tracks > $F/tyre_tracks-$run.txt 2>&1 & done; wait
+grep -c "^CHECK" $F/tyre_tracks-a.txt; grep -E "^RESULT|FAIL" $F/tyre_tracks-a.txt | cut -c1-300
+cmp $F/tyre_tracks-a.txt $F/tyre_tracks-b.txt && echo "BYTE-IDENTICAL"
+godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=tyre_tracks_showcase > $F/showcase-headless.txt 2>&1; echo "showcase rc=$?"; grep -E "^RESULT|FAIL" $F/showcase-headless.txt | cut -c1-200
+godot --headless -s -d --remote-debug tcp://127.0.0.1:0 res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a res://tests --ignoreHeadlessMode > $F/gdunit.txt 2>&1; echo "gdunit rc=$?"; grep -a "Overall Summary" $F/gdunit.txt | cut -c1-200
+godot --path . --windowed --resolution 1280x720 --quit-after 600 > $F/main-scene-600-frames.txt 2>&1; echo "main scene rc=$?"; grep -c -E "ERROR|WARNING|SCRIPT" $F/main-scene-600-frames.txt
+sh $S/rg26/manifest.sh $F/manifest-after-chain.txt
+cmp $F/manifest-before-chain.txt $F/manifest-after-chain.txt && echo "TREE UNCHANGED BY THE CHAIN"
+echo FINAL_DONE
+echo "done $(date +%H:%M:%S) FINAL_DONE" >> $F/progress.txt

@@ -1,0 +1,50 @@
+[gd_resource type="Resource" script_class="RotorSettings" format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/units/models/rotor_settings.gd" id="1_settings"]
+[ext_resource type="Script" path="res://src/gameplay/units/models/rotor_part.gd" id="2_part"]
+[ext_resource type="Shader" path="res://src/gameplay/units/models/spatial_unit_rotor_smear.gdshader" id="3_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_smear"]
+shader = ExtResource("3_shader")
+
+[sub_resource type="Resource" id="Resource_rotor"]
+resource_name = "Rotor"
+script = ExtResource("2_part")
+accent_mesh = &"RotorAccent"
+neutral_mesh = &"RotorNeutral"
+hub = Vector3(0, 1.58, 0.1)
+axis = Vector3(0, 0.9945219, 0.10452846)
+blade_direction = Vector3(0.90630779, 0.04417564, -0.42030311)
+blade_count = 2
+idle_turns_per_second = 4.0
+full_turns_per_second = 4.0
+smear_reach = 2.3
+smear_body_team_share = 1.0
+smear_tip_team_tone = 0.8
+smear_tip_start = 0.8087
+smear_inner_share = 0.1
+
+[sub_resource type="Resource" id="Resource_propeller"]
+resource_name = "Propeller"
+script = ExtResource("2_part")
+accent_mesh = &"PropellerAccent"
+neutral_mesh = &"PropellerNeutral"
+hub = Vector3(0, 0.9, 0.63)
+axis = Vector3(0, 0, -1.0)
+blade_direction = Vector3(0.34202014, 0.93969262, 0)
+blade_count = 3
+idle_turns_per_second = 2.0
+full_turns_per_second = 5.0
+smear_reach = 0.5
+smear_body_colour = Color(0.3, 0.31, 0.33, 1)
+smear_tip_team_tone = 1.0
+smear_tip_start = 0.82
+smear_inner_share = 0.2
+
+[resource]
+script = ExtResource("1_settings")
+parts = Array[ExtResource("2_part")]([SubResource("Resource_rotor"), SubResource("Resource_propeller")])
+smear_arc_degrees = 90.0
+smear_strength = 0.65
+strobe_share = 0.35
+smear_material = SubResource("ShaderMaterial_smear")

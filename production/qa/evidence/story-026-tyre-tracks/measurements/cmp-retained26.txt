@@ -1,0 +1,26 @@
+SAME  01-motorbikes-figure-eight-on-the-sand-from-above.png = final26-drive f00000644.png
+SAME  02-motorbikes-figure-eight-on-the-sand-chase-view.png = final26-drive f00000706.png
+SAME  03-buggy-and-truck-two-lines-each-on-the-sand-from-above.png = final26-drive f00000954.png
+SAME  04-buggy-and-truck-two-lines-each-on-the-sand-chase-view.png = final26-drive f00001016.png
+SAME  05-buggy-and-truck-circles-on-the-salt-flat-from-above.png = final26-drive f00001588.png
+SAME  06-buggy-and-truck-circles-on-the-salt-flat-chase-view.png = final26-drive f00001650.png
+SAME  07-motorbike-and-truck-on-the-canyon-road-from-above.png = final26-drive f00002038.png
+SAME  08-motorbike-and-truck-on-the-canyon-road-chase-view.png = final26-drive f00002100.png
+SAME  09-through-a-ford-none-in-the-water-from-above.png = final26-drive f00002943.png
+SAME  10-through-a-ford-none-in-the-water-chase-view.png = final26-drive f00003005.png
+SAME  11-out-of-the-garage-none-on-the-floor-from-above.png = final26-drive f00003173.png
+SAME  12-out-of-the-garage-none-on-the-floor-chase-view.png = final26-drive f00003235.png
+SAME  13-two-tracks-crossing-from-above.png = final26-drive f00003553.png
+SAME  14-two-tracks-crossing-chase-view.png = final26-drive f00003615.png
+SAME  17-gyrocopter-and-motorbike-from-above.png = final26-looks f00000164.png
+SAME  18-gyrocopter-and-motorbike-chase-view.png = final26-looks f00000226.png
+SAME  19-wall-of-sand-across-a-track-chase-view.png = final26-looks f00000656.png
+SAME  20-fade-0s-chase-view.png = final26-fade f00000226.png
+SAME  21-fade-30s-chase-view.png = final26-fade f00002150.png
+SAME  22-fade-60s-chase-view.png = final26-fade f00003951.png
+SAME  23-after-r-clean-ground-from-above.png = final26-looks f00001064.png
+SAME  24-after-r-clean-ground-chase-view.png = final26-looks f00001126.png
+SAME  00-launch-both-players-choosing.png = launch26 f00000089.png (= launch-pre f00000089.png: True)
+SAME  15-far-marks-slow-camera-chase-view-zoomed-3x.png = rebuilt set_15.png (compose26.sh)
+SAME  16-far-marks-faster-camera-chase-view-zoomed-3x.png = rebuilt set_16.png (compose26.sh)
+SAME  25-one-line-and-two-lines-from-above-zoomed-3x.png = rebuilt set_25.png (compose26.sh)

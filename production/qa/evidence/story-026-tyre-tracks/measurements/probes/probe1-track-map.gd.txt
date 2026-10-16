@@ -1,0 +1,121 @@
+extends Node3D
+## Probe 1 of story 026: does a SubViewport keep what is drawn into it, hold a time above 1, and reach a global sampler.
+const SIZE: Vector2i = Vector2i(4096, 1284)
+class Painter extends Node2D:
+	var pending: Array = []   # [from, to, width, time]
+	var use_shader: bool = true
+	func _ready() -> void:
+		if use_shader:
+			var m := ShaderMaterial.new()
+			m.shader = load("res://paint.gdshader")
+			material = m
+	func _draw() -> void:
+		for s in pending:
+			var a: Vector2 = s[0]; var b: Vector2 = s[1]; var w: float = s[2]; var t: float = s[3]
+			var n: Vector2 = (b - a).orthogonal().normalized() * w * 0.5
+			if use_shader:
+				draw_primitive(PackedVector2Array([a - n, a + n, b + n, b - n]), PackedColorArray([Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE]), PackedVector2Array([Vector2(-1, t), Vector2(1, t), Vector2(1, t), Vector2(-1, t)]))
+			else:
+				draw_line(a, b, Color(1.0, t, 0.0, 1.0), w)
+		pending = []
+
+var vp: SubViewport
+var painter: Painter
+
+func _ready() -> void:
+	var variant: String = OS.get_environment("VARIANT")
+	vp = SubViewport.new()
+	vp.size = SIZE
+	vp.disable_3d = true
+	vp.transparent_bg = true
+	vp.use_hdr_2d = variant != "ldr"
+	vp.render_target_clear_mode = SubViewport.CLEAR_MODE_ONCE
+	vp.render_target_update_mode = SubViewport.UPDATE_ONCE
+	add_child(vp)
+	painter = Painter.new()
+	painter.use_shader = variant != "color"
+	vp.add_child(painter)
+	var cam := Camera3D.new()
+	cam.projection = Camera3D.PROJECTION_ORTHOGONAL
+	cam.size = 8.0 if OS.get_environment("MAG").is_empty() else 0.4
+	cam.position = Vector3(2.0, 10.0, 1.0) if OS.get_environment("MAG").is_empty() else Vector3(1.5, 10.0, -0.475)
+	cam.rotation_degrees = Vector3(-90, 0, 0)
+	add_child(cam)
+	var plane := MeshInstance3D.new()
+	var pm := PlaneMesh.new()
+	pm.size = Vector2(40, 20)
+	plane.mesh = pm
+	var mat := ShaderMaterial.new()
+	var hint: String = OS.get_environment("HINT")
+	var sh := Shader.new()
+	sh.code = """shader_type spatial;
+render_mode unshaded;
+global uniform sampler2D tyre_track_map%s;
+global uniform vec4 tyre_track_area;
+global uniform vec4 tyre_track_clock;
+varying vec3 wp;
+void vertex() { wp = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz; }
+void fragment() {
+	vec2 uv = (wp.xz - tyre_track_area.xy) / tyre_track_area.zw;
+	vec4 t = texture(tyre_track_map, uv);
+	vec2 size = vec2(textureSize(tyre_track_map, 0));
+	// R in the red channel; the texture's width / 10000 in blue so the size can be read back
+	ALBEDO = vec3(t.r, t.g / 1000.0, size.x / 10000.0);
+}
+""" % hint
+	mat.shader = sh
+	plane.material_override = mat
+	add_child(plane)
+	_run(variant)
+
+func _px(img: Image, x: int, y: int) -> String:
+	var c: Color = img.get_pixel(x, y)
+	return "(%.6f, %.6f, %.6f, %.6f)" % [c.r, c.g, c.b, c.a]
+
+func _run(variant: String) -> void:
+	await get_tree().process_frame
+	await get_tree().process_frame
+	print("PROBE variant=", variant, " renderer=", RenderingServer.get_video_adapter_name(), " ", RenderingServer.get_current_rendering_method())
+	painter.pending = [[Vector2(100, 100), Vector2(300, 100), 6.0, 100.5]]
+	painter.queue_redraw()
+	vp.render_target_update_mode = SubViewport.UPDATE_ONCE
+	await get_tree().process_frame
+	await get_tree().process_frame
+	await get_tree().process_frame
+	painter.pending = [[Vector2(100, 200), Vector2(300, 260), 6.0, 612.25], [Vector2(150, 100), Vector2(150, 300), 6.0, 1500.0]]
+	painter.queue_redraw()
+	vp.render_target_update_mode = SubViewport.UPDATE_ONCE
+	await get_tree().process_frame
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var img: Image = vp.get_texture().get_image()
+	print("PROBE image format=", img.get_format(), " size=", img.get_size())
+	print("PROBE s1 centre (200,100) ", _px(img, 200, 100))
+	print("PROBE s1 edge   (200,97)  ", _px(img, 200, 97), " (200,96) ", _px(img, 200, 96), " (200,103) ", _px(img, 200, 103), " (200,104) ", _px(img, 200, 104))
+	print("PROBE s2 centre (200,230) ", _px(img, 200, 230))
+	print("PROBE s3 centre (150,150) ", _px(img, 150, 150), "  crossing s1/s3 (150,100) ", _px(img, 150, 100))
+	print("PROBE empty (500,500) ", _px(img, 500, 500))
+	# the 3D plane: area origin (-20,-10), size (40,20): the texture covers the plane 1:1 in x (4096 px/40 m)
+	RenderingServer.global_shader_parameter_set(&"tyre_track_map", vp.get_texture())
+	RenderingServer.global_shader_parameter_set(&"tyre_track_area", Vector4(-0.5, -1.5, 40.96, 12.84))
+	await get_tree().process_frame
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var shot: Image = get_viewport().get_texture().get_image()
+	print("PROBE screen size=", shot.get_size(), " centre ", _px(shot, 320, 180))
+	# 0.01 m a pixel: the s1 centre (200,100) is world (1.5, -0.5); ortho size 8 (vertical), camera at (2, 10, 1), 640 x 360 window
+	for probe in [["s1 centre", Vector2(200, 100)], ["s2 centre", Vector2(200, 230)], ["s3 centre", Vector2(150, 150)], ["empty", Vector2(500, 500)], ["s1 edge in", Vector2(200, 97)], ["s1 edge out", Vector2(200, 96)]]:
+		var px: Vector2 = probe[1]
+		var wx: float = -0.5 + px.x * 0.01
+		var wz: float = -1.5 + px.y * 0.01
+		var sx: int = int(320.0 + (wx - 2.0) / (8.0 * 16.0 / 9.0) * 640.0)
+		var sy: int = int(180.0 + (wz - 1.0) / 8.0 * 360.0)
+		print("PROBE ", probe[0], " screen (", sx, ",", sy, ") world=(", wx, ",", wz, ") ", _px(shot, sx, sy) if sx >= 0 and sx < 640 and sy >= 0 and sy < 360 else "off screen")
+	if not OS.get_environment("MAG").is_empty():
+		var run: PackedStringArray = []
+		for y in range(150, 211, 4):
+			run.append("%.2f" % shot.get_pixel(320, y).r)
+		print("PROBE mag red down the edge (y=150..210 step 4): ", " ".join(run), "  blue(size/10000)=", shot.get_pixel(320, 180).b)
+	shot.save_png("res://shot_%s.png" % variant)
+	print("PROBE done")
+	get_tree().quit()

@@ -1,0 +1,39 @@
+# Scan Map 01's island for circle centres whose swept ring misses every solid (and the water): the boxes are the probe's, the cliffs as half-planes.
+import math
+SOLIDS = [(-102,-100,9,11),(-102,-100,-11,-9),(-83.3,-76.7,2.2,7.8),(-66,-62,11,17),(-64,-52,-1.2,1.2),(-56.3,-49.7,-10.8,-5.2),
+ (-29.2,-22.8,4.4,10.8),(-25.3,-18.7,-12.4,-7.6),(-13.2,-10.8,6,18),(-9.4,-4.3,-9.2,-4.1),(-2.6,2.6,5.4,10.6),(4.3,9.4,-9.2,-4.1),
+ (10.8,13.2,6,18),(18.7,25.3,-12.4,-7.6),(22.8,29.2,4.4,10.8),(49.7,56.3,-10.8,-5.2),(52,64,-1.2,1.2),(62,66,11,17),(76.7,83.3,2.2,7.8),
+ (100,102,-11,-9),(100,102,9,11),
+ # the fords and channels: water, which halves the speed and hides the marks
+ (-46,-34,-20,48),(34,46,-20,48)]
+def ring_clear(cx, cz, rin, rout):
+    if cz - rout < -20.0 + 0.5:
+        return False
+    if cz + rout > 21.0 - 0.5:
+        return False
+    for x0, x1, z0, z1 in SOLIDS:
+        nx = min(max(cx, x0), x1); nz = min(max(cz, z0), z1)
+        dmin = math.hypot(cx - nx, cz - nz)
+        dmax = max(math.hypot(cx - x, cz - z) for x in (x0, x1) for z in (z0, z1))
+        if dmin < rout and dmax > rin:
+            return False
+    return True
+for name, r, half_w, half_l in [("truck", 10.9 / 0.89, 1.3, 2.7), ("buggy", 19.6 / 2.29, 1.0, 1.9)]:
+    rin = r - half_w - 0.7
+    rout = math.hypot(r + half_w, half_l) + 0.7
+    found = []
+    for i in range(-190, 191):
+        for j in range(-40, 42):
+            cx, cz = i * 0.5, j * 0.5
+            if ring_clear(cx, cz, rin, rout):
+                found.append((cx, cz))
+    print(name, "R %.2f ring %.2f..%.2f: %d clear centres" % (r, rin, rout, len(found)))
+    xs = sorted(set(c[0] for c in found))
+    # group the clear centres by runs of x
+    runs = []
+    for x in xs:
+        zs = [c[1] for c in found if c[0] == x]
+        runs.append((x, min(zs), max(zs)))
+    for x, z0, z1 in runs:
+        if abs(x) < 100 and x * 2 % 4 == 0:
+            print("   x %6.1f: z %5.1f to %5.1f" % (x, z0, z1))

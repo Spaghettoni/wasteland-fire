@@ -1,0 +1,23 @@
+extends SceneTree
+const Kit25: GDScript = preload("res://tools/evidence/split_screen/rotors_kit.gd")
+
+func _initialize() -> void:
+	var meshes: Dictionary = Kit25.glb_meshes("res://assets/art/vehicles/wasteland_gyrocopter/wasteland_gyrocopter.glb")
+	for top: float in [INF, 1.4]:
+		var low: Vector3 = Vector3.INF
+		var high: Vector3 = -Vector3.INF
+		var who_low: Array = ["", "", ""]
+		var who_high: Array = ["", "", ""]
+		for mesh_name: StringName in meshes:
+			for p: Vector3 in (meshes[mesh_name]["POSITION"] as PackedVector3Array):
+				if p.y > top:
+					continue
+				for a: int in 3:
+					if p[a] < low[a]:
+						low[a] = p[a]
+						who_low[a] = String(mesh_name)
+					if p[a] > high[a]:
+						high[a] = p[a]
+						who_high[a] = String(mesh_name)
+		print("top %s: low %s from %s, high %s from %s" % [top, low, who_low, high, who_high])
+	quit()

@@ -1,0 +1,11 @@
+src/gameplay/maps/tyre_tracks.gd                               316 lines scanned, 0 literal(s) other than 0/1/2
+src/gameplay/maps/tyre_track_painter.gd                         76 lines scanned, 0 literal(s) other than 0/1/2
+src/gameplay/maps/tyre_track_settings.gd                       117 lines scanned, 0 literal(s) other than 0/1/2
+src/gameplay/units/tyre_contact.gd                              41 lines scanned, 0 literal(s) other than 0/1/2
+src/gameplay/maps/canvas_env_tyre_track.gdshader                26 lines scanned, 0 literal(s) other than 0/1/2
+src/gameplay/units/unit_stats.gd (added lines)                  21 lines scanned, 0 literal(s) other than 0/1/2
+src/gameplay/maps/map_field.gd (added lines)                    12 lines scanned, 0 literal(s) other than 0/1/2
+src/gameplay/split_screen/split_screen.gd (added lines)         18 lines scanned, 0 literal(s) other than 0/1/2
+src/gameplay/maps/spatial_env_ground.gdshader (added lines)     52 lines scanned, 0 literal(s) other than 0/1/2
+tools/evidence/split_screen_harness.gd (added lines)            94 lines scanned, 0 literal(s) other than 0/1/2
+TOTAL literals other than 0/1/2: 0

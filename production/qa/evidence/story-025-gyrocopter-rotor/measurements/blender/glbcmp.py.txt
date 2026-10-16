@@ -1,0 +1,76 @@
+"""glbcmp.py OLD NEW: compares two glb files' meshes: the union of vertex positions, and the vertex colours of the meshes both hold."""
+import json, struct, sys
+from collections import defaultdict
+
+def load(p):
+    f = open(p, 'rb').read()
+    n = struct.unpack('<I', f[12:16])[0]
+    j = json.loads(f[20:20 + n])
+    return j, f, 20 + n + 8
+
+def read(j, f, off, idx, n):
+    acc = j['accessors'][idx]
+    bv = j['bufferViews'][acc['bufferView']]
+    base = off + bv.get('byteOffset', 0) + acc.get('byteOffset', 0)
+    ct = acc['componentType']
+    comps = {'VEC2': 2, 'VEC3': 3, 'VEC4': 4, 'SCALAR': 1}[acc['type']]
+    fmt = {5126: 'f', 5123: 'H', 5121: 'B'}[ct]
+    size = struct.calcsize(fmt) * comps
+    stride = bv.get('byteStride', size)
+    out = []
+    for i in range(acc['count']):
+        v = struct.unpack_from('<' + fmt * comps, f, base + i * stride)
+        if acc.get('normalized'):
+            v = tuple(c / {5123: 65535.0, 5121: 255.0}[ct] for c in v)
+        out.append(v)
+    return out
+
+def meshes(p):
+    j, f, off = load(p)
+    out = {}
+    for m in j['meshes']:
+        pr = m['primitives'][0]
+        a = pr['attributes']
+        out[m['name']] = {k: read(j, f, off, a[k], 0) for k in ('POSITION', 'NORMAL', 'COLOR_0') if k in a}
+    return out
+
+old, new = meshes(sys.argv[1]), meshes(sys.argv[2])
+pos_old = {p for m in old.values() for p in m['POSITION']}
+pos_new = {p for m in new.values() for p in m['POSITION']}
+print("unique positions:", len(pos_old), len(pos_new), "EQUAL" if pos_old == pos_new else "DIFFERENT: only old %d, only new %d" % (len(pos_old - pos_new), len(pos_new - pos_old)))
+for name in new:
+    if name not in old:
+        continue
+    o, n = old[name], new[name]
+    # the old mesh's colours by (position, normal)
+    table = defaultdict(set)
+    for p, nr, c in zip(o['POSITION'], o['NORMAL'], o['COLOR_0']):
+        table[(p, tuple(round(x, 5) for x in nr))].add(c)
+    worst = 0.0; missing = 0; same = 0; total = 0
+    for p, nr, c in zip(n['POSITION'], n['NORMAL'], n['COLOR_0']):
+        total += 1
+        cands = table.get((p, tuple(round(x, 5) for x in nr)))
+        if not cands:
+            missing += 1; continue
+        d = min(max(abs(a - b) for a, b in zip(c, k)) for k in cands)
+        worst = max(worst, d)
+        same += 1 if d == 0.0 else 0
+    print(f"{name}: {total} vertices, {missing} with no old vertex at the same place and normal, {same} with the identical colour, worst colour difference {worst:.6f}")
+
+# every vertex of the new meshes the old file does not have by name against ALL the old vertices
+union = defaultdict(set)
+for m in old.values():
+    for p, nr, c in zip(m['POSITION'], m['NORMAL'], m['COLOR_0']):
+        union[(p, tuple(round(x, 5) for x in nr))].add(c)
+for name in new:
+    if name in old:
+        continue
+    n = new[name]
+    total = len(n['POSITION']); missing = 0; same = 0; worst = 0.0
+    for p, nr, c in zip(n['POSITION'], n['NORMAL'], n['COLOR_0']):
+        cands = union.get((p, tuple(round(x, 5) for x in nr)))
+        if not cands:
+            missing += 1; continue
+        d = min(max(abs(a - b) for a, b in zip(c, k)) for k in cands)
+        worst = max(worst, d); same += 1 if d == 0.0 else 0
+    print(f"{name} (against all old vertices): {total} vertices, {missing} unmatched, {same} identical colour, worst {worst:.6f}")

@@ -302,12 +302,13 @@ func _rest_position() -> Vector3:
 	return offset + Vector3.UP * hover_height
 
 
-## Adds a MeshInstance3D child showing mesh, with material as its material_override when one is
-## given (null keeps the mesh's own surface materials); team_coloured puts it in
+## Adds a MeshInstance3D showing mesh, with material as its material_override when one is given
+## (null keeps the mesh's own surface materials); team_coloured puts it in
 ## Unit.TEAM_COLOUR_GROUP, stored with the node, for Unit._paint_team_colour(), which replaces the
-## override with the Unit's team_material.
+## override with the Unit's team_material. It is a child of this model, or of `parent` when one is
+## given (the pivot of a turning part: Story 025); the instance is returned.
 func _add_mesh(node_name: StringName, mesh: Mesh, team_coloured: bool,
-		material: Material = null) -> void:
+		material: Material = null, parent: Node = null) -> MeshInstance3D:
 	var instance: MeshInstance3D = MeshInstance3D.new()
 	instance.name = node_name
 	instance.mesh = mesh
@@ -315,4 +316,5 @@ func _add_mesh(node_name: StringName, mesh: Mesh, team_coloured: bool,
 		instance.material_override = material
 	if team_coloured:
 		instance.add_to_group(Unit.TEAM_COLOUR_GROUP, true)
-	add_child(instance)
+	(parent if parent != null else self).add_child(instance)
+	return instance

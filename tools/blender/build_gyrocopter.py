@@ -11,7 +11,16 @@ camera above), a Team nose pod with a darker cap and a windscreen, an open seat 
 boxer engine under a Team cowl driving a three-blade pusher propeller, a keel running back to a
 Team fin wearing the skull over a Team stabiliser with darker end plates, and tricycle gear with
 small knobby wheels on Team rims and darker Team legs. The rest of the tube frame is dark metal,
-as on the sheet. The rotor stands still, yawed and tilted as the kit model's was.
+as on the sheet. The rotor is yawed and tilted as the kit model's was.
+
+The rotor and the propeller turn in the game (Story 025), so each is its own pair of meshes in the
+file, RotorAccent and RotorNeutral, PropellerAccent and PropellerNeutral, beside the body's Accent
+and Neutral. Every part stays where it stands at rest: nothing is moved to its own origin, so every
+vertex of the file is where it was before the story, and the occlusion is baked on the joined
+Accent and Neutral exactly as before and only then divided (wasteland_kit.finish(): obj["split"]),
+so every vertex colour is the one it was. The game turns each pair about the hub and axis its data
+names (src/gameplay/units/data/gyrocopter_rotor_settings.tres, whose numbers the rotors scenario
+checks against the constants here).
 
 Sized to the Gyrocopter's collider (src/gameplay/units/data/gyrocopter_stats.tres: 1.6 m wide,
 2.4 m long, 1.0 m tall): about 2.4 m from the nose to the fin, 1.4 m across the main wheels, 4.6 m
@@ -45,6 +54,11 @@ ENGINE = (0.0, -0.42, 0.9)
 PROP_Y = -0.63
 PROP_R = 0.5
 PROP_ANGLES = (20.0, 140.0, 260.0)
+# The two parts that turn in the game. Each part's pieces are tagged obj["split"] with its name:
+# finish() bakes them as part of the body's Accent and Neutral, as before the rotor turned, and
+# then takes them out into RotorAccent, RotorNeutral, PropellerAccent and PropellerNeutral.
+ROTOR = "Rotor"
+PROPELLER = "Propeller"
 # The gear: main wheels' radius, width, x and y; the nose wheel's radius, width and y. Each
 # wheel's axle stands so its tread touches the ground (wasteland_kit.wheel stops 5 mm inside the
 # radius).
@@ -131,15 +145,19 @@ def build_engine():
             segments=8)
     kit.cylinder("exhaust_hole", 0.018, 0.01, (0.202, y - 0.162, z - 0.305), "Z", "hole",
             segments=8)
-    kit.cylinder("prop_hub", 0.07, 0.12, (0.0, PROP_Y + 0.05, z), "Y", "gunmetal", segments=10)
-    kit.cone("spinner", 0.07, 0.1, (0.0, PROP_Y - 0.01, z), (0.0, -1.0, 0.0), "steel_dark",
-            segments=10)
+    propeller = [kit.cylinder("prop_hub", 0.07, 0.12, (0.0, PROP_Y + 0.05, z), "Y", "gunmetal",
+            segments=10),
+            kit.cone("spinner", 0.07, 0.1, (0.0, PROP_Y - 0.01, z), (0.0, -1.0, 0.0), "steel_dark",
+            segments=10)]
     for angle in PROP_ANGLES:
         blade = [kit.box("prop_blade", (0.09, 0.022, PROP_R - 0.14), (0.0, PROP_Y, z + 0.05
                 + (PROP_R - 0.14) / 2.0), "steel_dark", bevel=0.006),
                 kit.box("prop_tip", (0.09, 0.024, 0.09), (0.0, PROP_Y, z + PROP_R - 0.045),
                 "accent", bevel=0.006)]
         kit.rotate_parts(blade, (0.0, PROP_Y, z), (0.0, angle, 0.0))
+        propeller += blade
+    for part in propeller:
+        part["split"] = PROPELLER
 
 
 def build_tail():
@@ -190,6 +208,8 @@ def build_rotor():
         rotor += blade
     kit.rotate_parts(rotor, ROTOR_HUB, (0.0, 0.0, ROTOR_YAW))
     kit.rotate_parts(rotor, ROTOR_HUB, (ROTOR_TILT, 0.0, 0.0))
+    for part in rotor:
+        part["split"] = ROTOR
 
 
 def main():

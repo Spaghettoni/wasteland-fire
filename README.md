@@ -29,6 +29,26 @@ friends at home.
   at one height, 0.5 m, so it is hit and hits there, 2 m under its model, and a
   wall or a piece of cover between it and its target stops the Shot. Right over
   a Truck it is drawn with the Truck's antenna through its gear.
+- The Gyrocopter's rotor turns while it is in play, 4 times a second, and each
+  of its two blades, in the Team colour with a darker tip, trails a soft
+  see-through smear about a quarter of a turn behind it, so the two blades can
+  always be counted and the turn looks smooth rather than flickering. The
+  pusher propeller behind it turns 2 times a second while it stands and faster
+  as it speeds up, 5 times a second at its top speed forward or in reverse, with
+  a smear of its own. Both are pictures only: a new Gyrocopter appears with them
+  at rest, and they stand still under the Round-over screen with everything
+  else.
+- Ground vehicles leave tyre tracks: the Motorbike one line behind its two
+  wheels, the Buggy and the Truck two, each as wide as its tyre (0.20 and 0.25
+  m, 0.30 m, 0.36 m). A track is darker, packed ground with a shallow rut that
+  catches the low sun, on the sand, the canyon road and the salt flat, and never
+  in the water, the fords or the Garages. A track holds its full strength for 20
+  seconds and then fades away over the next 40, counted in the Round's time (the
+  Round-over screen stops the fading), and every Round, and R, starts on clean
+  ground. The Gyrocopter flies and leaves none. A track ends a little behind the
+  tyre as it is drawn (up to one physics tick of travel: a third of a metre at a
+  Buggy's top speed), never ahead of it, and it is whole at any frame rate. A
+  picture only: nothing in a Round reads it.
 - A Gyrocopter that flies straight into a Tall piece at speed crashes: at 4 m/s
   or more into the piece's face (a quarter of its top speed, which full
   throttle reaches in about half a metre) it is destroyed on the tick it meets
@@ -181,6 +201,8 @@ The rules of record are in `design/rules.md`, the one-page brief in
 | 022 | Ammo, and full supplies for every new Unit: every Unit's gun holds a load of ammo (a Motorbike 100 Shots, a Buggy 50, a Truck 25, a Gyrocopter 40: 20 s of continuous fire at the type's own rate), each Shot spends one, and an empty gun fires nothing while the Unit still drives, carries the Flag and lays Mines; your count shows as "Ammo n / max" under the HUD band and "Out of ammo" shows on the notice line for 1.5 s; every new Unit, at the first spawn, every respawn and every Swap, starts with a full tank and a full load of ammo, so a Self-destruct trades a Token for full supplies and a Swap at your own Base is a free resupply; the Turrets never run out and the Truck's Mines stay a count of their own | Done |
 | 023 | The Fuel building replaces the Fuel Cans: the depot at the centre of Map 01 is the one Fuel building, with an amber Fuel zone (6 x 6 m, edged with dark dashes, drawn on the ground in both views of both Players) on each of its two sides that face a Base; a Unit that has stopped in a zone (its real speed about zero: held against a tank with the throttle on still counts, a Gyrocopter hovering still counts, rolling through at any speed does not) is refuelled gradually, from empty to full in about 4 s while it stands there, both Players at once if need be, with Fuel only (no hit points, ammo or Mines), and a zone never runs dry; the nine Fuel Cans are gone from the Map, so a ground Unit that runs dry anywhere else stays stranded until it Self-destructs (in its own Base, swaps) | Done |
 | 024 | The ammunition buildings, and no Mines at the supply zones: each half of Map 01's salt flat has an ammunition building about 64 m from the middle (a low store of crates on a plinth, 1.8 m tall, with pale yellow stripes: the Gyrocopter flies over it, ground Units and every Shot stop at it, and nothing destroys it) with a pale yellow zone (6 x 6 m, edged with dark dashes, drawn on the ground in both views of both Players) on its side that faces the centre; a Unit that has stopped in one (the same test as the Fuel zones: held against the building with the throttle on still counts, a Gyrocopter hovering still counts, rolling through at any speed does not) has its gun filled gradually, from empty to a full load in about 4 s while it stands there, both Players at once if need be, with ammo only (no Fuel, Mines or hit points), and a zone never runs dry; no Mine can be laid in or within 3 m of any of the four supply zones, the Fuel zones included: the press lays nothing, keeps the count, and shows "No Mines at a supply building" for a second and a half on that Player's line | Done |
+| 025 | The Gyrocopter's rotor and propeller turn: while a Gyrocopter is in play its main rotor turns 4 times a second whatever its speed (24 degrees a physics tick, drawn between ticks on a faster display), two blades in the Team colour with darker tips, each trailing a soft see-through smear about a quarter of a turn behind it (90 degrees, strongest at the blade and fading to nothing, in the Team colour, casting no shadow while the blades' own shadows turn with them), so the two blades can always be counted and it is never a solid disc; the pusher propeller behind it turns 2 times a second standing, 3.5 at half its top speed and 5 at its top speed forward or in reverse, with a smear of its own (steel grey with Team-coloured tips); a new Gyrocopter appears with both parts at rest, a destroyed or put-away one draws nothing, the Round-over screen stops them with everything else, and a badly damaged Gyrocopter's rotor keeps its rate; the propeller's lowest tip passes 12 mm into the thin mast brace in one position of its turn, where neither camera can see it (TD-018) | Done |
+| 026 | Ground Units leave tyre tracks: the Motorbike one line behind its two wheels, the Buggy and the Truck two, each as wide as its tyre (0.20 and 0.25 m, 0.30 m, 0.36 m), and the Gyrocopter none; a track is darker, packed ground with a shallow rut that catches the low sun, on the sand, the canyon road and the salt flat only (not in the water, the fords, on the Base pads, in the Garages or on a side face), drawn by the ground's own shader from one track map over Map 01's island (4096 x 1284 half-float pixels, 7.18 cm a pixel, cleared when a Round starts and updated only on a frame that has new strokes, so what has been driven costs nothing); a track holds its full strength for 20 s and fades out over the next 40, counted in the Round's time (the Round-over screen stops it), two tracks that cross are no darker than one, R and every new Round start on clean ground, and a track ends up to one physics tick of travel (0.36 m at a Buggy's top speed) behind the tyre as drawn, never ahead of it; every value is data (`tyre_track_settings.tres` and the three ground types' tyres) | Done |
 
 Map 01 and the four Units have their low-poly look, lit by a low warm sun
 under a desert sky with ambient occlusion and anti-aliasing. The ground is a

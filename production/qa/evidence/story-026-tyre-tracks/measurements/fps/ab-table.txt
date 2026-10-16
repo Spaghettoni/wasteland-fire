@@ -1,0 +1,22 @@
+| Run | Lowest steady second | Longest steady frame | Steady seconds over 16.6 ms | Longest frame | Draw calls at most | Unpaced seconds | Track lag (m) | Clean circles | Idle before / after (s) |
+|---|---|---|---|---|---|---|---|---|---|
+| on 1 | 118.0 fps | 25.14 ms | 3 | 25.14 ms | 379 | 0 | 0.0007 to 0.2857 | PASS | 796 / 922 |
+| on 2 | 117.0 fps | 30.82 ms | 4 | 30.82 ms | 379 | 0 | 0.0011 to 0.3272 | PASS | 1428 / 1555 |
+| on 3 | 120.0 fps | 12.40 ms | 0 | 12.40 ms | 379 | 0 | 0.0001 to 0.3554 | PASS | 1681 / 1808 |
+| off 1 | 117.0 fps | 33.52 ms | 7 | 33.52 ms | 379 | 0 | - | PASS | 922 / 1049 |
+| off 2 | 120.0 fps | 12.06 ms | 0 | 12.06 ms | 377 | 0 | - | PASS | 1175 / 1302 |
+| off 3 | 119.0 fps | 11.95 ms | 0 | 14.90 ms | 378 | 0 | - | PASS | 1808 / 1934 |
+| base 1 | 119.0 fps | 17.77 ms | 1 | 17.77 ms | 377 | 0 | - | PASS | 1049 / 1175 |
+| base 2 | 120.0 fps | 12.42 ms | 0 | 12.42 ms | 377 | 0 | - | PASS | 1302 / 1428 |
+| base 3 | 119.0 fps | 18.82 ms | 1 | 18.82 ms | 379 | 0 | - | PASS | 1555 / 1681 |
+
+on: median lowest steady second 118 fps, median longest steady frame 25.14 ms, steady seconds over 16.6 ms [3, 4, 0], draw calls at most 379
+off: median lowest steady second 119 fps, median longest steady frame 12.06 ms, steady seconds over 16.6 ms [7, 0, 0], draw calls at most 379
+base: median lowest steady second 119 fps, median longest steady frame 17.77 ms, steady seconds over 16.6 ms [1, 0, 1], draw calls at most 379
+
+gpu-base-1: GPUTIME_SUMMARY frames=14634 gpu_avg_ms=3.413 gpu_median_ms=3.449 gpu_p95_ms=4.250 gpu_max_ms=6.993 cpu_avg_ms=0.353
+gpu-base-2: GPUTIME_SUMMARY frames=14618 gpu_avg_ms=3.367 gpu_median_ms=3.396 gpu_p95_ms=4.201 gpu_max_ms=6.280 cpu_avg_ms=0.355
+gpu-off-1: GPUTIME_SUMMARY frames=14634 gpu_avg_ms=3.412 gpu_median_ms=3.427 gpu_p95_ms=4.256 gpu_max_ms=6.370 cpu_avg_ms=0.344
+gpu-off-2: GPUTIME_SUMMARY frames=14632 gpu_avg_ms=3.453 gpu_median_ms=3.463 gpu_p95_ms=4.307 gpu_max_ms=6.725 cpu_avg_ms=0.344
+gpu-on-1: GPUTIME_SUMMARY frames=14622 gpu_avg_ms=3.479 gpu_median_ms=3.510 gpu_p95_ms=4.327 gpu_max_ms=6.779 cpu_avg_ms=0.348
+gpu-on-2: GPUTIME_SUMMARY frames=14634 gpu_avg_ms=3.431 gpu_median_ms=3.458 gpu_p95_ms=4.284 gpu_max_ms=6.587 cpu_avg_ms=0.331

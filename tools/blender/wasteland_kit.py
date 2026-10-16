@@ -453,6 +453,53 @@ def _bake_occlusion(objs, ground_size, distance):
         bpy.data.objects.remove(ground, do_unlink=True)
 
 
+SPLIT_LAYER = "split"
+
+
+def _tag_split(parts):
+    """Marks every face of the parts that will leave their joined object after the bake, in an integer
+    face attribute that survives the join: obj["split"] names the object the part leaves to (a part
+    without the property keeps 0). Returns the names, in the order their tags count from 1."""
+    names = sorted({obj["split"] for obj in parts if "split" in obj})
+    for obj in parts:
+        number = names.index(obj["split"]) + 1 if "split" in obj else 0
+        for datum in obj.data.attributes.new(SPLIT_LAYER, "INT", "FACE").data:
+            datum.value = number
+    return names
+
+
+def _split_off(obj, names):
+    """Takes the faces of obj tagged with each name's number (_tag_split()) out into a new object, named
+    that name followed by obj's name, with the same colours, UVs and material; returns the new
+    objects. obj keeps the rest in the order it had them, so its vertices and colours are unchanged."""
+    made = []
+    for number, name in enumerate(names, start=1):
+        whole = bmesh.new()
+        whole.from_mesh(obj.data)
+        rest = whole.copy()
+        tag = whole.faces.layers.int[SPLIT_LAYER]
+        taken = [f for f in whole.faces if f[tag] == number]
+        if not taken:
+            whole.free()
+            rest.free()
+            continue
+        bmesh.ops.delete(whole, geom=[f for f in whole.faces if f[tag] != number], context="FACES")
+        rest_tag = rest.faces.layers.int[SPLIT_LAYER]
+        bmesh.ops.delete(rest, geom=[f for f in rest.faces if f[rest_tag] == number], context="FACES")
+        mesh = bpy.data.meshes.new(name + obj.name)
+        whole.to_mesh(mesh)
+        rest.to_mesh(obj.data)
+        whole.free()
+        rest.free()
+        part = bpy.data.objects.new(name + obj.name, mesh)
+        bpy.context.scene.collection.objects.link(part)
+        for material in obj.data.materials:
+            mesh.materials.append(material)
+        mesh.color_attributes.active_color = mesh.color_attributes["Col"]
+        made.append(part)
+    return made
+
+
 def _material(name, colour_attr=True, emission=None):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
@@ -563,13 +610,18 @@ def finish(out_path, previews_dir, views, ground_size=12.0, ao_distance=AO_DISTA
     (face_colours()). By default the parts join into the three objects the Units' models hold
     (Accent, Neutral, Lamp, by key); groups, object name -> its parts, joins them into named objects
     instead (one mesh per rock of the Map, each drawn with one material); preview_ground is the
-    preview's sand plane size. origins, object name -> a point, moves each named object by minus
+    preview's sand plane size. A part tagged obj["split"] = NAME is joined, baked and previewed with
+    the rest, and then taken out of its joined object, after the previews, into an object called
+    NAME followed by the joined object's name (RotorAccent): the game turns a part of the model about
+    a point of its own, and the vertices and colours of the rest are exactly what they would be
+    without the split. origins, object name -> a point, moves each named object by minus
     its point after the bake and the previews: props built apart, each on the ground at its own
     spot so none darkens another, are exported each about its own origin."""
     parts = [obj for obj in bpy.context.scene.objects if obj.type == "MESH" and "key" in obj]
     for obj in parts:
         if "base" not in obj.data.color_attributes:
             _fill(obj, "base", _colour_of(obj["key"]))
+    split_names = _tag_split(parts) if any("split" in obj for obj in parts) else []
     if groups is None:
         groups = {"Accent": [], "Neutral": [], "Lamp": []}
         for obj in parts:
@@ -595,6 +647,13 @@ def finish(out_path, previews_dir, views, ground_size=12.0, ao_distance=AO_DISTA
         print("OBJECT %s triangles=%d" % (obj.name, tris))
     if previews_dir:
         _render_previews(joined, previews_dir, views, preview_ground)
+    if split_names:
+        for obj in list(joined):
+            joined += _split_off(obj, split_names)
+        for obj in joined:
+            obj.data.attributes.remove(obj.data.attributes[SPLIT_LAYER])
+            print("OBJECT %s triangles=%d (after the split)" % (obj.name,
+                    sum(len(p.vertices) - 2 for p in obj.data.polygons)))
     for obj in joined:
         if origins and obj.name in origins:
             obj.data.transform(Matrix.Translation(-Vector(origins[obj.name])))

@@ -1,0 +1,22 @@
+#!/bin/bash
+# The composed frames of story 025 rebuilt from the FRESH recording (03e and 08) and from the dev's defect recording (09).
+D=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad
+MY=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/da488d11-1587-482d-a0a2-4199d8fbc77b/scratchpad/sd25
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+E=production/qa/evidence/story-025-gyrocopter-rotor
+T=$MY/compose-check
+mkdir -p $T
+C="godot --headless --path . -s $D/lib/compose.gd --"
+for n in 322 323 324 325; do $C crop $T/turn_$n.png $MY/rec/final/f00000$n.png 230 370 200 120 3 > /dev/null 2>&1; done
+$C row $T/03e.png 300 $T/turn_322.png $T/turn_323.png $T/turn_324.png $T/turn_325.png > /dev/null 2>&1
+cmp $T/03e.png $E/03e-rotor-four-consecutive-frames-zoomed-3x-player-1.png && echo "03e rebuilt from the fresh recording, byte-identical to the retained frame"
+for pair in "562 stand" "698 fast"; do
+  set -- $pair
+  $C crop $T/prop_$2_p1.png $MY/rec/final/f00000$1.png 262 268 76 50 8 > /dev/null 2>&1
+  $C crop $T/prop_$2_p2.png $MY/rec/final/f00000$1.png 902 268 76 50 8 > /dev/null 2>&1
+done
+$C row $T/08.png 300 $T/prop_stand_p1.png $T/prop_fast_p1.png $T/prop_stand_p2.png $T/prop_fast_p2.png > /dev/null 2>&1
+cmp $T/08.png $E/08-propeller-standing-and-at-full-speed-chase-view-zoomed-8x.png && echo "08 rebuilt from the fresh recording, byte-identical to the retained frame"
+for n in 186 187 188 189; do $C crop $T/flip_$n.png $D/w25f/flipped-rec/f00000$n.png 230 370 200 120 3 > /dev/null 2>&1; done
+$C row $T/09.png 300 $T/flip_186.png $T/flip_187.png $T/flip_188.png $T/flip_189.png > /dev/null 2>&1
+cmp $T/09.png $E/09-seeded-defect-smear-ahead-of-the-blades-zoomed-3x-player-1.png && echo "09 rebuilt from the dev session's defect recording, byte-identical to the retained frame"

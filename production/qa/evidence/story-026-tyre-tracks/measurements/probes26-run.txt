@@ -1,0 +1,2 @@
+tracks_on -> ['DIFF       split flag_walls             rc 0->1, lines 62->62, first difference at line 3', 'DIFF       split map_layout             rc 0->1, lines 135->135, first difference at line 133', 'DIFF       split turrets                rc 0->1, lines 39->39, first difference at line 3', '-- 67 strict, 9 normalized, 3 bad of 79 compared']
+export_kept -> ['-- 68 strict, 11 normalized, 0 bad of 79 compared']

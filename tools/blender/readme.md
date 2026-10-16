@@ -15,11 +15,11 @@ Blender 5.2.2 LTS (Homebrew: `brew install --cask blender`, which puts `blender`
 
 | File | What it is |
 |---|---|
-| `wasteland_kit.py` | Shared helpers: the palette, the skull emblem, the shape builders (box, prism, loft, cylinder, cone, tube, torus, wheel, fender arch, pixel emblem), the occlusion bake, the join, the previews and the export. |
+| `wasteland_kit.py` | Shared helpers: the palette, the skull emblem, the shape builders (box, prism, loft, cylinder, cone, tube, torus, wheel, fender arch, pixel emblem), the occlusion bake, the join, the split of the parts that turn out of their joined object after the bake (`obj["split"]`, Story 025), the previews and the export. |
 | `build_motorbike.py` | The Motorbike. Writes `assets/art/vehicles/wasteland_motorbike/wasteland_motorbike.glb`. |
 | `build_buggy.py` | The Buggy. Writes `assets/art/vehicles/wasteland_buggy/wasteland_buggy.glb`. |
 | `build_truck.py` | The Truck. Writes `assets/art/vehicles/wasteland_truck/wasteland_truck.glb`. |
-| `build_gyrocopter.py` | The Gyrocopter. Writes `assets/art/vehicles/wasteland_gyrocopter/wasteland_gyrocopter.glb`. |
+| `build_gyrocopter.py` | The Gyrocopter. Writes `assets/art/vehicles/wasteland_gyrocopter/wasteland_gyrocopter.glb`, six meshes since Story 025: the body's `Accent` and `Neutral` and the two turning parts' `RotorAccent`, `RotorNeutral`, `PropellerAccent` and `PropellerNeutral`. |
 | `build_rocks.py` | Map 01's rocks, read from the cliff colliders of `map_01_cliffs.tscn` (rerun it after changing them). Writes `assets/art/map_01/rocks/map_01_rocks.glb`, one mesh per cliff. |
 | `build_props.py` | Map 01's props, each built to the box of the primitive it replaces: wrecks, containers, scrap walls, the dressing's containers, tyres, boulders and posts, the fuel tanks' trim. Writes `assets/art/map_01/props/map_01_props.glb`. |
 | `build_base.py` | The Bases' trim, laid on their wall, tower and Garage boxes; the water tower's ladder; the Turrets' trim (the head's, and the drum's twice: `TurretPedestalTrim` for the 1 m drum of Story 013, which only the evidence's frozen Turret still uses, and `TurretPedestalTrimTall` for the grown 2.2 m drum of Story 015). Writes `assets/art/map_01/base/map_01_base.glb`. |
@@ -59,6 +59,14 @@ Each part is tagged with a palette key. The vertex colour is the key's colour (f
 tone: 1.0, or 0.68 for `accent_dark`) times the ambient occlusion Blender bakes. The numbers are
 sRGB, stored unchanged in a float attribute, so the game reads them with `vertex_color_is_srgb` as
 it does the kit's. A model without lamps (the Gyrocopter) has no `Lamp` mesh.
+
+A part that turns in the game (the Gyrocopter's main rotor and pusher propeller, Story 025) is tagged `obj["split"] = "Rotor"` (or
+`"Propeller"`) where it is built. `finish()` joins, bakes and previews it with the rest, exactly as if it were part of the body, and
+only then takes it out of its joined object into one named for the part and the object (`RotorAccent`, `PropellerNeutral`): every
+vertex stays where it stands at rest (nothing is moved to its own origin) and keeps the colour the bake gave it, so the body's
+meshes are what they were and the game turns each pair about the hub and axis its data names
+(`src/gameplay/units/data/gyrocopter_rotor_settings.tres`, drawn by `RotorPivot`, which `MeshUnitModel` makes for each part). The
+other models never set the tag and their builds are byte for byte what they were.
 
 Conventions a new model must keep:
 

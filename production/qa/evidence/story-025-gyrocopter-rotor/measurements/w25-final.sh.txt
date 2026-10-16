@@ -1,0 +1,28 @@
+#!/bin/bash
+# The two windowed seeded defects of Story 025 on the final tree: each in a fresh scratch copy of the repo.
+#   process:  the rotor turned in _process instead of the physics tick -> rotors_fps (interpolated check) must FAIL
+#   flipped:  the smear's trailing side flipped -> a short windowed recording of the standing and turn moments, read in frames
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad
+W=$S/w25f
+REPO=/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire
+mkdir -p $W
+date +%H:%M:%S > $W/progress.txt
+for name in process flipped; do
+  mkdir -p $W/$name
+  rsync -a --delete --exclude '.git' --exclude 'assets/art/svaty_jur' --exclude 'production' --exclude 'docs' --exclude 'design' --exclude 'tests' $REPO/ $W/$name/ > /dev/null 2>&1
+done
+python3 -I - <<'PY'
+W = "/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad/w25f/"
+def swap(path, old, new):
+    t = open(path).read()
+    assert t.count(old) == 1, (path, old)
+    open(path, "w").write(t.replace(old, new))
+swap(W + "process/src/gameplay/units/models/rotor_pivot.gd", "func _physics_process(delta: float) -> void:", "func _process(delta: float) -> void:")
+swap(W + "flipped/src/gameplay/units/models/spatial_unit_rotor_smear.gdshader", "float behind = mod(atan(disc.y, disc.x), gap);", "float behind = mod(-atan(disc.y, disc.x), gap);")
+print("mutants applied")
+PY
+echo "applied $(date +%H:%M:%S)" >> $W/progress.txt
+(cd $W/process && godot --path . --windowed --resolution 1280x720 res://tools/evidence/split_screen_harness.tscn -- --scenario=rotors_fps > $W/process-rotors_fps.txt 2>&1; echo "process rc=$? $(date +%H:%M:%S)" >> $W/progress.txt)
+mkdir -p $W/flipped-rec
+(cd $W/flipped && ROTORS_PASS=above ROTORS_MOMENTS=stand,turn godot --path . --windowed --resolution 1280x720 --write-movie $W/flipped-rec/f.png res://tools/evidence/split_screen_harness.tscn -- --scenario=rotors_showcase > $W/flipped-rotors_showcase.txt 2>&1; echo "flipped rc=$? $(date +%H:%M:%S)" >> $W/progress.txt)
+echo "ALLDONE" >> $W/progress.txt

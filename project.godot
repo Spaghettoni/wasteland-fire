@@ -138,3 +138,22 @@ p2_lay_mine={
 
 3d/physics_engine="Jolt Physics"
 common/physics_interpolation=true
+
+[shader_globals]
+
+tyre_track_map={
+"type": "sampler2D",
+"value": ""
+}
+tyre_track_area={
+"type": "vec4",
+"value": Vector4(0, 0, 1, 1)
+}
+tyre_track_look={
+"type": "vec4",
+"value": Vector4(0, 0, 0, 0)
+}
+tyre_track_clock={
+"type": "vec4",
+"value": Vector4(0, 0, 1, 1)
+}

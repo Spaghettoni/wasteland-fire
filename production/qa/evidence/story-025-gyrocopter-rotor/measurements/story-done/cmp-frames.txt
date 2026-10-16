@@ -1,0 +1,14 @@
+dev-recording:SAME  fresh-recording:SAME  01-standing-from-above-both-views.png = recorded f00000099.png
+dev-recording:SAME  fresh-recording:SAME  02-flying-at-full-speed-from-above-both-views.png = recorded f00000235.png
+dev-recording:SAME  fresh-recording:SAME  03a-rotor-consecutive-frame-1-of-4-from-above.png = recorded f00000322.png
+dev-recording:SAME  fresh-recording:SAME  03b-rotor-consecutive-frame-2-of-4-from-above.png = recorded f00000323.png
+dev-recording:SAME  fresh-recording:SAME  03c-rotor-consecutive-frame-3-of-4-from-above.png = recorded f00000324.png
+dev-recording:SAME  fresh-recording:SAME  03d-rotor-consecutive-frame-4-of-4-from-above.png = recorded f00000325.png
+dev-recording:SAME  fresh-recording:SAME  04-between-the-water-tower-legs-from-above-both-views.png = recorded f00000411.png
+dev-recording:SAME  fresh-recording:SAME  05-standing-chase-view-both-views.png = recorded f00000562.png
+dev-recording:SAME  fresh-recording:SAME  06-flying-at-full-speed-chase-view-both-views.png = recorded f00000698.png
+dev-recording:SAME  fresh-recording:SAME  07-between-the-water-tower-legs-chase-view-both-views.png = recorded f00000784.png
+dev-recording:SAME  fresh-recording:SAME  00-launch = launch f00000089.png
+--- recorded frame counts: dev final      816, fresh final      816, fresh launch       90
+--- every frame of the fresh whole recording against the dev's (same numbers):
+frames compared: 816, differing: 0

@@ -281,6 +281,30 @@ extends Node
 ## declares AMMO, with the opt-ins of the pieces it needs; any other scenario, now and later, runs without the ammunition
 ## and with the half tank.
 ##
+## The rotors (Story 025). The shipped Gyrocopter model now turns its main rotor and its pusher propeller: its mesh file
+## (assets/art/vehicles/wasteland_gyrocopter/wasteland_gyrocopter.glb) holds four more meshes, the turning parts, and its model
+## scene names them in rotor_settings, so a RotorPivot turns each about its hub on every physics tick and draws a see-through
+## smear behind its blades. Every scenario written before it measured a model that draws only the Accent and the Neutral and
+## stands still (drawn_box() merges the boxes of every visible mesh under a model, and a turning mesh or a smear changes them
+## even at angle 0), so the runner gives that model back unless the scenario script declares const ROTORS: bool = true
+## (_apply_rotors_off()): every UnitStats of match_rules.tres's unit_types whose model is the shipped Gyrocopter scene or its
+## frozen copy of Story 019 (so after _apply_heights_off()) takes a scene packed from an instance of it with mesh_scene set to
+## the byte copy of the mesh file taken at the start of Story 025 (tools/evidence/frozen/wasteland_gyrocopter_story_024.glb)
+## and rotor_settings null, before the launch scene is instanced: no pivot, no smear, nothing that turns, and the vertices the
+## older outputs were measured with. A scenario of Story 025 declares it, with the opt-ins of the pieces it needs (HEIGHTS
+## among them: the frozen scene of Story 019 hovers 0.78 m up); any other scenario, now and later, runs on the model that
+## stands still. The rotors put nothing on the notice line, so the notice keep rule (TURRETS or MINES) does not read them.
+##
+## The tyre tracks (Story 026). Map 01 now has a TyreTracks node, listed in its field's tyre_tracks: it draws a track under each
+## ground Unit's tyres into one texture the ground shader reads, and it is a script on the Map (map_layout prints the Map's scripts),
+## a clock the Round-over pause stops and a SubViewport, none of which any scenario written before it was measured with. So the
+## runner removes the node from a freshly instanced launch scene unless the scenario script declares const TYRE_TRACKS: bool = true
+## (_apply_tyre_tracks_off()): the field's export is cleared and the node freed before the scene enters the tree, SplitScreen then
+## hands nothing and connects nothing, the ground shader's global parameters stay at the project's defaults (strength 0, which
+## makes every term of the tracks in the shader exactly nothing) and the ground is drawn as before. The tyre data in the Units'
+## stats is read by nothing but that node. A scenario of Story 026 declares it, with the opt-ins of the pieces it needs; any other
+## scenario, now and later, runs on a Map with no tracks.
+##
 ## Output: SPLIT <scenario> t=<seconds> key=value ... (progress), CHECK <scenario> <check name> PASS|FAIL
 ## <detail> and exactly one last RESULT <scenario> ok|fail checks=<n> failed=<n> key=value ...; then quit with
 ## exit code 0 when every check passed, 1 when one failed, 2 for a missing or unknown scenario. TD-003
@@ -377,6 +401,12 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"ammo_buildings": preload("res://tools/evidence/split_screen/ammo_buildings.gd"),
 	&"ammo_buildings_showcase": preload("res://tools/evidence/split_screen/ammo_buildings_showcase.gd"),
 	&"ammo_buildings_fps": preload("res://tools/evidence/split_screen/ammo_buildings_fps.gd"),
+	&"rotors": preload("res://tools/evidence/split_screen/rotors.gd"),
+	&"rotors_showcase": preload("res://tools/evidence/split_screen/rotors_showcase.gd"),
+	&"rotors_fps": preload("res://tools/evidence/split_screen/rotors_fps.gd"),
+	&"tyre_tracks": preload("res://tools/evidence/split_screen/tyre_tracks.gd"),
+	&"tyre_tracks_showcase": preload("res://tools/evidence/split_screen/tyre_tracks_showcase.gd"),
+	&"tyre_tracks_fps": preload("res://tools/evidence/split_screen/tyre_tracks_fps.gd"),
 }
 
 ## The shared step class (drive_step.gd): keys held for a time.
@@ -560,6 +590,15 @@ const SHIPPED_GYROCOPTER_MODEL_PATH: String = "res://src/gameplay/units/models/g
 ## (tools/evidence/frozen/): hover_height 0.78 m, the rise over the cliffs and the cover, and the smoke Story 017
 ## exports. Evidence-only: nothing under src/ uses it.
 const FROZEN_GYROCOPTER_MODEL: PackedScene = preload("res://tools/evidence/frozen/gyrocopter_model_story_019.tscn")
+## The constant a scenario script declares as true to keep the Gyrocopter model the build ships with since Story 025: the main
+## rotor and the pusher propeller turn, each trailing a smear (_apply_rotors_off()).
+const ROTORS_CONSTANT: StringName = &"ROTORS"
+## The Gyrocopter's mesh file as Story 024 left it, a byte copy taken at the start of Story 025 (tools/evidence/frozen/): the
+## Accent and the Neutral and nothing that turns. Evidence-only: nothing under src/ uses it.
+const FROZEN_GYROCOPTER_MESH_FILE: PackedScene = preload("res://tools/evidence/frozen/wasteland_gyrocopter_story_024.glb")
+## The constant a scenario script declares as true to keep the tyre tracks of Story 026: the Map's TyreTracks node stays, so the
+## ground Units' tyres leave tracks, instead of the Map every older output was measured on, with none (_apply_tyre_tracks_off()).
+const TYRE_TRACKS_CONSTANT: StringName = &"TYRE_TRACKS"
 ## The Turret of Story 013 as it was measured, kept as a byte copy (tools/evidence/frozen/): a drum
 ## 1 m tall, a collider 1.8 m tall and no damaged look. Evidence-only: nothing under src/ uses it.
 const FROZEN_TURRET_SCENE: PackedScene = preload("res://tools/evidence/frozen/turret_story_013.tscn")
@@ -736,6 +775,7 @@ func _ready() -> void:
 	_apply_mines_off(SCENARIOS[scenario])
 	_apply_badly_damaged_off(SCENARIOS[scenario])
 	_apply_heights_off(SCENARIOS[scenario])
+	_apply_rotors_off(SCENARIOS[scenario])
 	_apply_crash_off(SCENARIOS[scenario])
 	_apply_ammo_off(SCENARIOS[scenario])
 	_apply_turret_looks_data_off(SCENARIOS[scenario])
@@ -747,6 +787,7 @@ func _ready() -> void:
 	_apply_field_panels_off(split, SCENARIOS[scenario])
 	_apply_ammo_buildings_off(split, SCENARIOS[scenario])
 	_apply_fuel_building_off(split, SCENARIOS[scenario])
+	_apply_tyre_tracks_off(split, SCENARIOS[scenario])
 	if PRE_009_MAP_SCENARIOS.has(scenario):
 		_apply_pre_009_map(split)
 	_apply_defences_off(split, SCENARIOS[scenario])
@@ -1219,6 +1260,21 @@ func _apply_ammo_buildings_off(root: SplitScreen, script: GDScript) -> void:
 			building.free()
 
 
+## Takes the tyre tracks of Story 026 off a freshly instanced launch scene, before it enters the tree, unless the scenario script
+## declares TYRE_TRACKS (the class doc says why): the field's tyre_tracks is cleared first (a NodePath export is resolved to the node
+## when the scene is instanced, so SplitScreen would hand a freed node the Units) and the node is removed and freed at once
+## (remove_child() and free(), so nothing stays in a group for a frame). A field with no tracks (the greybox composition) is left alone.
+func _apply_tyre_tracks_off(root: SplitScreen, script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(TYRE_TRACKS_CONSTANT, false)) or root.field == null:
+		return
+	var tracks: TyreTracks = root.field.tyre_tracks
+	if tracks == null:
+		return
+	root.field.tyre_tracks = null
+	tracks.get_parent().remove_child(tracks)
+	tracks.free()
+
+
 ## Takes the Fuel building of Story 023 off a freshly instanced launch scene, before it enters the tree, unless the scenario script
 ## declares FUEL_BUILDING (the class doc says why), and gives it the nine Fuel Cans the older outputs were measured with: every
 ## Fuel SupplyZone under the Map, its marking with it, is dropped from the Map's supply_zones, removed and freed at once (remove_child() and free(), as
@@ -1314,6 +1370,44 @@ func _apply_heights_off(script: GDScript) -> void:
 	for stats: UnitStats in rules.unit_types:
 		if stats != null and stats.model != null and stats.model.resource_path == SHIPPED_GYROCOPTER_MODEL_PATH:
 			stats.model = FROZEN_GYROCOPTER_MODEL
+
+
+## Gives every scenario that does not declare ROTORS the Gyrocopter model it was measured with (Story 025), on the shared
+## resources before the launch scene is instanced: every UnitStats of match_rules.tres's unit_types whose model is the shipped
+## Gyrocopter scene or the frozen copy of Story 019 (it runs after _apply_heights_off(), so a scenario that does not declare
+## HEIGHTS holds the frozen one) takes a scene packed from an instance of it with mesh_scene set to the byte copy of the old mesh
+## file (FROZEN_GYROCOPTER_MESH_FILE) and rotor_settings null: the model then adds no pivot and no smear and draws the Accent
+## and the Neutral of the old file. One scene is packed for each model scene and shared by every type that holds it. A greybox
+## scenario, whose Gyrocopter is neither scene, keeps its greybox model. Rules that fail to load are an error, and nothing is
+## applied.
+func _apply_rotors_off(script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(ROTORS_CONSTANT, false)):
+		return
+	var rules: MatchRules = load(MATCH_RULES_PATH) as MatchRules
+	if rules == null:
+		push_error("split_screen_harness: %s did not load as MatchRules, so the Gyrocopter's rotors are not taken off." % MATCH_RULES_PATH)
+		return
+	var packed: Dictionary = {}
+	for stats: UnitStats in rules.unit_types:
+		if stats == null or stats.model == null:
+			continue
+		var path: String = stats.model.resource_path
+		if path != SHIPPED_GYROCOPTER_MODEL_PATH and path != FROZEN_GYROCOPTER_MODEL.resource_path:
+			continue
+		if not packed.has(path):
+			packed[path] = _without_rotors(stats.model)
+		stats.model = packed[path]
+
+
+## A scene packed from an instance of a Gyrocopter model scene with its mesh file swapped for the old one and no rotor settings.
+func _without_rotors(scene: PackedScene) -> PackedScene:
+	var model: MeshUnitModel = scene.instantiate() as MeshUnitModel
+	model.mesh_scene = FROZEN_GYROCOPTER_MESH_FILE
+	model.rotor_settings = null
+	var copy: PackedScene = PackedScene.new()
+	copy.pack(model)
+	model.free()
+	return copy
 
 
 ## Takes the crash out of the data every scenario that does not declare GYRO_CRASH runs on (Story 021), on the shared

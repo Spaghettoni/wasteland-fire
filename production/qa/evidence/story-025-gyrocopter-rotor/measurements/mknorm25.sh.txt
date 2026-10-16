@@ -1,0 +1,6 @@
+#!/bin/sh
+# usage: mknorm25.sh   Regenerates normalizers25.json from the SOURCE: the printed line rewrites (and, when a lint count moves, the lint rewrites).
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+W=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad/rg25
+python3 -I $W/mk_normalizers.py . $W/base-a $W/before $W/normalizers25.json | tail -4
+python3 -I $W/lintcount25.py $W/../pre25/src ./ $W/normalizers25.json $W/base-a

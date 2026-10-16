@@ -1,0 +1,6 @@
+The four scenarios that read README.md, run again after the /story-done 026 edits (2026-10-16 15:23, headless, --fixed-fps 60, four in parallel,
+the Jolt load warning filtered from both sides) against the same scenarios' outputs of the verification before the edits (rg/f-live):
+IDENTICAL  ammo_buildings  56 checks  RESULT ammo_buildings ok checks=56 failed=0 t=1287.667 ammo_buildings=1 building
+IDENTICAL  mines  45 checks  RESULT mines ok checks=45 failed=0 t=229.833 mines=7 loads=motorbike=0,buggy=0,t
+IDENTICAL  ammo  41 checks  RESULT ammo ok checks=41 failed=0 t=592.900 ammo=1 report_lag=0,0 swap_to_the_sa
+IDENTICAL  ammo_alone  2 checks  RESULT ammo_alone ok checks=2 failed=0 t=21.883 alone=1

@@ -1,0 +1,10 @@
+09:26:58
+fps on 1 rc=0 09:29:05 idle_before=1833s idle_after=1959s
+fps off 1 rc=0 09:31:11 idle_before=1959s idle_after=2086s
+fps base 1 rc=0 09:33:18 idle_before=2086s idle_after=2212s
+fps off 2 rc=0 09:35:24 idle_before=2212s idle_after=2338s
+fps base 2 rc=0 09:37:31 idle_before=2339s idle_after=2465s
+fps on 2 rc=0 09:39:37 idle_before=2465s idle_after=2591s
+fps base 3 rc=0 09:41:44 idle_before=2591s idle_after=0s
+fps on 3 rc=0 09:43:50 idle_before=0s idle_after=54s
+fps off 3 rc=0 09:45:57 idle_before=54s idle_after=120s

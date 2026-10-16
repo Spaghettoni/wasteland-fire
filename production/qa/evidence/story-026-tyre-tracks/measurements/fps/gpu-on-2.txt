@@ -1,0 +1,376 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Vulkan 1.2.334 - Forward+ - Using Device #0: Apple - Apple M4 Pro
+
+GPUTIME_RAW t=1 viewports=4 gpu_ms=2.8980 cpu_ms=0.2760 frame_cpu_ms=0.0080
+GPUTIME t=1 viewports=4 frames=86 gpu_ms=2.639 cpu_ms=0.278
+SPLIT tyre_tracks_fps t=1.167 phase=window_1 staging=0 fps=23.0 frame_ms_max=10.71 draw_calls=170 primitives=252554 objects=420 clock=1.3
+GPUTIME_RAW t=2 viewports=4 gpu_ms=3.6660 cpu_ms=0.2330 frame_cpu_ms=0.0060
+GPUTIME t=2 viewports=4 frames=120 gpu_ms=3.303 cpu_ms=0.232
+SPLIT tyre_tracks_fps t=2.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=10.17 draw_calls=197 primitives=215177 objects=519 clock=2.3
+GPUTIME_RAW t=3 viewports=4 gpu_ms=3.2620 cpu_ms=0.3130 frame_cpu_ms=0.0090
+GPUTIME t=3 viewports=4 frames=120 gpu_ms=3.514 cpu_ms=0.315
+SPLIT tyre_tracks_fps t=3.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=10.96 draw_calls=222 primitives=240348 objects=511 clock=3.3
+GPUTIME_RAW t=4 viewports=4 gpu_ms=3.4920 cpu_ms=0.3590 frame_cpu_ms=0.0060
+GPUTIME t=4 viewports=4 frames=120 gpu_ms=3.462 cpu_ms=0.323
+SPLIT tyre_tracks_fps t=4.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=10.46 draw_calls=197 primitives=187585 objects=479 clock=4.3
+GPUTIME_RAW t=5 viewports=4 gpu_ms=2.8380 cpu_ms=0.3910 frame_cpu_ms=0.0080
+GPUTIME t=5 viewports=4 frames=120 gpu_ms=3.421 cpu_ms=0.328
+SPLIT tyre_tracks_fps t=5.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=10.79 draw_calls=306 primitives=284984 objects=733 clock=5.3
+GPUTIME_RAW t=6 viewports=4 gpu_ms=2.8990 cpu_ms=0.4090 frame_cpu_ms=0.0070
+GPUTIME t=6 viewports=4 frames=120 gpu_ms=3.565 cpu_ms=0.359
+SPLIT tyre_tracks_fps t=6.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=10.97 draw_calls=288 primitives=288271 objects=631 clock=6.3
+GPUTIME_RAW t=7 viewports=4 gpu_ms=3.9250 cpu_ms=0.3130 frame_cpu_ms=0.0060
+GPUTIME t=7 viewports=4 frames=120 gpu_ms=3.224 cpu_ms=0.288
+SPLIT tyre_tracks_fps t=7.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=10.69 draw_calls=220 primitives=232433 objects=492 clock=7.3
+GPUTIME_RAW t=8 viewports=4 gpu_ms=3.2950 cpu_ms=0.3370 frame_cpu_ms=0.0240
+GPUTIME t=8 viewports=4 frames=120 gpu_ms=3.055 cpu_ms=0.329
+SPLIT tyre_tracks_fps t=8.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=10.88 draw_calls=218 primitives=235651 objects=542 clock=8.3
+GPUTIME_RAW t=9 viewports=4 gpu_ms=3.3910 cpu_ms=0.3510 frame_cpu_ms=0.0080
+GPUTIME t=9 viewports=4 frames=120 gpu_ms=3.455 cpu_ms=0.359
+SPLIT tyre_tracks_fps t=9.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=11.16 draw_calls=212 primitives=231272 objects=504 clock=9.3
+GPUTIME_RAW t=10 viewports=4 gpu_ms=2.6770 cpu_ms=0.2900 frame_cpu_ms=0.0070
+GPUTIME t=10 viewports=4 frames=120 gpu_ms=3.039 cpu_ms=0.323
+SPLIT tyre_tracks_fps t=10.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=10.46 draw_calls=161 primitives=190541 objects=412 clock=10.3
+GPUTIME_RAW t=11 viewports=4 gpu_ms=3.7160 cpu_ms=0.3120 frame_cpu_ms=0.0060
+GPUTIME t=11 viewports=4 frames=120 gpu_ms=3.301 cpu_ms=0.331
+SPLIT tyre_tracks_fps t=11.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=11.13 draw_calls=251 primitives=225245 objects=578 clock=11.3
+GPUTIME_RAW t=12 viewports=4 gpu_ms=3.3790 cpu_ms=0.3030 frame_cpu_ms=0.0060
+GPUTIME t=12 viewports=4 frames=120 gpu_ms=3.461 cpu_ms=0.303
+SPLIT tyre_tracks_fps t=12.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=10.40 draw_calls=248 primitives=277175 objects=576 clock=12.3
+GPUTIME_RAW t=13 viewports=4 gpu_ms=3.8760 cpu_ms=0.3320 frame_cpu_ms=0.0060
+GPUTIME t=13 viewports=4 frames=120 gpu_ms=3.224 cpu_ms=0.342
+SPLIT tyre_tracks_fps t=13.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=10.85 draw_calls=280 primitives=244832 objects=669 clock=13.3
+GPUTIME_RAW t=14 viewports=4 gpu_ms=3.2930 cpu_ms=0.3590 frame_cpu_ms=0.0080
+GPUTIME t=14 viewports=4 frames=120 gpu_ms=3.443 cpu_ms=0.357
+SPLIT tyre_tracks_fps t=14.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=10.59 draw_calls=292 primitives=304366 objects=614 clock=14.3
+GPUTIME_RAW t=15 viewports=4 gpu_ms=3.9170 cpu_ms=0.3400 frame_cpu_ms=0.0070
+GPUTIME t=15 viewports=4 frames=120 gpu_ms=3.470 cpu_ms=0.351
+SPLIT tyre_tracks_fps t=15.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=10.74 draw_calls=154 primitives=163656 objects=417 clock=15.3
+GPUTIME_RAW t=16 viewports=4 gpu_ms=2.5530 cpu_ms=0.3490 frame_cpu_ms=0.0090
+GPUTIME t=16 viewports=4 frames=120 gpu_ms=3.582 cpu_ms=0.318
+SPLIT tyre_tracks_fps t=16.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=11.30 draw_calls=219 primitives=257675 objects=559 clock=16.3
+GPUTIME_RAW t=17 viewports=4 gpu_ms=3.7900 cpu_ms=0.2860 frame_cpu_ms=0.0060
+GPUTIME t=17 viewports=4 frames=120 gpu_ms=3.509 cpu_ms=0.278
+SPLIT tyre_tracks_fps t=17.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=10.53 draw_calls=184 primitives=204988 objects=451 clock=17.3
+GPUTIME_RAW t=18 viewports=4 gpu_ms=3.3840 cpu_ms=0.2840 frame_cpu_ms=0.0070
+GPUTIME t=18 viewports=4 frames=120 gpu_ms=3.431 cpu_ms=0.333
+SPLIT tyre_tracks_fps t=18.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=10.55 draw_calls=201 primitives=177841 objects=480 clock=18.3
+GPUTIME_RAW t=19 viewports=4 gpu_ms=3.8110 cpu_ms=0.3000 frame_cpu_ms=0.0060
+GPUTIME t=19 viewports=4 frames=120 gpu_ms=3.481 cpu_ms=0.329
+SPLIT tyre_tracks_fps t=19.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=10.66 draw_calls=290 primitives=275364 objects=690 clock=19.3
+GPUTIME_RAW t=20 viewports=4 gpu_ms=2.8220 cpu_ms=0.3230 frame_cpu_ms=0.0070
+GPUTIME t=20 viewports=4 frames=120 gpu_ms=3.463 cpu_ms=0.377
+SPLIT tyre_tracks_fps t=20.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=11.10 draw_calls=288 primitives=262110 objects=636 clock=20.3
+GPUTIME_RAW t=21 viewports=4 gpu_ms=3.9050 cpu_ms=0.3730 frame_cpu_ms=0.0070
+GPUTIME t=21 viewports=4 frames=120 gpu_ms=3.815 cpu_ms=0.344
+SPLIT tyre_tracks_fps t=21.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=11.15 draw_calls=244 primitives=255813 objects=536 clock=21.3
+GPUTIME_RAW t=22 viewports=4 gpu_ms=3.2420 cpu_ms=0.3750 frame_cpu_ms=0.0060
+GPUTIME t=22 viewports=4 frames=120 gpu_ms=3.687 cpu_ms=0.295
+SPLIT tyre_tracks_fps t=22.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=10.71 draw_calls=218 primitives=261505 objects=527 clock=22.3
+GPUTIME_RAW t=23 viewports=4 gpu_ms=3.1190 cpu_ms=0.3730 frame_cpu_ms=0.0070
+GPUTIME t=23 viewports=4 frames=120 gpu_ms=3.452 cpu_ms=0.338
+SPLIT tyre_tracks_fps t=23.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=10.59 draw_calls=163 primitives=251870 objects=409 clock=23.3
+GPUTIME_RAW t=24 viewports=4 gpu_ms=3.7770 cpu_ms=0.3100 frame_cpu_ms=0.0070
+GPUTIME t=24 viewports=4 frames=120 gpu_ms=3.446 cpu_ms=0.298
+SPLIT tyre_tracks_fps t=24.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=11.15 draw_calls=175 primitives=155430 objects=487 clock=24.3
+GPUTIME_RAW t=25 viewports=4 gpu_ms=3.3580 cpu_ms=0.3610 frame_cpu_ms=0.0080
+GPUTIME t=25 viewports=4 frames=120 gpu_ms=3.612 cpu_ms=0.322
+SPLIT tyre_tracks_fps t=25.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=10.82 draw_calls=263 primitives=247271 objects=580 clock=25.3
+GPUTIME_RAW t=26 viewports=4 gpu_ms=3.8790 cpu_ms=0.2850 frame_cpu_ms=0.0080
+GPUTIME t=26 viewports=4 frames=120 gpu_ms=3.555 cpu_ms=0.339
+SPLIT tyre_tracks_fps t=26.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=10.62 draw_calls=229 primitives=206273 objects=567 clock=26.3
+GPUTIME_RAW t=27 viewports=4 gpu_ms=3.9860 cpu_ms=0.2770 frame_cpu_ms=0.0070
+GPUTIME t=27 viewports=4 frames=120 gpu_ms=3.249 cpu_ms=0.294
+SPLIT tyre_tracks_fps t=27.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=10.96 draw_calls=312 primitives=289881 objects=722 clock=27.3
+GPUTIME_RAW t=28 viewports=4 gpu_ms=2.5670 cpu_ms=0.3430 frame_cpu_ms=0.0070
+GPUTIME t=28 viewports=4 frames=120 gpu_ms=3.320 cpu_ms=0.326
+SPLIT tyre_tracks_fps t=28.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=13.10 draw_calls=269 primitives=295164 objects=562 clock=28.3
+GPUTIME_RAW t=29 viewports=4 gpu_ms=3.6380 cpu_ms=0.2650 frame_cpu_ms=0.0070
+GPUTIME t=29 viewports=4 frames=120 gpu_ms=3.609 cpu_ms=0.360
+SPLIT tyre_tracks_fps t=29.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=10.78 draw_calls=173 primitives=209861 objects=440 clock=29.3
+GPUTIME_RAW t=30 viewports=4 gpu_ms=2.7050 cpu_ms=0.3570 frame_cpu_ms=0.0070
+GPUTIME t=30 viewports=4 frames=120 gpu_ms=3.412 cpu_ms=0.325
+SPLIT tyre_tracks_fps t=30.167 phase=window_1 staging=0 fps=120.0 frame_ms_max=13.51 draw_calls=212 primitives=250579 objects=531 clock=30.3
+GPUTIME_RAW t=31 viewports=4 gpu_ms=3.6020 cpu_ms=0.3560 frame_cpu_ms=0.0060
+GPUTIME t=31 viewports=4 frames=120 gpu_ms=3.075 cpu_ms=0.341
+SPLIT tyre_tracks_fps t=31.167 phase=window_2 staging=1 fps=120.0 frame_ms_max=11.14 draw_calls=191 primitives=239338 objects=479 clock=31.3
+GPUTIME_RAW t=32 viewports=4 gpu_ms=3.4810 cpu_ms=0.3320 frame_cpu_ms=0.0060
+GPUTIME t=32 viewports=4 frames=120 gpu_ms=3.722 cpu_ms=0.272
+SPLIT tyre_tracks_fps t=32.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=10.86 draw_calls=199 primitives=251312 objects=618 clock=32.3
+GPUTIME_RAW t=33 viewports=4 gpu_ms=2.2640 cpu_ms=0.2980 frame_cpu_ms=0.0060
+GPUTIME t=33 viewports=4 frames=120 gpu_ms=2.887 cpu_ms=0.349
+SPLIT tyre_tracks_fps t=33.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=11.19 draw_calls=155 primitives=166814 objects=450 clock=33.3
+GPUTIME_RAW t=34 viewports=4 gpu_ms=3.5370 cpu_ms=0.3580 frame_cpu_ms=0.0060
+GPUTIME t=34 viewports=4 frames=120 gpu_ms=3.590 cpu_ms=0.325
+SPLIT tyre_tracks_fps t=34.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=11.51 draw_calls=199 primitives=197470 objects=481 clock=34.3
+GPUTIME_RAW t=35 viewports=4 gpu_ms=3.7480 cpu_ms=0.3750 frame_cpu_ms=0.0070
+GPUTIME t=35 viewports=4 frames=120 gpu_ms=3.122 cpu_ms=0.332
+SPLIT tyre_tracks_fps t=35.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=11.09 draw_calls=165 primitives=173524 objects=457 clock=35.3
+GPUTIME_RAW t=36 viewports=4 gpu_ms=3.1770 cpu_ms=0.3560 frame_cpu_ms=0.0070
+GPUTIME t=36 viewports=4 frames=120 gpu_ms=3.220 cpu_ms=0.327
+SPLIT tyre_tracks_fps t=36.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=11.17 draw_calls=277 primitives=243493 objects=724 clock=36.3
+GPUTIME_RAW t=37 viewports=4 gpu_ms=3.2140 cpu_ms=0.3440 frame_cpu_ms=0.0080
+GPUTIME t=37 viewports=4 frames=120 gpu_ms=3.409 cpu_ms=0.309
+SPLIT tyre_tracks_fps t=37.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=10.48 draw_calls=346 primitives=362707 objects=714 clock=37.3
+GPUTIME_RAW t=38 viewports=4 gpu_ms=3.1780 cpu_ms=0.3750 frame_cpu_ms=0.0060
+GPUTIME t=38 viewports=4 frames=120 gpu_ms=3.231 cpu_ms=0.345
+SPLIT tyre_tracks_fps t=38.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=10.93 draw_calls=123 primitives=154212 objects=359 clock=38.3
+GPUTIME_RAW t=39 viewports=4 gpu_ms=2.0800 cpu_ms=0.3700 frame_cpu_ms=0.0070
+GPUTIME t=39 viewports=4 frames=120 gpu_ms=2.915 cpu_ms=0.327
+SPLIT tyre_tracks_fps t=39.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=10.80 draw_calls=276 primitives=315828 objects=773 clock=39.3
+GPUTIME_RAW t=40 viewports=4 gpu_ms=3.7630 cpu_ms=0.3940 frame_cpu_ms=0.0080
+GPUTIME t=40 viewports=4 frames=120 gpu_ms=3.260 cpu_ms=0.368
+SPLIT tyre_tracks_fps t=40.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=11.07 draw_calls=193 primitives=285707 objects=565 clock=40.3
+GPUTIME_RAW t=41 viewports=4 gpu_ms=4.1310 cpu_ms=0.3020 frame_cpu_ms=0.0080
+GPUTIME t=41 viewports=4 frames=120 gpu_ms=3.313 cpu_ms=0.346
+SPLIT tyre_tracks_fps t=41.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=11.38 draw_calls=110 primitives=125853 objects=329 clock=41.3
+GPUTIME_RAW t=42 viewports=4 gpu_ms=3.4160 cpu_ms=0.3000 frame_cpu_ms=0.0060
+GPUTIME t=42 viewports=4 frames=120 gpu_ms=3.543 cpu_ms=0.250
+SPLIT tyre_tracks_fps t=42.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=10.55 draw_calls=255 primitives=251154 objects=617 clock=42.3
+GPUTIME_RAW t=43 viewports=4 gpu_ms=3.3860 cpu_ms=0.4340 frame_cpu_ms=0.0080
+GPUTIME t=43 viewports=4 frames=120 gpu_ms=3.433 cpu_ms=0.349
+SPLIT tyre_tracks_fps t=43.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=10.76 draw_calls=285 primitives=291716 objects=785 clock=43.3
+GPUTIME_RAW t=44 viewports=4 gpu_ms=3.4140 cpu_ms=0.3590 frame_cpu_ms=0.0080
+GPUTIME t=44 viewports=4 frames=120 gpu_ms=3.335 cpu_ms=0.347
+SPLIT tyre_tracks_fps t=44.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=10.81 draw_calls=284 primitives=266946 objects=669 clock=44.3
+GPUTIME_RAW t=45 viewports=4 gpu_ms=3.5170 cpu_ms=0.3070 frame_cpu_ms=0.0060
+GPUTIME t=45 viewports=4 frames=120 gpu_ms=3.510 cpu_ms=0.358
+SPLIT tyre_tracks_fps t=45.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=11.28 draw_calls=229 primitives=268465 objects=538 clock=45.3
+GPUTIME_RAW t=46 viewports=4 gpu_ms=3.0720 cpu_ms=0.3250 frame_cpu_ms=0.0080
+GPUTIME t=46 viewports=4 frames=120 gpu_ms=3.389 cpu_ms=0.360
+SPLIT tyre_tracks_fps t=46.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=10.04 draw_calls=172 primitives=240148 objects=544 clock=46.3
+GPUTIME_RAW t=47 viewports=4 gpu_ms=3.5660 cpu_ms=0.3150 frame_cpu_ms=0.0060
+GPUTIME t=47 viewports=4 frames=120 gpu_ms=3.741 cpu_ms=0.299
+SPLIT tyre_tracks_fps t=47.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=10.76 draw_calls=175 primitives=185658 objects=499 clock=47.3
+GPUTIME_RAW t=48 viewports=4 gpu_ms=3.3440 cpu_ms=0.3370 frame_cpu_ms=0.0080
+GPUTIME t=48 viewports=4 frames=120 gpu_ms=3.584 cpu_ms=0.330
+SPLIT tyre_tracks_fps t=48.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=11.00 draw_calls=229 primitives=232910 objects=541 clock=48.3
+GPUTIME_RAW t=49 viewports=4 gpu_ms=2.7320 cpu_ms=0.3540 frame_cpu_ms=0.0080
+GPUTIME t=49 viewports=4 frames=120 gpu_ms=3.330 cpu_ms=0.332
+SPLIT tyre_tracks_fps t=49.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=11.13 draw_calls=141 primitives=126954 objects=411 clock=49.3
+GPUTIME_RAW t=50 viewports=4 gpu_ms=3.1960 cpu_ms=0.3550 frame_cpu_ms=0.0070
+GPUTIME t=50 viewports=4 frames=120 gpu_ms=3.345 cpu_ms=0.321
+SPLIT tyre_tracks_fps t=50.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=10.88 draw_calls=323 primitives=298256 objects=784 clock=50.3
+GPUTIME_RAW t=51 viewports=4 gpu_ms=3.4900 cpu_ms=0.2820 frame_cpu_ms=0.0070
+GPUTIME t=51 viewports=4 frames=120 gpu_ms=3.563 cpu_ms=0.336
+SPLIT tyre_tracks_fps t=51.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=10.49 draw_calls=316 primitives=378216 objects=786 clock=51.3
+GPUTIME_RAW t=52 viewports=4 gpu_ms=3.3360 cpu_ms=0.2580 frame_cpu_ms=0.0070
+GPUTIME t=52 viewports=4 frames=120 gpu_ms=3.656 cpu_ms=0.301
+SPLIT tyre_tracks_fps t=52.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=10.84 draw_calls=145 primitives=192127 objects=402 clock=52.3
+GPUTIME_RAW t=53 viewports=4 gpu_ms=3.7510 cpu_ms=0.4290 frame_cpu_ms=0.0070
+GPUTIME t=53 viewports=4 frames=120 gpu_ms=3.111 cpu_ms=0.325
+SPLIT tyre_tracks_fps t=53.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=10.94 draw_calls=258 primitives=320731 objects=726 clock=53.3
+GPUTIME_RAW t=54 viewports=4 gpu_ms=3.7260 cpu_ms=0.4460 frame_cpu_ms=0.0060
+GPUTIME t=54 viewports=4 frames=120 gpu_ms=3.682 cpu_ms=0.365
+SPLIT tyre_tracks_fps t=54.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=10.79 draw_calls=191 primitives=212122 objects=558 clock=54.3
+GPUTIME_RAW t=55 viewports=4 gpu_ms=2.9760 cpu_ms=0.2390 frame_cpu_ms=0.0080
+GPUTIME t=55 viewports=4 frames=120 gpu_ms=3.205 cpu_ms=0.317
+SPLIT tyre_tracks_fps t=55.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=11.16 draw_calls=151 primitives=120081 objects=453 clock=55.3
+GPUTIME_RAW t=56 viewports=4 gpu_ms=2.2400 cpu_ms=0.2880 frame_cpu_ms=0.0080
+GPUTIME t=56 viewports=4 frames=120 gpu_ms=2.945 cpu_ms=0.318
+SPLIT tyre_tracks_fps t=56.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=11.15 draw_calls=235 primitives=241220 objects=566 clock=56.3
+GPUTIME_RAW t=57 viewports=4 gpu_ms=3.8600 cpu_ms=0.3710 frame_cpu_ms=0.0070
+GPUTIME t=57 viewports=4 frames=121 gpu_ms=3.485 cpu_ms=0.304
+SPLIT tyre_tracks_fps t=57.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=10.78 draw_calls=217 primitives=257352 objects=556 clock=57.3
+GPUTIME_RAW t=58 viewports=4 gpu_ms=3.9310 cpu_ms=0.1730 frame_cpu_ms=0.0050
+GPUTIME t=58 viewports=4 frames=120 gpu_ms=3.659 cpu_ms=0.238
+SPLIT tyre_tracks_fps t=58.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=9.69 draw_calls=292 primitives=285624 objects=719 clock=58.3
+GPUTIME_RAW t=59 viewports=4 gpu_ms=3.4310 cpu_ms=0.3860 frame_cpu_ms=0.0070
+GPUTIME t=59 viewports=4 frames=120 gpu_ms=3.585 cpu_ms=0.340
+SPLIT tyre_tracks_fps t=59.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=11.31 draw_calls=265 primitives=296750 objects=652 clock=59.3
+GPUTIME_RAW t=60 viewports=4 gpu_ms=2.7430 cpu_ms=0.6330 frame_cpu_ms=0.0060
+GPUTIME t=60 viewports=4 frames=120 gpu_ms=3.719 cpu_ms=0.375
+SPLIT tyre_tracks_fps t=60.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=11.15 draw_calls=163 primitives=196673 objects=536 clock=60.3
+GPUTIME_RAW t=61 viewports=4 gpu_ms=4.0930 cpu_ms=0.4150 frame_cpu_ms=0.0090
+GPUTIME t=61 viewports=4 frames=120 gpu_ms=3.167 cpu_ms=0.430
+SPLIT tyre_tracks_fps t=61.167 phase=window_2 staging=0 fps=120.0 frame_ms_max=11.27 draw_calls=247 primitives=267086 objects=595 clock=61.3
+GPUTIME_RAW t=62 viewports=4 gpu_ms=3.8110 cpu_ms=0.2810 frame_cpu_ms=0.0080
+GPUTIME t=62 viewports=4 frames=120 gpu_ms=3.645 cpu_ms=0.289
+SPLIT tyre_tracks_fps t=62.167 phase=window_3 staging=1 fps=120.0 frame_ms_max=10.61 draw_calls=199 primitives=212990 objects=493 clock=62.3
+GPUTIME_RAW t=63 viewports=4 gpu_ms=2.6650 cpu_ms=0.3490 frame_cpu_ms=0.0070
+GPUTIME t=63 viewports=4 frames=120 gpu_ms=3.165 cpu_ms=0.341
+SPLIT tyre_tracks_fps t=63.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=10.91 draw_calls=196 primitives=239648 objects=471 clock=63.3
+GPUTIME_RAW t=64 viewports=4 gpu_ms=3.4870 cpu_ms=0.2640 frame_cpu_ms=0.0080
+GPUTIME t=64 viewports=4 frames=120 gpu_ms=3.492 cpu_ms=0.340
+SPLIT tyre_tracks_fps t=64.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=11.22 draw_calls=172 primitives=224409 objects=443 clock=64.3
+GPUTIME_RAW t=65 viewports=4 gpu_ms=3.9240 cpu_ms=0.3550 frame_cpu_ms=0.0070
+GPUTIME t=65 viewports=4 frames=120 gpu_ms=3.709 cpu_ms=0.233
+SPLIT tyre_tracks_fps t=65.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=10.81 draw_calls=195 primitives=189477 objects=479 clock=65.3
+GPUTIME_RAW t=66 viewports=4 gpu_ms=3.3960 cpu_ms=0.3450 frame_cpu_ms=0.0090
+GPUTIME t=66 viewports=4 frames=120 gpu_ms=3.149 cpu_ms=0.342
+SPLIT tyre_tracks_fps t=66.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=10.54 draw_calls=194 primitives=235461 objects=435 clock=66.3
+GPUTIME_RAW t=67 viewports=4 gpu_ms=3.9370 cpu_ms=0.2090 frame_cpu_ms=0.0060
+GPUTIME t=67 viewports=4 frames=120 gpu_ms=3.519 cpu_ms=0.283
+SPLIT tyre_tracks_fps t=67.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=10.01 draw_calls=273 primitives=225984 objects=679 clock=67.3
+GPUTIME_RAW t=68 viewports=4 gpu_ms=3.6080 cpu_ms=0.2860 frame_cpu_ms=0.0080
+GPUTIME t=68 viewports=4 frames=120 gpu_ms=3.617 cpu_ms=0.283
+SPLIT tyre_tracks_fps t=68.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=10.76 draw_calls=323 primitives=302802 objects=709 clock=68.3
+GPUTIME_RAW t=69 viewports=4 gpu_ms=3.9950 cpu_ms=0.4300 frame_cpu_ms=0.0070
+GPUTIME t=69 viewports=4 frames=120 gpu_ms=3.427 cpu_ms=0.343
+SPLIT tyre_tracks_fps t=69.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=10.83 draw_calls=227 primitives=266831 objects=491 clock=69.3
+GPUTIME_RAW t=70 viewports=4 gpu_ms=2.7900 cpu_ms=0.5840 frame_cpu_ms=0.0120
+GPUTIME t=70 viewports=4 frames=120 gpu_ms=3.462 cpu_ms=0.338
+SPLIT tyre_tracks_fps t=70.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=13.84 draw_calls=219 primitives=257659 objects=566 clock=70.3
+GPUTIME_RAW t=71 viewports=4 gpu_ms=3.9740 cpu_ms=0.3490 frame_cpu_ms=0.0060
+GPUTIME t=71 viewports=4 frames=120 gpu_ms=3.418 cpu_ms=0.347
+SPLIT tyre_tracks_fps t=71.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=10.70 draw_calls=208 primitives=259951 objects=505 clock=71.3
+GPUTIME_RAW t=72 viewports=4 gpu_ms=3.4440 cpu_ms=0.2590 frame_cpu_ms=0.0070
+GPUTIME t=72 viewports=4 frames=120 gpu_ms=3.699 cpu_ms=0.272
+SPLIT tyre_tracks_fps t=72.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=10.66 draw_calls=143 primitives=143119 objects=382 clock=72.3
+GPUTIME_RAW t=73 viewports=4 gpu_ms=3.5320 cpu_ms=0.3490 frame_cpu_ms=0.0100
+GPUTIME t=73 viewports=4 frames=120 gpu_ms=3.486 cpu_ms=0.298
+SPLIT tyre_tracks_fps t=73.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=10.68 draw_calls=234 primitives=244166 objects=553 clock=73.3
+GPUTIME_RAW t=74 viewports=4 gpu_ms=3.8890 cpu_ms=0.3830 frame_cpu_ms=0.0090
+GPUTIME t=74 viewports=4 frames=120 gpu_ms=3.761 cpu_ms=0.343
+SPLIT tyre_tracks_fps t=74.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=11.18 draw_calls=282 primitives=245096 objects=654 clock=74.3
+GPUTIME_RAW t=75 viewports=4 gpu_ms=2.2830 cpu_ms=0.3730 frame_cpu_ms=0.0140
+GPUTIME t=75 viewports=4 frames=120 gpu_ms=3.221 cpu_ms=0.342
+SPLIT tyre_tracks_fps t=75.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=10.89 draw_calls=273 primitives=260832 objects=613 clock=75.3
+GPUTIME_RAW t=76 viewports=4 gpu_ms=4.1370 cpu_ms=0.4210 frame_cpu_ms=0.0080
+GPUTIME t=76 viewports=4 frames=120 gpu_ms=3.108 cpu_ms=0.364
+SPLIT tyre_tracks_fps t=76.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=11.24 draw_calls=273 primitives=276775 objects=587 clock=76.3
+GPUTIME_RAW t=77 viewports=4 gpu_ms=3.0880 cpu_ms=0.2340 frame_cpu_ms=0.0050
+GPUTIME t=77 viewports=4 frames=120 gpu_ms=3.551 cpu_ms=0.294
+SPLIT tyre_tracks_fps t=77.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=10.15 draw_calls=165 primitives=249886 objects=412 clock=77.3
+GPUTIME_RAW t=78 viewports=4 gpu_ms=3.3970 cpu_ms=0.3440 frame_cpu_ms=0.0080
+GPUTIME t=78 viewports=4 frames=120 gpu_ms=3.355 cpu_ms=0.329
+SPLIT tyre_tracks_fps t=78.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=10.90 draw_calls=199 primitives=214976 objects=536 clock=78.3
+GPUTIME_RAW t=79 viewports=4 gpu_ms=3.4730 cpu_ms=0.3520 frame_cpu_ms=0.0100
+GPUTIME t=79 viewports=4 frames=120 gpu_ms=3.215 cpu_ms=0.341
+SPLIT tyre_tracks_fps t=79.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=10.72 draw_calls=214 primitives=215760 objects=504 clock=79.3
+GPUTIME_RAW t=80 viewports=4 gpu_ms=2.6890 cpu_ms=0.3150 frame_cpu_ms=0.0260
+GPUTIME t=80 viewports=4 frames=120 gpu_ms=3.288 cpu_ms=0.325
+SPLIT tyre_tracks_fps t=80.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=11.32 draw_calls=175 primitives=188508 objects=425 clock=80.3
+GPUTIME_RAW t=81 viewports=4 gpu_ms=2.7190 cpu_ms=0.3840 frame_cpu_ms=0.0070
+GPUTIME t=81 viewports=4 frames=120 gpu_ms=3.446 cpu_ms=0.350
+SPLIT tyre_tracks_fps t=81.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=10.54 draw_calls=286 primitives=270511 objects=700 clock=81.3
+GPUTIME_RAW t=82 viewports=4 gpu_ms=4.0560 cpu_ms=0.3260 frame_cpu_ms=0.0070
+GPUTIME t=82 viewports=4 frames=120 gpu_ms=3.716 cpu_ms=0.297
+SPLIT tyre_tracks_fps t=82.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=11.05 draw_calls=310 primitives=311978 objects=667 clock=82.3
+GPUTIME_RAW t=83 viewports=4 gpu_ms=4.0250 cpu_ms=0.3760 frame_cpu_ms=0.0060
+GPUTIME t=83 viewports=4 frames=120 gpu_ms=3.395 cpu_ms=0.373
+SPLIT tyre_tracks_fps t=83.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=10.94 draw_calls=231 primitives=236733 objects=505 clock=83.3
+GPUTIME_RAW t=84 viewports=4 gpu_ms=2.7550 cpu_ms=0.3720 frame_cpu_ms=0.0070
+GPUTIME t=84 viewports=4 frames=120 gpu_ms=3.330 cpu_ms=0.342
+SPLIT tyre_tracks_fps t=84.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=11.13 draw_calls=211 primitives=255249 objects=534 clock=84.3
+GPUTIME_RAW t=85 viewports=4 gpu_ms=2.8010 cpu_ms=0.3610 frame_cpu_ms=0.0080
+GPUTIME t=85 viewports=4 frames=120 gpu_ms=3.499 cpu_ms=0.325
+SPLIT tyre_tracks_fps t=85.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=10.98 draw_calls=209 primitives=232574 objects=505 clock=85.3
+GPUTIME_RAW t=86 viewports=4 gpu_ms=3.7010 cpu_ms=0.3170 frame_cpu_ms=0.0070
+GPUTIME t=86 viewports=4 frames=120 gpu_ms=3.486 cpu_ms=0.314
+SPLIT tyre_tracks_fps t=86.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=11.32 draw_calls=163 primitives=169063 objects=423 clock=86.3
+GPUTIME_RAW t=87 viewports=4 gpu_ms=3.8450 cpu_ms=0.2800 frame_cpu_ms=0.0080
+GPUTIME t=87 viewports=4 frames=120 gpu_ms=3.932 cpu_ms=0.278
+SPLIT tyre_tracks_fps t=87.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=10.65 draw_calls=230 primitives=236702 objects=523 clock=87.3
+GPUTIME_RAW t=88 viewports=4 gpu_ms=3.4830 cpu_ms=0.4080 frame_cpu_ms=0.0100
+GPUTIME t=88 viewports=4 frames=120 gpu_ms=3.649 cpu_ms=0.351
+SPLIT tyre_tracks_fps t=88.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=10.96 draw_calls=229 primitives=256157 objects=539 clock=88.3
+GPUTIME_RAW t=89 viewports=4 gpu_ms=3.3090 cpu_ms=0.3040 frame_cpu_ms=0.0100
+GPUTIME t=89 viewports=4 frames=120 gpu_ms=3.387 cpu_ms=0.354
+SPLIT tyre_tracks_fps t=89.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=11.36 draw_calls=302 primitives=266746 objects=708 clock=89.3
+GPUTIME_RAW t=90 viewports=4 gpu_ms=2.4390 cpu_ms=0.3660 frame_cpu_ms=0.0070
+GPUTIME t=90 viewports=4 frames=120 gpu_ms=3.411 cpu_ms=0.352
+SPLIT tyre_tracks_fps t=90.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=11.16 draw_calls=301 primitives=301442 objects=619 clock=90.3
+GPUTIME_RAW t=91 viewports=4 gpu_ms=3.9810 cpu_ms=0.3110 frame_cpu_ms=0.0070
+GPUTIME t=91 viewports=4 frames=120 gpu_ms=3.161 cpu_ms=0.370
+SPLIT tyre_tracks_fps t=91.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=10.92 draw_calls=152 primitives=179953 objects=413 clock=91.3
+GPUTIME_RAW t=92 viewports=4 gpu_ms=3.4650 cpu_ms=0.2990 frame_cpu_ms=0.0080
+GPUTIME t=92 viewports=4 frames=120 gpu_ms=3.702 cpu_ms=0.272
+SPLIT tyre_tracks_fps t=92.167 phase=window_3 staging=0 fps=120.0 frame_ms_max=10.71 draw_calls=222 primitives=260589 objects=574 clock=92.3
+GPUTIME_RAW t=93 viewports=4 gpu_ms=4.1680 cpu_ms=0.3570 frame_cpu_ms=0.0080
+GPUTIME t=93 viewports=4 frames=120 gpu_ms=3.201 cpu_ms=0.328
+SPLIT tyre_tracks_fps t=93.167 phase=window_4 staging=1 fps=120.0 frame_ms_max=10.75 draw_calls=202 primitives=272573 objects=484 clock=93.3
+GPUTIME_RAW t=94 viewports=4 gpu_ms=2.9300 cpu_ms=0.4040 frame_cpu_ms=0.0080
+GPUTIME t=94 viewports=4 frames=120 gpu_ms=3.386 cpu_ms=0.329
+SPLIT tyre_tracks_fps t=94.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=11.05 draw_calls=249 primitives=345929 objects=784 clock=94.3
+GPUTIME_RAW t=95 viewports=4 gpu_ms=2.3420 cpu_ms=0.3550 frame_cpu_ms=0.0080
+GPUTIME t=95 viewports=4 frames=120 gpu_ms=3.315 cpu_ms=0.360
+SPLIT tyre_tracks_fps t=95.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=10.88 draw_calls=145 primitives=193586 objects=385 clock=95.3
+GPUTIME_RAW t=96 viewports=4 gpu_ms=3.4510 cpu_ms=0.3430 frame_cpu_ms=0.0070
+GPUTIME t=96 viewports=4 frames=120 gpu_ms=3.115 cpu_ms=0.317
+SPLIT tyre_tracks_fps t=96.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=11.11 draw_calls=204 primitives=205647 objects=497 clock=96.3
+GPUTIME_RAW t=97 viewports=4 gpu_ms=4.4010 cpu_ms=0.3270 frame_cpu_ms=0.0070
+GPUTIME t=97 viewports=4 frames=120 gpu_ms=3.749 cpu_ms=0.286
+SPLIT tyre_tracks_fps t=97.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=10.87 draw_calls=204 primitives=258193 objects=611 clock=97.3
+GPUTIME_RAW t=98 viewports=4 gpu_ms=3.0760 cpu_ms=0.3340 frame_cpu_ms=0.0070
+GPUTIME t=98 viewports=4 frames=120 gpu_ms=3.148 cpu_ms=0.359
+SPLIT tyre_tracks_fps t=98.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=11.46 draw_calls=246 primitives=203243 objects=667 clock=98.3
+GPUTIME_RAW t=99 viewports=4 gpu_ms=3.2750 cpu_ms=0.3660 frame_cpu_ms=0.0060
+GPUTIME t=99 viewports=4 frames=120 gpu_ms=3.621 cpu_ms=0.359
+SPLIT tyre_tracks_fps t=99.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=10.46 draw_calls=347 primitives=344730 objects=744 clock=99.3
+GPUTIME_RAW t=100 viewports=4 gpu_ms=3.7110 cpu_ms=0.3930 frame_cpu_ms=0.0070
+GPUTIME t=100 viewports=4 frames=120 gpu_ms=3.539 cpu_ms=0.367
+SPLIT tyre_tracks_fps t=100.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=10.83 draw_calls=140 primitives=195628 objects=379 clock=100.3
+GPUTIME_RAW t=101 viewports=4 gpu_ms=3.2110 cpu_ms=0.3590 frame_cpu_ms=0.0080
+GPUTIME t=101 viewports=4 frames=120 gpu_ms=3.537 cpu_ms=0.350
+SPLIT tyre_tracks_fps t=101.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=13.65 draw_calls=226 primitives=235900 objects=704 clock=101.3
+GPUTIME_RAW t=102 viewports=4 gpu_ms=3.9320 cpu_ms=0.3350 frame_cpu_ms=0.0080
+GPUTIME t=102 viewports=4 frames=120 gpu_ms=3.376 cpu_ms=0.326
+SPLIT tyre_tracks_fps t=102.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=11.18 draw_calls=253 primitives=290455 objects=585 clock=102.3
+GPUTIME_RAW t=103 viewports=4 gpu_ms=3.5040 cpu_ms=0.3610 frame_cpu_ms=0.0080
+GPUTIME t=103 viewports=4 frames=120 gpu_ms=3.663 cpu_ms=0.340
+SPLIT tyre_tracks_fps t=103.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=11.39 draw_calls=93 primitives=84432 objects=303 clock=103.3
+GPUTIME_RAW t=104 viewports=4 gpu_ms=3.0440 cpu_ms=0.3250 frame_cpu_ms=0.0090
+GPUTIME t=104 viewports=4 frames=120 gpu_ms=3.574 cpu_ms=0.311
+SPLIT tyre_tracks_fps t=104.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=11.34 draw_calls=237 primitives=238736 objects=599 clock=104.3
+GPUTIME_RAW t=105 viewports=4 gpu_ms=3.1120 cpu_ms=0.3770 frame_cpu_ms=0.0090
+GPUTIME t=105 viewports=4 frames=120 gpu_ms=3.582 cpu_ms=0.352
+SPLIT tyre_tracks_fps t=105.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=10.53 draw_calls=278 primitives=306318 objects=773 clock=105.3
+GPUTIME_RAW t=106 viewports=4 gpu_ms=3.1000 cpu_ms=0.2130 frame_cpu_ms=0.0060
+GPUTIME t=106 viewports=4 frames=120 gpu_ms=3.526 cpu_ms=0.356
+SPLIT tyre_tracks_fps t=106.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=13.90 draw_calls=258 primitives=273023 objects=594 clock=106.3
+GPUTIME_RAW t=107 viewports=4 gpu_ms=4.2060 cpu_ms=0.3990 frame_cpu_ms=0.0060
+GPUTIME t=107 viewports=4 frames=120 gpu_ms=3.493 cpu_ms=0.306
+SPLIT tyre_tracks_fps t=107.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=10.92 draw_calls=249 primitives=278441 objects=570 clock=107.3
+GPUTIME_RAW t=108 viewports=4 gpu_ms=3.4960 cpu_ms=0.4400 frame_cpu_ms=0.0080
+GPUTIME t=108 viewports=4 frames=120 gpu_ms=3.203 cpu_ms=0.351
+SPLIT tyre_tracks_fps t=108.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=10.95 draw_calls=240 primitives=292575 objects=766 clock=108.3
+GPUTIME_RAW t=109 viewports=4 gpu_ms=3.7340 cpu_ms=0.2810 frame_cpu_ms=0.0070
+GPUTIME t=109 viewports=4 frames=120 gpu_ms=3.737 cpu_ms=0.366
+SPLIT tyre_tracks_fps t=109.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=10.58 draw_calls=190 primitives=172493 objects=567 clock=109.3
+GPUTIME_RAW t=110 viewports=4 gpu_ms=2.4000 cpu_ms=0.3370 frame_cpu_ms=0.0080
+GPUTIME t=110 viewports=4 frames=120 gpu_ms=3.509 cpu_ms=0.320
+SPLIT tyre_tracks_fps t=110.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=10.91 draw_calls=201 primitives=202468 objects=481 clock=110.3
+GPUTIME_RAW t=111 viewports=4 gpu_ms=3.7790 cpu_ms=0.3430 frame_cpu_ms=0.0130
+GPUTIME t=111 viewports=4 frames=120 gpu_ms=3.226 cpu_ms=0.369
+SPLIT tyre_tracks_fps t=111.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=11.13 draw_calls=125 primitives=163446 objects=357 clock=111.3
+GPUTIME_RAW t=112 viewports=4 gpu_ms=3.4610 cpu_ms=0.2720 frame_cpu_ms=0.0080
+GPUTIME t=112 viewports=4 frames=120 gpu_ms=3.418 cpu_ms=0.264
+SPLIT tyre_tracks_fps t=112.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=10.77 draw_calls=254 primitives=199952 objects=698 clock=112.3
+GPUTIME_RAW t=113 viewports=4 gpu_ms=2.2110 cpu_ms=0.4120 frame_cpu_ms=0.0060
+GPUTIME t=113 viewports=4 frames=120 gpu_ms=3.222 cpu_ms=0.373
+SPLIT tyre_tracks_fps t=113.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=11.23 draw_calls=377 primitives=383422 objects=809 clock=113.3
+GPUTIME_RAW t=114 viewports=4 gpu_ms=3.2190 cpu_ms=0.3860 frame_cpu_ms=0.0070
+GPUTIME t=114 viewports=4 frames=120 gpu_ms=3.372 cpu_ms=0.399
+SPLIT tyre_tracks_fps t=114.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=10.55 draw_calls=156 primitives=171815 objects=391 clock=114.3
+GPUTIME_RAW t=115 viewports=4 gpu_ms=3.4480 cpu_ms=0.3500 frame_cpu_ms=0.0080
+GPUTIME t=115 viewports=4 frames=120 gpu_ms=3.234 cpu_ms=0.323
+SPLIT tyre_tracks_fps t=115.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=11.22 draw_calls=280 primitives=311242 objects=768 clock=115.3
+GPUTIME_RAW t=116 viewports=4 gpu_ms=4.0390 cpu_ms=0.4270 frame_cpu_ms=0.0060
+GPUTIME t=116 viewports=4 frames=120 gpu_ms=3.659 cpu_ms=0.363
+SPLIT tyre_tracks_fps t=116.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=11.64 draw_calls=236 primitives=286480 objects=709 clock=116.3
+GPUTIME_RAW t=117 viewports=4 gpu_ms=3.2330 cpu_ms=0.3000 frame_cpu_ms=0.0070
+GPUTIME t=117 viewports=4 frames=120 gpu_ms=3.885 cpu_ms=0.300
+SPLIT tyre_tracks_fps t=117.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=10.91 draw_calls=115 primitives=131535 objects=341 clock=117.3
+GPUTIME_RAW t=118 viewports=4 gpu_ms=3.1320 cpu_ms=0.3300 frame_cpu_ms=0.0080
+GPUTIME t=118 viewports=4 frames=120 gpu_ms=2.911 cpu_ms=0.333
+SPLIT tyre_tracks_fps t=118.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=10.43 draw_calls=220 primitives=253877 objects=543 clock=118.3
+GPUTIME_RAW t=119 viewports=4 gpu_ms=4.0800 cpu_ms=0.4530 frame_cpu_ms=0.0070
+GPUTIME t=119 viewports=4 frames=120 gpu_ms=3.433 cpu_ms=0.352
+SPLIT tyre_tracks_fps t=119.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=10.91 draw_calls=262 primitives=225104 objects=755 clock=119.3
+GPUTIME_RAW t=120 viewports=4 gpu_ms=3.3350 cpu_ms=0.3230 frame_cpu_ms=0.0080
+GPUTIME t=120 viewports=4 frames=120 gpu_ms=3.438 cpu_ms=0.351
+SPLIT tyre_tracks_fps t=120.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=10.98 draw_calls=289 primitives=258793 objects=716 clock=120.3
+GPUTIME_RAW t=121 viewports=4 gpu_ms=4.2720 cpu_ms=0.4310 frame_cpu_ms=0.0080
+GPUTIME t=121 viewports=4 frames=120 gpu_ms=3.607 cpu_ms=0.379
+SPLIT tyre_tracks_fps t=121.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=11.06 draw_calls=262 primitives=286864 objects=565 clock=121.3
+GPUTIME_RAW t=122 viewports=4 gpu_ms=3.9680 cpu_ms=0.2920 frame_cpu_ms=0.0070
+GPUTIME t=122 viewports=4 frames=120 gpu_ms=3.608 cpu_ms=0.303
+SPLIT tyre_tracks_fps t=122.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=10.58 draw_calls=175 primitives=272014 objects=544 clock=122.3
+GPUTIME_RAW t=123 viewports=4 gpu_ms=3.7860 cpu_ms=0.9900 frame_cpu_ms=0.0170
+GPUTIME t=123 viewports=4 frames=120 gpu_ms=3.470 cpu_ms=0.350
+SPLIT tyre_tracks_fps t=123.167 phase=window_4 staging=0 fps=120.0 frame_ms_max=11.02 draw_calls=233 primitives=211256 objects=697 clock=123.3
+CHECK tyre_tracks_fps never_ahead PASS in window 1 (3600 frames over 1800 ticks, 2.00 a tick, on a display of 120.0 Hz) the newest stroke of each tyre of both Units ended at or behind the tyre as the renderer drew it, along the way the Unit faces, on all 28712 tyre-frames judged: the track lagged it by 0.0004 to 0.2297 m
+CHECK tyre_tracks_fps clean_circles PASS in all 4 windows both Units circled at full lock and full throttle, Player 1's Buggy and Player 2's Truck each round an outer wreck, and over 7200 ticks neither touched anything but the ground
+RESULT tyre_tracks_fps ok checks=2 failed=0 t=123.667 fps_avg=119.2 fps_avg_steady=120.0 fps_min=23.0 fps_min_steady=120.0 frame_ms_max=13.90 frame_ms_max_steady=13.90 refresh_hz=120.0 fps_first_window=120.0 fps_last_window=120.0 draw_calls_max=377 primitives_max=383422 samples=123 steady_samples=119 windows=4 tracks=1 display=macOS
+GPUTIME_SUMMARY frames=14634 gpu_avg_ms=3.431 gpu_median_ms=3.458 gpu_p95_ms=4.284 gpu_max_ms=6.587 cpu_avg_ms=0.331

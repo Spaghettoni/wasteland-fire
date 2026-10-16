@@ -1,0 +1,36 @@
+#!/bin/bash
+# /story-done 026: which recorded frame each retained full-size frame is a byte copy of, against the dev session's recordings
+# (rec/ of its scratchpad) and against the fresh windowed recordings of the live tree (sd26/rec); then every frame of each fresh
+# recording against the dev's same-numbered frame.
+D=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/903467d6-8576-4a19-ad15-5c4b7052d4e0/scratchpad/rec
+MY=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/2573aa3b-8b37-4178-bdbd-5cb6686a7ba2/scratchpad/sd26/rec
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+E=production/qa/evidence/story-026-tyre-tracks
+# retained file | part (fresh folder) | dev folder | frame
+while read -r name part dev frame; do
+  a=DIFF; b=DIFF
+  [ -f "$D/$dev/$frame" ] && cmp -s "$E/$name" "$D/$dev/$frame" && a=SAME
+  [ -f "$MY/$part/$frame" ] && cmp -s "$E/$name" "$MY/$part/$frame" && b=SAME
+  echo "dev-recording:$a  fresh-recording:$b  $name = $part $frame"
+done <<'LIST'
+00-launch-both-players-choosing.png launch launch26 f00000089.png
+01-motorbikes-figure-eight-on-the-sand-from-above.png drive final26-drive f00000644.png
+02-motorbikes-figure-eight-on-the-sand-chase-view.png drive final26-drive f00000706.png
+17-gyrocopter-and-motorbike-from-above.png looks final26-looks f00000164.png
+18-gyrocopter-and-motorbike-chase-view.png looks final26-looks f00000226.png
+19-wall-of-sand-across-a-track-chase-view.png looks final26-looks f00000656.png
+20-fade-0s-chase-view.png fade final26-fade f00000226.png
+23-after-r-clean-ground-from-above.png looks final26-looks f00001064.png
+24-after-r-clean-ground-chase-view.png looks final26-looks f00001126.png
+LIST
+echo "--- every frame of each fresh recording against the dev's same-numbered frame:"
+for pair in "launch launch26" "drive final26-drive" "looks final26-looks" "fade final26-fade"; do
+  set -- $pair
+  n=0; d=0; m=0
+  for f in $MY/$1/f*.png; do
+    b=$(basename $f); n=$((n+1))
+    if [ ! -f "$D/$2/$b" ]; then m=$((m+1)); continue; fi
+    cmp -s $f "$D/$2/$b" || { d=$((d+1)); echo "differs: $1 $b"; }
+  done
+  echo "$1: frames compared $n, differing $d, missing in the dev's $m"
+done

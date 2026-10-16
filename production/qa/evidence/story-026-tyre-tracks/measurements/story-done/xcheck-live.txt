@@ -1,0 +1,17 @@
+CHECK lines in the re-run: 31  all PASS: True
+acceptance rows: 9
+cited and a PASS line of the re-run (33):
+  AC-1: data, tyres_match_blender, tyres_touch_the_ground, lines, quad_widths, reverse, steady_turn, slow_roll, spot_turn, gyrocopter_none, two_ticks_a_frame
+  AC-2: ground_surfaces
+  AC-3: fade_arithmetic, clock, round_over_pause, restart_clears, drawn_first
+  AC-4: bench_then_spawn, teleport, off_the_floor, swap, destroyed, destroyed_in_motion, retyped_alive
+  AC-5: lines, two_ticks_a_frame
+  AC-6: data, lint, refusals
+  AC-7: hand_off, globals_default, published, lint
+cited but not a CHECK line of `tyre_tracks` (4) -- read each by hand:
+  AC-2: strokes_added_up_not_replaced
+  AC-4: tyre_tracks_fps
+  AC-4: never_ahead
+  AC-7: round_started
+CHECK names in the re-run not cited by any acceptance row:
+  modules_leave_a_fresh_round, no_engine_noise

@@ -1,0 +1,29 @@
+#!/bin/sh
+# usage: fps26.sh   Story 026's frame-rate A/B, windowed at 1280x720, one run at a time (the display awake, nothing else running):
+# three rounds of on (the repo), off (the repo with TRACKS_FPS_OFF=1: the node removed, the ground shader reading a strength of 0)
+# and base (ab26/base: the tree before Story 026, with tyre_tracks_fps.gd and its runner line added), the order turned each round;
+# then the GPU time on Vulkan (gpu_time.gd, the map-art tool) of each, twice, the order turned again.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/903467d6-8576-4a19-ad15-5c4b7052d4e0/scratchpad
+REPO=/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire
+BASE=$S/ab26/base
+O=$S/fps26/ab
+mkdir -p $O
+P=$S/fps26/ab.progress
+date +%H:%M:%S > $P
+run() { # run KIND N [gpu]
+  if [ "$1" = base ]; then DIR=$BASE; else DIR=$REPO; fi
+  if [ "$1" = off ]; then OFF=1; else OFF=; fi
+  if [ "$3" = gpu ]; then
+    (cd $DIR && env TRACKS_FPS_OFF=$OFF godot --path . --windowed --resolution 1280x720 --rendering-driver vulkan -s $S/ab26/gpu_time.gd -- --scenario=tyre_tracks_fps > $O/gpu-$1-$2.txt 2>&1)
+    echo "gpu $1 $2 rc=$? $(date +%H:%M:%S)" >> $P
+  else
+    (cd $DIR && env TRACKS_FPS_OFF=$OFF godot --path . --windowed --resolution 1280x720 res://tools/evidence/split_screen_harness.tscn -- --scenario=tyre_tracks_fps > $O/fps-$1-$2.txt 2>&1)
+    echo "fps $1 $2 rc=$? $(date +%H:%M:%S)" >> $P
+  fi
+}
+run on 1; run off 1; run base 1
+run off 2; run base 2; run on 2
+run base 3; run on 3; run off 3
+run on 1 gpu; run off 1 gpu; run base 1 gpu
+run base 2 gpu; run off 2 gpu; run on 2 gpu
+echo ALLDONE >> $P

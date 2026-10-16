@@ -2,6 +2,27 @@
 
 [ext_resource type="Script" path="res://src/gameplay/units/unit_stats.gd" id="1_us"]
 [ext_resource type="PackedScene" path="res://src/gameplay/units/models/buggy_mesh_model.tscn" id="2_model"]
+[ext_resource type="Script" path="res://src/gameplay/units/tyre_contact.gd" id="3_tyre"]
+
+[sub_resource type="Resource" id="Resource_front_left"]
+script = ExtResource("3_tyre")
+offset = Vector2(-0.74, -0.92)
+width = 0.3
+
+[sub_resource type="Resource" id="Resource_front_right"]
+script = ExtResource("3_tyre")
+offset = Vector2(0.74, -0.92)
+width = 0.3
+
+[sub_resource type="Resource" id="Resource_rear_left"]
+script = ExtResource("3_tyre")
+offset = Vector2(-0.74, 0.92)
+width = 0.3
+
+[sub_resource type="Resource" id="Resource_rear_right"]
+script = ExtResource("3_tyre")
+offset = Vector2(0.74, 0.92)
+width = 0.3
 
 [resource]
 script = ExtResource("1_us")
@@ -37,3 +58,4 @@ spawn_fuel_fraction = 1.0
 empty_turn_rate = 1.15
 badly_damaged_fraction = 0.2
 badly_damaged_speed_share = 0.5
+tyres = Array[ExtResource("3_tyre")]([SubResource("Resource_front_left"), SubResource("Resource_front_right"), SubResource("Resource_rear_left"), SubResource("Resource_rear_right")])

@@ -1,0 +1,32 @@
+#!/bin/sh
+# Story 026's composed frames, rebuilt from the recording's PNGs (rec/final26-drive): the far scene's two sets of four consecutive frames, each
+# Player's far marks cropped at 3x, the Units left out of the crops (15, the slow camera, frames 4680 to 4683: Player 1 0,235 280x115, Player 2
+# 1010,250 270x115; 16, the faster one, frames 4720 to 4723: Player 1 0,262 280x115, Player 2 1010,255 270x115), one row per frame (Player 1 left,
+# Player 2 right), the four rows stacked. With an argument, writes into that folder instead of far26/final.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/903467d6-8576-4a19-ad15-5c4b7052d4e0/scratchpad
+REC=$S/rec/final26-drive
+T=${1:-$S/far26/final}
+mkdir -p $T
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+C="godot --headless --path . -s $S/lib/compose.gd --"
+for set in "15 0 235 1010 250 4680 4681 4682 4683" "16 0 262 1010 255 4720 4721 4722 4723"; do
+  set -- $set
+  name=$1; x1=$2; y1=$3; x2=$4; y2=$5; shift 5
+  for n in "$@"; do
+    $C crop $T/p1_$n.png $REC/f0000$n.png $x1 $y1 280 115 3 > /dev/null 2>&1
+    $C crop $T/p2_$n.png $REC/f0000$n.png $x2 $y2 270 115 3 > /dev/null 2>&1
+    $C row $T/row_$n.png 345 $T/p1_$n.png $T/p2_$n.png > /dev/null 2>&1
+  done
+  $C pair $T/top_$name.png $T/row_$1.png $T/row_$2.png > /dev/null 2>&1
+  $C pair $T/bottom_$name.png $T/row_$3.png $T/row_$4.png > /dev/null 2>&1
+  $C pair $T/set_$name.png $T/top_$name.png $T/bottom_$name.png > /dev/null 2>&1
+done
+ls $T/set_15.png $T/set_16.png
+# 25: one line and two, from above, each at 3x: the Motorbike at the crossing of its figure eight (frame 644: 240,330 160x180), the Buggy and the
+# Truck behind their straight and curve (frame 954: 240,440 160x180 and 880,440 160x180), in a row.
+D=$S/rec/final26-drive
+$C crop $T/one_moto.png $D/f00000644.png 240 330 160 180 3 > /dev/null 2>&1
+$C crop $T/two_buggy.png $D/f00000954.png 240 440 160 180 3 > /dev/null 2>&1
+$C crop $T/two_truck.png $D/f00000954.png 880 440 160 180 3 > /dev/null 2>&1
+$C row $T/set_25.png 540 $T/one_moto.png $T/two_buggy.png $T/two_truck.png > /dev/null 2>&1
+ls $T/set_25.png

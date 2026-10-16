@@ -1,0 +1,31 @@
+extends Node
+## Probe for the review's finding 1: with two physics ticks in one frame, does a CanvasItem redraw after each tick (the deferred
+## call flushed inside SceneTree.physics_process), so the first tick's draw commands are replaced before the frame is drawn?
+class Painter extends Node2D:
+	var waiting: int = 0
+	func _draw() -> void:
+		print("    _draw() pf=%d phys=%d in_physics=%s waiting=%d" % [Engine.get_process_frames(), Engine.get_physics_frames(), Engine.is_in_physics_frame(), waiting])
+		waiting = 0
+
+var painter: Painter
+var ticks: int = 0
+var frames: int = 0
+
+func _ready() -> void:
+	painter = Painter.new()
+	add_child(painter)
+	painter.draw.connect(func() -> void: print("    draw signal waiting=%d" % painter.waiting))
+	Engine.physics_ticks_per_second = int(OS.get_environment("TICKS")) if not OS.get_environment("TICKS").is_empty() else 120
+	get_tree().process_frame.connect(func() -> void: print("  process_frame signal pf=%d" % Engine.get_process_frames()))
+
+func _physics_process(_delta: float) -> void:
+	ticks += 1
+	painter.waiting += 3
+	painter.queue_redraw()
+	print("tick %d pf=%d phys=%d in_physics=%s" % [ticks, Engine.get_process_frames(), Engine.get_physics_frames(), Engine.is_in_physics_frame()])
+
+func _process(_delta: float) -> void:
+	frames += 1
+	print("_process frame %d pf=%d in_physics=%s" % [frames, Engine.get_process_frames(), Engine.is_in_physics_frame()])
+	if frames >= 4:
+		get_tree().quit()

@@ -17,9 +17,21 @@
 // take side_colour and no relief. The macro and mottle sizes are the same in all three materials,
 // so their tones run on where two surfaces meet; near the edges of a mesh whose UV spans it (the
 // salt flat's plane), edge_width blends toward the edge tones (the sand's).
+// Tyre tracks (Story 026, production/epics/wasteland-fire/story-026-tyre-tracks.md): a Map that has a
+// TyreTracks node (src/gameplay/maps/tyre_tracks.gd) keeps one track map over its ground, a texture the
+// tyres of the ground Units write into as they roll, and publishes it, its area, its look and its clock
+// as global shader parameters (project.godot's [shader_globals]). Here the map is read in world space
+// like every layer above: where a mark lies the colour darkens, the roughness drops (packed earth is
+// smoother) and the rut's two sides, read from the mark's strength one reach to either side, tilt the
+// surface toward and away from the low sun. The mark's strength is its coverage times what is left of it
+// at its age, the Round's time now less the time it was written, through a hold and a fade. Level faces
+// only (the shore edge takes none), and only on these three surfaces: the water, the fords, the
+// channels and the Garage floors are other materials, and a Map with no TyreTracks node leaves the
+// strength at the project's default of 0, which makes every term below exactly nothing.
 // Target: desktop, Forward+ renderer (project.godot rendering_method); macOS Metal and the Windows
 // build. No quality tiers or fallback yet.
-// Budget: one fragment pass, ten texture reads (each mipmapped and anisotropic), no loops, no
+// Budget: one fragment pass, fifteen texture reads (ten mipmapped and anisotropic, and the five of the
+// tyre track map, linear without mipmaps: the mark and one to either side on X and on Z), no loops, no
 // branches, no keywords or variants.
 shader_type spatial;
 render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_burley, specular_schlick_ggx;
@@ -55,6 +67,12 @@ const float LEVEL_LOW = 0.55;
 const float LEVEL_HIGH = 0.85;
 // The smallest relief normal height used when turning a relief normal into a slope.
 const float RELIEF_MIN_HEIGHT = 0.2;
+// The smallest coverage the track map's time is divided by: the map stores the coverage times the
+// time a stroke was written, so the time is G over R, and a texel with next to no coverage has none.
+const float TRACK_MIN_COVERAGE = 0.004;
+// The shortest fade, seconds, that the fade is divided by, so a clock that was never set divides by
+// something.
+const float TRACK_MIN_SECONDS = 0.001;
 
 // R, G: two smooth fractal noises; B: a fine one (ground_soft.png).
 uniform sampler2D soft_noise : hint_default_white, filter_linear_mipmap_anisotropic, repeat_enable;
@@ -69,6 +87,18 @@ uniform sampler2D stone_relief_map : hint_default_white, filter_linear_mipmap_an
 // The relief of the cracks along the cell borders (ground_cracks_normal.png).
 uniform sampler2D crack_relief_map : hint_default_white, filter_linear_mipmap_anisotropic,
 		repeat_enable;
+
+// Tyre tracks (Story 026), published by the Map's TyreTracks (declared in project.godot's
+// [shader_globals]). The track map: R the coverage of a mark, G that times the Round's time it was
+// written, a half-float texture drawn into by the tyres.
+global uniform sampler2D tyre_track_map : filter_linear, repeat_disable;
+// The track area: xy the corner with the smallest X and Z, zw its size, metres.
+global uniform vec4 tyre_track_area;
+// The look: x the darkness a mark takes off the colour, y the rut's depth (metres), z the roughness a
+// mark takes off, w the strength of the whole effect (0 off, the project's default; 1 on).
+global uniform vec4 tyre_track_look;
+// The clock: x the Round's time now, y the hold, z the fade (seconds), w the rut's reach (pixels of the map).
+global uniform vec4 tyre_track_clock;
 
 group_uniforms tones;
 // The surface's three tones, dark to light, blended by the macro tone and the mottle.
@@ -147,6 +177,16 @@ vec2 slope_of(sampler2D map, vec2 uv) {
 	return n.xy / max(n.z, RELIEF_MIN_HEIGHT);
 }
 
+// The strength of the tyre mark at a point of the track map, 0 to 1: its coverage times what is left of
+// it at its age (TyreTrackSettings.strength_at() is the same line), and nothing outside the track area.
+float track_mark(vec2 uv) {
+	vec4 texel = texture(tyre_track_map, uv);
+	float age = tyre_track_clock.x - texel.g / max(texel.r, TRACK_MIN_COVERAGE);
+	float left = 1.0 - clamp((age - tyre_track_clock.y) / max(tyre_track_clock.z, TRACK_MIN_SECONDS), 0.0, 1.0);
+	vec2 inside = step(vec2(0.0), uv) * step(uv, vec2(1.0));
+	return texel.r * left * inside.x * inside.y;
+}
+
 // A cell texture's "outside a width" mask: 0 inside width of a border (its G), 1 past it.
 float crack_line(float gap, float width) {
 	return 1.0 - smoothstep(width * 0.5, width, gap * CELL_DISTANCE_SCALE);
@@ -193,13 +233,23 @@ void fragment() {
 	colour = mix(colour, stone_colour.rgb * (STONE_TONE_LOW + cell.b * STONE_TONE_SPREAD), stone);
 
 	float level = smoothstep(LEVEL_LOW, LEVEL_HIGH, world_normal.y);
+	// The tyre mark here, on level faces only; its rut's sides come from the mark one reach to either side.
+	vec2 track_uv = (p - tyre_track_area.xy) / tyre_track_area.zw;
+	vec2 reach = tyre_track_clock.w / vec2(textureSize(tyre_track_map, 0));
+	float mark = track_mark(track_uv) * tyre_track_look.w * level;
+	colour *= 1.0 - tyre_track_look.x * mark;
 	ALBEDO = mix(side_colour.rgb, colour, level);
-	ROUGHNESS = clamp(roughness_base - stone * STONE_SMOOTHER, 0.0, 1.0);
+	ROUGHNESS = clamp(roughness_base - stone * STONE_SMOOTHER - tyre_track_look.z * mark, 0.0, 1.0);
 	SPECULAR = specular_base;
 
 	vec2 slope = slope_of(soft_relief, p / mottle_size + MOTTLE_OFFSET) * swell_relief;
 	slope += slope_of(stone_relief_map, stone_uv) * stone_relief * stone;
 	slope += slope_of(crack_relief_map, p / crack_size) * crack_relief * crack_amount;
+	// The rut: the mark's rise a metre across its edge (the rise of the mark from one reach to the other, over
+	// the two reaches in metres), turned into a slope of depth rut_depth; the level mix below keeps it off side faces.
+	vec2 rise = vec2(track_mark(track_uv + vec2(reach.x, 0.0)) - track_mark(track_uv - vec2(reach.x, 0.0)),
+			track_mark(track_uv + vec2(0.0, reach.y)) - track_mark(track_uv - vec2(0.0, reach.y)));
+	slope += rise / (2.0 * reach * tyre_track_area.zw) * tyre_track_look.y * tyre_track_look.w;
 	vec3 relief = normalize(vec3(slope.x, 1.0, slope.y));
 	vec3 world = normalize(mix(world_normal, relief, level));
 	NORMAL = normalize((VIEW_MATRIX * vec4(world, 0.0)).xyz);

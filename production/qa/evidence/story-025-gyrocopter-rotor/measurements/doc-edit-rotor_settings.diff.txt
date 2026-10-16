@@ -1,0 +1,25 @@
+14,18c14,19
+< ## at runtime (duplicate_deep() it for a private copy: duplicate() would share the parts). Every default below is zero or empty on purpose,
+< ## for the reason UnitStats gives: the engine leaves a property that equals its script default out
+< ## of a saved .tres, so a tuned number would vanish from the data file. Write every number into the
+< ## .tres. first_problem() says whether the values can turn a part at all; MeshUnitModel asks it once
+< ## when it builds, and a bad .tres is one named error and a model whose parts stand still.
+---
+> ## at runtime (duplicate_deep() it for a private copy: duplicate() would share the parts). Every
+> ## default below is zero or empty on purpose, for the reason UnitStats gives: the engine leaves a
+> ## property that equals its script default out of a saved .tres, so a tuned number would vanish from
+> ## the data file. Write every number into the .tres. first_problem() says whether the values can
+> ## turn a part at all; MeshUnitModel asks it once when it builds, and a bad .tres is one named error
+> ## and a model whose parts stand still.
+51,55c52,56
+< ## other), a part with no name or the name of an earlier one (the name is its pivot's), a negative, NaN
+< ## or zero rate, a strobe share of half or more, a rate over the strobe limit, a smear with no reach
+< ## or no inner fade, a share outside 0 to 1, an arc outside 0 to one gap between two blades, or no
+< ## smear material. Each test is written as "not above" so a NaN, which is above nothing, is refused
+< ## too.
+---
+> ## other), a part with no name or the name of an earlier one (the name is its pivot's), a negative,
+> ## NaN or zero rate, a strobe share of half or more, a rate over the strobe limit, a smear with no
+> ## reach or no inner fade, a share outside 0 to 1, an arc outside 0 to one gap between two blades,
+> ## or no smear material. Each test is written as "not above" so a NaN, which is above nothing, is
+> ## refused too.

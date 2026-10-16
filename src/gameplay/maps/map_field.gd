@@ -42,6 +42,13 @@ extends Node3D
 ## MineLayers every zone, which they keep clear of Mines
 ## (production/epics/wasteland-fire/story-024-ammunition-buildings.md AC-2, AC-4).
 ##
+## The tyre tracks (Story 026). A Map that wants its ground Units' tyres to leave tracks has a
+## TyreTracks node and lists it in tyre_tracks: Map 01's ground is drawn by spatial_env_ground.gdshader,
+## which reads the node's track map. SplitScreen hands the node the two Units before the Round begins
+## and connects round_started to its clear(), from this export and with no search of the tree. A Map
+## with none, the greybox field among them, shows no tracks and logs nothing
+## (production/epics/wasteland-fire/story-026-tyre-tracks.md AC-7).
+##
 ## Data, almost no behaviour: the Map's scene sets the exports and nothing here checks them but
 ## the warnings for an unassigned entry of neutral_structures and of supply_zones. SplitScreen
 ## refuses to begin a Round while either Base is missing, and the MatchController refuses it
@@ -83,6 +90,11 @@ extends Node3D
 ## default: a Map with no supply building, the greybox field among them, lists none. An entry that
 ## is not assigned is skipped with a warning.
 @export var supply_zones: Array[SupplyZone] = []
+
+## The Map's tyre tracks (Story 026): the node that keeps the track map of its ground and draws what
+## the tyres of the two Units leave in it. Optional: a Map with none shows no tracks. SplitScreen hands
+## it both Units and the restarts.
+@export var tyre_tracks: TyreTracks
 
 
 func _ready() -> void:

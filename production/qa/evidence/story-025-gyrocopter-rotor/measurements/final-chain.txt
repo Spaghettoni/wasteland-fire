@@ -1,0 +1,33 @@
+     884
+import rc=0
+0
+      18
+parse rc=0
+18
+tools/evidence/split_screen_harness.gd:1577 -> 1639
+wrote /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad/rg25/normalizers25.json: ['ammo_buildings', 'badly_damaged', 'explosions', 'flag_walls', 'fuel_building', 'token_ui', 'tokens_data', 'turret_looks', 'turrets', 'unit_swap']
+scripts under res://src: 60 -> 63 (the baseline printed 60)
+compare exit 0
+NORMALIZED split ammo_buildings         rc=0 rewrites=[3]
+NORMALIZED split badly_damaged          rc=0 rewrites=[2]
+NORMALIZED split explosions             rc=0 rewrites=[3]
+NORMALIZED split flag_walls             rc=0 rewrites=[4]
+NORMALIZED split fuel_building          rc=0 rewrites=[3, 1]
+NORMALIZED split token_ui               rc=0 rewrites=[2]
+NORMALIZED split tokens_data            rc=0 rewrites=[18]
+NORMALIZED split turret_looks           rc=0 rewrites=[5]
+NORMALIZED split turrets                rc=0 rewrites=[1]
+NORMALIZED split unit_swap              rc=0 rewrites=[1]
+-- 67 strict, 10 normalized, 0 bad of 77 compared
+22
+RESULT rotors ok checks=22 failed=0 t=41.533 rates=4.0/2.0/5.0 arc=90.0 strength=0.65 strobe=0.35 rotor_reach=2.2995 propeller_reach=0.5015 refusals=21 lint_lines=248 file_vertices=13231 keys=13199 triangles=7402 rest_pose_error=0.0000000 box_error=0.0000000 rotor_step_deg=24.000000 rotor_step_share
+BYTE-IDENTICAL
+showcase rc=0
+RESULT rotors_showcase ok checks=0 failed=0 t=13.583 moments=11
+gdunit rc=0
+[38;2;30;144;255mOverall Summary:[0m[38;2;255;255;255m 1 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans |[0m
+main scene rc=0
+0
+     884
+TREE UNCHANGED BY THE CHAIN
+FINAL_DONE

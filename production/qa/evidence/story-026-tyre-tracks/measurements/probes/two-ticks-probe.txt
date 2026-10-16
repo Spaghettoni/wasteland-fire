@@ -1,0 +1,31 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+tick 1 pf=0 phys=1 in_physics=true
+    draw signal waiting=3
+    _draw() pf=0 phys=1 in_physics=true waiting=3
+  process_frame signal pf=0
+_process frame 1 pf=0 in_physics=false
+tick 2 pf=1 phys=2 in_physics=true
+    draw signal waiting=3
+    _draw() pf=1 phys=2 in_physics=true waiting=3
+tick 3 pf=1 phys=3 in_physics=true
+    draw signal waiting=3
+    _draw() pf=1 phys=3 in_physics=true waiting=3
+  process_frame signal pf=1
+_process frame 2 pf=1 in_physics=false
+tick 4 pf=2 phys=4 in_physics=true
+    draw signal waiting=3
+    _draw() pf=2 phys=4 in_physics=true waiting=3
+tick 5 pf=2 phys=5 in_physics=true
+    draw signal waiting=3
+    _draw() pf=2 phys=5 in_physics=true waiting=3
+  process_frame signal pf=2
+_process frame 3 pf=2 in_physics=false
+tick 6 pf=3 phys=6 in_physics=true
+    draw signal waiting=3
+    _draw() pf=3 phys=6 in_physics=true waiting=3
+tick 7 pf=3 phys=7 in_physics=true
+    draw signal waiting=3
+    _draw() pf=3 phys=7 in_physics=true waiting=3
+  process_frame signal pf=3
+_process frame 4 pf=3 in_physics=false

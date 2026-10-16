@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+"""Story 026's A/B as a Markdown table: per run, the lowest steady second, the longest steady frame, the steady seconds with a frame over 16.6 ms,
+the longest frame of the run, the most draw calls, the seconds not paced by the display (a rate over the refresh rate), the never-ahead lag and the
+clean-circles verdict, and the user's idle seconds before and after (the progress file); then each kind's medians and the GPU summaries.
+Observations only. usage: fps26-table.py DIR PROGRESS"""
+import glob, os, re, statistics, sys
+D, P = sys.argv[1], sys.argv[2]
+idle = {}
+for line in open(P):
+    m = re.match(r"(fps|gpu) (\w+) (\d+) rc=(\d+) \S+ idle_before=(\d+)s idle_after=(\d+)s", line)
+    if m:
+        idle[(m.group(1), m.group(2), m.group(3))] = (m.group(4), m.group(5), m.group(6))
+def fields(line):
+    return dict(re.findall(r"(\w+)=([^\s]+)", line))
+rows = {}
+print("| Run | Lowest steady second | Longest steady frame | Steady seconds over 16.6 ms | Longest frame | Draw calls at most | Unpaced seconds | Track lag (m) | Clean circles | Idle before / after (s) |")
+print("|---|---|---|---|---|---|---|---|---|---|")
+for kind in ("on", "off", "base"):
+    for path in sorted(glob.glob(os.path.join(D, "fps-%s-*.txt" % kind))):
+        n = path.rsplit("-", 1)[1][:-4]
+        text = open(path).read()
+        res = [l for l in text.splitlines() if l.startswith("RESULT")]
+        if not res:
+            print("| %s %s | no RESULT | | | | | | | | |" % (kind, n)); continue
+        f = fields(res[0])
+        splits = [fields(l) for l in text.splitlines() if l.startswith("SPLIT")]
+        steady = [s for i, s in enumerate(splits) if i > 0 and s["staging"] == "0"]
+        over = sum(1 for s in steady if float(s["frame_ms_max"]) > 16.6)
+        unpaced = sum(1 for s in splits if float(s["fps"]) > float(f["refresh_hz"]) + 1.0)
+        lag = re.search(r"lagged it by (\S+) to (\S+) m", text)
+        clean = re.search(r"clean_circles (PASS|FAIL)", text)
+        i = idle.get(("fps", kind, n), ("?", "?", "?"))
+        rows.setdefault(kind, []).append((float(f["fps_min_steady"]), float(f["frame_ms_max_steady"]), over, float(f["frame_ms_max"]), int(f["draw_calls_max"])))
+        print("| %s %s | %s fps | %s ms | %d | %s ms | %s | %d | %s | %s | %s / %s |" % (kind, n, f["fps_min_steady"], f["frame_ms_max_steady"], over, f["frame_ms_max"], f["draw_calls_max"], unpaced,
+              ("%s to %s" % (lag.group(1), lag.group(2))) if lag else "-", clean.group(1) if clean else "-", i[1], i[2]))
+print()
+for kind, rs in rows.items():
+    print("%s: median lowest steady second %.0f fps, median longest steady frame %.2f ms, steady seconds over 16.6 ms %s, draw calls at most %d" % (
+        kind, statistics.median(r[0] for r in rs), statistics.median(r[1] for r in rs), [r[2] for r in rs], max(r[4] for r in rs)))
+print()
+for path in sorted(glob.glob(os.path.join(D, "gpu-*.txt"))):
+    text = open(path).read()
+    summ = [l for l in text.splitlines() if l.startswith("GPUTIME_SUMMARY")]
+    print("%s: %s" % (os.path.basename(path)[:-4], summ[0] if summ else "no summary"))

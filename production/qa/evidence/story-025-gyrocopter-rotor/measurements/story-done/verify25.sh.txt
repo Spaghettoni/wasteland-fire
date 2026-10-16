@@ -1,0 +1,30 @@
+#!/bin/sh
+# /story-done 025 on the live tree (which equals story 026's final tree). Reads the repo, writes only under sd25
+# (and gdUnit's gitignored reports/). The headless half; the windowed recordings follow in rec25.sh.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire
+MY=$S/da488d11-1587-482d-a0a2-4199d8fbc77b/scratchpad/sd25
+R26=$S/903467d6-8576-4a19-ad15-5c4b7052d4e0/scratchpad/rg26
+E25=production/qa/evidence/story-025-gyrocopter-rotor
+O=$MY/out
+mkdir -p $O
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+date +%H:%M:%S > $O/progress.txt
+sh $R26/manifest.sh $O/manifest-before.txt
+# 1 parse every .gd the story added or changed (the story's own list), plus the runner
+sed 's#^#res://#' $E25/measurements/gd-list.txt | xargs godot --headless --path . -s res://.claude/scripts/godot-parse-check.gd -- > $O/parse.txt 2>&1; echo "parse rc=$?"; grep -c "^ok:" $O/parse.txt; grep "PARSE FAIL" $O/parse.txt
+echo "parse done $(date +%H:%M:%S)" >> $O/progress.txt
+# 2 the scenarios of the story, twice in parallel, and the showcase headless
+for run in a b; do godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=rotors > $O/rotors-$run.txt 2>&1 & done; wait
+grep -c "^CHECK" $O/rotors-a.txt; grep -E "^RESULT|FAIL" $O/rotors-a.txt | cut -c1-300
+cmp $O/rotors-a.txt $O/rotors-b.txt && echo "rotors a/b BYTE-IDENTICAL"
+godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=rotors_showcase > $O/showcase-headless.txt 2>&1; echo "showcase rc=$?"; grep -E "^RESULT|FAIL" $O/showcase-headless.txt | cut -c1-200
+echo "scenarios done $(date +%H:%M:%S)" >> $O/progress.txt
+# 3 the 79 older outputs against story 026's baseline, through its exact rewrites
+sh $MY/rg/regress.sh live $MY/rg/normalizers26.json 2>&1 | tail -20
+echo "regress done $(date +%H:%M:%S)" >> $O/progress.txt
+# 4 gdUnit
+godot --headless -s -d --remote-debug tcp://127.0.0.1:0 res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a res://tests --ignoreHeadlessMode > $O/gdunit.txt 2>&1; echo "gdunit rc=$?"; grep -a "Overall Summary" $O/gdunit.txt | cut -c1-200
+sh $R26/manifest.sh $O/manifest-after.txt
+cmp $O/manifest-before.txt $O/manifest-after.txt && echo "TREE UNCHANGED BY THE CHECK"
+echo VERIFY_DONE
+echo "done $(date +%H:%M:%S) VERIFY_DONE" >> $O/progress.txt

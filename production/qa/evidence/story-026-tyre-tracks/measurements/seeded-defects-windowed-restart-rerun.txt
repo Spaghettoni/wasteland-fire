@@ -1,0 +1,2 @@
+KILLED   clear_leaves_the_last_draw_commands                          rc=1; after_restart: the track map holds marks within [P: (575, 640), S: (22, 4)], where none is expected anywhere; after_restart:
+-- 1 windowed mutants: 1 killed, 0 not killed

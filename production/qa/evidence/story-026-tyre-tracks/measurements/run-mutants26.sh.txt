@@ -1,0 +1,8 @@
+#!/bin/sh
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/903467d6-8576-4a19-ad15-5c4b7052d4e0/scratchpad
+export PROBES=tracks_on PROBE_DIR=$S/rg26 NORMALIZERS=$S/rg26/normalizers26.json
+date +%H:%M:%S > $S/w26m/mutants.progress
+sh $S/rg26/manifest.sh $S/w26m/manifest-before-mutants.txt >> $S/w26m/mutants.progress
+python3 -I $S/rg26/seeded-defects26.py $S/rg26/f-base $S/w26m/mut "$@" > $S/w26m/mutants.txt 2>&1
+echo "rc=$? $(date +%H:%M:%S) ALLDONE" >> $S/w26m/mutants.progress

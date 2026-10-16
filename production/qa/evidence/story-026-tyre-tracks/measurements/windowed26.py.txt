@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+"""Windowed seeded defects for Story 026: each one exact text replacement in a scratch copy of the repo, run through the windowed
+tyre_tracks_showcase on the real renderer, with the scenes that show it. KILLED when the showcase prints a failing premise CHECK (the track
+map readback, the wall's luminance or the fade's contrast) or does not finish; SURVIVED otherwise. Run one after another (a window each).
+usage: windowed26.py WORK_DIR [name,name]"""
+import os
+import re
+import subprocess
+import sys
+
+REPO = "/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire"
+WORK = sys.argv[1]
+TT = "src/gameplay/maps/tyre_tracks.gd"
+GROUND = "src/gameplay/maps/spatial_env_ground.gdshader"
+M = [
+ ("strokes_added_up_not_replaced", "src/gameplay/maps/canvas_env_tyre_track.gdshader", "render_mode blend_disabled;", "render_mode blend_add;", "sand"),
+ ("update_never_requested_for_new_strokes", "src/gameplay/maps/tyre_track_painter.gd", "\t\ttarget.render_target_update_mode = SubViewport.UPDATE_ONCE\n", "\t\tpass\n", "sand"),
+ ("stroke_time_lost_in_the_brush_uv", "src/gameplay/maps/tyre_track_painter.gd", "\t\t\tuvs.append(Vector2(edge, time))\n", "\t\t\tuvs.append(Vector2(edge, 0.0))\n", "sand"),
+ ("clear_leaves_the_last_draw_commands", TT, "\t\tpainter.discard()\n\t\tpainter.queue_redraw()\n", "\t\tpainter.discard()\n", "restart"),
+ ("track_darkens_the_final_albedo_not_the_ground_colour", GROUND, "\tcolour *= 1.0 - tyre_track_look.x * mark;\n\tALBEDO = mix(side_colour.rgb, colour, level);\n", "\tALBEDO = mix(side_colour.rgb, colour, level) * (1.0 - tyre_track_look.x * track_mark(track_uv) * tyre_track_look.w);\n", "wall"),
+ ("fade_starts_at_once_in_the_shader", GROUND, "float left = 1.0 - clamp((age - tyre_track_clock.y) / max(", "float left = 1.0 - clamp(age / max(", "fade"),
+ ("clock_ignored_in_the_shader", GROUND, "float age = tyre_track_clock.x - texel.g /", "float age = 0.0 - texel.g /", "fade"),
+ ("fade_over_half_the_time_in_the_shader", GROUND, "max(tyre_track_clock.z, TRACK_MIN_SECONDS), 0.0, 1.0);", "max(tyre_track_clock.z * 0.5, TRACK_MIN_SECONDS), 0.0, 1.0);", "fade"),
+]
+
+
+def main():
+    wanted = sys.argv[2].split(",") if len(sys.argv) > 2 else [m[0] for m in M]
+    os.makedirs(WORK, exist_ok=True)
+    copy = os.path.join(WORK, "copy")
+    results = []
+    for name, rel, old, new, scenes in M:
+        if name not in wanted:
+            continue
+        subprocess.run(["rsync", "-a", "--delete", "--exclude", ".git", "--exclude", "production", "--exclude", "design", "--exclude", "docs",
+                        "--exclude", "tests", "--exclude", "assets/art/svaty_jur", REPO + "/", copy + "/"], check=True)
+        path = os.path.join(copy, rel)
+        text = open(path).read()
+        if text.count(old) != 1:
+            results.append((name, None, "NOT APPLIED (found %d times)" % text.count(old)))
+            continue
+        open(path, "w").write(text.replace(old, new))
+        env = dict(os.environ)
+        env["TRACKS_SCENES"] = scenes
+        env["TRACKS_FADE_POKE"] = "1"
+        p = subprocess.run(["godot", "--path", copy, "--windowed", "--resolution", "1280x720", "res://tools/evidence/split_screen_harness.tscn", "--", "--scenario=tyre_tracks_showcase"],
+                           capture_output=True, text=True, timeout=900, env=env)
+        out = p.stdout + p.stderr
+        if not re.search(r"^RESULT tyre_tracks_showcase ", out, re.M):
+            results.append((name, None, "BROKEN: no RESULT line (rc=%d) %s" % (p.returncode, " | ".join(l for l in out.splitlines() if "ERROR" in l)[:300])))
+            continue
+        failed = re.findall(r"^CHECK tyre_tracks_showcase premise FAIL.*PROBLEMS: (.*)$", out, re.M)
+        results.append((name, bool(failed) or p.returncode != 0, ("rc=%d; %s" % (p.returncode, failed[0][:260])) if failed else "rc=%d; no failing premise" % p.returncode))
+        print(results[-1], flush=True)
+    killed = sum(1 for r in results if r[1])
+    for name, dead, detail in results:
+        print("%s %-60s %s" % ("KILLED  " if dead else ("BROKEN  " if dead is None else "SURVIVED"), name, detail))
+    print("-- %d windowed mutants: %d killed, %d not killed" % (len(results), killed, len(results) - killed))
+    return 0 if killed == len(results) else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

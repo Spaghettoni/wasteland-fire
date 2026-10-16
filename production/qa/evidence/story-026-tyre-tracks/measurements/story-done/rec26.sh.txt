@@ -1,0 +1,17 @@
+#!/bin/sh
+# /story-done 026: windowed Movie Maker recordings on the live tree, into sd26/rec, run one after another after the headless chain:
+# the main scene's launch (90 frames, for retained frame 00), the drive part's first 710 frames (retained 01 and 02), the whole looks part
+# (retained 17, 18, 19, 23, 24) and the fade part's first 235 frames (retained 20, the fresh track at 0 s).
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/2573aa3b-8b37-4178-bdbd-5cb6686a7ba2/scratchpad/sd26
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+P=$S/rec/progress.txt
+mkdir -p $S/rec/launch $S/rec/drive $S/rec/looks $S/rec/fade
+date +%H:%M:%S > $P
+godot --path . --windowed --resolution 1280x720 --write-movie $S/rec/launch/f.png --quit-after 90 > $S/rec/launch.out 2>&1
+echo "launch rc=$? $(date +%H:%M:%S)" >> $P
+env TRACKS_SCENES=sand,sand_wide,salt,road,ford,pad,cross,far godot --path . --windowed --resolution 1280x720 --write-movie $S/rec/drive/f.png --quit-after 710 res://tools/evidence/split_screen_harness.tscn -- --scenario=tyre_tracks_showcase > $S/rec/drive.out 2>&1
+echo "drive(710) rc=$? $(date +%H:%M:%S)" >> $P
+env TRACKS_SCENES=gyro,wall,restart godot --path . --windowed --resolution 1280x720 --write-movie $S/rec/looks/f.png res://tools/evidence/split_screen_harness.tscn -- --scenario=tyre_tracks_showcase > $S/rec/looks.out 2>&1
+echo "looks rc=$? $(date +%H:%M:%S)" >> $P
+env TRACKS_SCENES=fade godot --path . --windowed --resolution 1280x720 --write-movie $S/rec/fade/f.png --quit-after 235 res://tools/evidence/split_screen_harness.tscn -- --scenario=tyre_tracks_showcase > $S/rec/fade.out 2>&1
+echo "fade(235) rc=$? $(date +%H:%M:%S) REC_DONE" >> $P

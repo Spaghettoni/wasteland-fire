@@ -1,0 +1,36 @@
+00:01.038  render           | Saved: '/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad/bl/new1/previews/front_three_quarter.png'
+00:01.397  render           | Saved: '/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad/bl/new1/previews/rear_three_quarter.png'
+00:01.654  render           | Saved: '/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad/bl/new1/previews/side.png'
+00:01.932  render           | Saved: '/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad/bl/new1/previews/top.png'
+Warning: No mesh data to join
+OBJECT Accent triangles=988
+OBJECT Neutral triangles=5876
+OBJECT RotorAccent triangles=176
+OBJECT RotorNeutral triangles=44
+OBJECT PropellerAccent triangles=132
+OBJECT PropellerNeutral triangles=186
+PREVIEW /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad/bl/new1/previews/front_three_quarter.png
+PREVIEW /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad/bl/new1/previews/rear_three_quarter.png
+PREVIEW /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad/bl/new1/previews/side.png
+PREVIEW /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad/bl/new1/previews/top.png
+INFO Draco is available, use library at /Applications/Blender.app/Contents/Resources/5.2/scripts/addons_core/io_scene_gltf2/libbf_intern_draco_bridge.dylib
+INFO MeshOptimizer is available, use library at /Applications/Blender.app/Contents/Resources/5.2/scripts/addons_core/io_scene_gltf2/libbf_intern_meshopt_bridge.dylib
+17:17:31 | INFO: Starting glTF 2.0 export
+17:17:31 | INFO: Extracting primitive: Accent
+17:17:31 | INFO: Primitives created: 1
+17:17:31 | INFO: Extracting primitive: Neutral
+17:17:31 | INFO: Primitives created: 1
+17:17:31 | INFO: Extracting primitive: PropellerAccent
+17:17:31 | INFO: Primitives created: 1
+17:17:31 | INFO: Extracting primitive: PropellerNeutral
+17:17:31 | INFO: Primitives created: 1
+17:17:31 | INFO: Extracting primitive: RotorAccent
+17:17:31 | INFO: Primitives created: 1
+17:17:31 | INFO: Extracting primitive: RotorNeutral
+17:17:31 | INFO: Primitives created: 1
+17:17:31 | INFO: Finished glTF 2.0 export in 0.01270294189453125 s
+
+EXPORTED /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad/bl/new1/wasteland_gyrocopter.glb
+Blender 5.2.2 LTS (hash d13f752e3b9c built 2026-09-15 01:49:19)
+
+Blender quit

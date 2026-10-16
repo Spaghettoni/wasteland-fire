@@ -1,0 +1,19 @@
+"""Adds the exact rewrite of the one lint-like count Story 025 moves: fuel_building's only_the_zones_add_fuel prints how many scripts
+stand under res://src (every .gd file, the evidence-only ones and the untracked Svaty Jur map script among them). The old number is
+read from the tree as it was at the start (the pre25 copy of src) and checked against the baseline's own printed number; the new one
+from the tree as it is now. usage: lintcount25.py PRE_SRC REPO NORMALIZERS_JSON BASELINE_DIR"""
+import json
+import re
+import sys
+from pathlib import Path
+
+pre, repo, out, base = Path(sys.argv[1]), Path(sys.argv[2]), Path(sys.argv[3]), Path(sys.argv[4])
+count = lambda root: sum(1 for _ in root.rglob("*.gd"))
+old, new = count(pre), count(repo / "src")
+printed = re.search(r"of (\d+) scripts under res://src", (base / "split-fuel_building.txt").read_text(encoding="utf-8", errors="replace"))
+assert printed and int(printed.group(1)) == old, (printed and printed.group(1), old)
+rules = json.loads(out.read_text(encoding="utf-8"))
+if old != new:
+    rules.setdefault("fuel_building", []).append([f"of {old} scripts under res://src", f"of {new} scripts under res://src"])
+out.write_text(json.dumps(rules, indent=1) + "\n", encoding="utf-8")
+print(f"scripts under res://src: {old} -> {new} (the baseline printed {printed.group(1)})")

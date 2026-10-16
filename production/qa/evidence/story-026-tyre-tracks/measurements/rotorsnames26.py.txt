@@ -1,0 +1,28 @@
+"""Adds the exact rewrite of the one sentence Story 026 changes in the rotors output: rotors_file.gd printed the mesh names in the order
+Array.sort() gives StringNames (by the address of their interned text, which moves with whatever else a run loads) and now prints them
+alphabetically. The old sentence is read from the baseline's own output, the new one is the same sentence with each list sorted.
+usage: rotorsnames26.py NORMALIZERS_JSON BASELINE_DIR"""
+import json
+import re
+import sys
+from pathlib import Path
+
+out, base = Path(sys.argv[1]), Path(sys.argv[2])
+pattern = re.compile(r'the rebuilt file holds \[([^\]]*)\] and the frozen copy \[([^\]]*)\]')
+
+
+def alphabetical(match):
+    first = sorted(match.group(1).split(", "))
+    second = sorted(match.group(2).split(", "))
+    return "the rebuilt file holds [%s] and the frozen copy [%s]" % (", ".join(first), ", ".join(second))
+
+
+text = (base / "split-rotors.txt").read_text(encoding="utf-8")
+found = pattern.search(text)
+assert found, "no sentence in the baseline"
+old = found.group(0)
+new = alphabetical(found)
+rules = json.loads(out.read_text(encoding="utf-8"))
+rules.setdefault("rotors", []).append([old, new])
+out.write_text(json.dumps(rules, indent=1) + "\n", encoding="utf-8")
+print("rotors names: %s -> %s" % (old[:70], new[:70]))

@@ -1,0 +1,17 @@
+10:05:50
+fps on 1 rc=0 10:07:56 idle_before=796s idle_after=922s
+fps off 1 rc=0 10:10:03 idle_before=922s idle_after=1049s
+fps base 1 rc=0 10:12:09 idle_before=1049s idle_after=1175s
+fps off 2 rc=0 10:14:15 idle_before=1175s idle_after=1302s
+fps base 2 rc=0 10:16:22 idle_before=1302s idle_after=1428s
+fps on 2 rc=0 10:18:28 idle_before=1428s idle_after=1555s
+fps base 3 rc=0 10:20:35 idle_before=1555s idle_after=1681s
+fps on 3 rc=0 10:22:41 idle_before=1681s idle_after=1808s
+fps off 3 rc=0 10:24:48 idle_before=1808s idle_after=1934s
+gpu on 1 rc=0 10:26:55 idle_before=1934s idle_after=2061s
+gpu off 1 rc=0 10:29:02 idle_before=2061s idle_after=2188s
+gpu base 1 rc=0 10:31:08 idle_before=2188s idle_after=2315s
+gpu base 2 rc=0 10:33:15 idle_before=2315s idle_after=2441s
+gpu off 2 rc=0 10:35:22 idle_before=2441s idle_after=2568s
+gpu on 2 rc=0 10:37:28 idle_before=2568s idle_after=2695s
+ALLDONE

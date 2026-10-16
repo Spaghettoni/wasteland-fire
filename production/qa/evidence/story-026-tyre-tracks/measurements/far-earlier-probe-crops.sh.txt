@@ -1,0 +1,17 @@
+#!/bin/sh
+# The far scene's four consecutive frames, each Player's far marks cropped at 3x (Player 1: 150,235 380x110; Player 2: 840,228 400x110), stacked.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/903467d6-8576-4a19-ad15-5c4b7052d4e0/scratchpad
+REC=${1:-$S/rec/first26-drive}
+T=$S/far26
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+C="godot --headless --path . -s $S/lib/compose.gd --"
+for n in 4612 4613 4614 4615; do
+  $C crop $T/p1_$n.png $REC/f0000$n.png 150 235 380 110 3 > /dev/null 2>&1
+  $C crop $T/p2_$n.png $REC/f0000$n.png 840 228 400 110 3 > /dev/null 2>&1
+done
+for p in p1 p2; do
+  $C pair $T/${p}_a.png $T/${p}_4612.png $T/${p}_4613.png > /dev/null 2>&1
+  $C pair $T/${p}_b.png $T/${p}_4614.png $T/${p}_4615.png > /dev/null 2>&1
+  $C pair $T/${p}_all.png $T/${p}_a.png $T/${p}_b.png > /dev/null 2>&1
+done
+ls $T

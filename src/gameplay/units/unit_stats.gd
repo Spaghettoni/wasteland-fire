@@ -74,6 +74,13 @@ extends Resource
 ## Self-destruct trades a Token for full supplies and a Swap at the own Base is a free resupply.
 ## The four .tres hold 100, 50, 25 and 40 Shots, to tune by playing.
 ##
+## Story 026 (production/epics/wasteland-fire/story-026-tyre-tracks.md AC-1 and AC-6; design/rules.md
+## "Teams and visual style") adds the Tyres group: where each tyre of a ground type touches the ground
+## and how wide it is (tyres, a list of TyreContact), which a Map's TyreTracks reads to draw the track
+## each tyre leaves. A type whose .tres lists none (the Gyrocopter) leaves no tracks, the way
+## fuel_capacity zero means no Fuel system, and nothing in code asks what type a Unit is. The Motorbike
+## lists two tyres, the Buggy and the Truck four, from the Blender scripts that build the models.
+##
 ## Data only. A Unit reads these numbers and never writes them. One .tres is shared by every
 ## Unit that references it, so treat it as read-only at runtime (duplicate() it for a private
 ## copy).
@@ -371,6 +378,15 @@ extends Resource
 ## the Fuel burn do not read it.
 @export_range(0.0, 1.0, 0.01) var badly_damaged_speed_share: float = 0.0
 
+@export_group("Tyres")
+
+## Where each tyre of this type touches the ground, in the Unit's frame, and how wide it is (Story 026
+## AC-1): one TyreContact per tyre, which a Map's TyreTracks turns into a track as wide as the tyre. The
+## Motorbike lists its front and rear tyres (one line, the two are in line), the Buggy and the Truck
+## their four. Empty by default (class doc), and empty means the type leaves no tracks: the Gyrocopter
+## lists none because it flies. first_problem() refuses an entry that is missing or unusable.
+@export var tyres: Array[TyreContact] = []
+
 
 ## The reason these stats cannot drive a Unit, or an empty String when they can: max_speed,
 ## ground_snap_length and max_hit_points must each be above zero (the rule Unit._ready() applies;
@@ -383,6 +399,7 @@ extends Resource
 ## and so is a share outside above 0 to 1 while the fraction is above 0; both are tested so that
 ## a NaN fails them. A crash_speed below zero is refused too (Story 021), a NaN included, and so is
 ## an ammo_capacity below zero (Story 022): a negative load would otherwise read as no count at all.
+## A tyre (Story 026) that is missing or whose TyreContact.first_problem() names a fault is refused too.
 func first_problem() -> String:
 	if max_speed <= 0.0:
 		return "max_speed is not above zero"
@@ -401,4 +418,8 @@ func first_problem() -> String:
 		return "crash_speed is not zero or above"
 	if ammo_capacity < 0:
 		return "ammo_capacity is below zero"
+	for index: int in tyres.size():
+		var problem: String = "is missing" if tyres[index] == null else tyres[index].first_problem()
+		if not problem.is_empty():
+			return "tyres[%d] %s" % [index, problem]
 	return ""

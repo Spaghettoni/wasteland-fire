@@ -1,0 +1,21 @@
+extends SceneTree
+## Finds the region of a full frame that a stored 3x crop was made from: find_crop.gd -- FRAME CROP
+func _initialize() -> void:
+	var args: PackedStringArray = OS.get_cmdline_user_args()
+	var frame: Image = Image.load_from_file(args[0])
+	var crop: Image = Image.load_from_file(args[1])
+	var scale: int = int(args[2]) if args.size() > 2 else 3
+	var w: int = crop.get_width() / scale
+	var h: int = crop.get_height() / scale
+	var best: int = 1 << 60
+	var best_at: Vector2i = Vector2i.ZERO
+	for y: int in range(int(args[3]) if args.size() > 3 else 200, int(args[4]) if args.size() > 4 else 520):
+		for x: int in range(int(args[5]) if args.size() > 5 else 100, int(args[6]) if args.size() > 6 else 440):
+			var region: Image = frame.get_region(Rect2i(x, y, w, h))
+			region.resize(w * scale, h * scale, Image.INTERPOLATE_LANCZOS)
+			if region.get_data() == crop.get_data():
+				print("EXACT ", x, " ", y, " size ", w, "x", h)
+				quit(0)
+				return
+	print("none found")
+	quit(1)

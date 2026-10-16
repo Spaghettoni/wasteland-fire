@@ -1,0 +1,66 @@
+KILLED  jump_step_ignored                                        tyre_tracks[lifecycle] rc=1 fails=teleport,swap
+KILLED  tick_before_not_required_alive                           tyre_tracks[lifecycle] rc=1 fails=bench_then_spawn
+KILLED  current_tick_not_required_alive                          tyre_tracks[lifecycle] rc=1 fails=destroyed_in_motion
+KILLED  floor_not_required                                       tyre_tracks[lifecycle] rc=1 fails=off_the_floor
+KILLED  type_change_not_required                                 tyre_tracks[lifecycle] rc=1 fails=retyped_alive
+EQUIVALENT tyre_count_not_required                              tyre_tracks[lifecycle] rc=0 fails=- | a Unit of the same stats always has the same number of tyres, so the count only differs when the type does, and the type test already refuses that
+KILLED  gyrocopter_given_tyres                                   tyre_tracks[strokes] rc=1 fails=gyrocopter_none
+WINDOWED   strokes_added_up_not_replaced                        tyre_tracks[lifecycle] rc=0 fails=- | killed windowed: the showcase's track map readback finds a coverage above 1 (the texture is half float, so overlapping strokes add up)
+KILLED  stroke_width_a_constant                                  tyre_tracks[strokes] rc=1 fails=lines,reverse
+KILLED  strength_default_one                                     tyre_tracks[lint] rc=1 fails=globals_default
+KILLED  no_clear_at_the_restart                                  tyre_tracks[round] rc=1 fails=restart_clears,hand_off
+KILLED  clock_on_the_wall_time                                   tyre_tracks[round] rc=1 fails=clock
+KILLED  clock_runs_in_the_pause                                  tyre_tracks[round] rc=1 fails=round_over_pause
+KILLED  clear_keeps_the_clock                                    tyre_tracks[round] rc=1 fails=restart_clears
+KILLED  clear_does_not_clear_the_map                             tyre_tracks[round] rc=1 fails=restart_clears
+KILLED  clear_does_not_ask_for_an_update                         tyre_tracks[round] rc=1 fails=restart_clears
+KILLED  width_written_in_the_code                                tyre_tracks[lint] rc=1 fails=lint
+KILLED  a_type_named_in_the_code                                 tyre_tracks[lint] rc=1 fails=lint
+KILLED  ground_shader_default_strength_ignored_in_a_map_without_a_node tyre_tracks[lint] rc=1 fails=globals_default
+KILLED  current_contact_instead_of_the_last_ticks                tyre_tracks[strokes] rc=1 fails=lines,reverse
+KILLED  stroke_time_is_zero                                      tyre_tracks[strokes] rc=1 fails=lines,reverse
+KILLED  no_stroke_below_the_minimum_step_is_kept                 tyre_tracks[turns] rc=1 fails=slow_roll
+KILLED  minimum_step_zero                                        tyre_tracks[lifecycle] rc=1 fails=teleport
+KILLED  quads_never_handed_to_the_painter                        tyre_tracks[strokes] rc=1 fails=lines
+KILLED  painter_not_emptied_by_its_draw                          tyre_tracks[strokes] rc=1 fails=lines
+KILLED  quad_without_its_rim                                     tyre_tracks[strokes] rc=1 fails=quad_widths
+KILLED  quad_corner_wrong                                        tyre_tracks[strokes] rc=1 fails=quad_widths
+KILLED  quad_one_side_only                                       tyre_tracks[strokes] rc=1 fails=quad_widths
+KILLED  clock_never_sent                                         tyre_tracks[round] rc=1 fails=published
+KILLED  strength_left_on_when_it_leaves                          tyre_tracks[round] rc=1 fails=published
+KILLED  look_sent_with_strength_zero                             tyre_tracks[round] rc=1 fails=published
+KILLED  map_not_sent                                             tyre_tracks[round] rc=1 fails=published
+KILLED  unusable_settings_not_reported                           tyre_tracks[lint] rc=1 fails=no_engine_noise
+KILLED  unusable_settings_still_tick                             tyre_tracks[lint] rc=1 fails=refusals
+KILLED  units_not_handed_on                                      tyre_tracks[round] rc=1 fails=hand_off
+KILLED  handoff_searches_the_tree                                tyre_tracks[lint] rc=1 fails=lint
+KILLED  hold_and_fade_swapped                                    tyre_tracks[data] rc=1 fails=data
+KILLED  fade_line_twice_as_slow                                  tyre_tracks[round] rc=1 fails=fade_arithmetic
+KILLED  fade_never_reaches_nothing                               tyre_tracks[round] rc=1 fails=fade_arithmetic
+KILLED  negative_hold_accepted                                   tyre_tracks[lint] rc=1 fails=refusals
+KILLED  zero_fade_accepted                                       tyre_tracks[lint] rc=1 fails=refusals,no_engine_noise
+KILLED  empty_area_accepted                                      tyre_tracks[lint] rc=1 fails=refusals
+KILLED  empty_texture_accepted                                   tyre_tracks[lint] rc=1 fails=refusals
+KILLED  jump_step_zero_accepted                                  tyre_tracks[lint] rc=1 fails=refusals
+KILLED  minimum_step_over_the_jump_accepted                      tyre_tracks[lint] rc=1 fails=refusals
+KILLED  nan_origin_accepted                                      tyre_tracks[lint] rc=1 fails=refusals
+KILLED  darkness_over_one_accepted                               tyre_tracks[lint] rc=1 fails=refusals
+KILLED  hard_edge_accepted                                       tyre_tracks[lint] rc=1 fails=refusals
+KILLED  negative_width_accepted                                  tyre_tracks[lint] rc=1 fails=refusals
+KILLED  nan_tyre_place_accepted                                  tyre_tracks[lint] rc=1 fails=refusals
+KILLED  missing_tyre_accepted                                    tyre_tracks[lint] rc=1 fails=refusals
+KILLED  motorbike_rear_tyre_as_wide_as_the_front                 tyre_tracks[data] rc=1 fails=data,tyres_match_blender,tyres_touch_the_ground
+KILLED  buggy_tyre_in_a_hair_off                                 tyre_tracks[data] rc=1 fails=tyres_match_blender
+KILLED  truck_rear_axle_at_the_front_axle                        tyre_tracks[data] rc=1 fails=tyres_match_blender
+KILLED  truck_tyre_missing                                       tyre_tracks[data] rc=1 fails=data,tyres_match_blender,tyres_touch_the_ground
+KILLED  area_too_small                                           tyre_tracks[data] rc=1 fails=data
+KILLED  texture_too_small                                        tyre_tracks[data] rc=1 fails=data
+KILLED  hold_a_minute                                            tyre_tracks[data] rc=1 fails=data
+KILLED  model_scene_scaled                                       tyre_tracks[data] rc=1 fails=tyres_match_blender
+KILLED  model_scene_offset                                       tyre_tracks[data] rc=1 fails=tyres_match_blender
+KILLED  ground_shader_on_the_ford                                tyre_tracks[data] rc=1 fails=ground_surfaces
+KILLED  runner_tracks_on_flag_walls                              flag_walls rc=1 output differs from the baseline
+KILLED  runner_tracks_on_map_layout                              map_layout rc=1 output differs from the baseline
+KILLED  runner_tracks_on_turrets                                 turrets rc=1 output differs from the baseline
+-- 64 mutants: 64 killed or equivalent, 0 survived, 0 broken or not applied
+-- the 3 scratch copies equal the repo (apart from .godot, production, design, docs, tests, svaty_jur)

@@ -1,0 +1,17 @@
+extends SceneTree
+## Prints MeshUnitModel.hull_of() of the shipped file and of the frozen copy at both heights, with the six floats as raw bytes.
+
+func _initialize() -> void:
+	await process_frame
+	var shipped: PackedScene = load("res://assets/art/vehicles/wasteland_gyrocopter/wasteland_gyrocopter.glb") as PackedScene
+	var frozen: PackedScene = load("res://tools/evidence/frozen/wasteland_gyrocopter_story_024.glb") as PackedScene
+	for top: float in [INF, 1.4]:
+		for pair: Array in [["shipped", shipped], ["frozen ", frozen]]:
+			var hull: AABB = MeshUnitModel.hull_of(pair[1], top)
+			var bits: PackedFloat32Array = PackedFloat32Array([hull.position.x, hull.position.y, hull.position.z, hull.end.x, hull.end.y, hull.end.z])
+			print("%s top=%s  %s  bits=%s" % [pair[0], top, hull, bits.to_byte_array().hex_encode()])
+		print("   bit-identical: %s" % (MeshUnitModel.hull_of(shipped, top) == MeshUnitModel.hull_of(frozen, top)))
+	var meshes: Dictionary = MeshFile.meshes_of(shipped)
+	print("shipped meshes: %s" % [meshes.keys()])
+	print("frozen meshes: %s" % [MeshFile.meshes_of(frozen).keys()])
+	quit()

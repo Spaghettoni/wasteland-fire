@@ -1,0 +1,12 @@
+== ORDER=map_first driver=metal
+ORDER map_first: the view saw this frame's map colour on 41 frames and the last frame's on 0
+ORDER map_first: the view saw this frame's map colour on 42 frames and the last frame's on 0
+== ORDER=map_first driver=vulkan
+ORDER map_first: the view saw this frame's map colour on 41 frames and the last frame's on 0
+ORDER map_first: the view saw this frame's map colour on 42 frames and the last frame's on 0
+== ORDER=view_first driver=metal
+ORDER view_first: the view saw this frame's map colour on 0 frames and the last frame's on 41
+ORDER view_first: the view saw this frame's map colour on 0 frames and the last frame's on 42
+== ORDER=view_first driver=vulkan
+ORDER view_first: the view saw this frame's map colour on 0 frames and the last frame's on 41
+ORDER view_first: the view saw this frame's map colour on 0 frames and the last frame's on 42

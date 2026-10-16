@@ -1,0 +1,10 @@
+extends SceneTree
+func _initialize() -> void:
+	var a: RotorSettings = load("res://src/gameplay/units/data/gyrocopter_rotor_settings.tres") as RotorSettings
+	var b: RotorSettings = a.duplicate_deep() as RotorSettings
+	b.parts[0].full_turns_per_second = 9.0
+	b.smear_material = null
+	print("duplicate_deep: original rotor rate still %s, material kept %s, parts distinct %s" % [a.parts[0].full_turns_per_second, a.smear_material != null, a.parts[0] != b.parts[0]])
+	var c: RotorSettings = a.duplicate() as RotorSettings
+	print("duplicate: parts shared %s" % [a.parts == c.parts or a.parts[0] == c.parts[0]])
+	quit()

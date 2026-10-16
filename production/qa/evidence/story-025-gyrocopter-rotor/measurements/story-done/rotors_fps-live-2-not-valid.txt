@@ -1,0 +1,35 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+SPLIT rotors_fps t=1.267 phase=window_1 staging=0 fps=106.0 frame_ms_max=16.77 draw_calls=269 primitives=276594 objects=615 rotor_deg=288.0
+SPLIT rotors_fps t=2.267 phase=window_1 staging=0 fps=132.0 frame_ms_max=19.25 draw_calls=269 primitives=276594 objects=615 rotor_deg=288.0
+SPLIT rotors_fps t=3.267 phase=window_1 staging=0 fps=144.0 frame_ms_max=13.90 draw_calls=269 primitives=276594 objects=615 rotor_deg=288.0
+SPLIT rotors_fps t=4.267 phase=window_1 staging=0 fps=145.0 frame_ms_max=9.46 draw_calls=269 primitives=276594 objects=615 rotor_deg=288.0
+SPLIT rotors_fps t=5.267 phase=window_1 staging=0 fps=145.0 frame_ms_max=9.27 draw_calls=269 primitives=276594 objects=615 rotor_deg=288.0
+SPLIT rotors_fps t=6.267 phase=window_1 staging=0 fps=145.0 frame_ms_max=9.60 draw_calls=269 primitives=276594 objects=615 rotor_deg=288.0
+SPLIT rotors_fps t=7.267 phase=window_2 staging=1 fps=145.0 frame_ms_max=9.50 draw_calls=309 primitives=317815 objects=819 rotor_deg=288.0
+SPLIT rotors_fps t=8.267 phase=window_2 staging=0 fps=145.0 frame_ms_max=10.18 draw_calls=293 primitives=296265 objects=650 rotor_deg=96.0
+SPLIT rotors_fps t=9.267 phase=window_2 staging=0 fps=145.0 frame_ms_max=9.37 draw_calls=174 primitives=249581 objects=434 rotor_deg=96.0
+SPLIT rotors_fps t=10.267 phase=window_2 staging=0 fps=145.0 frame_ms_max=10.56 draw_calls=265 primitives=285022 objects=664 rotor_deg=96.0
+SPLIT rotors_fps t=11.267 phase=window_2 staging=0 fps=145.0 frame_ms_max=9.15 draw_calls=176 primitives=212712 objects=400 rotor_deg=96.0
+SPLIT rotors_fps t=12.267 phase=window_2 staging=0 fps=145.0 frame_ms_max=9.49 draw_calls=298 primitives=312869 objects=796 rotor_deg=96.0
+SPLIT rotors_fps t=13.267 phase=window_2 staging=0 fps=145.0 frame_ms_max=9.33 draw_calls=186 primitives=239936 objects=435 rotor_deg=96.0
+SPLIT rotors_fps t=14.267 phase=window_3 staging=1 fps=145.0 frame_ms_max=9.54 draw_calls=209 primitives=258025 objects=499 rotor_deg=96.0
+SPLIT rotors_fps t=15.267 phase=window_3 staging=0 fps=145.0 frame_ms_max=10.37 draw_calls=281 primitives=288736 objects=598 rotor_deg=264.0
+SPLIT rotors_fps t=16.267 phase=window_3 staging=0 fps=144.0 frame_ms_max=9.77 draw_calls=221 primitives=239346 objects=521 rotor_deg=264.0
+SPLIT rotors_fps t=17.267 phase=window_3 staging=0 fps=145.0 frame_ms_max=9.60 draw_calls=240 primitives=271968 objects=523 rotor_deg=264.0
+SPLIT rotors_fps t=18.267 phase=window_3 staging=0 fps=145.0 frame_ms_max=10.12 draw_calls=199 primitives=223124 objects=461 rotor_deg=264.0
+SPLIT rotors_fps t=19.267 phase=window_3 staging=0 fps=145.0 frame_ms_max=9.53 draw_calls=271 primitives=280976 objects=627 rotor_deg=264.0
+SPLIT rotors_fps t=20.267 phase=window_3 staging=0 fps=145.0 frame_ms_max=9.43 draw_calls=225 primitives=212012 objects=514 rotor_deg=264.0
+SPLIT rotors_fps t=21.267 phase=window_4 staging=1 fps=145.0 frame_ms_max=9.32 draw_calls=163 primitives=230027 objects=431 rotor_deg=264.0
+SPLIT rotors_fps t=22.267 phase=window_4 staging=0 fps=145.0 frame_ms_max=10.50 draw_calls=308 primitives=315249 objects=822 rotor_deg=72.0
+SPLIT rotors_fps t=23.267 phase=window_4 staging=0 fps=145.0 frame_ms_max=9.37 draw_calls=308 primitives=315241 objects=818 rotor_deg=72.0
+SPLIT rotors_fps t=24.267 phase=window_4 staging=0 fps=145.0 frame_ms_max=9.10 draw_calls=308 primitives=315241 objects=818 rotor_deg=72.0
+SPLIT rotors_fps t=25.267 phase=window_4 staging=0 fps=145.0 frame_ms_max=8.85 draw_calls=308 primitives=315241 objects=818 rotor_deg=72.0
+SPLIT rotors_fps t=26.267 phase=window_4 staging=0 fps=145.0 frame_ms_max=9.07 draw_calls=308 primitives=315241 objects=818 rotor_deg=72.0
+SPLIT rotors_fps t=27.267 phase=window_4 staging=0 fps=145.0 frame_ms_max=9.10 draw_calls=308 primitives=315241 objects=818 rotor_deg=72.0
+SPLIT rotors_fps t=28.267 phase=appearance staging=1 fps=144.0 frame_ms_max=18.28 draw_calls=279 primitives=271473 objects=989 rotor_deg=0.0
+SPLIT rotors_fps t=29.267 phase=appearance staging=1 fps=145.0 frame_ms_max=9.67 draw_calls=275 primitives=273921 objects=969 rotor_deg=0.0
+SPLIT rotors_fps t=30.267 phase=appearance staging=1 fps=145.0 frame_ms_max=9.12 draw_calls=271 primitives=266145 objects=933 rotor_deg=0.0
+CHECK rotors_fps interpolated FAIL in window 1 (837 frames over 360 ticks, 2.33 a tick, on a display of 120.0 Hz) the pose the renderer drew for each rotor was within 0.00015 rad of the pose between its last two ticks at the engine's interpolation fraction, and every frame advanced it: by 0.0027 rad at least and 0.4910 at most (the step of a tick is 0.4189 rad), 2 frames at its angle of the frame before | PROBLEMS: 2 frames drew a rotor at the angle of the frame before (the least advance of a frame was 0.00271 rad)
+RESULT rotors_fps fail checks=1 failed=1 t=31.233 fps_avg=143.2 fps_avg_steady=144.3 fps_min=106.0 fps_min_steady=132.0 frame_ms_max=19.25 frame_ms_max_steady=19.25 refresh_hz=120.0 draw_calls_max=309 primitives_max=317815 appearance_frame_ms=9.10 samples=30 steady_samples=23 windows=4 display=macOS

@@ -1,0 +1,5 @@
+08:46:45
+fps on 1 rc=0 08:48:52
+fps off 1 rc=0 08:50:58
+fps base 1 rc=0 08:53:05
+fps off 2 rc=0 08:55:11

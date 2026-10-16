@@ -1,0 +1,83 @@
+KILLED  smear_casts_a_shadow                                     rotors[paint] rc=1 fails=no_shadow
+KILLED  smear_in_a_fixed_colour                                  rotors[paint] rc=1 fails=paint
+KILLED  pivot_at_the_origin                                      rotors[file] rc=1 fails=rest_pose
+KILLED  axis_without_its_tilt_in_code                            rotors[paint] rc=1 fails=no_shadow
+KILLED  axis_without_its_tilt_in_the_data                        rotors[data] rc=1 fails=mesh_match
+KILLED  propeller_at_a_fixed_rate                                rotors[prop] rc=1 fails=propeller,propeller_badly_damaged
+KILLED  turning_meshes_drawn_twice                               rotors[paint] rc=1 fails=no_shadow
+KILLED  a_number_in_the_code                                     rotors[data] rc=1 fails=lint
+KILLED  a_number_in_the_shader                                   rotors[data] rc=1 fails=lint
+KILLED  a_rate_over_the_strobe_limit_accepted                    rotors[data] rc=1 fails=refusals,no_engine_noise
+KILLED  angle_not_kept_under_a_turn                              rotors[turn] rc=1 fails=turn
+KILLED  turn_direction_reversed                                  rotors[paint] rc=1 fails=no_shadow
+KILLED  hidden_angle_kept                                        rotors[turn] rc=1 fails=out_of_play
+KILLED  hidden_parts_go_on_turning                               rotors[turn] rc=1 fails=out_of_play
+KILLED  rate_half_the_step_per_tick                              rotors[turn] rc=1 fails=turn,out_of_play
+KILLED  rate_lerp_reversed                                       rotors[prop] rc=1 fails=propeller
+KILLED  reverse_judged_by_the_forward_top_speed                  rotors[prop] rc=1 fails=propeller
+KILLED  speed_taken_with_its_sign                                rotors[prop] rc=1 fails=propeller
+EQUIVALENT a_model_with_no_unit_is_not_turned_at_idle           rotors[turn] rc=0 fails=- | a model with no Unit above it only exists in a warm-up that is freed before any tick, and in rest_pose, where no tick is run: nothing a scenario can read
+KILLED  colour_read_before_the_paint                             rotors[paint] rc=1 fails=paint
+KILLED  smear_material_made_for_each_unit                        rotors[paint] rc=1 fails=no_shadow
+KILLED  smear_blades_uniform_off_by_one                          rotors[paint] rc=1 fails=paint
+KILLED  smear_arc_in_degrees                                     rotors[paint] rc=1 fails=paint
+KILLED  smear_tip_starts_at_the_edge                             rotors[paint] rc=1 fails=paint
+KILLED  smear_alpha_missing                                      rotors[paint] rc=1 fails=paint
+KILLED  smear_frame_left_handed                                  rotors[paint] rc=1 fails=no_shadow
+KILLED  smear_colours_passed_as_a_color                          rotors[paint] rc=1 fails=paint
+KILLED  smear_not_scaled_to_the_reach                            rotors[paint] rc=1 fails=no_shadow
+KILLED  smear_plane_not_square_to_the_axis                       rotors[paint] rc=1 fails=no_shadow
+KILLED  smear_at_the_origin_not_the_hub                          rotors[paint] rc=1 fails=no_shadow
+KILLED  rotor_settings_never_built                               rotors[turn] rc=1 fails=turn,no_engine_noise
+KILLED  unusable_settings_not_reported                           rotors[data] rc=1 fails=refusals,no_engine_noise
+KILLED  missing_mesh_not_looked_for                              rotors[data] rc=1 fails=refusals
+KILLED  team_turning_meshes_not_painted                          rotors[paint] rc=1 fails=paint
+KILLED  neutral_turning_meshes_painted_in_the_team_colour        rotors[paint] rc=1 fails=paint
+KILLED  accent_mesh_not_offset_by_minus_the_hub                  rotors[file] rc=1 fails=rest_pose
+KILLED  neutral_mesh_not_offset_by_minus_the_hub                 rotors[file] rc=1 fails=rest_pose
+KILLED  meshes_added_to_the_model_not_the_pivot                  rotors[file] rc=1 fails=rest_pose
+KILLED  pivot_not_named_for_the_part                             rotors[turn] rc=1 fails=turn,no_engine_noise
+KILLED  strobe_share_of_a_half_accepted                          rotors[data] rc=1 fails=refusals
+KILLED  part_name_not_required                                   rotors[data] rc=1 fails=refusals
+KILLED  part_name_may_repeat                                     rotors[data] rc=1 fails=refusals
+KILLED  share_judged_against_the_reduced_top_speed               rotors[prop] rc=1 fails=propeller_badly_damaged
+KILLED  strobe_limit_exclusive                                   rotors[data] rc=1 fails=refusals
+KILLED  arc_never_compared_with_the_gap                          rotors[data] rc=1 fails=refusals
+KILLED  negative_idle_rate_accepted                              rotors[data] rc=1 fails=refusals
+KILLED  zero_axis_accepted                                       rotors[data] rc=1 fails=refusals
+KILLED  no_parts_accepted                                        rotors[data] rc=1 fails=refusals
+KILLED  no_smear_material_accepted                               rotors[data] rc=1 fails=refusals
+KILLED  blade_gap_half_a_turn                                    rotors[data] rc=1 fails=data,mesh_match,refusals,no_engine_noise
+KILLED  step_share_blind_to_the_blades                           rotors[data] rc=1 fails=refusals,no_engine_noise
+KILLED  strobe_limit_blind_to_the_blades                         rotors[data] rc=1 fails=refusals
+KILLED  hub_one_centimetre_off                                   rotors[data] rc=1 fails=mesh_match
+KILLED  blade_direction_turned_25_degrees                        rotors[data] rc=1 fails=mesh_match
+KILLED  rotor_at_five_turns_a_second                             rotors[data] rc=1 fails=data
+KILLED  rotor_over_the_strobe_limit                              rotors[data] rc=1 fails=data,refusals,no_engine_noise
+KILLED  propeller_with_one_rate                                  rotors[prop] rc=1 fails=propeller
+KILLED  arc_a_third_of_a_turn                                    rotors[data] rc=1 fails=data
+KILLED  arc_over_the_propellers_gap                              rotors[data] rc=1 fails=data,refusals,no_engine_noise
+KILLED  strobe_share_a_tenth                                     rotors[data] rc=1 fails=data,refusals,no_engine_noise
+KILLED  rotor_with_three_blades                                  rotors[data] rc=1 fails=data,mesh_match,refusals
+KILLED  rotor_reach_three_metres                                 rotors[data] rc=1 fails=mesh_match
+KILLED  smear_strength_zero                                      rotors[paint] rc=1 fails=paint,no_shadow
+KILLED  accent_mesh_misspelt                                     rotors[data] rc=1 fails=data,mesh_match,refusals,no_engine_noise
+KILLED  settings_missing_from_the_scene                          rotors[data] rc=1 fails=data
+KILLED  propeller_axis_pointing_back                             rotors[data] rc=1 fails=mesh_match
+KILLED  runner_rotors_on_garage_scrap_walls                      garage_scrap_walls rc=0 output differs from the baseline
+KILLED  runner_rotors_on_heights                                 heights rc=1 output differs from the baseline
+KILLED  runner_file_kept_garage_scrap_walls                      garage_scrap_walls rc=0 output differs from the baseline
+KILLED  runner_file_kept_heights                                 heights rc=0 output differs from the baseline
+KILLED  runner_settings_kept_ammo                                ammo rc=1 output differs from the baseline
+KILLED  runner_settings_kept_ammo_buildings                      ammo_buildings rc=1 output differs from the baseline
+KILLED  runner_settings_kept_ammo_buildings_showcase             ammo_buildings_showcase rc=0 output differs from the baseline
+KILLED  runner_settings_kept_ammo_showcase                       ammo_showcase rc=0 output differs from the baseline
+KILLED  runner_settings_kept_crash                               crash rc=1 output differs from the baseline
+KILLED  runner_settings_kept_crash_showcase                      crash_showcase rc=0 output differs from the baseline
+KILLED  runner_settings_kept_fuel_building                       fuel_building rc=1 output differs from the baseline
+KILLED  runner_settings_kept_fuel_building_showcase              fuel_building_showcase rc=0 output differs from the baseline
+KILLED  runner_settings_kept_heights                             heights rc=1 output differs from the baseline
+KILLED  runner_settings_kept_heights_showcase                    heights_showcase rc=0 output differs from the baseline
+KILLED  runner_frozen_scene_left_garage_scrap_walls              garage_scrap_walls rc=0 output differs from the baseline
+-- 81 mutants: 81 killed or equivalent, 0 survived, 0 broken or not applied
+-- the 3 scratch copies equal the repo (apart from .godot, production, design, docs, tests, svaty_jur)

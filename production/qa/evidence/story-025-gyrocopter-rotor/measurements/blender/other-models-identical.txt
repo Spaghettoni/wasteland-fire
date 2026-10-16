@@ -1,0 +1,12 @@
+The other Blender models rebuilt after the kit change (wasteland_kit.py, Story 025) against the files git has at 14eec71 (the working tree's copies are unmodified: git status lists none of them):
+IDENTICAL  wasteland_truck.glb  rebuilt 7823f45d7fe681cc046f27ed2c28fbe5  git 7823f45d7fe681cc046f27ed2c28fbe5  tree 7823f45d7fe681cc046f27ed2c28fbe5  (assets/art/vehicles/wasteland_truck/wasteland_truck.glb)
+IDENTICAL  wasteland_motorbike.glb  rebuilt 0a8696fa6b25177f63082f889ffcfd4b  git 0a8696fa6b25177f63082f889ffcfd4b  tree 0a8696fa6b25177f63082f889ffcfd4b  (assets/art/vehicles/wasteland_motorbike/wasteland_motorbike.glb)
+IDENTICAL  wasteland_buggy.glb  rebuilt b9684c99eb498009b10ff0132c5154d0  git b9684c99eb498009b10ff0132c5154d0  tree b9684c99eb498009b10ff0132c5154d0  (assets/art/vehicles/wasteland_buggy/wasteland_buggy.glb)
+IDENTICAL  build_base.glb  rebuilt 3439dda15c94aac67d835d1dd93d1353  git 3439dda15c94aac67d835d1dd93d1353  tree 3439dda15c94aac67d835d1dd93d1353  (assets/art/map_01/base/map_01_base.glb)
+IDENTICAL  build_props.glb  rebuilt 72feef5a710cca7364470be95f71b491  git 72feef5a710cca7364470be95f71b491  tree 72feef5a710cca7364470be95f71b491  (assets/art/map_01/props/map_01_props.glb)
+IDENTICAL  map_01_rocks.glb  rebuilt c8194a14aba0e995c681c2bb720d42ac  git c8194a14aba0e995c681c2bb720d42ac  tree c8194a14aba0e995c681c2bb720d42ac  (assets/art/map_01/rocks/map_01_rocks.glb; rebuilt at 19:15, after the others, with build_rocks.py: rebuild-after-kit-change-rocks.txt)
+
+The Gyrocopter: the unchanged script rebuilt, and the shipped file:
+git 14eec71 file md5 3499714fba6af15fa07d7bdfeb0acfd3
+unchanged script rebuild md5 3499714fba6af15fa07d7bdfeb0acfd3
+shipped (rebuilt with the split) md5 9ca6ec05ee742e87499ce6833f05d0fb; the final Blender run's output md5 9ca6ec05ee742e87499ce6833f05d0fb

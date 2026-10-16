@@ -1,0 +1,18 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+PROBE variant=color renderer=Apple M4 Pro (Apple9) forward_plus
+PROBE image format=15 size=(4096, 1284)
+PROBE s1 centre (200,100) (1.000000, 56224.000000, 0.000000, 1.000000)
+PROBE s1 edge   (200,97)  (1.000000, 56224.000000, 0.000000, 1.000000) (200,96) (0.000000, 0.000000, 0.000000, 0.000000) (200,103) (0.000000, 0.000000, 0.000000, 0.000000) (200,104) (0.000000, 0.000000, 0.000000, 0.000000)
+PROBE s2 centre (200,230) (1.000000, 65504.000000, 0.000000, 1.000000)
+PROBE s3 centre (150,150) (1.000000, 65504.000000, 0.000000, 1.000000)  crossing s1/s3 (150,100) (1.000000, 65504.000000, 0.000000, 1.000000)
+PROBE empty (500,500) (0.000000, 0.000000, 0.000000, 0.000000)
+PROBE screen size=(640, 360) centre (0.000000, 0.000000, 0.670588, 1.000000)
+PROBE s1 centre screen (297,112) world=(1.5,-0.5) (1.000000, 1.000000, 0.670588, 1.000000)
+PROBE s2 centre screen (297,171) world=(1.5,0.8) (1.000000, 1.000000, 0.670588, 1.000000)
+PROBE s3 centre screen (275,135) world=(1.0,0.0) (1.000000, 1.000000, 0.670588, 1.000000)
+PROBE empty screen (432,292) world=(4.5,3.5) (0.000000, 0.000000, 0.670588, 1.000000)
+PROBE s1 edge in screen (297,111) world=(1.5,-0.53) (1.000000, 1.000000, 0.670588, 1.000000)
+PROBE s1 edge out screen (297,110) world=(1.5,-0.54) (0.000000, 0.000000, 0.670588, 1.000000)
+PROBE done

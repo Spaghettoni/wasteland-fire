@@ -1,0 +1,15 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Vulkan 1.2.334 - Forward+ - Using Device #0: Apple - Apple M4 Pro
+
+P2a stroke drawn: (1.000, 50.000)
+P2a after an update with no strokes: (1.000, 50.000)
+P2a after CLEAR_MODE_ONCE + UPDATE_ONCE: (0.000, 0.000) clear mode now 2
+P2a stroke after the clear: (1.000, 60.000)
+P2b frame +0 post_draw: (1.000, 70.000)
+P2b frame +1 post_draw: (1.000, 70.000)
+P2b frame +2 post_draw: (1.000, 70.000)
+P2b frame +3 post_draw: (1.000, 70.000)
+P2c idle: subviewport cpu 0.000 ms gpu 0.000 ms per frame (mean of 200), 8.33 ms a frame over the run
+P2c update_every_frame_8_strokes: subviewport cpu 0.043 ms gpu 0.127 ms per frame (mean of 200), 8.33 ms a frame over the run
+P2c idle2: subviewport cpu 0.009 ms gpu 0.059 ms per frame (mean of 200), 8.33 ms a frame over the run
+P2c update_every_other_frame: subviewport cpu 0.009 ms gpu 0.059 ms per frame (mean of 200), 8.33 ms a frame over the run

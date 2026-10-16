@@ -1,0 +1,3 @@
+NORMALIZED split turret_looks           rc=0 rewrites=[5]
+NORMALIZED split turrets                rc=0 rewrites=[1]
+-- 0 strict, 2 normalized, 0 bad of 2 compared

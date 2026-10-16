@@ -1,0 +1,40 @@
+Warning: No mesh data to join
+OBJECT WreckPickup triangles=1064
+OBJECT WreckFlipped triangles=884
+OBJECT Container triangles=1344
+OBJECT ScrapWall triangles=3680
+OBJECT DressingContainer7 triangles=900
+OBJECT DressingContainer8 triangles=996
+OBJECT Tyre triangles=512
+OBJECT Boulder triangles=80
+OBJECT Post triangles=436
+OBJECT FuelTankTrim triangles=1320
+INFO Draco is available, use library at /Applications/Blender.app/Contents/Resources/5.2/scripts/addons_core/io_scene_gltf2/libbf_intern_draco_bridge.dylib
+INFO MeshOptimizer is available, use library at /Applications/Blender.app/Contents/Resources/5.2/scripts/addons_core/io_scene_gltf2/libbf_intern_meshopt_bridge.dylib
+17:19:42 | INFO: Starting glTF 2.0 export
+17:19:42 | INFO: Extracting primitive: Boulder
+17:19:42 | INFO: Primitives created: 1
+17:19:42 | INFO: Extracting primitive: Container
+17:19:42 | INFO: Primitives created: 1
+17:19:42 | INFO: Extracting primitive: DressingContainer7
+17:19:42 | INFO: Primitives created: 1
+17:19:42 | INFO: Extracting primitive: DressingContainer8
+17:19:42 | INFO: Primitives created: 1
+17:19:42 | INFO: Extracting primitive: FuelTankTrim
+17:19:42 | INFO: Primitives created: 1
+17:19:42 | INFO: Extracting primitive: Post
+17:19:42 | INFO: Primitives created: 1
+17:19:42 | INFO: Extracting primitive: ScrapWall
+17:19:42 | INFO: Primitives created: 1
+17:19:42 | INFO: Extracting primitive: Tyre
+17:19:42 | INFO: Primitives created: 1
+17:19:42 | INFO: Extracting primitive: WreckFlipped
+17:19:42 | INFO: Primitives created: 1
+17:19:42 | INFO: Extracting primitive: WreckPickup
+17:19:42 | INFO: Primitives created: 1
+17:19:42 | INFO: Finished glTF 2.0 export in 0.01840996742248535 s
+
+EXPORTED /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad/bl/others/build_props.glb
+Blender 5.2.2 LTS (hash d13f752e3b9c built 2026-09-15 01:49:19)
+
+Blender quit

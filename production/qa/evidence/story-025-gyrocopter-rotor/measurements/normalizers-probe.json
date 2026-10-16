@@ -1,0 +1,66 @@
+{
+ "ammo_buildings": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1577)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1639)"
+  ]
+ ],
+ "badly_damaged": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1577)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1639)"
+  ]
+ ],
+ "explosions": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1577)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1639)"
+  ]
+ ],
+ "flag_walls": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1577)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1639)"
+  ]
+ ],
+ "fuel_building": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1577)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1639)"
+  ],
+  [
+   "of 60 scripts under res://src",
+   "of 63 scripts under res://src"
+  ]
+ ],
+ "token_ui": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1577)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1639)"
+  ]
+ ],
+ "tokens_data": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1577)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1639)"
+  ]
+ ],
+ "turret_looks": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1577)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1639)"
+  ]
+ ],
+ "turrets": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1577)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1639)"
+  ]
+ ],
+ "unit_swap": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1577)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1639)"
+  ]
+ ]
+}

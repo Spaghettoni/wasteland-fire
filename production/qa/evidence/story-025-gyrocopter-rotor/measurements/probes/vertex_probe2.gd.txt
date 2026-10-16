@@ -1,0 +1,35 @@
+extends SceneTree
+## How far the imported vertices of the rebuilt file stand from the nearest vertex of the frozen copy, per mesh.
+
+func _initialize() -> void:
+	await process_frame
+	var shipped: PackedScene = load("res://assets/art/vehicles/wasteland_gyrocopter/wasteland_gyrocopter.glb") as PackedScene
+	var frozen: PackedScene = load("res://tools/evidence/frozen/wasteland_gyrocopter_story_024.glb") as PackedScene
+	var old_points: Dictionary = {}
+	for mesh: Mesh in MeshFile.meshes_of(frozen).values():
+		for p: Vector3 in mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX]:
+			old_points[PackedVector3Array([p]).to_byte_array().hex_encode()] = p
+	var olds: Array = old_points.values()
+	var meshes: Dictionary = MeshFile.meshes_of(shipped)
+	for mesh_name: StringName in meshes:
+		var mesh: Mesh = meshes[mesh_name]
+		var arrays: Array = mesh.surface_get_arrays(0)
+		var worst: float = 0.0
+		var differing: int = 0
+		var total: int = 0
+		var sample: String = ""
+		for p: Vector3 in arrays[Mesh.ARRAY_VERTEX]:
+			total += 1
+			if old_points.has(PackedVector3Array([p]).to_byte_array().hex_encode()):
+				continue
+			differing += 1
+			var best: float = INF
+			for o: Vector3 in olds:
+				best = minf(best, o.distance_to(p))
+			worst = maxf(worst, best)
+			if sample.is_empty():
+				sample = "%s" % p
+		print("%s: %d vertices, %d not bit-identical to any frozen vertex, the farthest from its nearest %.8f m (aabb %s) e.g. %s" % [mesh_name, total, differing, worst, mesh.get_aabb(), sample])
+	for mesh_name: StringName in MeshFile.meshes_of(frozen):
+		print("frozen %s aabb %s" % [mesh_name, (MeshFile.meshes_of(frozen)[mesh_name] as Mesh).get_aabb()])
+	quit()

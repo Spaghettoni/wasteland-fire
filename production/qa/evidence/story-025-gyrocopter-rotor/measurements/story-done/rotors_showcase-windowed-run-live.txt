@@ -1,0 +1,23 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+Movie Maker mode enabled, recording movie in 1280×720 @ 60 FPS...
+SPLIT rotors_showcase t=0.183 frame=10 moment=garage_spawn_above both Gyrocopters spawned in their Garages by the choice keys
+SPLIT rotors_showcase t=1.667 frame=99 moment=stand_above both Gyrocopters standing in the open, Player 1 Orange and Player 2 Teal, the rotor turning at a steady rate and the propeller at its idle rate | P1 rotor 192.0 deg at 4.00 turns/s, propeller 276.0 deg at 2.00 turns/s | P2 rotor 192.0 deg at 4.00 turns/s, propeller 276.0 deg at 2.00 turns/s views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT rotors_showcase t=3.933 frame=235 moment=fast_above both Gyrocopters flying at their top speed (16.4 and 16.4 m/s), the propeller at its full rate | P1 rotor 312.0 deg at 4.00 turns/s, propeller 294.6 deg at 5.00 turns/s | P2 rotor 312.0 deg at 4.00 turns/s, propeller 294.6 deg at 5.00 turns/s views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT rotors_showcase t=5.383 frame=322 moment=turn_1_above frame 1 of 4 consecutive frames of the rotors standing | P1 rotor 216.0 deg at 4.00 turns/s, propeller 288.0 deg at 2.00 turns/s | P2 rotor 216.0 deg at 4.00 turns/s, propeller 288.0 deg at 2.00 turns/s views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT rotors_showcase t=5.400 frame=323 moment=turn_2_above frame 2 of 4 consecutive frames of the rotors standing | P1 rotor 240.0 deg at 4.00 turns/s, propeller 300.0 deg at 2.00 turns/s | P2 rotor 240.0 deg at 4.00 turns/s, propeller 300.0 deg at 2.00 turns/s views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT rotors_showcase t=5.417 frame=324 moment=turn_3_above frame 3 of 4 consecutive frames of the rotors standing | P1 rotor 264.0 deg at 4.00 turns/s, propeller 312.0 deg at 2.00 turns/s | P2 rotor 264.0 deg at 4.00 turns/s, propeller 312.0 deg at 2.00 turns/s views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT rotors_showcase t=5.433 frame=325 moment=turn_4_above frame 4 of 4 consecutive frames of the rotors standing | P1 rotor 288.0 deg at 4.00 turns/s, propeller 324.0 deg at 2.00 turns/s | P2 rotor 288.0 deg at 4.00 turns/s, propeller 324.0 deg at 2.00 turns/s views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT rotors_showcase t=6.867 frame=411 moment=legs_above both Gyrocopters between their water tower's Gate-side legs, the blades turning through them | P1 rotor 192.0 deg at 4.00 turns/s, propeller 276.0 deg at 2.00 turns/s | P2 rotor 192.0 deg at 4.00 turns/s, propeller 276.0 deg at 2.00 turns/s views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT rotors_showcase t=9.383 frame=562 moment=stand_chase both Gyrocopters standing in the open, Player 1 Orange and Player 2 Teal, the rotor turning at a steady rate and the propeller at its idle rate | P1 rotor 192.0 deg at 4.00 turns/s, propeller 276.0 deg at 2.00 turns/s | P2 rotor 192.0 deg at 4.00 turns/s, propeller 276.0 deg at 2.00 turns/s views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT rotors_showcase t=11.650 frame=698 moment=fast_chase both Gyrocopters flying at their top speed (16.4 and 16.4 m/s), the propeller at its full rate | P1 rotor 312.0 deg at 4.00 turns/s, propeller 294.6 deg at 5.00 turns/s | P2 rotor 312.0 deg at 4.00 turns/s, propeller 294.6 deg at 5.00 turns/s views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT rotors_showcase t=13.083 frame=784 moment=legs_chase both Gyrocopters between their water tower's Gate-side legs, the blades turning through them | P1 rotor 192.0 deg at 4.00 turns/s, propeller 276.0 deg at 2.00 turns/s | P2 rotor 192.0 deg at 4.00 turns/s, propeller 276.0 deg at 2.00 turns/s views=chase_camera_settings.tres, chase_camera_settings.tres
+RESULT rotors_showcase ok checks=0 failed=0 t=13.583 moments=11
+--------------------------------------------------------------------------------
+Done recording movie at path: /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/da488d11-1587-482d-a0a2-4199d8fbc77b/scratchpad/sd25/rec/final/f.png
+816 frames at 60 FPS (movie length: 00:00:13:36), recorded in 00:02:43 (7% of real-time speed).
+CPU render time: 0.02 seconds (average: 0.02 ms/frame)
+GPU render time: 0.00 seconds (average: 0.00 ms/frame)
+Encoding time: 152.93 seconds (average: 187.41 ms/frame)
+--------------------------------------------------------------------------------

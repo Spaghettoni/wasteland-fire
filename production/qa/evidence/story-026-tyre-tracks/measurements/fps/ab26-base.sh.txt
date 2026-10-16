@@ -1,0 +1,21 @@
+#!/bin/sh
+# How the A/B base (ab26/base: the tree before Story 026) was made on 2026-10-16, before the A/B: the project's .godot, addons and
+# assets (Story 026 changes no asset), the copy of src, tools and project.godot taken before the story's first edit (pre26/: the tree
+# with story 025's uncommitted work, which every run of the A/B shares), tyre_tracks_fps.gd and its .uid (written without any reference
+# to the tracks' classes, so it runs there), and the one runner line that registers it after rotors_fps; then an import, which printed
+# no ERROR or WARNING.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/903467d6-8576-4a19-ad15-5c4b7052d4e0/scratchpad
+B=$S/ab26/base
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+mkdir -p $B
+rsync -a .godot addons assets $B/
+rsync -a $S/pre26/src $S/pre26/tools $S/pre26/project.godot $B/
+cp tools/evidence/split_screen/tyre_tracks_fps.gd tools/evidence/split_screen/tyre_tracks_fps.gd.uid $B/tools/evidence/split_screen/
+python3 -I - <<'PY'
+p = "/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/903467d6-8576-4a19-ad15-5c4b7052d4e0/scratchpad/ab26/base/tools/evidence/split_screen_harness.gd"
+s = open(p).read()
+a = '\t&"rotors_fps": preload("res://tools/evidence/split_screen/rotors_fps.gd"),\n'
+assert s.count(a) == 1
+open(p, "w").write(s.replace(a, a + '\t&"tyre_tracks_fps": preload("res://tools/evidence/split_screen/tyre_tracks_fps.gd"),\n'))
+PY
+(cd $B && godot --headless --path . --import)

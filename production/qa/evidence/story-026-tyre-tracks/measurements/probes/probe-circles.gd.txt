@@ -1,0 +1,83 @@
+extends RefCounted
+## Scratch probe (not evidence code): drives Player 1's Buggy and Player 2's Truck in circles at full throttle and full lock, the way
+## tyre_tracks_fps.gd and the showcase's salt scene do, from the spots PROBE_SPOTS names ("x1,z1,x2,z2;..."; default the fps spots), for
+## PROBE_SECONDS each, and prints every contact of a Unit with anything but the floor (a slide collision whose normal is not up): the tick,
+## the collider's path and the Unit's place, then each Unit's lowest speed after the first two seconds and the box its middle swept.
+const Kit25: GDScript = preload("res://tools/evidence/split_screen/rotors_kit.gd")
+const Quick: GDScript = preload("res://tools/evidence/split_screen/quick_fix_kit.gd")
+const OWN_CHOICE: bool = true
+const OWN_BASE_SWAP: bool = true
+const SHIPPED_CAMERA: bool = true
+const BASE_DEFENCES: bool = true
+const TURRETS: bool = true
+const TURRET_LOOKS: bool = true
+const MINES: bool = true
+const EXPLOSIONS: bool = true
+const BADLY_DAMAGED: bool = true
+const WALL_PANELS: bool = true
+const GARAGE_SCRAP_PANELS: bool = true
+const HEIGHTS: bool = true
+const ROTORS: bool = true
+const TYRE_TRACKS: bool = true
+const STOCK_COUNTS: Dictionary = {&"motorbike": 30, &"buggy": 30, &"truck": 30, &"gyrocopter": 30}
+const WATCHDOG_SECONDS: float = 1800.0
+
+var _k: Kit25
+var _q: Quick
+var _contacts: Array = [[], []]
+var _low: PackedFloat64Array = PackedFloat64Array([INF, INF])
+var _box: Array[Rect2] = [Rect2(), Rect2()]
+var _t: int = 0
+var _steer: Array[int] = [-1, 1]
+var _types: Array[int] = [Quick.BUGGY, Quick.TRUCK]
+
+
+func run(harness: Node) -> void:
+	_k = Kit25.new(harness)
+	_q = _k.q()
+	var types_env: String = OS.get_environment("PROBE_TYPES")
+	if types_env == "motorbikes":
+		_types = [Quick.MOTORBIKE, Quick.MOTORBIKE]
+	elif types_env == "trucks":
+		_types = [Quick.TRUCK, Quick.TRUCK]
+	await _k.k.swap().play(0, _types[0])
+	await _k.k.swap().play(1, _types[1])
+	await _k.k.walls().turrets_down()
+	var cases: PackedStringArray = (OS.get_environment("PROBE_SPOTS") if not OS.get_environment("PROBE_SPOTS").is_empty() else "-16,-16,22,-16").split(";", false)
+	var seconds: float = float(OS.get_environment("PROBE_SECONDS")) if not OS.get_environment("PROBE_SECONDS").is_empty() else 30.0
+	for case: String in cases:
+		var v: PackedFloat64Array = case.split_floats(",")
+		var spots: Array[Vector3] = [Vector3(v[0], 0.0, v[1]), Vector3(v[2], 0.0, v[3])]
+		await _q.map.stage(_types, spots, [Vector3.RIGHT, Vector3.LEFT], true)
+		_contacts = [[], []]
+		_low = PackedFloat64Array([INF, INF])
+		_box = [Rect2(Vector2(spots[0].x, spots[0].z), Vector2.ZERO), Rect2(Vector2(spots[1].x, spots[1].z), Vector2.ZERO)]
+		_t = 0
+		_q.kit.on_tick = _watch
+		await _q.kit.advance(int(seconds * float(Engine.physics_ticks_per_second)))
+		_q.kit.on_tick = Callable()
+		_q.harness.release_all()
+		for p: int in 2:
+			var unit: Unit = _q.units.units[p]
+			var names: Dictionary = {}
+			for c: Array in _contacts[p]:
+				names[c[1]] = int(names.get(c[1], 0)) + 1
+			print("PROBE case=%s player=%d type=%s contacts=%d first=%s colliders=%s low_speed_after_2s=%.2f top=%.2f box=%s" % [case, p + 1, unit.stats.type_id, _contacts[p].size(), str(_contacts[p][0]) if not _contacts[p].is_empty() else "-", names, _low[p], unit.stats.max_speed, _box[p]])
+	harness.finish("cases=%d" % cases.size())
+
+
+func _watch() -> void:
+	_t += 1
+	for p: int in 2:
+		_q.harness.drive(p, 1, _steer[p])
+		var unit: Unit = _q.units.units[p]
+		for i: int in unit.get_slide_collision_count():
+			var c: KinematicCollision3D = unit.get_slide_collision(i)
+			if c.get_normal().y < 0.7:
+				var collider: Object = c.get_collider()
+				var name: String = str((collider as Node).get_path()) if collider is Node else str(collider)
+				(_contacts[p] as Array).append([_t, name, Vector2(unit.global_position.x, unit.global_position.z).snapped(Vector2(0.1, 0.1))])
+		if _t > 2 * Engine.physics_ticks_per_second:
+			var real: Vector3 = unit.get_real_velocity()
+			_low[p] = minf(_low[p], Vector2(real.x, real.z).length())
+		_box[p] = _box[p].expand(Vector2(unit.global_position.x, unit.global_position.z))

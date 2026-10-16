@@ -1,0 +1,6 @@
+#!/bin/sh
+# usage: capture_in.sh ROOT OUTDIR JOBS_FILE [PARALLEL]   Runs every job of the list in the project at ROOT, P at a time.
+HERE="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$1"; OUT="$2"; JOBS="$3"; P="${4:-3}"
+mkdir -p "$OUT"
+xargs -P "$P" -L 1 "$HERE/run_one_in.sh" "$ROOT" "$OUT" < "$JOBS"

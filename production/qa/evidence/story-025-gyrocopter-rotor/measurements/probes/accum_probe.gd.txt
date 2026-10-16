@@ -1,0 +1,14 @@
+extends SceneTree
+func _initialize() -> void:
+	var delta: float = 1.0 / 60.0
+	var step: float = TAU * 4.0 / 60.0
+	var angle: float = 0.0
+	var worst: float = 0.0
+	var worst_unwrapped: float = 0.0
+	for i: int in 2000:
+		var next: float = fposmod(angle + TAU * 4.0 * delta, TAU)
+		var grown: float = wrapf(next - angle, -PI, PI)
+		worst = maxf(worst, absf(grown - step))
+		angle = next
+	print("worst %s  step %s  TAU*4*delta %s" % [worst, step, TAU * 4.0 * delta])
+	quit()

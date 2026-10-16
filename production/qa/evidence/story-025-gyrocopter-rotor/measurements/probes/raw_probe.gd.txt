@@ -1,0 +1,21 @@
+extends SceneTree
+## The raw arrays of both glb files (read by the kit's glb reader) against what the importer made of them.
+const Kit25: GDScript = preload("res://tools/evidence/split_screen/rotors_kit.gd")
+
+func _initialize() -> void:
+	await process_frame
+	for path: String in ["res://assets/art/vehicles/wasteland_gyrocopter/wasteland_gyrocopter.glb", "res://tools/evidence/frozen/wasteland_gyrocopter_story_024.glb"]:
+		var raw: Dictionary = Kit25.glb_meshes(path)
+		var imported: Dictionary = MeshFile.meshes_of(load(path) as PackedScene)
+		print(path.get_file())
+		for mesh_name: StringName in raw:
+			var rp: PackedVector3Array = raw[mesh_name]["POSITION"]
+			var ip: PackedVector3Array = (imported[mesh_name] as Mesh).surface_get_arrays(0)[Mesh.ARRAY_VERTEX]
+			var raw_keys: Dictionary = {}
+			for p: Vector3 in rp:
+				raw_keys[PackedVector3Array([p]).to_byte_array().hex_encode()] = 1
+			var differing: int = 0
+			for p: Vector3 in ip:
+				differing += 0 if raw_keys.has(PackedVector3Array([p]).to_byte_array().hex_encode()) else 1
+			print("  %s: raw %d vertices, imported %d, imported positions that are not raw positions: %d, triangles %d" % [mesh_name, rp.size(), ip.size(), differing, raw[mesh_name]["triangles"]])
+	quit()

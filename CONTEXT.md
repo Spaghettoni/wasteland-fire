@@ -62,6 +62,14 @@ _Avoid_: lorry, tank, van, heavy
 The flying combat Unit. It moves only in the high Height and never descends into the low one (the comments), at one constant flying height, its lowest point at 2.5 m (the Truck's pod, 2.2 m, plus a 0.25 m clearance, rounded up to 0.05 m; its thin antenna is not counted, so it is drawn through the gear of a Gyrocopter that flies right over a Truck; measured in story 015, set in story 020), from the moment it appears in the Garage, never rising, settling, taking off or landing (reading, 2026-10-10). Flying means that it crosses every low piece, which ground Units cannot: cliffs, water, the cover and every Wall Panel (the cover since the first playtest, 2026-10-03; the Flag Walls since the author's board of 2026-10-07; the other Wall Panels since 2026-10-10), and that no Mine goes off under it (the board). Every Tall piece stops it, the Turrets included, and one it flies straight into faster than its crash speed (starting at 4 m/s, about a quarter of its top speed; decided 2026-10-10) destroys it, and it explodes (the comments); a graze, a slow nudge or a turn on the spot against one only stops it, as before (decided 2026-10-10). It shoots and is shot at the same height as everyone, because every hit volume spans both Heights: no height advantage for fire (decided 2026-10-10); the Turrets fire at it (reading, 2026-10-07). Burns Fuel fastest and crashes when its tank is empty. Beats the Buggy from across cliffs and water; loses to the Truck.
 _Avoid_: helicopter, chopper, gyro, plane
 
+**Rotor (rotor)**:
+One of the Gyrocopter's two turning parts (the developer's request of 2026-10-15, "I want some sort of animation for the gyrocopter spinning blades. Something smooth. Blurred is fine, but it needs to be recognizable enough."; built in story 025): its main rotor, two blades in the Team colour with darker tips, and its pusher propeller, three blades. Each turns about its own hub, as a picture only: the main rotor at a steady rate, 4 turns a second, and the propeller at a rate that follows the Unit's speed, 2 turns a second standing and 5 at its top speed, forward or in reverse (both starting values to tune). Each blade trails a Smear. A new Gyrocopter appears with both at rest, they stand still under the Round-over screen, and nothing a Round does reads them. The other three types have no turning part.
+_Avoid_: blades (a rotor's parts), fan, spinner, helicopter blades
+
+**Smear**:
+The soft see-through fan a turning blade trails behind it over about a quarter of a turn (decided 2026-10-15: blades and a smear, not a blur disc that replaces the blades and not plain blades, which strobe at 60 ticks a second at any rate that looks fast; built in story 025): strongest at the blade, fading to nothing behind it, in the Team colour (the propeller's in its metal, with Team-coloured tips). It hides the step between two frames so that the two blades can always be counted. It casts no shadow, though the blades cast theirs and turn with them. A picture only.
+_Avoid_: blur, motion blur, blur disc, trail, tyre track
+
 **Token (token)**:
 One Unit of one type in a Player's stock: a Player with five Motorbike Tokens can lose five Motorbikes. Each Player holds a stock per type, set by the Map (the rules source's example: Motorbike 5, Buggy 3, Truck 2, Gyrocopter 2). A Token is taken at the destruction of a Unit of its type, never at its spawn, so the Unit in play is not yet subtracted; a type with no Tokens left cannot be picked again, and a Player whose last Motorbike Token is gone has lost the Round.
 _Avoid_: life, lives, credit, ticket, respawn, coin
@@ -81,6 +89,14 @@ _Avoid_: blast, splash damage, wreck, debris field, detonation
 **Badly damaged**:
 The state of a live Unit at or below a fraction of its own maximum hit points, the edge included (the comments: "ked maju napr 20% ze sa z nich dymi a idu pomalsie. O polovicu napr."; built in story 017): thin dark grey smoke rises from the top of its drawn body (a column while it stands, a short trail while it moves, in both views, in no Team colour) and its top speed, forward and in reverse, is a share of its own, eased in at the Unit's own acceleration. Both numbers are data per type, 0.2 and 0.5 to start (8 of 40, 20 of 100, 44 of 220 and 14 of 70 hit points); a fraction of 0 means a type has no such state. It is read from the hit points and ends only with the Unit (a destruction, a Swap or R), so the next Unit starts whole; it changes nothing else (turning, the weapon, the Fuel burn and the HUD stay, and in a Ford the lower cap wins). A Mine, a Self-destruct and the Gyrocopter's Fuel crash destroy at once and pass through no state.
 _Avoid_: crippled, critical, on fire, damaged (a Flag Wall or a Turret is damaged; a Unit is badly damaged)
+
+**Hit flash**:
+The short white flash that shows a hit (decided 2026-10-15; story 030): a Unit, a Turret, a Wall Panel or a Flag Wall that a Shot damages and that survives flashes white over its whole drawn model for a few ticks, in both views. A Shot that takes nothing, and the lethal hit, show none. A picture only.
+_Avoid_: blink, damage flash, hit marker
+
+**Charring**:
+The dark patches a Unit gathers as it loses hit points (decided 2026-10-15; story 030): they appear after its first losses and grow to their most at the badly damaged edge, about half of the body, so the Team colour still reads; a new Unit starts clean. Only Units char: a Turret, a Flag Wall or a Wall Panel shows its damage by its two damaged looks. A picture only.
+_Avoid_: burning, on fire, damaged (a Turret or a wall is damaged), scorch mark
 
 **Swap**:
 Putting a Player's Unit away inside its own Base with the Self-destruct key, so the Player chooses another type at once and at no cost (story 011, decided 2026-10-03 after the first playtest). It is not a destruction: no Token is taken and no respawn delay runs, it takes no Flag with it, and the Unit put away does not explode (reading, 2026-10-10). It acts only on a Unit in play standing inside its own Base's walls, the Garage included, whatever its type; anywhere else the key destroys. The new Unit appears with full hit points, a full tank and a full load of ammo, so a Swap is also a free full resupply at the own Base (decided 2026-10-10).
@@ -138,6 +154,14 @@ _Avoid_: bomb, trap, landmine, explosive
 A shallow creek crossing on the Map. A ground Unit inside a Ford drives at no more than a fraction of its top speed (Map 01: half, a starting value to tune); the Gyrocopter crosses at full speed. Map 01 has two, across the salt flat between the canyon and the ridge.
 _Avoid_: creek, river, mud, shallows
 
+**Tyre track**:
+The mark a ground Unit's tyres leave as they roll (decided 2026-10-15; story 026): darker, packed ground with a shallow rut, as wide as the tyre, on the sand, the canyon road and the salt flat only, never in the water, the fords, on the Base pads or in the Garages. A mark holds and then fades out over about a minute, and every Round starts on clean ground. The Gyrocopter leaves none. Only a picture: nothing in a Round reads it. As built (story 026): each tick the Map's `TyreTracks` makes one stroke for each tyre of a ground Unit, from where the tyre touched the ground the tick before to where it touches it now, and draws it into the Map's track map; a mark holds its full strength for 20 s of the Round's time and fades over the next 40 s.
+_Avoid_: tire track (the code and the docs spell it tyre), skid mark, trail
+
+**Track map**:
+The one texture over a Map's ground in which its tyre tracks are drawn (story 026): a half-float image of 4096 x 1284 pixels over Map 01's island (7.18 cm a pixel), each pixel holding the coverage of a mark and the Round's time it was made, cleared when a Round starts and read by the ground shader through four global shader parameters. A later stroke replaces an earlier one; nothing about it is a place a Round reads.
+_Avoid_: decal, splat map, trail texture
+
 **Cover**:
 A static obstacle on the Map that stops every ground Unit and every shot and is never destroyed; the Gyrocopter flies over it (decided 2026-10-03, after the first playtest). On Map 01 the eight wrecks and the two long containers; the drawings' wrecks are cover, not destroyed Units. The two scrap walls were cover too until story 019 made them Wall Panels of no Player (decided 2026-10-10; built 2026-10-12); they are no longer Cover (reading, 2026-10-10). The depot's three Fuel tanks are not cover: they stop every Unit, the Gyrocopter included, as Tall pieces (decided 2026-10-10). Nor are the Wall Panels, the Flag Walls among them, although the Gyrocopter flies over them too: a Wall Panel can be destroyed (reading, 2026-10-10). Nor is an ammunition building, although it stops ground Units and every Shot like cover and the Gyrocopter flies over it: it is a building (reading, 2026-10-10; story 024). Nor are the Turrets (reading, 2026-10-07).
 _Avoid_: obstacle, barricade, prop, destructible
@@ -153,3 +177,11 @@ _Avoid_: high obstacle, tall obstacle, solid piece, wall
 **View**:
 What a Player's camera shows, one of two: the view from above (the Round's start: high over the Unit, almost straight down with a slight forward tilt, turning with the Unit; the tops of the water towers are not drawn in it, so the Flag on its seat stays in sight) or the chase view (from behind and above). Each Player switches their own with one key, at any time; the other Player's view does not change (decided 2026-10-03, after the first playtest, as a trial the friends compare in one playtest).
 _Avoid_: camera mode, zoom, perspective
+
+**Silhouette**:
+A Player's own Unit drawn through what hides it (decided 2026-10-15; story 027): where a Turret, a wall, a tower, a building, the cover or a cliff hides part of that Unit, the hidden part shows over it as a flat see-through shape in the Team colour, in its own Player's view only, from above and in the chase view. The other Player's Unit is never drawn through anything, so cover still hides a Unit from the other Player, as the Turrets' line of sight assumes. A picture only.
+_Avoid_: x-ray, outline, ghost, wallhack
+
+**Red edge**:
+The red pulse at the edges of a Player's half of the screen when that Player's Unit is hit or destroyed (decided 2026-10-15; story 031): it fades within a fraction of a second, shows in that Player's half only and stays under the HUD's band; never at a spawn, a Swap or a restart. A picture only.
+_Avoid_: vignette, damage overlay, blood, hit flash (that is on the model)

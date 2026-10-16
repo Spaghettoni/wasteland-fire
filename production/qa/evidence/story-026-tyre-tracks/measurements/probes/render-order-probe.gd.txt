@@ -1,0 +1,64 @@
+extends Node
+## Probe for the review's finding 3: do sibling SubViewports render in the order they entered the tree? A 2D SubViewport (the map)
+## is filled with a colour that changes every frame and updated once a frame; a 3D SubViewport (the view) draws a plane whose shader
+## reads the map through the global sampler tyre_track_map. After each frame the view's pixel shows which frame's colour it saw: this
+## frame's (the map rendered first) or the last frame's (the view rendered first). ORDER=map_first or view_first sets the tree order.
+var map_vp: SubViewport
+var view_vp: SubViewport
+var rect: ColorRect
+var frame: int = 0
+var same: int = 0
+var late: int = 0
+
+func _ready() -> void:
+	map_vp = SubViewport.new()
+	map_vp.size = Vector2i(16, 16)
+	map_vp.disable_3d = true
+	map_vp.render_target_update_mode = SubViewport.UPDATE_ONCE
+	rect = ColorRect.new()
+	rect.size = Vector2(16, 16)
+	map_vp.add_child(rect)
+	view_vp = SubViewport.new()
+	view_vp.size = Vector2i(16, 16)
+	view_vp.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	view_vp.own_world_3d = true
+	var cam := Camera3D.new()
+	cam.position = Vector3(0, 2, 0)
+	cam.rotation_degrees = Vector3(-90, 0, 0)
+	view_vp.add_child(cam)
+	var plane := MeshInstance3D.new()
+	var pm := PlaneMesh.new()
+	pm.size = Vector2(20, 20)
+	plane.mesh = pm
+	var sh := Shader.new()
+	sh.code = "shader_type spatial;\nrender_mode unshaded;\nglobal uniform sampler2D tyre_track_map : filter_nearest;\nvoid fragment() { ALBEDO = texture(tyre_track_map, vec2(0.5)).rgb; }\n"
+	var mat := ShaderMaterial.new()
+	mat.shader = sh
+	plane.material_override = mat
+	view_vp.add_child(plane)
+	if OS.get_environment("ORDER") == "view_first":
+		add_child(view_vp)
+		add_child(map_vp)
+	else:
+		add_child(map_vp)
+		add_child(view_vp)
+	RenderingServer.global_shader_parameter_set(&"tyre_track_map", map_vp.get_texture())
+	RenderingServer.frame_post_draw.connect(_after)
+
+func _process(_delta: float) -> void:
+	frame += 1
+	rect.color = Color(1, 0, 0) if frame % 2 == 0 else Color(0, 1, 0)
+	map_vp.render_target_update_mode = SubViewport.UPDATE_ONCE
+
+func _after() -> void:
+	if frame < 5:
+		return
+	var c: Color = view_vp.get_texture().get_image().get_pixel(8, 8)
+	var now_red: bool = frame % 2 == 0
+	if (c.r > 0.5) == now_red:
+		same += 1
+	else:
+		late += 1
+	if frame >= 45:
+		print("ORDER %s: the view saw this frame's map colour on %d frames and the last frame's on %d" % [OS.get_environment("ORDER"), same, late])
+		get_tree().quit()

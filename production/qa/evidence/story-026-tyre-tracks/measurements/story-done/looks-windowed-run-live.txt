@@ -1,0 +1,27 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+Movie Maker mode enabled, recording movie in 1280×720 @ 60 FPS...
+SPLIT tyre_tracks_showcase t=0.100 frame=5 moment=garage_spawn both Players chose a Motorbike with their own keys
+SPLIT tyre_tracks_showcase t=2.750 map moment=gyro_none player=1 covered=0 most=0.0000 first_stamp=-1.00 last_stamp=-1.00 own_last_stroke=-1.00 clock=2.10 used_rect=[P: (3561, 250), S: (239, 4)] format=15 size=(4096, 1284)
+SPLIT tyre_tracks_showcase t=2.750 map moment=gyro_none player=2 covered=512 most=1.0000 first_stamp=0.97 last_stamp=1.73 own_last_stroke=1.77 clock=2.10 used_rect=[P: (3561, 250), S: (239, 4)] format=15 size=(4096, 1284)
+SPLIT tyre_tracks_showcase t=2.750 frame=164 moment=gyro_none_above Player 1's Gyrocopter and Player 2's Motorbike have both driven the same stretch of sand at their end of the Map: only the Motorbike left a track | strokes this tick 0, clock 2.10 s, views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT tyre_tracks_showcase t=3.783 frame=226 moment=gyro_none_chase Player 1's Gyrocopter and Player 2's Motorbike have both driven the same stretch of sand at their end of the Map: only the Motorbike left a track | strokes this tick 0, clock 3.13 s, views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT tyre_tracks_showcase t=9.917 map moment=wall_across_a_track player=1 covered=718 most=1.0000 first_stamp=0.17 last_stamp=4.10 own_last_stroke=4.12 clock=5.10 used_rect=[P: (1815, 407), S: (550, 24)] format=15 size=(4096, 1284)
+SPLIT tyre_tracks_showcase t=9.917 map moment=wall_across_a_track player=2 covered=728 most=1.0000 first_stamp=0.20 last_stamp=4.10 own_last_stroke=4.12 clock=5.10 used_rect=[P: (1815, 407), S: (550, 24)] format=15 size=(4096, 1284)
+SPLIT tyre_tracks_showcase t=9.917 frame=594 moment=wall_across_a_track_above a wall of the ground's own material across each Motorbike's track: the track is on the ground and not on the wall | strokes this tick 0, clock 5.10 s, views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT tyre_tracks_showcase t=10.950 wall player=1 wall_on_track=0.2141 wall_beside=0.2141 ground_on_track=0.4625 ground_beside=0.7476
+SPLIT tyre_tracks_showcase t=10.950 wall player=2 wall_on_track=0.3395 wall_beside=0.3395 ground_on_track=0.4328 ground_beside=0.7348
+SPLIT tyre_tracks_showcase t=10.950 frame=656 moment=wall_across_a_track_chase a wall of the ground's own material across each Motorbike's track: the track is on the ground and not on the wall | strokes this tick 0, clock 6.15 s, views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT tyre_tracks_showcase t=17.750 map moment=after_restart player=1 covered=0 most=0.0000 first_stamp=-1.00 last_stamp=-1.00 own_last_stroke=-1.00 clock=0.68 used_rect=[P: (0, 0), S: (0, 0)] format=15 size=(4096, 1284)
+SPLIT tyre_tracks_showcase t=17.750 map moment=after_restart player=2 covered=0 most=0.0000 first_stamp=-1.00 last_stamp=-1.00 own_last_stroke=-1.00 clock=0.68 used_rect=[P: (0, 0), S: (0, 0)] format=15 size=(4096, 1284)
+SPLIT tyre_tracks_showcase t=17.750 frame=1064 moment=after_restart_above the sand where the marks were, after a Round was won and R pressed: clean ground (the clock reads 0.68 s) | strokes this tick 0, clock 0.68 s, views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT tyre_tracks_showcase t=18.783 frame=1126 moment=after_restart_chase the sand where the marks were, after a Round was won and R pressed: clean ground (the clock reads 0.68 s) | strokes this tick 0, clock 1.72 s, views=chase_camera_settings.tres, chase_camera_settings.tres
+RESULT tyre_tracks_showcase ok checks=0 failed=0 t=19.817 moments=7
+--------------------------------------------------------------------------------
+Done recording movie at path: /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/2573aa3b-8b37-4178-bdbd-5cb6686a7ba2/scratchpad/sd26/rec/looks/f.png
+1190 frames at 60 FPS (movie length: 00:00:19:50), recorded in 00:04:12 (7% of real-time speed).
+CPU render time: 0.02 seconds (average: 0.02 ms/frame)
+GPU render time: 0.00 seconds (average: 0.00 ms/frame)
+Encoding time: 239.11 seconds (average: 200.93 ms/frame)
+--------------------------------------------------------------------------------

@@ -1,0 +1,31 @@
+config_version=5
+
+[application]
+
+config/name="probe26"
+run/main_scene="res://main.tscn"
+config/features=PackedStringArray("4.7", "Forward Plus")
+
+[display]
+
+window/size/viewport_width=640
+window/size/viewport_height=360
+
+[shader_globals]
+
+tyre_track_map={
+"type": "sampler2D",
+"value": ""
+}
+tyre_track_area={
+"type": "vec4",
+"value": Vector4(0, 0, 1, 1)
+}
+tyre_track_clock={
+"type": "vec4",
+"value": Vector4(0, 0, 0, 0)
+}
+
+[rendering]
+
+environment/defaults/default_clear_color=Color(0.3, 0.3, 0.3, 1)

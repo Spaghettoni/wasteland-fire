@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+"""Story 026's retained frames: each full-size frame is the recording's PNG that a moment's frame= line names, copied under a name that says what
+it shows; prints the cmp lines that prove it. usage: retain26.py [--check]"""
+import os, re, shutil, sys, filecmp
+S = "/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/903467d6-8576-4a19-ad15-5c4b7052d4e0/scratchpad"
+E = "/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire/production/qa/evidence/story-026-tyre-tracks"
+PARTS = {"drive": S + "/rec/final26-drive", "looks": S + "/rec/final26-looks", "fade": S + "/rec/final26-fade"}
+def frames(part):
+    out = open(PARTS[part] + ".out").read()
+    return {m.group(2): int(m.group(1)) for m in re.finditer(r"^SPLIT tyre_tracks_showcase t=\S+ frame=(\d+) moment=(\S+)", out, re.M)}
+PICK = [
+ ("01-motorbikes-figure-eight-on-the-sand-from-above.png", "drive", "sand_eight_above"),
+ ("02-motorbikes-figure-eight-on-the-sand-chase-view.png", "drive", "sand_eight_chase"),
+ ("03-buggy-and-truck-two-lines-each-on-the-sand-from-above.png", "drive", "sand_two_lines_above"),
+ ("04-buggy-and-truck-two-lines-each-on-the-sand-chase-view.png", "drive", "sand_two_lines_chase"),
+ ("05-buggy-and-truck-circles-on-the-salt-flat-from-above.png", "drive", "salt_circle_above"),
+ ("06-buggy-and-truck-circles-on-the-salt-flat-chase-view.png", "drive", "salt_circle_chase"),
+ ("07-motorbike-and-truck-on-the-canyon-road-from-above.png", "drive", "road_lanes_above"),
+ ("08-motorbike-and-truck-on-the-canyon-road-chase-view.png", "drive", "road_lanes_chase"),
+ ("09-through-a-ford-none-in-the-water-from-above.png", "drive", "ford_crossing_above"),
+ ("10-through-a-ford-none-in-the-water-chase-view.png", "drive", "ford_crossing_chase"),
+ ("11-out-of-the-garage-none-on-the-floor-from-above.png", "drive", "pad_edge_above"),
+ ("12-out-of-the-garage-none-on-the-floor-chase-view.png", "drive", "pad_edge_chase"),
+ ("13-two-tracks-crossing-from-above.png", "drive", "tracks_cross_above"),
+ ("14-two-tracks-crossing-chase-view.png", "drive", "tracks_cross_chase"),
+ ("17-gyrocopter-and-motorbike-from-above.png", "looks", "gyro_none_above"),
+ ("18-gyrocopter-and-motorbike-chase-view.png", "looks", "gyro_none_chase"),
+ ("19-wall-of-sand-across-a-track-chase-view.png", "looks", "wall_across_a_track_chase"),
+ ("20-fade-0s-chase-view.png", "fade", "fade_0s_chase"),
+ ("21-fade-30s-chase-view.png", "fade", "fade_30s_chase"),
+ ("22-fade-60s-chase-view.png", "fade", "fade_60s_chase"),
+ ("23-after-r-clean-ground-from-above.png", "looks", "after_restart_above"),
+ ("24-after-r-clean-ground-chase-view.png", "looks", "after_restart_chase"),
+]
+def main():
+    check = "--check" in sys.argv
+    found = {p: frames(p) for p in PARTS if os.path.exists(PARTS[p] + ".out")}
+    for name, part, moment in PICK:
+        if part not in found or moment not in found[part]:
+            print("MISSING %s (%s %s)" % (name, part, moment)); continue
+        src = "%s/f%08d.png" % (PARTS[part], found[part][moment])
+        dst = os.path.join(E, name)
+        if not check:
+            shutil.copyfile(src, dst)
+        print("%s  %s = %s f%08d.png" % ("SAME" if filecmp.cmp(src, dst, shallow=False) else "DIFF", name, os.path.basename(PARTS[part]), found[part][moment]))
+    launch = S + "/rec/launch26/f00000089.png"
+    dst = os.path.join(E, "00-launch-both-players-choosing.png")
+    if not check:
+        shutil.copyfile(launch, dst)
+    print("%s  00-launch-both-players-choosing.png = launch26 f00000089.png (= launch-pre f00000089.png: %s)" % ("SAME" if filecmp.cmp(launch, dst, shallow=False) else "DIFF", filecmp.cmp(launch, S + "/rec/launch-pre/f00000089.png", shallow=False)))
+main()

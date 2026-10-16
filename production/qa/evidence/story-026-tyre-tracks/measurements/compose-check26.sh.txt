@@ -1,0 +1,10 @@
+#!/bin/sh
+# Rebuilds Story 026's three composed images with compose26.sh into a fresh folder and compares each with the retained one, byte for byte.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/903467d6-8576-4a19-ad15-5c4b7052d4e0/scratchpad
+E=/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire/production/qa/evidence/story-026-tyre-tracks
+T=$S/far26/check-$(date +%H%M%S)
+sh $S/rg26/compose26.sh $T > /dev/null
+for pair in "15-far-marks-slow-camera-chase-view-zoomed-3x.png set_15.png" "16-far-marks-faster-camera-chase-view-zoomed-3x.png set_16.png" "25-one-line-and-two-lines-from-above-zoomed-3x.png set_25.png"; do
+  set -- $pair
+  if cmp -s "$E/$1" "$T/$2"; then echo "SAME  $1 = rebuilt $2 (compose26.sh)"; else echo "DIFF  $1 vs rebuilt $2"; fi
+done

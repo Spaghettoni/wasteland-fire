@@ -2,6 +2,27 @@
 
 [ext_resource type="Script" path="res://src/gameplay/units/unit_stats.gd" id="1_us"]
 [ext_resource type="PackedScene" path="res://src/gameplay/units/models/truck_mesh_model.tscn" id="2_model"]
+[ext_resource type="Script" path="res://src/gameplay/units/tyre_contact.gd" id="3_tyre"]
+
+[sub_resource type="Resource" id="Resource_front_left"]
+script = ExtResource("3_tyre")
+offset = Vector2(-0.86, -1.28)
+width = 0.36
+
+[sub_resource type="Resource" id="Resource_front_right"]
+script = ExtResource("3_tyre")
+offset = Vector2(0.86, -1.28)
+width = 0.36
+
+[sub_resource type="Resource" id="Resource_rear_left"]
+script = ExtResource("3_tyre")
+offset = Vector2(-0.86, 1.3)
+width = 0.36
+
+[sub_resource type="Resource" id="Resource_rear_right"]
+script = ExtResource("3_tyre")
+offset = Vector2(0.86, 1.3)
+width = 0.36
 
 [resource]
 script = ExtResource("1_us")
@@ -39,3 +60,4 @@ mine_capacity = 5
 mine_drop_offset = Vector3(0, 0, 3.4)
 badly_damaged_fraction = 0.2
 badly_damaged_speed_share = 0.5
+tyres = Array[ExtResource("3_tyre")]([SubResource("Resource_front_left"), SubResource("Resource_front_right"), SubResource("Resource_rear_left"), SubResource("Resource_rear_right")])

@@ -1,0 +1,15 @@
+dev-recording:SAME  fresh-recording:SAME  00-launch-both-players-choosing.png = launch f00000089.png
+dev-recording:SAME  fresh-recording:SAME  01-motorbikes-figure-eight-on-the-sand-from-above.png = drive f00000644.png
+dev-recording:SAME  fresh-recording:SAME  02-motorbikes-figure-eight-on-the-sand-chase-view.png = drive f00000706.png
+dev-recording:SAME  fresh-recording:SAME  17-gyrocopter-and-motorbike-from-above.png = looks f00000164.png
+dev-recording:SAME  fresh-recording:SAME  18-gyrocopter-and-motorbike-chase-view.png = looks f00000226.png
+dev-recording:SAME  fresh-recording:SAME  19-wall-of-sand-across-a-track-chase-view.png = looks f00000656.png
+dev-recording:SAME  fresh-recording:SAME  20-fade-0s-chase-view.png = fade f00000226.png
+dev-recording:SAME  fresh-recording:SAME  23-after-r-clean-ground-from-above.png = looks f00001064.png
+dev-recording:SAME  fresh-recording:SAME  24-after-r-clean-ground-chase-view.png = looks f00001126.png
+--- every frame of each fresh recording against the dev's same-numbered frame:
+launch: frames compared 90, differing 0, missing in the dev's 0
+differs: drive f00000001.png
+drive: frames compared 710, differing 1, missing in the dev's 0
+looks: frames compared 1190, differing 0, missing in the dev's 0
+fade: frames compared 235, differing 0, missing in the dev's 0

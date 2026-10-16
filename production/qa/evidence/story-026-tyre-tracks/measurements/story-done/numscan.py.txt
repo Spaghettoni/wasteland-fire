@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+"""Numeric literals other than 0, 1, 2 (and their .0 forms) in gameplay code that are not on a const / @export declaration line.
+Scans the four new scripts whole and the lines the story ADDED to the modified files (git diff against HEAD). Prints what it finds."""
+import re, subprocess, sys
+
+ALLOWED = {0.0, 1.0, 2.0}
+NUM = re.compile(r"(?<![A-Za-z_0-9.])(\d+\.\d+|\d+|\.\d+)(?![A-Za-z_0-9])")
+STR = re.compile(r'"(?:[^"\\]|\\.)*"|&"(?:[^"\\]|\\.)*"')
+
+def code_part(line):
+    line = STR.sub('""', line)
+    if "#" in line:
+        line = line.split("#", 1)[0]
+    if "//" in line:
+        line = line.split("//", 1)[0]
+    return line
+
+def scan(label, lines):
+    found = []
+    for n, raw in lines:
+        s = raw.strip()
+        if not s or s.startswith(("#", "//", "/*", "*")):
+            continue
+        if re.match(r"(const|@export|@export_range|@export_group|shader_type|uniform|global uniform)\b", s):
+            continue
+        c = code_part(raw)
+        for m in NUM.finditer(c):
+            try:
+                v = float(m.group(1))
+            except ValueError:
+                continue
+            if v not in ALLOWED:
+                found.append((n, m.group(1), s[:120]))
+    print("%-62s %3d lines scanned, %d literal(s) other than 0/1/2" % (label, len(lines), len(found)))
+    for n, tok, s in found:
+        print("    %s:%d  %s   | %s" % (label, n, tok, s))
+    return len(found)
+
+total = 0
+for f in ["src/gameplay/maps/tyre_tracks.gd", "src/gameplay/maps/tyre_track_painter.gd", "src/gameplay/maps/tyre_track_settings.gd",
+          "src/gameplay/units/tyre_contact.gd", "src/gameplay/maps/canvas_env_tyre_track.gdshader"]:
+    lines = list(enumerate(open(f).read().split("\n"), 1))
+    total += scan(f, lines)
+for f in ["src/gameplay/units/unit_stats.gd", "src/gameplay/maps/map_field.gd", "src/gameplay/split_screen/split_screen.gd",
+          "src/gameplay/maps/spatial_env_ground.gdshader", "tools/evidence/split_screen_harness.gd"]:
+    diff = subprocess.run(["git", "diff", "-U0", "HEAD", "--", f], capture_output=True, text=True).stdout
+    added = []
+    n = 0
+    for line in diff.split("\n"):
+        m = re.match(r"@@ -\d+(?:,\d+)? \+(\d+)", line)
+        if m:
+            n = int(m.group(1)); continue
+        if line.startswith("+") and not line.startswith("+++"):
+            added.append((n, line[1:])); n += 1
+    total += scan(f + " (added lines)", added)
+print("TOTAL literals other than 0/1/2:", total)

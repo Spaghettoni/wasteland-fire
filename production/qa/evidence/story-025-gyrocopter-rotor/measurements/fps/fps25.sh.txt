@@ -1,0 +1,19 @@
+#!/bin/sh
+# usage: fps25.sh   Runs rotors_fps windowed on the repo (rotors on) and on a copy whose rotors_fps declares no ROTORS (the old model:
+# hovering at 2.5 m, nothing turning), three pairs one after the other (the display awake, nothing else running).
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+SP=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad
+mkdir -p $SP/fps25
+date +%H:%M:%S > $SP/fps25.progress
+AB=$SP/fps25/copy
+mkdir -p $AB
+rsync -a --delete --exclude '.git' --exclude 'assets/art/svaty_jur' --exclude 'production' --exclude 'docs' --exclude 'design' --exclude 'tests' ./ $AB/ > /dev/null 2>&1
+sed -i '' 's/^const ROTORS: bool = true$/const ROTORS: bool = false/' $AB/tools/evidence/split_screen/rotors_fps.gd
+grep -c "^const ROTORS: bool = false" $AB/tools/evidence/split_screen/rotors_fps.gd >> $SP/fps25.progress
+for n in 1 2 3; do
+  godot --path . --windowed --resolution 1280x720 res://tools/evidence/split_screen_harness.tscn -- --scenario=rotors_fps > $SP/fps25/with-$n.txt 2>&1
+  echo "with $n rc=$? $(date +%H:%M:%S)" >> $SP/fps25.progress
+  (cd $AB && godot --path . --windowed --resolution 1280x720 res://tools/evidence/split_screen_harness.tscn -- --scenario=rotors_fps > $SP/fps25/without-$n.txt 2>&1)
+  echo "without $n rc=$? $(date +%H:%M:%S)" >> $SP/fps25.progress
+done
+echo ALLDONE >> $SP/fps25.progress

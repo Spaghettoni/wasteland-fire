@@ -1,0 +1,50 @@
+extends SceneTree
+## Which attribute of the imported vertices differs between the rebuilt file and the frozen copy.
+
+func _initialize() -> void:
+	await process_frame
+	var shipped: PackedScene = load("res://assets/art/vehicles/wasteland_gyrocopter/wasteland_gyrocopter.glb") as PackedScene
+	var frozen: PackedScene = load("res://tools/evidence/frozen/wasteland_gyrocopter_story_024.glb") as PackedScene
+	var a: Dictionary = _read(shipped)
+	var b: Dictionary = _read(frozen)
+	for attribute: String in ["pos", "normal", "colour", "pos+normal", "pos+colour", "normal+colour"]:
+		var sa: Dictionary = a[attribute]
+		var sb: Dictionary = b[attribute]
+		var only_a: int = 0
+		var only_b: int = 0
+		for k: String in sa:
+			only_a += 0 if sb.has(k) else 1
+		for k: String in sb:
+			only_b += 0 if sa.has(k) else 1
+		print("%-14s distinct %d vs %d, only in rebuilt %d, only in frozen %d" % [attribute, sa.size(), sb.size(), only_a, only_b])
+	var accent_a: Mesh = MeshFile.meshes_of(shipped)[&"Accent"]
+	var accent_b: Mesh = MeshFile.meshes_of(frozen)[&"Accent"]
+	var aa: Array = accent_a.surface_get_arrays(0)
+	var ab: Array = accent_b.surface_get_arrays(0)
+	print("Accent vertices %d vs %d; colour array type %s vs %s; first colours %s vs %s" % [(aa[Mesh.ARRAY_VERTEX] as PackedVector3Array).size(), (ab[Mesh.ARRAY_VERTEX] as PackedVector3Array).size(), typeof(aa[Mesh.ARRAY_COLOR]), typeof(ab[Mesh.ARRAY_COLOR]), (aa[Mesh.ARRAY_COLOR] as PackedColorArray).slice(0, 3), (ab[Mesh.ARRAY_COLOR] as PackedColorArray).slice(0, 3)])
+	print("first normals %s vs %s" % [(aa[Mesh.ARRAY_NORMAL] as PackedVector3Array).slice(0, 3), (ab[Mesh.ARRAY_NORMAL] as PackedVector3Array).slice(0, 3)])
+	print("first positions %s vs %s" % [(aa[Mesh.ARRAY_VERTEX] as PackedVector3Array).slice(0, 3), (ab[Mesh.ARRAY_VERTEX] as PackedVector3Array).slice(0, 3)])
+	quit()
+
+
+func _read(file: PackedScene) -> Dictionary:
+	var out: Dictionary = {"pos": {}, "normal": {}, "colour": {}, "pos+normal": {}, "pos+colour": {}, "normal+colour": {}}
+	var meshes: Dictionary = MeshFile.meshes_of(file)
+	for mesh_name: StringName in meshes:
+		var mesh: Mesh = meshes[mesh_name]
+		for surface: int in mesh.get_surface_count():
+			var arrays: Array = mesh.surface_get_arrays(surface)
+			var p: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+			var n: PackedVector3Array = arrays[Mesh.ARRAY_NORMAL]
+			var c: PackedColorArray = arrays[Mesh.ARRAY_COLOR]
+			for i: int in p.size():
+				var kp: String = PackedVector3Array([p[i]]).to_byte_array().hex_encode()
+				var kn: String = PackedVector3Array([n[i]]).to_byte_array().hex_encode()
+				var kc: String = PackedColorArray([c[i]]).to_byte_array().hex_encode()
+				out["pos"][kp] = 1
+				out["normal"][kn] = 1
+				out["colour"][kc] = 1
+				out["pos+normal"][kp + kn] = 1
+				out["pos+colour"][kp + kc] = 1
+				out["normal+colour"][kn + kc] = 1
+	return out

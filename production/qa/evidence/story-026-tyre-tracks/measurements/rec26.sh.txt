@@ -1,0 +1,9 @@
+#!/bin/sh
+# usage: rec26.sh TAG SCENARIO [VAR=value ...]   A windowed Movie Maker recording of one scenario into rec/TAG/, progress in rec/TAG.progress
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/903467d6-8576-4a19-ad15-5c4b7052d4e0/scratchpad
+TAG="$1"; SC="$2"; shift 2
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+mkdir -p $S/rec/$TAG
+date +%H:%M:%S > $S/rec/$TAG.progress
+env "$@" godot --path . --windowed --resolution 1280x720 --write-movie $S/rec/$TAG/f.png res://tools/evidence/split_screen_harness.tscn -- --scenario=$SC > $S/rec/$TAG.out 2>&1
+echo "rc=$? $(date +%H:%M:%S) DONE" >> $S/rec/$TAG.progress

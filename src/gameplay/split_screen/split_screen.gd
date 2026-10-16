@@ -180,6 +180,14 @@ extends Control
 ## the exports were resolved). A Round that starts again needs no handler for them: a zone keeps
 ## only its last tick's list and the Weapons refill themselves at every spawn.
 ## (production/epics/wasteland-fire/story-024-ammunition-buildings.md AC-2, AC-4)
+##
+## Tyre tracks (Story 026). A Map that has a TyreTracks node lists it in the field's tyre_tracks
+## (MapField). Before the Round begins this scene hands it both Units, in Player order, and it
+## connects round_started to the node's clear() after begin(), so every restart starts on clean
+## ground and the first Round starts on the clean ground the node begins with. Both come from that
+## export and not from a search of the tree or a singleton; a Map with none hands nothing, and the
+## evidence runner takes the node away for every scenario written before it.
+## (production/epics/wasteland-fire/story-026-tyre-tracks.md AC-3, AC-7)
 
 ## The node group every Shot in flight belongs to; _free_shots() frees it at every Round start.
 const SHOT_GROUP: StringName = &"shots"
@@ -248,6 +256,7 @@ func _ready() -> void:
 	_arm_turrets(units, bases)
 	_hand_bases_to_mine_layers(bases)
 	_hand_supply_zones()
+	_hand_tyre_tracks(units)
 	_warm_up_models()
 	_warm_up_explosion()
 	match_controller.begin(units, bases, cameras, field.token_stock)
@@ -255,6 +264,8 @@ func _ready() -> void:
 	match_controller.round_started.connect(_restock_fuel_cans)
 	match_controller.round_started.connect(_restore_structures)
 	match_controller.round_started.connect(_free_mines)
+	if field.tyre_tracks != null:
+		match_controller.round_started.connect(field.tyre_tracks.clear)
 	if explosion_scene != null:
 		match_controller.unit_destroyed.connect(_explode)
 		match_controller.round_started.connect(_free_explosions)
@@ -329,6 +340,13 @@ func _hand_supply_zones() -> void:
 			zone.weapons = weapons
 	for layer: MineLayer in [player_1_mine_layer, player_2_mine_layer]:
 		layer.supply_zones = field.supply_zones
+
+
+## Hands the Map's tyre tracks both Units, in Player order, before the Round begins (Story 026 AC-7):
+## from the field's own export, so a Map with none hands nothing.
+func _hand_tyre_tracks(units: Array[Unit]) -> void:
+	if field.tyre_tracks != null:
+		field.tyre_tracks.units = units.duplicate()
 
 
 ## Instances each of the match's Unit types' model scenes once and frees it at once, before the

@@ -1,0 +1,96 @@
+extends Node3D
+## Probe 2 of story 026: clear semantics, the frame lag of a drawn stroke, and what an update of a 4096 x 1284 half-float target costs.
+const SIZE: Vector2i = Vector2i(4096, 1284)
+class Painter extends Node2D:
+	var pending: Array = []
+	func _ready() -> void:
+		var m := ShaderMaterial.new()
+		m.shader = load("res://paint.gdshader")
+		material = m
+	func _draw() -> void:
+		for s in pending:
+			var a: Vector2 = s[0]; var b: Vector2 = s[1]; var w: float = s[2]; var t: float = s[3]
+			var n: Vector2 = (b - a).orthogonal().normalized() * w * 0.5
+			draw_primitive(PackedVector2Array([a - n, a + n, b + n, b - n]), PackedColorArray([Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE]), PackedVector2Array([Vector2(-1, t), Vector2(1, t), Vector2(1, t), Vector2(-1, t)]))
+		pending = []
+var vp: SubViewport
+var painter: Painter
+
+func _px(img: Image, x: int, y: int) -> String:
+	var c: Color = img.get_pixel(x, y)
+	return "(%.3f, %.3f)" % [c.r, c.g]
+
+func _ready() -> void:
+	vp = SubViewport.new()
+	vp.size = SIZE
+	vp.disable_3d = true
+	vp.transparent_bg = true
+	vp.use_hdr_2d = true
+	vp.render_target_clear_mode = SubViewport.CLEAR_MODE_ONCE
+	vp.render_target_update_mode = SubViewport.UPDATE_ONCE
+	add_child(vp)
+	painter = Painter.new()
+	vp.add_child(painter)
+	var cam := Camera3D.new()
+	add_child(cam)
+	_run()
+
+func _run() -> void:
+	await get_tree().process_frame
+	await get_tree().process_frame
+	# P2a: clear semantics
+	painter.pending = [[Vector2(100, 100), Vector2(300, 100), 6.0, 50.0]]
+	painter.queue_redraw()
+	vp.render_target_update_mode = SubViewport.UPDATE_ONCE
+	for i in 3:
+		await get_tree().process_frame
+	print("P2a stroke drawn: ", _px(vp.get_texture().get_image(), 200, 100))
+	# a pure update with nothing pending must keep it
+	vp.render_target_update_mode = SubViewport.UPDATE_ONCE
+	painter.queue_redraw()
+	for i in 3:
+		await get_tree().process_frame
+	print("P2a after an update with no strokes: ", _px(vp.get_texture().get_image(), 200, 100))
+	# the clear
+	vp.render_target_clear_mode = SubViewport.CLEAR_MODE_ONCE
+	vp.render_target_update_mode = SubViewport.UPDATE_ONCE
+	for i in 3:
+		await get_tree().process_frame
+	print("P2a after CLEAR_MODE_ONCE + UPDATE_ONCE: ", _px(vp.get_texture().get_image(), 200, 100), " clear mode now ", vp.render_target_clear_mode)
+	painter.pending = [[Vector2(100, 100), Vector2(300, 100), 6.0, 60.0]]
+	painter.queue_redraw()
+	vp.render_target_update_mode = SubViewport.UPDATE_ONCE
+	for i in 3:
+		await get_tree().process_frame
+	print("P2a stroke after the clear: ", _px(vp.get_texture().get_image(), 200, 100))
+	# P2b: how many frames from a physics-tick request to a readable result
+	painter.pending = [[Vector2(100, 400), Vector2(300, 400), 6.0, 70.0]]
+	painter.queue_redraw()
+	vp.render_target_update_mode = SubViewport.UPDATE_ONCE
+	for i in 4:
+		await RenderingServer.frame_post_draw
+		print("P2b frame +", i, " post_draw: ", _px(vp.get_texture().get_image(), 200, 400))
+	# P2c: cost
+	var rid: RID = vp.get_viewport_rid()
+	RenderingServer.viewport_set_measure_render_time(rid, true)
+	for mode in ["idle", "update_every_frame_8_strokes", "idle2", "update_every_other_frame"]:
+		var cpu: float = 0.0
+		var gpu: float = 0.0
+		var n: int = 0
+		var started: int = Time.get_ticks_usec()
+		for i in 240:
+			if mode == "update_every_frame_8_strokes" or (mode == "update_every_other_frame" and i % 2 == 0):
+				var list: Array = []
+				for k in 8:
+					list.append([Vector2(100 + i, 600 + k * 10), Vector2(103 + i, 600 + k * 10), 5.0, 80.0 + i])
+				painter.pending = list
+				painter.queue_redraw()
+				vp.render_target_update_mode = SubViewport.UPDATE_ONCE
+			await RenderingServer.frame_post_draw
+			if i >= 40:
+				cpu += RenderingServer.viewport_get_measured_render_time_cpu(rid)
+				gpu += RenderingServer.viewport_get_measured_render_time_gpu(rid)
+				n += 1
+		var elapsed: float = float(Time.get_ticks_usec() - started) / 1000.0
+		print("P2c %s: subviewport cpu %.3f ms gpu %.3f ms per frame (mean of %d), %.2f ms a frame over the run" % [mode, cpu / n, gpu / n, n, elapsed / 240.0])
+	get_tree().quit()

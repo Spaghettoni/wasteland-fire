@@ -1,0 +1,6 @@
+#!/bin/sh
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+SP=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/d1c9331f-af1b-4190-8906-efd99a380790/scratchpad
+date +%H:%M:%S > $SP/rg25/probes25.progress
+python3 -I $SP/rg25/probes25.py rotors_on file_kept settings_kept frozen_scene_left > $SP/rg25/probes25.out 2>&1
+echo "rc=$? $(date +%H:%M:%S) ALLDONE" >> $SP/rg25/probes25.progress

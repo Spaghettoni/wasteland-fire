@@ -1,0 +1,9 @@
+extends SceneTree
+func _initialize() -> void:
+	ProjectSettings.set_setting("shader_globals/tyre_track_map", {"type": "sampler2D", "value": ""})
+	ProjectSettings.set_setting("shader_globals/tyre_track_area", {"type": "vec4", "value": Quaternion(0, 0, 1, 1)})
+	ProjectSettings.set_setting("shader_globals/tyre_track_look", {"type": "vec4", "value": Vector4(0, 0, 0, 0)})
+	ProjectSettings.set_setting("shader_globals/tyre_track_float", {"type": "float", "value": 0.0})
+	var err: int = ProjectSettings.save_custom("res://saved.godot")
+	print("save_custom=", err)
+	quit()

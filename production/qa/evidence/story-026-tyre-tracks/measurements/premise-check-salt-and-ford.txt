@@ -1,0 +1,13 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+SPLIT tyre_tracks_showcase t=0.083 frame=0 moment=garage_spawn both Players chose a Motorbike with their own keys
+SPLIT tyre_tracks_showcase t=9.800 map moment=salt_circle player=1 covered=3276 most=1.0000 first_stamp=0.13 last_stamp=4.70 own_last_stroke=4.70 clock=9.17 used_rect=[P: (1652, 369), S: (820, 403)] format=15 size=(4096, 1284)
+SPLIT tyre_tracks_showcase t=9.800 map moment=salt_circle player=2 covered=3688 most=1.0000 first_stamp=0.97 last_stamp=8.66 own_last_stroke=8.67 clock=9.17 used_rect=[P: (1652, 369), S: (820, 403)] format=15 size=(4096, 1284)
+SPLIT tyre_tracks_showcase t=9.800 frame=1156 moment=salt_circle_above a Buggy (Player 1, two lines) and a Truck (Player 2, two lines) have driven a circle and on, on the salt flat | strokes this tick 0, clock 9.17 s, views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT tyre_tracks_showcase t=10.833 frame=1273 moment=salt_circle_chase a Buggy (Player 1, two lines) and a Truck (Player 2, two lines) have driven a circle and on, on the salt flat | strokes this tick 0, clock 10.20 s, views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT tyre_tracks_showcase t=25.250 map moment=ford_crossing player=1 covered=687 most=1.0000 first_stamp=2.37 last_stamp=8.13 own_last_stroke=8.17 clock=13.38 used_rect=[P: (1174, 799), S: (1756, 50)] format=15 size=(4096, 1284)
+SPLIT tyre_tracks_showcase t=25.250 map moment=ford_crossing player=2 covered=2022 most=1.0000 first_stamp=4.63 last_stamp=12.90 own_last_stroke=12.90 clock=13.38 used_rect=[P: (1174, 799), S: (1756, 50)] format=15 size=(4096, 1284)
+SPLIT tyre_tracks_showcase t=25.250 frame=3000 moment=ford_crossing_above both Units drove through a ford and turned round to face it: tracks on the near bank, none in the water, tracks again on the far bank | strokes this tick 0, clock 13.38 s, views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT tyre_tracks_showcase t=26.283 frame=3112 moment=ford_crossing_chase both Units drove through a ford and turned round to face it: tracks on the near bank, none in the water, tracks again on the far bank | strokes this tick 0, clock 14.42 s, views=chase_camera_settings.tres, chase_camera_settings.tres
+RESULT tyre_tracks_showcase ok checks=0 failed=0 t=27.317 moments=5
