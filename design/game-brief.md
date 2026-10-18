@@ -48,7 +48,7 @@ the author's comments after stories 012 to 014 (archived under design/source/).
 - No Unit swap at the own Base in the First Playable: a Unit type changes only through a destruction. After the first playtest the swap is back (decided 2026-10-03): a story after the playtest fixes (`design/rules.md`, Destruction and respawn).
 - No camera or control-mode test in v0.1: the turning chase camera and the vehicle-relative keys of items 1 and 2 stay; the test, and the arrow or north-up minimap it may call for, come after v0.1.
 - No water boost and no key repair: the source's backlog, not v0.1.
-- Keyboard only: no gamepad support, no key-rebinding UI.
+- No key-rebinding UI yet. Gamepads are no longer excluded (decided 2026-10-18, Martin's request): each Player can play with an Xbox controller beside their keyboard layout (story 032); four Players in two teams, a join screen and rebinding are planned as stories 033 to 035 (until then: "Keyboard only: no gamepad support, no key-rebinding UI").
 - No music or sound, no menus beyond the Round-over screen, no save or settings, no export or Steam work: run from the editor or a local build.
 - Nothing from Return Fire that the rules dropped: no flag hunt in towers, no repair economy, no radar. Ammo is no longer excluded (the comments; decided 2026-10-10, the developer confirming the scope change): every Unit's gun carries a load of ammo that refills only at an ammunition building, while a Truck's Mines still come only with a new Truck and the Turrets never run out (until then: "no ammo or repair economy (Shots are unlimited, and a Truck's Mines come only with a new Truck)").
 

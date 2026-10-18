@@ -94,3 +94,11 @@ The developer asked on 2026-10-15 whether the game uses shaders and whether they
 | 029 | Fire and smoke drawn by shaders: a ragged, white-hot fireball that darkens to soot, and smoke that breaks up from its edges with a lit and a shaded side | Visual/Feel | Ready | N/A (minimal) |
 | 030 | Hits and shots: a white flash on whatever a Shot damages, Units that char as they lose hit points, glowing tracers, muzzle flashes, and sparks or dust where a Shot ends | Visual/Feel | Ready | N/A (minimal) |
 | 031 | The air: sand drifting along the wind, heat haze in the distance, a dusty sky, and a red pulse at the edges of the view whose Unit is hit | Visual/Feel | Ready | N/A (minimal) |
+
+## After Martin's request of 2026-10-18: controllers, then four Players
+
+Martin asked on 2026-10-18 to play with the Xbox controllers paired with his PC, and later to play two against two on four views, with a menu to pick which Player has which controller and, later still, rebinding of every pad and keyboard. He was offered four steps and chose to start with the controllers (decided 2026-10-18). Story 032 is written; stories 033 (two teams of two on four views), 034 (a join screen: each Player takes a slot with a pad or a key and picks a team) and 035 (rebinding, saved between runs) are planned and written later, 033 once Martin answers how the teams share the Bases, the Tokens and the Flags and whether teammates can hurt each other. Story 032 touches only the input and the hints, so it can be built beside the visual stories 027 to 031; story 033 rewrites `split_screen.gd` and the HUD and should not be built beside them.
+
+| # | Story | Type | Status | ADR |
+|---|-------|------|--------|-----|
+| 032 | Xbox controllers: the first two connected pads belong to Player 1 and Player 2 beside their keyboard layouts; analog triggers and stick, A fire, X Mine, Y camera, View Self-destruct, Menu restart; pads that come and go mid-Round; the hints name the pad's buttons | Integration | Ready | N/A (minimal) |
