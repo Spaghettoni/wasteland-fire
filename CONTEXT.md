@@ -20,6 +20,10 @@ _Avoid_: full game, v2, release, final, backlog
 One of the two humans in a Round. Each owns a Base, defends one Flag, holds a stock of Tokens and has a Team colour.
 _Avoid_: user, team, squad
 
+**Input source**:
+What a Player plays with: their keyboard layout, always, and their pad when one is assigned to them (story 032: the first connected pad is Player 1's, the second Player 2's). The pad's inputs are added to the same actions as the keys, on that pad's device alone.
+_Avoid_: controller (for the whole source), device
+
 **Base (základňa)**:
 A Player's home on the Map: Base A for Player 1 and Base B for Player 2 on Map 01. It holds that Player's Flag at the start of a Round, has the Garage where the Player's Units appear, and is where the opponent's Flag must be delivered to win. Its Player's two Turrets stand outside its Gate and four Flag Walls box in its Flag (decided 2026-10-07). Its walls, the back wall, the two side walls and the two Gate walls, and its Garage's walls become Wall Panels (the comments; decided 2026-10-10; stories 018 and 019 build them) of its Player (reading, 2026-10-10): the other Player can break them with any Unit but the Motorbike, and the Gyrocopter flies over them. Its corner towers are Tall pieces and stand all Round (decided 2026-10-10).
 _Avoid_: bunker, HQ, spawn point, camp

@@ -4,7 +4,8 @@ extends Label
 ## Player's Unit touches the other Player's Flag and only the other Base's Turrets keep it from
 ## taking it, and, for about a second and a half, the reason a Mine was not laid ("No Mines left",
 ## "No Mines in or near a Base", "No Mines at a supply building", "No room for a Mine here") and,
-## since Story 022, the words "Out of ammo" when its Player's gun fires its last Shot or is pressed
+## since Story 032, "Controller connected" or "Controller disconnected" when this Player's pad comes
+## or goes, and, since Story 022, the words "Out of ammo" when its Player's gun fires its last Shot or is pressed
 ## while empty. Nothing otherwise. It is a plain one-line notice.
 ##
 ## Implements: production/epics/wasteland-fire/story-013-turrets.md AC-5 (the line shows in the view
@@ -100,7 +101,20 @@ extends Label
 ## while weapon is assigned, with no default. It names no key.
 @export var out_of_ammo_text: String = ""
 
-## Seconds a refusal or an "Out of ammo" stays (about 1.5 in player_notice.tscn). Required, above
+## The PadAssignment whose pads this line announces (Story 032): "Controller connected" and
+## "Controller disconnected" for this Player's pad, for refusal_seconds, the refusal's way. Optional:
+## a scene with none says nothing of pads, and then the two texts below are not read.
+@export var pad_assignment: PadAssignment
+
+## The notice when this Player's pad connects, "Controller connected" in player_notice.tscn. Looked
+## up with tr(). Required while pad_assignment is assigned, with no default.
+@export var pad_connected_text: String = ""
+
+## The notice when this Player's pad disconnects, "Controller disconnected" in player_notice.tscn.
+## Looked up with tr(). Required while pad_assignment is assigned, with no default.
+@export var pad_disconnected_text: String = ""
+
+## Seconds a refusal, an "Out of ammo" or a pad notice stays (about 1.5 in player_notice.tscn). Required, above
 ## zero, while mine_layer or weapon is assigned.
 @export_range(0.0, 10.0, 0.1, "or_greater", "suffix:s") var refusal_seconds: float = 0.0
 
@@ -122,6 +136,9 @@ func _ready() -> void:
 		mine_layer.lay_refused.connect(_on_lay_refused)
 	if weapon != null:
 		weapon.out_of_ammo.connect(_on_out_of_ammo)
+	if pad_assignment != null:
+		pad_assignment.pad_connected.connect(_on_pad_connected)
+		pad_assignment.pad_disconnected.connect(_on_pad_disconnected)
 	set_process(true)
 	_refresh()
 
@@ -157,7 +174,9 @@ func _first_problem() -> String:
 			return "a refusal text is not set (store the four texts in the scene)"
 	if weapon != null and out_of_ammo_text.is_empty():
 		return "out_of_ammo_text is not set (store the notice in the scene)"
-	if (mine_layer != null or weapon != null) and refusal_seconds <= 0.0:
+	if pad_assignment != null and (pad_connected_text.is_empty() or pad_disconnected_text.is_empty()):
+		return "a pad text is not set (store pad_connected_text and pad_disconnected_text in the scene)"
+	if (mine_layer != null or weapon != null or pad_assignment != null) and refusal_seconds <= 0.0:
 		return "refusal_seconds is not above zero (store the time in the scene)"
 	return ""
 
@@ -185,6 +204,27 @@ func _on_lay_refused(reason: MineLayer.Refusal) -> void:
 ## shows, for refusal_seconds (the lay refusal's way).
 func _on_out_of_ammo() -> void:
 	text = tr(out_of_ammo_text)
+	_refusal_left = refusal_seconds
+	visible = true
+
+
+## This Player's pad connected (Story 032): say so for refusal_seconds, the refusal's way. Another
+## Player's pad is not ours.
+func _on_pad_connected(pad_player_index: int) -> void:
+	if pad_player_index == player_index:
+		_show_for_a_while(pad_connected_text)
+
+
+## This Player's pad disconnected (Story 032): say so for refusal_seconds. Another Player's pad is
+## not ours.
+func _on_pad_disconnected(pad_player_index: int) -> void:
+	if pad_player_index == player_index:
+		_show_for_a_while(pad_disconnected_text)
+
+
+## Shows the text in place of whatever the line shows, for refusal_seconds.
+func _show_for_a_while(shown_text: String) -> void:
+	text = tr(shown_text)
 	_refusal_left = refusal_seconds
 	visible = true
 

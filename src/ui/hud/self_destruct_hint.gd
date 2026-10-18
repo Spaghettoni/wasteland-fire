@@ -62,7 +62,9 @@ extends Label
 ## physical key of the first key event of the action action_prefix + self_destruct (the action
 ## PlayerMatchInput reads), named by InputEventKey.as_text_physical_keycode() with the key's side in
 ## front when it has one (as_text_location()); "Tab" for Player 1 and "Enter" for Player 2 in
-## project.godot. An action bound to no key names nothing. The keyboard is the only input so far.
+## project.godot. An action bound to no key names nothing. Since Story 032 a Player who has a pad
+## is shown the pad's button instead ("View" in pad_layout.tres), read from the PadAssignment when
+## the scene gives one: the hint polls while shown, so a pad that comes or goes is named at once.
 ##
 ## Look, stored in self_destruct_hint.tscn: a dark translucent panel with rounded corners in the
 ## lower part of the view, at x 40, 560 px wide like the Unit choice panel (the two never show
@@ -103,6 +105,11 @@ const _SUFFIX_SELF_DESTRUCT: String = "self_destruct"
 ## "Out of Fuel! Press %s to swap your Unit" in self_destruct_hint.tscn. Looked up with tr(). Required,
 ## with no default, for the reason format gives.
 @export var swap_format: String = ""
+
+## The PadAssignment that says whether this Player has a pad (Story 032). Optional: with one, a
+## Player who has a pad is shown the pad's button names (from the pad layout) instead of the keys;
+## with none, or for a Player without a pad, the keys are named as before.
+@export var pad_assignment: PadAssignment
 
 ## The Self-destruct action whose key the hint names, action_prefix + self_destruct; set in
 ## _ready().
@@ -168,7 +175,12 @@ func _first_problem() -> String:
 ## The name of the key the Input Map binds to the Self-destruct action, from the physical key of the
 ## action's first key event: its engine name (as_text_physical_keycode()) with the key's side in
 ## front when it has one (as_text_location()); an empty string when the action has no key event.
+## For a Player with a pad (Story 032), the pad button's name from the layout instead.
 func _key_name() -> String:
+	if pad_assignment != null:
+		var button: String = pad_assignment.button_name(player_index, _SUFFIX_SELF_DESTRUCT)
+		if not button.is_empty():
+			return tr(button)
 	for event: InputEvent in InputMap.action_get_events(_action):
 		var key_event: InputEventKey = event as InputEventKey
 		if key_event != null:

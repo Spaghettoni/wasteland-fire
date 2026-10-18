@@ -36,3 +36,5 @@ near_supply_text = "No Mines at a supply building"
 no_room_text = "No room for a Mine here"
 out_of_ammo_text = "Out of ammo"
 refusal_seconds = 1.5
+pad_connected_text = "Controller connected"
+pad_disconnected_text = "Controller disconnected"

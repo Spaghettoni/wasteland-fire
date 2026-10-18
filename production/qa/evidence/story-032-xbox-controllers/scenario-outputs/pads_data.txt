@@ -1,0 +1,14 @@
+
+CHECK pads_data D1_shipped_layout PASS { &"throttle": ["RT"], &"reverse": ["LT"], &"steer_left": ["Stick left", "D-pad left"], &"steer_right": ["Stick right", "D-pad right"], &"fire": ["A"], &"lay_mine": ["X"], &"camera": ["Y"], &"self_destruct": ["View"], &"round_restart": ["Menu"] }; dead zone 0.20; unbound ["debug_damage"]
+CHECK pads_data D2_refusals PASS missing lay_mine -> 'no binding covers the action 'p1_lay_mine' (bind it, or name 'lay_mine' in unbound_suffixes)' | A twice -> ''A' is bound to both 'fire' and 'lay_mine'' | no dead zone -> 'deadzone 0.0 is not between 0 and 1' | no name -> 'the binding of 'throttle' has no display_name' | unknown action -> 'the binding of 'jump' names the action 'p1_jump', which the Input Map lacks'
+ERROR: PadAssignment '@Node@10': the pad layout for p1_: 'A' is bound to both 'fire' and 'lay_mine', so no pad is used and the keyboard works as before.
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://src/gameplay/input/pad_assignment.gd:72)
+       [1] _check_refused_assignment (res://tools/evidence/split_screen/pads_data.gd:145)
+       [2] run (res://tools/evidence/split_screen/pads_data.gd:47)
+       [3] _run (res://tools/evidence/split_screen_harness.gd:833)
+       [4] confirm_choices (res://tools/evidence/split_screen_harness.gd:1599)
+CHECK pads_data D3_refused_assignment PASS errors 1 (PadAssignment '@Node@10': the pad layout for p1_: 'A' is bound to both 'fire' and 'lay_mine', so no pad is used and the keyboard works as before.); connect -> -1; pad events 0; keyboard events 132 -> 132
+CHECK pads_data D4_no_number_in_code PASS read pad_assignment.gd, pad_binding.gd, pad_layout.gd; integer literals other than 0 and 1 outside strings and the export ranges: 0
+RESULT pads_data ok checks=4 failed=0 t=0.017 bindings=11

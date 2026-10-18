@@ -1,7 +1,7 @@
 # Story 032: Xbox controllers: each Player can drive, fire, lay Mines and choose with a pad, the keyboard still works
 
 > **Epic**: Wasteland Fire — First Playable
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Core
 > **Type**: Integration
 > **Estimate**: M (about a day at `coarse`: the gameplay input nodes already read actions, not keys)
@@ -84,7 +84,7 @@ Today every gameplay input node reads Input Map actions under its Player's prefi
 **Required evidence**:
 - Integration: a documented playtest (`production/qa/evidence/story-032-xbox-controllers-evidence.md`) with the headless `pads` and `pads_data` outputs, the regression of the older outputs, the seeded defects, frames of the pad hints in both views and of the Round-over screen, and Martin's human checks of AC-9 on the real pads at `/story-done`.
 
-**Status**: [ ] Not yet created
+**Status**: [x] Created 2026-10-18: `production/qa/evidence/story-032-xbox-controllers-evidence.md`, with `scenario-outputs/` (`pads`, `pads_data`, each run twice byte-identical) and six frames in `production/qa/evidence/story-032-xbox-controllers/` (each opened and read); the human checks on the real pads (AC-9), the two questions and the sign-off are for `/story-done`
 
 ---
 

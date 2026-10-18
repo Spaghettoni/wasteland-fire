@@ -1,0 +1,85 @@
+[gd_resource type="Resource" script_class="PadLayout" load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/input/pad_layout.gd" id="1_layout"]
+[ext_resource type="Script" path="res://src/gameplay/input/pad_binding.gd" id="2_binding"]
+
+[sub_resource type="Resource" id="PadBinding_00"]
+script = ExtResource("2_binding")
+action_suffix = &"throttle"
+kind = 1
+axis = 5
+axis_direction = 1
+display_name = "RT"
+
+[sub_resource type="Resource" id="PadBinding_01"]
+script = ExtResource("2_binding")
+action_suffix = &"reverse"
+kind = 1
+axis = 4
+axis_direction = 1
+display_name = "LT"
+
+[sub_resource type="Resource" id="PadBinding_02"]
+script = ExtResource("2_binding")
+action_suffix = &"steer_left"
+kind = 1
+axis = 0
+axis_direction = -1
+display_name = "Stick left"
+
+[sub_resource type="Resource" id="PadBinding_03"]
+script = ExtResource("2_binding")
+action_suffix = &"steer_left"
+button = 13
+display_name = "D-pad left"
+
+[sub_resource type="Resource" id="PadBinding_04"]
+script = ExtResource("2_binding")
+action_suffix = &"steer_right"
+kind = 1
+axis = 0
+axis_direction = 1
+display_name = "Stick right"
+
+[sub_resource type="Resource" id="PadBinding_05"]
+script = ExtResource("2_binding")
+action_suffix = &"steer_right"
+button = 14
+display_name = "D-pad right"
+
+[sub_resource type="Resource" id="PadBinding_06"]
+script = ExtResource("2_binding")
+action_suffix = &"fire"
+button = 0
+display_name = "A"
+
+[sub_resource type="Resource" id="PadBinding_07"]
+script = ExtResource("2_binding")
+action_suffix = &"lay_mine"
+button = 2
+display_name = "X"
+
+[sub_resource type="Resource" id="PadBinding_08"]
+script = ExtResource("2_binding")
+action_suffix = &"camera"
+button = 3
+display_name = "Y"
+
+[sub_resource type="Resource" id="PadBinding_09"]
+script = ExtResource("2_binding")
+action_suffix = &"self_destruct"
+button = 4
+display_name = "View"
+
+[sub_resource type="Resource" id="PadBinding_10"]
+script = ExtResource("2_binding")
+action_suffix = &"round_restart"
+shared = true
+button = 6
+display_name = "Menu"
+
+[resource]
+script = ExtResource("1_layout")
+bindings = Array[ExtResource("2_binding")]([SubResource("PadBinding_00"), SubResource("PadBinding_01"), SubResource("PadBinding_02"), SubResource("PadBinding_03"), SubResource("PadBinding_04"), SubResource("PadBinding_05"), SubResource("PadBinding_06"), SubResource("PadBinding_07"), SubResource("PadBinding_08"), SubResource("PadBinding_09"), SubResource("PadBinding_10")])
+deadzone = 0.2
+unbound_suffixes = PackedStringArray("debug_damage")

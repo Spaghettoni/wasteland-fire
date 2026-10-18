@@ -25,6 +25,7 @@ extends Node
 ## (windowed); since Story 021, crash and crash_showcase (windowed); since Story 022, ammo, ammo_alone and
 ## ammo_showcase (windowed); since Story 023, fuel_building, fuel_building_showcase and fuel_building_fps
 ## (windowed); since Story 024, ammo_buildings, ammo_buildings_showcase and ammo_buildings_fps
+## (windowed); since Story 032, pads, pads_data and pads_showcase
 ## (windowed). Each is a script under tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
@@ -407,6 +408,9 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"tyre_tracks": preload("res://tools/evidence/split_screen/tyre_tracks.gd"),
 	&"tyre_tracks_showcase": preload("res://tools/evidence/split_screen/tyre_tracks_showcase.gd"),
 	&"tyre_tracks_fps": preload("res://tools/evidence/split_screen/tyre_tracks_fps.gd"),
+	&"pads": preload("res://tools/evidence/split_screen/pads.gd"),
+	&"pads_data": preload("res://tools/evidence/split_screen/pads_data.gd"),
+	&"pads_showcase": preload("res://tools/evidence/split_screen/pads_showcase.gd"),
 }
 
 ## The shared step class (drive_step.gd): keys held for a time.

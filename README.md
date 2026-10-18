@@ -12,7 +12,13 @@ friends at home.
 
 ## How it plays
 
-- Two Players share one keyboard and one screen, split side by side.
+- Two Players share one keyboard and one screen, split side by side. Each
+  Player can also play with an Xbox controller (story 032): the first pad
+  connected is Player 1's, the second Player 2's, and the keyboard keeps
+  working beside it. Right trigger throttle, left trigger reverse, left stick
+  (or the D-pad) steer and move the Unit choice, A fire and confirm, X lay a
+  Mine, Y switch the camera, View Self-destruct, Menu restart the Round. A pad
+  can be plugged in or out during a Round; the Player's view says so.
 - Each Player spawns Units from the Garage at their Base, paying one Token of
   that type per spawn. The Map sets the Token stock.
 - Four Units. The Motorbike is fast, weak and the only one that can carry a

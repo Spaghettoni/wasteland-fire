@@ -36,6 +36,8 @@
 [ext_resource type="PackedScene" path="res://src/ui/hud/mine_count.tscn" id="34_mcount"]
 [ext_resource type="PackedScene" path="res://src/gameplay/effects/explosion.tscn" id="35_explosion"]
 [ext_resource type="PackedScene" path="res://src/ui/hud/ammo_count.tscn" id="36_acount"]
+[ext_resource type="Script" path="res://src/gameplay/input/pad_assignment.gd" id="37_pads"]
+[ext_resource type="Resource" path="res://src/gameplay/input/data/pad_layout.tres" id="38_padlayout"]
 
 [node name="SplitScreen" type="Control" unique_id=9000001 node_paths=PackedStringArray("field", "player_1_unit", "player_2_unit", "player_1_camera", "player_2_camera", "match_controller", "player_1_mine_layer", "player_2_mine_layer", "player_1_weapon", "player_2_weapon")]
 layout_mode = 3
@@ -212,23 +214,27 @@ unit = NodePath("%Player1Unit")
 player_index = 0
 edge_style = ExtResource("24_edge_orange")
 
-[node name="Player1UnitChoice" parent="Views/Player1View/SubViewport" node_paths=PackedStringArray("match_controller", "choice_input") instance=ExtResource("21_choice")]
+[node name="Player1UnitChoice" parent="Views/Player1View/SubViewport" node_paths=PackedStringArray("match_controller", "choice_input", "pad_assignment") instance=ExtResource("21_choice")]
+pad_assignment = NodePath("%PadAssignment")
 match_controller = NodePath("%MatchController")
 choice_input = NodePath("%Player1ChoiceInput")
 player_index = 0
 action_prefix = &"p1_"
 edge_style = ExtResource("24_edge_orange")
 
-[node name="Player1RoundOver" parent="Views/Player1View/SubViewport" unique_id=9000061 node_paths=PackedStringArray("match_controller") instance=ExtResource("14_ros")]
+[node name="Player1RoundOver" parent="Views/Player1View/SubViewport" unique_id=9000061 node_paths=PackedStringArray("match_controller", "pad_assignment") instance=ExtResource("14_ros")]
+pad_assignment = NodePath("%PadAssignment")
 match_controller = NodePath("%MatchController")
 
-[node name="Player1SelfDestructHint" parent="Views/Player1View/SubViewport" node_paths=PackedStringArray("match_controller", "unit") instance=ExtResource("26_hint")]
+[node name="Player1SelfDestructHint" parent="Views/Player1View/SubViewport" node_paths=PackedStringArray("match_controller", "unit", "pad_assignment") instance=ExtResource("26_hint")]
+pad_assignment = NodePath("%PadAssignment")
 match_controller = NodePath("%MatchController")
 unit = NodePath("%Player1Unit")
 player_index = 0
 action_prefix = &"p1_"
 
-[node name="Player1Notice" parent="Views/Player1View/SubViewport" node_paths=PackedStringArray("match_controller", "mine_layer", "weapon") instance=ExtResource("29_notice")]
+[node name="Player1Notice" parent="Views/Player1View/SubViewport" node_paths=PackedStringArray("match_controller", "mine_layer", "weapon", "pad_assignment") instance=ExtResource("29_notice")]
+pad_assignment = NodePath("%PadAssignment")
 match_controller = NodePath("%MatchController")
 mine_layer = NodePath("%Player1MineLayer")
 weapon = NodePath("%Player1Weapon")
@@ -266,23 +272,27 @@ unit = NodePath("%Player2Unit")
 player_index = 1
 edge_style = ExtResource("25_edge_teal")
 
-[node name="Player2UnitChoice" parent="Views/Player2View/SubViewport" node_paths=PackedStringArray("match_controller", "choice_input") instance=ExtResource("21_choice")]
+[node name="Player2UnitChoice" parent="Views/Player2View/SubViewport" node_paths=PackedStringArray("match_controller", "choice_input", "pad_assignment") instance=ExtResource("21_choice")]
+pad_assignment = NodePath("%PadAssignment")
 match_controller = NodePath("%MatchController")
 choice_input = NodePath("%Player2ChoiceInput")
 player_index = 1
 action_prefix = &"p2_"
 edge_style = ExtResource("25_edge_teal")
 
-[node name="Player2RoundOver" parent="Views/Player2View/SubViewport" unique_id=9000062 node_paths=PackedStringArray("match_controller") instance=ExtResource("14_ros")]
+[node name="Player2RoundOver" parent="Views/Player2View/SubViewport" unique_id=9000062 node_paths=PackedStringArray("match_controller", "pad_assignment") instance=ExtResource("14_ros")]
+pad_assignment = NodePath("%PadAssignment")
 match_controller = NodePath("%MatchController")
 
-[node name="Player2SelfDestructHint" parent="Views/Player2View/SubViewport" node_paths=PackedStringArray("match_controller", "unit") instance=ExtResource("26_hint")]
+[node name="Player2SelfDestructHint" parent="Views/Player2View/SubViewport" node_paths=PackedStringArray("match_controller", "unit", "pad_assignment") instance=ExtResource("26_hint")]
+pad_assignment = NodePath("%PadAssignment")
 match_controller = NodePath("%MatchController")
 unit = NodePath("%Player2Unit")
 player_index = 1
 action_prefix = &"p2_"
 
-[node name="Player2Notice" parent="Views/Player2View/SubViewport" node_paths=PackedStringArray("match_controller", "mine_layer", "weapon") instance=ExtResource("29_notice")]
+[node name="Player2Notice" parent="Views/Player2View/SubViewport" node_paths=PackedStringArray("match_controller", "mine_layer", "weapon", "pad_assignment") instance=ExtResource("29_notice")]
+pad_assignment = NodePath("%PadAssignment")
 match_controller = NodePath("%MatchController")
 mine_layer = NodePath("%Player2MineLayer")
 weapon = NodePath("%Player2Weapon")
@@ -313,6 +323,13 @@ rules = ExtResource("10_rules")
 process_mode = 3
 script = ExtResource("15_rri")
 match_controller = NodePath("%MatchController")
+
+[node name="PadAssignment" type="Node" parent="."]
+unique_name_in_owner = true
+process_mode = 3
+script = ExtResource("37_pads")
+layout = ExtResource("38_padlayout")
+action_prefixes = Array[StringName]([&"p1_", &"p2_"])
 
 [editable path="World/Player1Unit"]
 [editable path="World/Player2Unit"]

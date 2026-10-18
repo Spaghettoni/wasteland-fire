@@ -113,8 +113,10 @@ extends Control
 ## physical key of the first key event of the actions PlayerChoiceInput reads (action_prefix +
 ## steer_left, steer_right and fire), named by InputEventKey.as_text_physical_keycode() with the
 ## key's side in front when it has one (as_text_location()), so a new binding in project.godot
-## changes the hint with no edit here; an action bound to no key names nothing. The keyboard is the
-## only input the game has so far, so no gamepad binding is named (none exists to read).
+## changes the hint with no edit here; an action bound to no key names nothing. Since Story 032 a
+## Player who has a pad is shown the pad's inputs instead ("Stick left / Stick right to choose, A to
+## confirm", the first binding of each action in pad_layout.tres), read from the PadAssignment when
+## the scene gives one, and the hint is rebuilt when a pad comes or goes (pads_changed).
 ##
 ## Look, stored in unit_choice.tscn: a dark translucent panel with rounded corners, the title at 24
 ## px and the slot names, the counts and the hint at 18 px, white (the hint a light grey), so it
@@ -164,6 +166,11 @@ const _PATH_COUNT_LABEL: NodePath = ^"Lines/CountLabel"
 ## to the prefix plus steer_left, steer_right and fire, the three actions PlayerChoiceInput reads.
 ## Required, with no default: the owning scene stores it.
 @export var action_prefix: StringName = &""
+
+## The PadAssignment that says whether this Player has a pad (Story 032). Optional: with one, a
+## Player who has a pad is shown the pad's button names (from the pad layout) instead of the keys;
+## with none, or for a Player without a pad, the keys are named as before.
+@export var pad_assignment: PadAssignment
 
 @export_group("Text")
 ## The title while the Player is choosing: "Choose your Unit" in unit_choice.tscn. Looked up with
@@ -244,6 +251,8 @@ func _ready() -> void:
 	match_controller.unit_spawned.connect(_on_unit_spawned)
 	match_controller.round_over.connect(_on_round_over)
 	choice_input.cursor_moved.connect(_on_cursor_moved)
+	if pad_assignment != null:
+		pad_assignment.pads_changed.connect(_refresh)
 	if edge_style != null:
 		_panel.draw.connect(_draw_edge)
 		_panel.queue_redraw()
@@ -437,7 +446,19 @@ func _mark_slot(cursor: int) -> void:
 ## The hint line: the format with the names of the previous-type, next-type and confirm keys.
 func _hint_text() -> String:
 	return tr(hint_format) % [
-		_key_name(_steer_left_action), _key_name(_steer_right_action), _key_name(_fire_action)]
+		_input_name(_steer_left_action, _SUFFIX_STEER_LEFT),
+		_input_name(_steer_right_action, _SUFFIX_STEER_RIGHT),
+		_input_name(_fire_action, _SUFFIX_FIRE)]
+
+
+## The name of what this Player presses for the action: the pad's input from the layout when the
+## Player has a pad (Story 032), else the key (_key_name()).
+func _input_name(action: StringName, suffix: String) -> String:
+	if pad_assignment != null:
+		var button: String = pad_assignment.button_name(player_index, StringName(suffix))
+		if not button.is_empty():
+			return tr(button)
+	return _key_name(action)
 
 
 ## The name of the key the Input Map binds to the action, from the physical key of the action's

@@ -66,8 +66,9 @@ extends Control
 ## each text is its key. The key's name is OS.get_keycode_string() of the physical key the Input
 ## Map binds to the round_restart action (the name of the bound key, read when the screen is shown,
 ## so a binding changed at runtime is named when the Round next ends; an action with no key bound
-## names nothing). The keyboard is the only input the game has so far, so no gamepad binding is
-## named (none exists to read).
+## names nothing). Since Story 032, while any Player has a pad, the line names the key and the pad's
+## button together through either_format ("R or Menu"), read from the PadAssignment when the scene
+## gives one, and it is rebuilt when a pad comes or goes while the screen shows.
 
 ## The MatchController this screen listens to: the node that emits round_over and round_started.
 ## Required: without it the screen pushes an error and shows nothing.
@@ -91,6 +92,16 @@ extends Control
 ## the translation key. Required, with no default.
 @export var restart_format: String = ""
 
+## The PadAssignment that says whether any Player has a pad (Story 032). Optional: with one,
+## the restart line names the pad's button beside the key while any pad is connected; with none, the
+## key alone, as before.
+@export var pad_assignment: PadAssignment
+
+## The restart key's name and the pad button's name together, two %s placeholders: "%s or %s" in
+## round_over_screen.tscn (Story 032). Looked up with tr(). Required while pad_assignment is
+## assigned, with no default.
+@export var either_format: String = ""
+
 @onready var _winner_label: Label = %WinnerLabel
 @onready var _restart_label: Label = %RestartLabel
 
@@ -103,6 +114,8 @@ func _ready() -> void:
 		return
 	match_controller.round_over.connect(_on_round_over)
 	match_controller.round_started.connect(_on_round_started)
+	if pad_assignment != null:
+		pad_assignment.pads_changed.connect(_on_pads_changed)
 	visible = false
 
 
@@ -132,6 +145,8 @@ func _first_text_problem() -> String:
 		return "restart_format is not set (store the restart line, with a %s placeholder, in the scene)"
 	if not restart_format.contains("%"):
 		return "restart_format '%s' has no placeholder for the key's name" % restart_format
+	if pad_assignment != null and either_format.count("%s") != 2:
+		return "either_format '%s' does not hold two %%s placeholders (store it in the scene)" % either_format
 	return ""
 
 
@@ -143,8 +158,24 @@ func _show_result(winner_index: int) -> void:
 		_winner_label.text = tr(nobody_text)
 	else:
 		_winner_label.text = tr(winner_format) % (winner_index + 1)
-	_restart_label.text = tr(restart_format) % _restart_key_name()
+	_restart_label.text = _restart_text()
 	visible = true
+
+
+## The restart line: the key's name, and the pad's button beside it while any Player has a pad.
+func _restart_text() -> String:
+	var shown: String = _restart_key_name()
+	if pad_assignment != null:
+		var button: String = pad_assignment.shared_button_name(RoundRestartInput.ACTION_RESTART)
+		if not button.is_empty():
+			shown = tr(either_format) % [shown, tr(button)]
+	return tr(restart_format) % shown
+
+
+## A pad came or went: while the screen shows, the restart line follows.
+func _on_pads_changed() -> void:
+	if visible:
+		_restart_label.text = _restart_text()
 
 
 ## The name of the key the Input Map binds to the Round-restart action: OS.get_keycode_string()
