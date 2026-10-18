@@ -145,8 +145,8 @@ func _first_text_problem() -> String:
 		return "restart_format is not set (store the restart line, with a %s placeholder, in the scene)"
 	if not restart_format.contains("%"):
 		return "restart_format '%s' has no placeholder for the key's name" % restart_format
-	if pad_assignment != null and either_format.count("%s") != 2:
-		return "either_format '%s' does not hold two %%s placeholders (store it in the scene)" % either_format
+	if pad_assignment != null and not either_format.contains("%"):
+		return "either_format '%s' has no placeholders for the key's and the button's names (store it in the scene)" % either_format
 	return ""
 
 

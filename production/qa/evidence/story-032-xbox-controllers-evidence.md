@@ -23,10 +23,21 @@
 | AC-5 pads that come and go | PASS: unplugged with RT held, `p1_throttle` is released at once and the Unit slows from 20.0 to 8.0 m/s in 60 ticks; "Controller disconnected" in Player 1's view only; reconnect → Player 1, "Controller connected"; W held through a disconnect stays held and releases with W | `pads` P8; frames 02, 06 |
 | AC-6 the hints name what the Player holds | PASS: before any pad the hints read exactly as before ("A / D to choose, Space to confirm", "Tab", …); with pad 0 only, Player 1 reads "Stick left / Stick right to choose, A to confirm" and "View" while Player 2 still reads the keys; the Round-over line reads "Press R or Menu to play again" | `pads` P1, P2, P4; frames 01–03, 05 |
 | AC-7 all data, broken layout refused | PASS: five broken layouts each named by `first_problem()`; a PadAssignment with A on two actions pushes exactly one error, takes no pad, adds no event, and the 132 keyboard events stay; no integer literal but 0 and 1 in the pad scripts | `pads_data` D2–D4 |
-| AC-8 no pad, today's game | REGRESSION_LINE | below |
+| AC-8 no pad, today's game | PASS with the differences explained below: no older scenario changes what it measures | Regression |
 | AC-9 Martin's play on the real pads | NOT YET: for `/story-done` | Human checks |
 
 Both scenarios ran twice, byte-identical: `scenario-outputs/pads.txt` (9 checks, 0 errors, 0 warnings) and `scenario-outputs/pads_data.txt` (4 checks).
+
+## Regression (AC-8)
+
+All 88 scenarios of the harness were captured on `main` at bf9e12e (an untouched copy of the tree) before any change, and again on the story's tree, headless, two at a time on this 2-core machine. 85 pass on the old tree; the other 3 (`camera_smooth`, `rotors_fps`, `tyre_tracks_fps`) need a real window and fail headless on both trees. Of the 85, 60 are byte-identical. The other 25 differ only in:
+
+- **the Jolt warning** "job system exceeded the maximum number of jobs", which the engine prints at random under load on 2 cores, on both trees (it is why `loss` fails: its engine-log check counts the warning; `loss` alone on the old tree failed 2 runs of 2, on the new tree 1 of 2, the same warning each time);
+- **the harness's own line numbers** in stack traces (four lines were added to its scenario table);
+- **the frame-rate scenarios' timings** (`*_fps`, measured time, different on every run);
+- **the lint counts that read the files this story extended**: `ammo` and `mines` count the notice's code lines (225 → 243, 389 → 407), `fuel_building` counts the scripts under `src/` (64 → 67, the three pad scripts); all three still pass. `tokens_data` counted one integer literal more (a `2` in `round_over_screen.gd`); the literal was removed, and the rerun counts 5, as before.
+
+None of them changes a measured position, a count of Shots, Tokens, destructions or spawns, or a verdict that does not read the engine log.
 
 ## A defect the scenario found, and the engine fact behind it
 
