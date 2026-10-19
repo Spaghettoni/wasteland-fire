@@ -1,4 +1,4 @@
-# Story 036: Fuel lasts three times longer, and Fuel and ammo are two coloured bars with icons
+# Story 036: Fuel lasts twice as long, and Fuel and ammo are two coloured bars with icons
 
 > **Epic**: Wasteland Fire — First Playable
 > **Status**: In Progress
@@ -30,7 +30,7 @@ Today every type burns `fuel_use` per second while it drives and `fuel_use_idle`
 
 *From Martin's request of 2026-10-19, scoped to this story:*
 
-- [ ] AC-1: Every type burns Fuel three times slower, driving and standing: Motorbike 0.667 / 0.167, Buggy 0.833 / 0.208, Truck 1.0 / 0.25, Gyrocopter 1.667 / 0.417 per second (data, the four `*_stats.tres`); a full tank lasts three times as long, measured in ticks. The tank, the refill at the Fuel building and the Gyrocopter's crash when empty do not change.
+- [ ] AC-1: Every type burns Fuel at half its earlier rate, driving and standing: Motorbike 1.0 / 0.25, Buggy 1.25 / 0.3125, Truck 1.5 / 0.375, Gyrocopter 2.5 / 0.625 per second (data, the four `*_stats.tres`); a full tank lasts twice as long, measured in ticks. (Built first at a third; Martin played it and chose half, 2026-10-19: "3x pomalsie je az prilis pomala, dajme to na 2x pomalsie". The ammo bar stays lavender.) The tank, the refill at the Fuel building and the Gyrocopter's crash when empty do not change.
 - [ ] AC-2: In each Player's HUD band, right of the hit-point bar, a Fuel icon and the Fuel bar, then an ammo icon and the ammo bar, side by side on the same row, each bar its own colour (Fuel amber as today, ammo a colour no other bar or Team uses), with no text on or under them. The bars empty as Fuel burns and Shots are fired, refill at the supply buildings and are full for every new Unit.
 - [ ] AC-3: The "Ammo n / max" line under the band is gone; the Mines line stays where it is. A type with no ammo count (capacity 0) shows no ammo bar and no ammo icon.
 - [ ] AC-4: The icons are the repository's own (SVG drawn for this story, no downloaded art), readable on sand, salt flat and water in both views, with the Team edge still round the whole band.
@@ -41,7 +41,7 @@ Today every type burns `fuel_use` per second while it drives and `fuel_use_idle`
 
 ## Implementation Notes
 
-- Burn: divide the eight values by three in the four stats files. The runner (`tools/evidence/split_screen_harness.gd`) restores the old rates on the shared resources, before the older data helpers run, for every scenario that does not declare `RESOURCE_BARS`.
+- Burn: halve the eight values in the four stats files. The runner (`tools/evidence/split_screen_harness.gd`) restores the old rates on the shared resources, before the older data helpers run, for every scenario that does not declare `RESOURCE_BARS`.
 - Bars: the Fuel bar keeps its node and colour, loses its line and gets a `FuelIcon`; a new `AmmoBar` (icon and ProgressBar, listening to `Weapon.ammo_changed` as `AmmoCount` does) replaces each Player's `AmmoCount` in `split_screen.tscn`. `AmmoCount` stays in `src/ui/hud/` for the runner's older scenarios. The band's Team edge is drawn round PlayerHud's children; the AmmoBar sits inside that rectangle.
 - Docs in the same change: `design/rules.md` Resources (the rates and the bars as built), README, `tests/smoke/critical-paths.md`, EPIC.md.
 

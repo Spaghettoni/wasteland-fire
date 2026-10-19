@@ -65,8 +65,8 @@ friends at home.
   sea's edge only stops it, the piece takes no damage, and a ground Unit
   never crashes.
 - Every Unit burns Fuel while moving, and a little while it stands: a full
-  tank lasts a Motorbike about 150 seconds of driving, a Gyrocopter about 60
-  (story 036 made the burn three times slower). Your Fuel shows as the amber
+  tank lasts a Motorbike about 100 seconds of driving, a Gyrocopter about 40
+  (story 036 halved the burn). Your Fuel shows as the amber
   bar with a jerrycan beside your hit points. Fuel is
   refilled only in the two amber Fuel zones on the ground at the sides of the
   depot in the middle of the Map, one facing each Base, each marked with a

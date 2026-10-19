@@ -1,7 +1,7 @@
 
-CHECK resource_bars R1_data PASS motorbike 0.667 / 0.167 (was 2.000 / 0.500), tank 100; buggy 0.833 / 0.208 (was 2.500 / 0.625), tank 100; truck 1.000 / 0.250 (was 3.000 / 0.750), tank 100; gyrocopter 1.667 / 0.417 (was 5.000 / 1.250), tank 100
-CHECK resource_bars R2_burn PASS Motorbike, 600 ticks on W: 6.658 Fuel (6.667 at the new rate, 20.000 at the old); then 600 ticks standing: 2.667 (rates 0.667 and 0.167 per s): a full tank of 100 lasts 150 s driving, was 50 s
+CHECK resource_bars R1_data PASS motorbike 1.000 / 0.250 (was 2.000 / 0.500), tank 100; buggy 1.250 / 0.312 (was 2.500 / 0.625), tank 100; truck 1.500 / 0.375 (was 3.000 / 0.750), tank 100; gyrocopter 2.500 / 0.625 (was 5.000 / 1.250), tank 100
+CHECK resource_bars R2_burn PASS Motorbike, 600 ticks on W: 9.987 Fuel (10.000 at the new rate, 20.000 at the old); then 600 ticks standing: 4.000 (rates 1.000 and 0.250 per s): a full tank of 100 lasts 100 s driving, was 50 s
 CHECK resource_bars R3_band PASS p1 HitPointsBar(16,16:300x24) FuelIcon(332,14:28x28) FuelBar(362,16:112x24) AmmoIcon(482,14:28x28) AmmoBar(512,16:112x24); ammo b98cff, others 66d161, f5b32e, e67324, 2e9994; row labels ["HitPointsLabel"] | p2 HitPointsBar(16,16:300x24) FuelIcon(332,14:28x28) FuelBar(362,16:112x24) AmmoIcon(482,14:28x28) AmmoBar(512,16:112x24); ammo b98cff, others 66d161, f5b32e, e67324, 2e9994; row labels ["HitPointsLabel"]
-CHECK resource_bars R4_follow PASS Fuel bars 90.58 and 96.57 of 100; Space for 30 ticks: p1 ammo bar 100 -> 97 (Weapon 97 of 100), p2 100 -> 100
+CHECK resource_bars R4_follow PASS Fuel bars 85.88 and 94.86 of 100; Space for 30 ticks: p1 ammo bar 100 -> 97 (Weapon 97 of 100), p2 100 -> 100
 CHECK resource_bars R5_no_count PASS capacity 0: bar and icon hidden true; load 100 back: shown true
 RESULT resource_bars ok checks=5 failed=0 t=20.550 burn_ticks=600

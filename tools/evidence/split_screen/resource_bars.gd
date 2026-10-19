@@ -1,10 +1,10 @@
 extends RefCounted
 ## Scenario resource_bars of the split screen evidence harness (split_screen_harness.gd): Fuel lasts three times longer and the
-## HUD shows Fuel and ammo as two coloured bars with icons (Story 036), on Map 01 with the shipped data, real keys. CHECK lines:
-##  R1 the data: every type's fuel_use and fuel_use_idle are a third of the rates before the story (the runner's
+## HUD shows Fuel and ammo as two coloured bars with icons (Story 036; the burn made half the old instead of a third on 2026-10-19), on Map 01 with the shipped data, real keys. CHECK lines:
+##  R1 the data: every type's fuel_use and fuel_use_idle are half the rates before the story (the runner's
 ##     LEGACY_036_FUEL_RATES), the tank is unchanged (AC-1, AC-5).
 ##  R2 the burn: Player 1's Motorbike driven on W for BURN_TICKS and standing for BURN_TICKS burns what the new rates give,
-##     a third of the old (AC-1).
+##     half the old (AC-1).
 ##  R3 the band: in each view, right of the hit-point bar on the same row, the Fuel icon, the Fuel bar, the ammo icon and the
 ##     ammo bar, in that order, inside the 640 px view and inside the Team edge; no Fuel line, no Label on that row but the
 ##     hit-point line, no Ammo line under the band; the ammo bar's colour is none of the hit-point green, the Fuel amber or
@@ -37,6 +37,8 @@ const FIRE_TICKS: int = 30
 const BURN_TOLERANCE: float = 0.05
 ## A bar's value against the Fuel: a ProgressBar keeps its value to its step, 0.01 by default.
 const BAR_STEP_TOLERANCE: float = 0.01
+## The old rate over the new one (Martin, 2026-10-19: a third was too slow, half it is).
+const SLOWDOWN: float = 2.0
 ## A colour compared with another: the sum of the RGB differences below this is the same colour.
 const COLOUR_TOLERANCE: float = 0.2
 ## Player 1's throttle and fire keys (project.godot p1_throttle, p1_fire).
@@ -72,7 +74,7 @@ func _check_data() -> void:
 	for stats: UnitStats in rules.unit_types:
 		var old: Array = Harness.LEGACY_036_FUEL_RATES[stats.type_id]
 		lines.append("%s %.3f / %.3f (was %.3f / %.3f), tank %.0f" % [stats.type_id, stats.fuel_use, stats.fuel_use_idle, old[0], old[1], stats.fuel_capacity])
-		_kit.need(problems, is_equal_approx(stats.fuel_use * 3.0, old[0]) and is_equal_approx(stats.fuel_use_idle * 3.0, old[1]),
+		_kit.need(problems, is_equal_approx(stats.fuel_use * SLOWDOWN, old[0]) and is_equal_approx(stats.fuel_use_idle * SLOWDOWN, old[1]),
 			"%s burns %.4f / %.4f" % [stats.type_id, stats.fuel_use, stats.fuel_use_idle])
 	_kit.verdict("R1_data", problems, "; ".join(lines))
 
@@ -94,8 +96,8 @@ func _check_burn() -> void:
 	_kit.need(problems, absf(driven - stats.fuel_use * seconds) < BURN_TOLERANCE * 10.0, "drove %.3f, rate gives %.3f" % [driven, stats.fuel_use * seconds])
 	_kit.need(problems, stood > 0.0 and stood < driven, "stood %.3f" % stood)
 	_kit.verdict("R2_burn", problems, "Motorbike, %d ticks on W: %.3f Fuel (%.3f at the new rate, %.3f at the old); then %d ticks standing: %.3f (rates %.3f and %.3f per s): a full tank of %.0f lasts %.0f s driving, was %.0f s" % [
-		BURN_TICKS, driven, stats.fuel_use * seconds, stats.fuel_use * 3.0 * seconds, BURN_TICKS, stood, stats.fuel_use, stats.fuel_use_idle,
-		stats.fuel_capacity, stats.fuel_capacity / stats.fuel_use, stats.fuel_capacity / (stats.fuel_use * 3.0)])
+		BURN_TICKS, driven, stats.fuel_use * seconds, stats.fuel_use * SLOWDOWN * seconds, BURN_TICKS, stood, stats.fuel_use, stats.fuel_use_idle,
+		stats.fuel_capacity, stats.fuel_capacity / stats.fuel_use, stats.fuel_capacity / (stats.fuel_use * SLOWDOWN)])
 
 
 func _fill_colour(bar: ProgressBar) -> Color:
