@@ -1,7 +1,7 @@
 # Story 037: RidgeWest's top is drawn, and a Turret sees a Gyrocopter over a cliff
 
 > **Epic**: Wasteland Fire — First Playable
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Core
 > **Type**: Integration
 > **Estimate**: S (half a day at `coarse`)
@@ -28,12 +28,12 @@ Found: `map_01_rocks.glb`'s RidgeWest has its top built facing down (67 m² of u
 
 ## Acceptance Criteria
 
-- [ ] AC-1: Every rock of Map 01 has a top that faces up over at least 80% of its outline's area; RidgeWest's matches RidgeEast's within 5%.
-- [ ] AC-2: The fix is in the build script (`build_rocks.py`: every face of a rock's top turned to face up), and the `.glb` is rebuilt from it, never edited by hand (`tools/blender/readme.md`).
-- [ ] AC-3: A Turret sees, aims at and fires on a Gyrocopter flying over a cliff, and its Shots hit.
-- [ ] AC-4: A cliff still hides a ground Unit behind it from a Turret, as before.
-- [ ] AC-5: The sight is data: `TurretStats.flying_sight_extra_mask` (0 in `turret_stats.tres`) is used in place of `sight_extra_mask` for a target whose type can fly.
-- [ ] AC-6: The older evidence scenarios keep their outputs: the runner gives them the old sight (`flying_sight_extra_mask` = `sight_extra_mask`) unless they declare `TURRET_SEES_FLYING`; the rocks' tops change only what is drawn.
+- [x] AC-1: Every rock of Map 01 has a top that faces up over at least 80% of its outline's area; RidgeWest's matches RidgeEast's within 5%.
+- [x] AC-2: The fix is in the build script (`build_rocks.py`: every face of a rock's top turned to face up), and the `.glb` is rebuilt from it, never edited by hand (`tools/blender/readme.md`).
+- [x] AC-3: A Turret sees, aims at and fires on a Gyrocopter flying over a cliff, and its Shots hit.
+- [x] AC-4: A cliff still hides a ground Unit behind it from a Turret, as before.
+- [x] AC-5: The sight is data: `TurretStats.flying_sight_extra_mask` (0 in `turret_stats.tres`) is used in place of `sight_extra_mask` for a target whose type can fly.
+- [x] AC-6: The older evidence scenarios keep their outputs: the runner gives them the old sight (`flying_sight_extra_mask` = `sight_extra_mask`) unless they declare `TURRET_SEES_FLYING`; the rocks' tops change only what is drawn.
 
 ---
 
@@ -70,3 +70,14 @@ Found: `map_01_rocks.glb`'s RidgeWest has its top built facing down (67 m² of u
 
 - Depends on: None.
 - Unlocks: None.
+
+---
+
+## Completion Notes
+
+**Completed**: 2026-10-19
+**Criteria**: 6/6 passing: `cliff_tops` (2 checks) and `turret_flying_sight` (4 checks), each run twice byte-identical; the ridge's frames before and after; Martin played `WastelandFire-2026-10-19-ridge-turret.exe` and accepted it ("ok, super za mna", 2026-10-19).
+**Deviations**: None.
+**Test Evidence**: Integration: `production/qa/evidence/story-037-cliff-top-and-turret-sight-evidence.md` (sign-off `[x]`, 2026-10-19), the regression of the 97 older scenarios.
+**Code Review**: Skipped, Solo mode; QL-TEST-COVERAGE skipped, `qa.level` minimal.
+**Tech debt logged**: None. `map_01_rocks.glb` was rebuilt with Blender 5.2.2 as the `bpy` module (`tools/blender/readme.md`); the unchanged script gave the committed mesh counts, so a rebuild on Tomáš's Blender should match.

@@ -2,7 +2,7 @@
 
 > **Story**: `production/epics/wasteland-fire/story-037-cliff-top-and-turret-sight.md`
 > **Written**: 2026-10-19, cloud session (Godot 4.7.2; Blender 5.2.2 LTS as the `bpy` module)
-> **Sign-off**: [ ] pending — Martin's play is for `/story-done`
+> **Sign-off**: [x] Approved by Martin after playing the build, 2026-10-19 ("ok, super za mna")
 
 | AC | Result |
 |---|---|

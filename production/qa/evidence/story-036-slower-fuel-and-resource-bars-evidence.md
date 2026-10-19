@@ -3,7 +3,7 @@
 > **Story**: `production/epics/wasteland-fire/story-036-slower-fuel-and-resource-bars.md`
 > **Type**: UI
 > **Written**: 2026-10-19, by `/dev-story` in a cloud session (Linux, Godot 4.7.2)
-> **Sign-off**: [ ] pending — Martin's play of `WastelandFire-2026-10-19-fuel-bars.exe` is for `/story-done`
+> **Sign-off**: [x] Approved by Martin after playing the build, 2026-10-19 ("ok, super za mna")
 
 ## Measured (`scenario-outputs/resource_bars.txt`, two runs byte-identical)
 

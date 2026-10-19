@@ -1,7 +1,7 @@
 # Story 036: Fuel lasts twice as long, and Fuel and ammo are two coloured bars with icons
 
 > **Epic**: Wasteland Fire — First Playable
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Presentation
 > **Type**: UI
 > **Estimate**: S (half a day at `coarse`: four data lines, one new bar, two icons)
@@ -30,12 +30,12 @@ Today every type burns `fuel_use` per second while it drives and `fuel_use_idle`
 
 *From Martin's request of 2026-10-19, scoped to this story:*
 
-- [ ] AC-1: Every type burns Fuel at half its earlier rate, driving and standing: Motorbike 1.0 / 0.25, Buggy 1.25 / 0.3125, Truck 1.5 / 0.375, Gyrocopter 2.5 / 0.625 per second (data, the four `*_stats.tres`); a full tank lasts twice as long, measured in ticks. (Built first at a third; Martin played it and chose half, 2026-10-19: "3x pomalsie je az prilis pomala, dajme to na 2x pomalsie". The ammo bar is blue, Martin's choice after seeing lavender.) The tank, the refill at the Fuel building and the Gyrocopter's crash when empty do not change.
-- [ ] AC-2: In each Player's HUD band, right of the hit-point bar, a Fuel icon and the Fuel bar, then an ammo icon and the ammo bar, side by side on the same row, each bar its own colour (Fuel amber as today, ammo a colour no other bar or Team uses), with no text on or under them. The bars empty as Fuel burns and Shots are fired, refill at the supply buildings and are full for every new Unit.
-- [ ] AC-3: The "Ammo n / max" line under the band is gone; the Mines line stays where it is. The ammo bar and its icon show always, as the Fuel bar does, an empty bar while no Unit is in play (Martin, 2026-10-19: "aby sa ammo zobrazovalo aj ked nemas este vybraty voz, tak ako sa zobrazuje fuel"; built first hidden while the Weapon's capacity was 0).
-- [ ] AC-4: The icons are the repository's own (SVG drawn for this story, no downloaded art), readable on sand, salt flat and water in both views, with the Team edge still round the whole band.
-- [ ] AC-5: Every value is data: the burn rates in the stats, the colours and sizes in the scenes; no number in code but 0 and 1.
-- [ ] AC-6: The older evidence scenarios keep their outputs against the capture taken at the start: the runner gives them the old burn rates and the old HUD (a frozen copy of today's `player_hud.tscn` and the Ammo line) unless they declare `RESOURCE_BARS`.
+- [x] AC-1: Every type burns Fuel at half its earlier rate, driving and standing: Motorbike 1.0 / 0.25, Buggy 1.25 / 0.3125, Truck 1.5 / 0.375, Gyrocopter 2.5 / 0.625 per second (data, the four `*_stats.tres`); a full tank lasts twice as long, measured in ticks. (Built first at a third; Martin played it and chose half, 2026-10-19: "3x pomalsie je az prilis pomala, dajme to na 2x pomalsie". The ammo bar is blue, Martin's choice after seeing lavender.) The tank, the refill at the Fuel building and the Gyrocopter's crash when empty do not change.
+- [x] AC-2: In each Player's HUD band, right of the hit-point bar, a Fuel icon and the Fuel bar, then an ammo icon and the ammo bar, side by side on the same row, each bar its own colour (Fuel amber as today, ammo a colour no other bar or Team uses), with no text on or under them. The bars empty as Fuel burns and Shots are fired, refill at the supply buildings and are full for every new Unit.
+- [x] AC-3: The "Ammo n / max" line under the band is gone; the Mines line stays where it is. The ammo bar and its icon show always, as the Fuel bar does, an empty bar while no Unit is in play (Martin, 2026-10-19: "aby sa ammo zobrazovalo aj ked nemas este vybraty voz, tak ako sa zobrazuje fuel"; built first hidden while the Weapon's capacity was 0).
+- [x] AC-4: The icons are the repository's own (SVG drawn for this story, no downloaded art), readable on sand, salt flat and water in both views, with the Team edge still round the whole band.
+- [x] AC-5: Every value is data: the burn rates in the stats, the colours and sizes in the scenes; no number in code but 0 and 1.
+- [x] AC-6: The older evidence scenarios keep their outputs against the capture taken at the start: the runner gives them the old burn rates and the old HUD (a frozen copy of today's `player_hud.tscn` and the Ammo line) unless they declare `RESOURCE_BARS`.
 
 ---
 
@@ -73,3 +73,14 @@ Today every type burns `fuel_use` per second while it drives and `fuel_use_idle`
 
 - Depends on: None.
 - Unlocks: None.
+
+---
+
+## Completion Notes
+
+**Completed**: 2026-10-19
+**Criteria**: 6/6 passing (`resource_bars`, 5 checks, run twice byte-identical; three frames), with the changes Martin asked for after playing, the same day: the burn halved instead of a third, the ammo bar blue instead of lavender, and the ammo bar shown always (empty while no Unit is in play) instead of hidden.
+**Deviations**: None.
+**Test Evidence**: UI: `production/qa/evidence/story-036-slower-fuel-and-resource-bars-evidence.md` (sign-off `[x]`, 2026-10-19), frames in `production/qa/evidence/story-036-slower-fuel-and-resource-bars/`, the regressions of story 036 and story 037.
+**Code Review**: Skipped, Solo mode; QL-TEST-COVERAGE skipped, `qa.level` minimal.
+**Tech debt logged**: None. `src/ui/hud/ammo_count.gd`/`.tscn` stay under `src/` used only by the evidence runner's older scenarios (as TD-015 records for the Fuel Can).

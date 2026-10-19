@@ -101,7 +101,7 @@ Martin asked on 2026-10-18 to play with the Xbox controllers paired with his PC,
 
 | # | Story | Type | Status | ADR |
 |---|-------|------|--------|-----|
-| 032 | Xbox controllers: the first two connected pads belong to Player 1 and Player 2 beside their keyboard layouts; analog triggers and stick, A fire, X Mine, Y camera, View Self-destruct, Menu restart; pads that come and go mid-Round; the hints name the pad's buttons | Integration | Ready | N/A (minimal) |
+| 032 | Xbox controllers: the first two connected pads belong to Player 1 and Player 2 beside their keyboard layouts; analog triggers and stick, A fire, X Mine, Y camera, View Self-destruct, Menu restart; pads that come and go mid-Round; the hints name the pad's buttons | Integration | Complete | N/A (minimal) |
 
 ## After Martin's request of 2026-10-19: slower Fuel and the resource bars
 
@@ -109,10 +109,10 @@ Martin asked on 2026-10-19 for Fuel to burn three times slower (after playing it
 
 | # | Story | Type | Status | ADR |
 |---|-------|------|--------|-----|
-| 036 | Fuel lasts twice as long, and Fuel and ammo are two coloured bars with icons: half of every burn rate; a jerrycan and the amber Fuel bar, cartridges and a blue ammo bar, no text, right of the hit-point bar | UI | In Progress | N/A (minimal) |
+| 036 | Fuel lasts twice as long, and Fuel and ammo are two coloured bars with icons: half of every burn rate; a jerrycan and the amber Fuel bar, cartridges and a blue ammo bar, no text, right of the hit-point bar | UI | Complete | N/A (minimal) |
 
 ## After Martin's playtest of 2026-10-19: a hollow ridge and a blind Turret
 
 | # | Story | Type | Status | ADR |
 |---|-------|------|--------|-----|
-| 037 | RidgeWest's top is drawn (rebuilt from `build_rocks.py`, every rock top facing up), and a Turret sees, aims at and fires on a Gyrocopter over a cliff while a cliff still hides a ground Unit | Integration | In Progress | N/A (minimal) |
+| 037 | RidgeWest's top is drawn (rebuilt from `build_rocks.py`, every rock top facing up), and a Turret sees, aims at and fires on a Gyrocopter over a cliff while a cliff still hides a ground Unit | Integration | Complete | N/A (minimal) |

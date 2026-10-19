@@ -3,7 +3,7 @@
 > **Story**: `production/epics/wasteland-fire/story-032-xbox-controllers.md`
 > **Type**: Integration (documented playtest record + headless scenarios)
 > **Written**: 2026-10-18, by `/dev-story` in a cloud session (Linux, Godot 4.7.2 official build, no pads attached)
-> **Sign-off**: [ ] pending — Martin's play on the real Xbox controllers (AC-9) is for `/story-done`
+> **Sign-off**: [x] Approved by Martin after playing the build, 2026-10-19 ("ok, super za mna")
 
 ## What was built
 
