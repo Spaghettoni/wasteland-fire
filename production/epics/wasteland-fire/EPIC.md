@@ -109,4 +109,4 @@ Martin asked on 2026-10-19 for Fuel to burn three times slower (after playing it
 
 | # | Story | Type | Status | ADR |
 |---|-------|------|--------|-----|
-| 036 | Fuel lasts twice as long, and Fuel and ammo are two coloured bars with icons: half of every burn rate; a jerrycan and the amber Fuel bar, cartridges and a lavender ammo bar, no text, right of the hit-point bar | UI | In Progress | N/A (minimal) |
+| 036 | Fuel lasts twice as long, and Fuel and ammo are two coloured bars with icons: half of every burn rate; a jerrycan and the amber Fuel bar, cartridges and a blue ammo bar, no text, right of the hit-point bar | UI | In Progress | N/A (minimal) |

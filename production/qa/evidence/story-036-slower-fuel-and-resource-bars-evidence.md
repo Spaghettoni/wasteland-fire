@@ -9,10 +9,10 @@
 
 | AC | Result |
 |---|---|
-| AC-1 Fuel burns at half the old rate | PASS: every rate is half the old (Motorbike 1.0 / 0.25, Buggy 1.25 / 0.3125, Truck 1.5 / 0.375, Gyrocopter 2.5 / 0.625); 600 ticks on W burned 9.987 Fuel (10.0 at the new rate, 20.0 at the old), 600 ticks standing 4.0; a full tank lasts a Motorbike 100 s of driving, was 50 s. Built first at a third; Martin found it too slow and chose half (2026-10-19), and kept the lavender ammo colour |
+| AC-1 Fuel burns at half the old rate | PASS: every rate is half the old (Motorbike 1.0 / 0.25, Buggy 1.25 / 0.3125, Truck 1.5 / 0.375, Gyrocopter 2.5 / 0.625); 600 ticks on W burned 9.987 Fuel (10.0 at the new rate, 20.0 at the old), 600 ticks standing 4.0; a full tank lasts a Motorbike 100 s of driving, was 50 s. Built first at a third; Martin found it too slow and chose half (2026-10-19) |
 | AC-2 two bars side by side | PASS: in both views HitPointsBar (16,16 300x24), FuelIcon (332,14 28x28), FuelBar (362,16 112x24), AmmoIcon (482,14 28x28), AmmoBar (512,16 112x24), on one row, in order, inside 640 px; the bars follow the Unit's Fuel and the Weapon's Shots, and Space lowered only Player 1's ammo bar (100 -> 97) |
 | AC-3 no text, no Ammo line | PASS: no Fuel line, the only Label on the row is the hit points' line, no AmmoCount in either view; capacity 0 hides the ammo bar and its icon |
-| AC-4 own icons, readable | PASS: `assets/art/ui/fuel_icon.svg` (a jerrycan) and `ammo_icon.svg` (three cartridges), drawn for the story; ammo colour #b98cff against #66d161 (HP), #f5b32e (Fuel), #e67324 and #2e9994 (Team edges); frames below |
+| AC-4 own icons, readable | PASS: `assets/art/ui/fuel_icon.svg` (a jerrycan) and `ammo_icon.svg` (three cartridges), drawn for the story; ammo colour #3d8bff (blue, Martin's choice after lavender, 2026-10-19) against #66d161 (HP), #f5b32e (Fuel), #e67324 and #2e9994 (Team edges); frames below |
 | AC-5 data | PASS: rates in the four stats files, colours and sizes in `player_hud.tscn` |
 | AC-6 older outputs | PASS with explained differences (below) |
 
@@ -30,4 +30,4 @@ All 89 scenarios on `main` at b1f9ee1 and again on the story's tree, headless: 8
 
 1. Do the two bars read at a glance, with the icons, in both views?
 2. Does a tank now last long enough at half the old burn?
-3. Lavender ammo colour: kept by Martin, 2026-10-19.
+3. Blue ammo colour: Martin's choice, 2026-10-19.

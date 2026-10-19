@@ -77,7 +77,7 @@ friends at home.
   and the Fuel Cans are gone from the Map.
 - Every Unit's gun holds a load of ammo, counted in Shots: a Motorbike 100, a
   Buggy 50, a Truck 25 and a Gyrocopter 40, which is 20 seconds of continuous
-  fire at its own rate. Each Shot spends one. Your count shows as the lavender
+  fire at its own rate. Each Shot spends one. Your count shows as the blue
   bar with three cartridges right of the Fuel bar, and the last Shot says "Out of ammo" for a second and a half,
   as does every new press of the fire key after it. An empty gun fires
   nothing, but the Unit still drives, carries the Flag and lays Mines. Ammo
