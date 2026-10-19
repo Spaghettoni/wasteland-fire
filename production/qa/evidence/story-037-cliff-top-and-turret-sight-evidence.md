@@ -11,10 +11,10 @@
 | AC-3 Gyrocopter over a cliff | PASS (`turret_flying_sight` F1): aimed, 5 Shots in 240 ticks, hit points 70 -> 10 |
 | AC-4 ground still hidden | PASS (F3): a Buggy 3 m behind the block, not aimed at, no Shot |
 | AC-5 data | PASS (F4): sight_extra_mask 32, flying_sight_extra_mask 0; F2: with 32 the Turret stays idle (the check can fail) |
-| AC-6 older outputs | see Regression |
+| AC-6 older outputs | PASS with explained differences (Regression) |
 
 Both scenarios ran twice, byte-identical. Frames: `story-037-cliff-top-and-turret-sight/00-ridge-west-from-above-before.png` (the ridge hollow: its walls and the sand inside) and `01-ridge-west-from-above.png` (a full top like its neighbour), OpenGL compatibility renderer under Xvfb.
 
 ## Regression
 
-Pending at commit time: all 97 scenarios on `main` at a6708b4 against this tree; the result is added when the run ends.
+All 97 scenarios on `main` at a6708b4 against this tree, headless: 88 pass on both. After removing the Jolt load warning and the harness's line numbers, the differences are only: the `*_fps` timings (measured time); line numbers in `turret.gd` inside expected-error stack traces of `turrets` and `turret_looks` (two lines added above them); `tokens_data`'s count of the HUD script's code lines (1484 -> 1485, still 5 literals, passes); and `resource_bars`' R5, rewritten on purpose for the always-shown ammo bar. No position, count or verdict of an older scenario changed.
