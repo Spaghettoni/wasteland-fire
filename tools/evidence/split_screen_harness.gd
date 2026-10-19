@@ -26,7 +26,8 @@ extends Node
 ## ammo_showcase (windowed); since Story 023, fuel_building, fuel_building_showcase and fuel_building_fps
 ## (windowed); since Story 024, ammo_buildings, ammo_buildings_showcase and ammo_buildings_fps
 ## (windowed); since Story 032, pads, pads_data and pads_showcase
-## (windowed); since Story 036, resource_bars and resource_bars_showcase (windowed). Each is a script under tools/evidence/split_screen/,
+## (windowed); since Story 036, resource_bars and resource_bars_showcase (windowed);
+## since Story 037, turret_flying_sight and cliff_tops. Each is a script under tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
 ## line there. A scenario reaches this script, DriveStep, UnitTrack and check_kit.gd through preload
@@ -315,6 +316,11 @@ extends Node
 ## line, no icons, no ammo bar), with the same name, index and exports, and, for a scenario that declares AMMO, puts the Ammo line
 ## of story 022 back as each view's last child (_apply_resource_bars_off()). A scenario of Story 036 declares it.
 ##
+## A Turret sees a Gyrocopter over a cliff (Story 037). The shipped turret_stats.tres now lets no cliff hide a flying target
+## (flying_sight_extra_mask 0). Unless the scenario script declares const TURRET_SEES_FLYING: bool = true the runner gives the
+## shared TurretStats the sight every older output was measured with, a cliff hiding every target alike
+## (_apply_flying_sight_off(): flying_sight_extra_mask = sight_extra_mask).
+##
 ## Output: SPLIT <scenario> t=<seconds> key=value ... (progress), CHECK <scenario> <check name> PASS|FAIL
 ## <detail> and exactly one last RESULT <scenario> ok|fail checks=<n> failed=<n> key=value ...; then quit with
 ## exit code 0 when every check passed, 1 when one failed, 2 for a missing or unknown scenario. TD-003
@@ -422,6 +428,8 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"pads_showcase": preload("res://tools/evidence/split_screen/pads_showcase.gd"),
 	&"resource_bars": preload("res://tools/evidence/split_screen/resource_bars.gd"),
 	&"resource_bars_showcase": preload("res://tools/evidence/split_screen/resource_bars_showcase.gd"),
+	&"turret_flying_sight": preload("res://tools/evidence/split_screen/turret_flying_sight.gd"),
+	&"cliff_tops": preload("res://tools/evidence/split_screen/cliff_tops.gd"),
 }
 
 ## The shared step class (drive_step.gd): keys held for a time.
@@ -579,6 +587,9 @@ const AMMO_CONSTANT: StringName = &"AMMO"
 ## The constant a scenario script declares as true to keep the slower Fuel and the HUD's resource bars of Story 036
 ## (_apply_fuel_burn_off(), _apply_resource_bars_off()).
 const RESOURCE_BARS_CONSTANT: StringName = &"RESOURCE_BARS"
+## The constant a scenario script declares as true to keep the shipped Turret sight of Story 037, no cliff hiding a flying target
+## (_apply_flying_sight_off()).
+const TURRET_SEES_FLYING_CONSTANT: StringName = &"TURRET_SEES_FLYING"
 ## Each type's Fuel burn before Story 036, by type_id: [fuel_use, fuel_use_idle] per second.
 const LEGACY_036_FUEL_RATES: Dictionary = {
 	&"motorbike": [2.0, 0.5], &"buggy": [2.5, 0.625], &"truck": [3.0, 0.75], &"gyrocopter": [5.0, 1.25]}
@@ -789,6 +800,7 @@ func _ready() -> void:
 	_watchdog_seconds = _scenario_watchdog_seconds(SCENARIOS[scenario])
 	get_tree().create_timer(_watchdog_seconds).timeout.connect(_on_watchdog)
 	_apply_fuel_burn_off(SCENARIOS[scenario])
+	_apply_flying_sight_off(SCENARIOS[scenario])
 	if LEGACY_SCENARIOS.has(scenario):
 		_apply_legacy_data()
 	if LEGACY_SCENARIOS.has(scenario) or STORY_005_SCENARIOS.has(scenario):
@@ -1486,6 +1498,18 @@ func _apply_fuel_burn_off(script: GDScript) -> void:
 		if stats != null and LEGACY_036_FUEL_RATES.has(stats.type_id):
 			stats.fuel_use = LEGACY_036_FUEL_RATES[stats.type_id][0]
 			stats.fuel_use_idle = LEGACY_036_FUEL_RATES[stats.type_id][1]
+
+
+## Gives the shared TurretStats the sight of stories 013 to 036, a cliff hiding a flying target as it hides a ground one
+## (flying_sight_extra_mask = sight_extra_mask), unless the scenario script declares TURRET_SEES_FLYING (Story 037).
+func _apply_flying_sight_off(script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(TURRET_SEES_FLYING_CONSTANT, false)):
+		return
+	var stats: TurretStats = load(TURRET_STATS_PATH) as TurretStats
+	if stats == null:
+		push_error("split_screen_harness: %s did not load as TurretStats, so the old Turret sight is not applied." % TURRET_STATS_PATH)
+		return
+	stats.flying_sight_extra_mask = stats.sight_extra_mask
 
 
 ## Puts the HUD of story 032 back in a freshly instanced launch scene, before it enters the tree, unless the scenario script

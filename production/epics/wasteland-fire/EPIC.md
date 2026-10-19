@@ -110,3 +110,9 @@ Martin asked on 2026-10-19 for Fuel to burn three times slower (after playing it
 | # | Story | Type | Status | ADR |
 |---|-------|------|--------|-----|
 | 036 | Fuel lasts twice as long, and Fuel and ammo are two coloured bars with icons: half of every burn rate; a jerrycan and the amber Fuel bar, cartridges and a blue ammo bar, no text, right of the hit-point bar | UI | In Progress | N/A (minimal) |
+
+## After Martin's playtest of 2026-10-19: a hollow ridge and a blind Turret
+
+| # | Story | Type | Status | ADR |
+|---|-------|------|--------|-----|
+| 037 | RidgeWest's top is drawn (rebuilt from `build_rocks.py`, every rock top facing up), and a Turret sees, aims at and fires on a Gyrocopter over a cliff while a cliff still hides a ground Unit | Integration | In Progress | N/A (minimal) |

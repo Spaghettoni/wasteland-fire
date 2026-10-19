@@ -1,0 +1,6 @@
+
+CHECK turret_flying_sight F4_data PASS sight_extra_mask 32, flying_sight_extra_mask 0
+CHECK turret_flying_sight F1_over_the_cliff PASS Gyrocopter over the block at (0.0, 0.0, 380.0), 240 ticks: aimed true, 5 Shots, hit points 70 -> 10
+CHECK turret_flying_sight F2_old_sight_hides PASS the same with the old sight (32) at (0.0, 0.0, 380.0), 240 ticks: aimed false, 0 Shots, hit points 70 -> 70
+CHECK turret_flying_sight F3_ground_still_hidden PASS Buggy 3.0 m behind the block at (0.0, 0.0, 372.0), 240 ticks: aimed false, 0 Shots, hit points 100 -> 100
+RESULT turret_flying_sight ok checks=4 failed=0 t=12.850 turret_flying_sight=1

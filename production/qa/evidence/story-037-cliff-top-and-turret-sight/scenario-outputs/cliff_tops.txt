@@ -1,0 +1,4 @@
+
+CHECK cliff_tops C1_tops PASS RockCanyonNorth outline 2545 m2, up 2552, down 4; RockCanyonSouth outline 1243 m2, up 1249, down 4; RidgeWest outline 1330 m2, up 1331, down 2; RidgeCentre outline 1802 m2, up 1805, down 2; RidgeEast outline 1330 m2, up 1332, down 2
+CHECK cliff_tops C2_mirror PASS RidgeWest up 1331 m2, RidgeEast 1332 m2
+RESULT cliff_tops ok checks=2 failed=0 t=0.017 rocks=5

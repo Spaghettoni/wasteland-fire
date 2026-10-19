@@ -26,6 +26,8 @@ Blender 5.2.2 LTS (Homebrew: `brew install --cask blender`, which puts `blender`
 | `build_ground_textures.py` | The ground's seamless noise textures (`src/gameplay/maps/map_01/textures/ground_*.png`), read by `src/gameplay/maps/spatial_env_ground.gdshader` and the rocks' `spatial_env_rock.gdshader`. |
 | `build_wall_textures.py` | The Bases' welded steel plates (`src/gameplay/maps/map_01/textures/wall_plates*.png`), read by `wall.tres` and the Flag Walls' damaged looks. |
 
+Without Blender installed, the same version runs as a Python module (`pip install bpy==5.2.2`, Python 3.13): import `bpy` first and run the script with `runpy`, which is how story 037 rebuilt `map_01_rocks.glb` in a cloud session (the unchanged script gave the same five meshes, vertex and index counts as the committed file).
+
 ## Rebuilding a model
 
 From the repository root, for example the Truck:

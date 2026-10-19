@@ -147,10 +147,19 @@ def slow(seed, distance, size):
     return noise.noise(Vector((distance / size, seed * 7.31, 0.5)))
 
 
-def _part(name, bm, colour):
-    """A rock part from a bmesh, its faces coloured by colour(centre, normal)."""
-    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
-    obj = kit._finish_part(name, bm, "rock")
+def _part(name, bm, colour, face_up=False):
+    """A rock part from a bmesh, its faces coloured by colour(centre, normal). face_up: every face
+    is turned to face up instead of recalculated (Story 037): the top is an open sheet, and
+    recalc_face_normals guesses an open sheet's side from its shape, which turned RidgeWest's top
+    face down, so Godot culled it and the ridge looked hollow from above."""
+    if face_up:
+        for face in bm.faces:
+            face.normal_update()
+            if face.normal.z < 0.0:
+                face.normal_flip()
+    else:
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+    obj = kit._finish_part(name, bm, "rock", recalc=not face_up)
     kit.face_colours(obj, colour)
     return obj
 
@@ -233,7 +242,7 @@ def build_cliff(name, points_xz, top, palette, rng, seed):
         shade += noise.noise(Vector((centre.x / 7.0, centre.y / 7.0, seed))) * 0.06
         return tuple(min(1.0, c * shade) for c in palette["top"])
 
-    parts.append(_part(name + "_top", bm, top_colour))
+    parts.append(_part(name + "_top", bm, top_colour, face_up=True))
 
     along = rng.uniform(0.0, STONE_SPACING)
     total = lengths[-1]

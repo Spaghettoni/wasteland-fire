@@ -3,5 +3,5 @@ CHECK resource_bars R1_data PASS motorbike 1.000 / 0.250 (was 2.000 / 0.500), ta
 CHECK resource_bars R2_burn PASS Motorbike, 600 ticks on W: 9.987 Fuel (10.000 at the new rate, 20.000 at the old); then 600 ticks standing: 4.000 (rates 1.000 and 0.250 per s): a full tank of 100 lasts 100 s driving, was 50 s
 CHECK resource_bars R3_band PASS p1 HitPointsBar(16,16:300x24) FuelIcon(332,14:28x28) FuelBar(362,16:112x24) AmmoIcon(482,14:28x28) AmmoBar(512,16:112x24); ammo 3d8bff, others 66d161, f5b32e, e67324, 2e9994; row labels ["HitPointsLabel"] | p2 HitPointsBar(16,16:300x24) FuelIcon(332,14:28x28) FuelBar(362,16:112x24) AmmoIcon(482,14:28x28) AmmoBar(512,16:112x24); ammo 3d8bff, others 66d161, f5b32e, e67324, 2e9994; row labels ["HitPointsLabel"]
 CHECK resource_bars R4_follow PASS Fuel bars 85.88 and 94.86 of 100; Space for 30 ticks: p1 ammo bar 100 -> 97 (Weapon 97 of 100), p2 100 -> 100
-CHECK resource_bars R5_no_count PASS capacity 0: bar and icon hidden true; load 100 back: shown true
+CHECK resource_bars R5_no_unit PASS capacity 0: bar and icon shown, bar empty true; load 100 back: filled true
 RESULT resource_bars ok checks=5 failed=0 t=20.550 burn_ticks=600

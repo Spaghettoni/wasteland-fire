@@ -120,8 +120,11 @@ def reset_scene():
 # transform) and returns the object, tagged with its palette key in obj["key"].
 # ---------------------------------------------------------------------------------------------
 
-def _finish_part(name, bm, key):
-    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+def _finish_part(name, bm, key, recalc=True):
+    """The bmesh as a linked object. recalc=False keeps the faces' sides as the caller set them
+    (Story 037: a rock's open top, which recalc_face_normals may turn face down)."""
+    if recalc:
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
     mesh = bpy.data.meshes.new(name)
     bm.to_mesh(mesh)
     bm.free()

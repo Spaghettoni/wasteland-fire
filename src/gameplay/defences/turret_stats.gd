@@ -49,6 +49,12 @@ extends StructureStats
 ## the developer on 2026-10-07). The Bushes' layer joins it later, as data.
 @export_flags_3d_physics var sight_extra_mask: int = 0
 
+## The layers that hide a flying target (UnitStats.can_fly) beyond what stops a Shot, in place of
+## sight_extra_mask (Story 037, Martin, 2026-10-19: a Gyrocopter over a cliff must be seen and shot
+## at). 0 in turret_stats.tres: a cliff, which hides a ground Unit behind it, never hides a
+## Gyrocopter flying over it, whose Shots it never stopped either.
+@export_flags_3d_physics var flying_sight_extra_mask: int = 0
+
 
 ## The reason a Turret cannot use these stats, or an empty String when it can: what StructureStats
 ## refuses, and any weapon number that is not above zero. A NaN is refused, the tests being written

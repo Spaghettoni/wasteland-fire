@@ -44,6 +44,8 @@
 
 24. [Story 036 — Fuel burns at half its earlier rate: a Motorbike driven flat out loses about 10 of its 100 Fuel in 10 seconds, a Gyrocopter about 25; each Player's HUD band shows, right of the hit-point bar, a jerrycan icon and the amber Fuel bar, then a cartridges icon and the blue ammo bar, with no text on them, and no "Ammo" line under the band; the Fuel bar empties as the Unit drives and fills in a Fuel zone, the ammo bar empties as the Unit fires and fills in an ammunition zone; both are full for every new Unit]
 
+25. [Story 037 — from the view from above every ridge and canyon rock shows a sandy top, the ridge west of Base A's side included (it looked hollow before); a Gyrocopter hovering over a cliff within a Turret's reach is fired on and loses hit points; a Buggy behind a cliff is not]
+
 ## Data Integrity
 
 23. Restarting a Round resets Units, Flags, both Token stocks, HUD and every Flag Wall, Turret, Mine, explosion and badly damaged state (R brings all eight Flag Walls and all 88 Wall Panels (the Base walls', the Garages' and the field's) back with 40 hit points and the whole look, a Unit standing in a breach benched first, and all four Turrets back with 100 hit points and their whole look, the head in its own steel, standing, solid, the barrel at rest and ready to fire; a fallen or damaged one stays as it is, and shows its look, until then; every Mine, arming, live or flashing, is gone and the first Truck of the new Round comes with 5; every explosion still playing, behind the Round-over screen too, is gone at once) (once stories 014 and 016 land)

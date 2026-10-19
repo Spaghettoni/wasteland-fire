@@ -100,7 +100,6 @@ stretch_mode = 5
 
 [node name="AmmoIcon" type="TextureRect" parent="."]
 unique_name_in_owner = true
-visible = false
 layout_mode = 1
 offset_left = 482.0
 offset_top = 14.0
@@ -113,7 +112,6 @@ stretch_mode = 5
 
 [node name="AmmoBar" type="ProgressBar" parent="."]
 unique_name_in_owner = true
-visible = false
 layout_mode = 1
 offset_left = 512.0
 offset_top = 16.0

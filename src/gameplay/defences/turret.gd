@@ -50,7 +50,9 @@ extends Structure
 ## Sight and path. Two ray queries from the aimed muzzle, built as the Shot builds its own, the
 ## Turret's own body excluded and hit_from_inside true. The sight ray goes to the target's centre at
 ## the shooting height on the Shot's mask plus sight_extra_mask (the cliffs: a cliff hides a target
-## although every Shot passes through cliffs) and must meet the target first; so whatever stops a
+## although every Shot passes through cliffs; since Story 037 a flying target, which flies over the
+## cliffs, uses flying_sight_extra_mask instead, 0, so a cliff never hides it) and must meet the
+## target first; so whatever stops a
 ## Shot hides a target, a wall, the cover, a Flag Wall, the other Turret or another Unit, and so
 ## does a cliff. The path ray goes to the aim point on the Shot's mask alone, the target excluded
 ## too, and must meet nothing. The Flag has no body, so neither ray stops at it.
@@ -298,8 +300,9 @@ func _aimed_muzzle(aim: Vector3) -> Vector3:
 func _sees(muzzle: Vector3) -> bool:
 	var centre: Vector3 = Vector3(_target.global_position.x, _rules.shooting_height, _target.global_position.z)
 	var excluded: Array[RID] = [get_rid()]
+	var extra: int = _data.flying_sight_extra_mask if _target.stats.can_fly else _data.sight_extra_mask
 	var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(
-			muzzle, centre, _rules.shot_collision_mask | _data.sight_extra_mask, excluded)
+			muzzle, centre, _rules.shot_collision_mask | extra, excluded)
 	query.hit_from_inside = true
 	var hit: Dictionary = get_world_3d().direct_space_state.intersect_ray(query)
 	return not hit.is_empty() and hit["collider"] == _target

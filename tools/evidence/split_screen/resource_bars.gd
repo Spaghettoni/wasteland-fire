@@ -11,7 +11,8 @@ extends RefCounted
 ##     either Team colour (AC-2, AC-3, AC-4).
 ##  R4 the bars follow: the Fuel bar shows the Unit's Fuel and its tank, the ammo bar the Weapon's Shots and its load, and
 ##     Space (Player 1's fire) lowers Player 1's ammo bar and not Player 2's (AC-2).
-##  R5 no ammo count: a Weapon announcing capacity 0 hides the ammo bar and its icon; its load back shows them (AC-3).
+##  R5 no Unit in play: a Weapon announcing capacity 0 (its count emptied while no Unit is chosen) leaves the ammo bar and
+##     its icon shown, the bar empty, as the Fuel bar is; its load back fills it (AC-3, Martin 2026-10-19).
 ## Implements: production/epics/wasteland-fire/story-036-slower-fuel-and-resource-bars.md AC-1 to AC-5.
 ## Tooling only: nothing under src/ depends on this file.
 ## Run: godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=resource_bars
@@ -173,9 +174,9 @@ func _check_no_count() -> void:
 	var bar: Control = hud.get_node("%AmmoBar")
 	var icon: Control = hud.get_node("%AmmoIcon")
 	weapon.ammo_changed.emit(0, 0)
-	var hidden: bool = not bar.visible and not icon.visible
+	var shown_empty: bool = bar.visible and icon.visible and is_zero_approx((bar as ProgressBar).value)
 	weapon.ammo_changed.emit(weapon.shots_left, weapon.capacity)
-	var back: bool = bar.visible and icon.visible
-	_kit.need(problems, hidden, "capacity 0 left the bar %s, the icon %s" % [bar.visible, icon.visible])
-	_kit.need(problems, back, "the load back left the bar %s, the icon %s" % [bar.visible, icon.visible])
-	_kit.verdict("R5_no_count", problems, "capacity 0: bar and icon hidden %s; load %d back: shown %s" % [hidden, weapon.capacity, back])
+	var back: bool = bar.visible and icon.visible and int((bar as ProgressBar).value) == weapon.shots_left
+	_kit.need(problems, shown_empty, "capacity 0: bar %s, icon %s, value %.0f" % [bar.visible, icon.visible, (bar as ProgressBar).value])
+	_kit.need(problems, back, "the load back: bar %s, icon %s, value %.0f" % [bar.visible, icon.visible, (bar as ProgressBar).value])
+	_kit.verdict("R5_no_unit", problems, "capacity 0: bar and icon shown, bar empty %s; load %d back: filled %s" % [shown_empty, weapon.capacity, back])

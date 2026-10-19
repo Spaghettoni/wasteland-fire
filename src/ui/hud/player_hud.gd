@@ -321,16 +321,18 @@ func _on_hit_points_changed(hit_points: float, max_hit_points: float) -> void:
 	_hit_points_label.text = tr(hit_points_format) % [ceili(hit_points), ceili(max_hit_points)]
 
 
-## Shows the ammo (Story 036): the bar (maximum first) and its icon while the Weapon's capacity is
-## above zero, neither otherwise (a type with no ammo count, or a Unit out of play).
+## Shows the ammo (Story 036): the bar (maximum first) and its icon, always, as the Fuel bar is
+## (Martin, 2026-10-19: also while no Unit is chosen). A capacity of zero (no Unit in play, the
+## Weapon empties its count) shows an empty bar.
 func _on_ammo_changed(shots_left: int, capacity: int) -> void:
-	var shown: bool = capacity > 0
-	_ammo_bar.visible = shown
+	_ammo_bar.visible = true
 	if _ammo_icon != null:
-		_ammo_icon.visible = shown
-	if shown:
+		_ammo_icon.visible = true
+	if capacity > 0:
 		_ammo_bar.max_value = capacity
 		_ammo_bar.value = shots_left
+	else:
+		_ammo_bar.value = 0.0
 
 
 ## Shows the Fuel (Story 006 AC-7): the gauge (maximum first) and its line with both numbers

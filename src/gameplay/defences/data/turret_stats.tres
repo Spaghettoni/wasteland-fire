@@ -12,6 +12,7 @@ turn_rate = 1.5707963267949
 muzzle_forward = 1.6
 aim_tolerance = 0.25
 sight_extra_mask = 32
+flying_sight_extra_mask = 0
 type_id = &"turret"
 display_name = "Turret"
 max_hit_points = 100.0
