@@ -146,6 +146,10 @@ extends Control
 ## exported value that equals its script default out of a saved scene, which would drop a stored 0.
 @export var player_index: int = -1
 
+## The Weapon of this Player's Unit, whose ammo the ammo bar shows (Story 036). Optional: with none,
+## or in a scene without an AmmoBar, the HUD shows no ammo. The scene stores this Player's Weapon.
+@export var weapon: Weapon
+
 @export_group("Text")
 ## The hit-point line with two placeholders (%d): the hit points left, then the maximum;
 ## "HP %d / %d" in player_hud.tscn. Looked up with tr(), so it is also the translation key.
@@ -153,8 +157,10 @@ extends Control
 @export var hit_points_format: String = ""
 
 ## The Fuel line with two placeholders (%d): the Fuel left, then the capacity; "Fuel %d / %d" in
-## player_hud.tscn (Story 006 AC-7). Looked up with tr(), so it is also the translation key.
-## Required, with no default: the text is data in the scene and never a literal in this script.
+## the HUD of stories 006 to 032 (Story 006 AC-7). Looked up with tr(), so it is also the translation
+## key. Since Story 036 the shipped player_hud.tscn has no Fuel line (an icon beside the bar instead)
+## and leaves this empty; it is required, with no default, only in a scene that has a FuelLabel
+## (the frozen HUD the evidence runner gives the older scenarios).
 @export var fuel_format: String = ""
 
 ## The Tokens line with two placeholders: the carrier type's name (%s), then its Tokens left (%d);
@@ -186,7 +192,11 @@ extends Control
 @onready var _bar: ProgressBar = %HitPointsBar
 @onready var _hit_points_label: Label = %HitPointsLabel
 @onready var _fuel_bar: ProgressBar = %FuelBar
-@onready var _fuel_label: Label = %FuelLabel
+## The Fuel line on the bar, or null in a scene without one (Story 036: the shipped HUD has an icon).
+@onready var _fuel_label: Label = get_node_or_null(^"%FuelLabel") as Label
+## The ammo bar and its icon beside the Fuel bar, or null in a scene without them (Story 036).
+@onready var _ammo_bar: ProgressBar = get_node_or_null(^"%AmmoBar") as ProgressBar
+@onready var _ammo_icon: Control = get_node_or_null(^"%AmmoIcon") as Control
 @onready var _status_label: Label = %FlagStatusLabel
 @onready var _tokens_label: Label = %TokensLabel
 
@@ -208,6 +218,9 @@ func _ready() -> void:
 	var max_hit_points: float = unit.stats.max_hit_points if unit.stats != null else 0.0
 	_on_hit_points_changed(unit.hit_points, max_hit_points)
 	_on_fuel_changed(unit.fuel, unit.fuel_capacity)
+	if weapon != null and _ammo_bar != null:
+		weapon.ammo_changed.connect(_on_ammo_changed)
+		_on_ammo_changed(weapon.shots_left, weapon.capacity)
 	_show_status()
 	_show_tokens()
 	if edge_style != null:
@@ -270,9 +283,9 @@ func _format_problem() -> String:
 		return "hit_points_format is not set (store the hit-point line, with two %d placeholders, in the scene)"
 	if hit_points_format.count("%") < 2:
 		return "hit_points_format '%s' lacks the two placeholders for the hit points and the maximum" % hit_points_format
-	if fuel_format.is_empty():
+	if _fuel_label != null and fuel_format.is_empty():
 		return "fuel_format is not set (store the Fuel line, with two %d placeholders, in the scene)"
-	if fuel_format.count("%") < 2:
+	if _fuel_label != null and fuel_format.count("%") < 2:
 		return "fuel_format '%s' lacks the two placeholders for the Fuel and the capacity" % fuel_format
 	return _tokens_format_problem()
 
@@ -308,6 +321,18 @@ func _on_hit_points_changed(hit_points: float, max_hit_points: float) -> void:
 	_hit_points_label.text = tr(hit_points_format) % [ceili(hit_points), ceili(max_hit_points)]
 
 
+## Shows the ammo (Story 036): the bar (maximum first) and its icon while the Weapon's capacity is
+## above zero, neither otherwise (a type with no ammo count, or a Unit out of play).
+func _on_ammo_changed(shots_left: int, capacity: int) -> void:
+	var shown: bool = capacity > 0
+	_ammo_bar.visible = shown
+	if _ammo_icon != null:
+		_ammo_icon.visible = shown
+	if shown:
+		_ammo_bar.max_value = capacity
+		_ammo_bar.value = shots_left
+
+
 ## Shows the Fuel (Story 006 AC-7): the gauge (maximum first) and its line with both numbers
 ## rounded up. The maximum is left alone when the capacity is not above zero (a maximum of zero
 ## draws a full bar).
@@ -315,7 +340,8 @@ func _on_fuel_changed(fuel: float, capacity: float) -> void:
 	if capacity > 0.0:
 		_fuel_bar.max_value = capacity
 	_fuel_bar.value = fuel
-	_fuel_label.text = tr(fuel_format) % [ceili(fuel), ceili(capacity)]
+	if _fuel_label != null:
+		_fuel_label.text = tr(fuel_format) % [ceili(fuel), ceili(capacity)]
 
 
 ## Chooses the status line again from the controller's answer for this Player.

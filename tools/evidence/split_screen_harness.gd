@@ -26,7 +26,7 @@ extends Node
 ## ammo_showcase (windowed); since Story 023, fuel_building, fuel_building_showcase and fuel_building_fps
 ## (windowed); since Story 024, ammo_buildings, ammo_buildings_showcase and ammo_buildings_fps
 ## (windowed); since Story 032, pads, pads_data and pads_showcase
-## (windowed). Each is a script under tools/evidence/split_screen/,
+## (windowed); since Story 036, resource_bars and resource_bars_showcase (windowed). Each is a script under tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
 ## line there. A scenario reaches this script, DriveStep, UnitTrack and check_kit.gd through preload
@@ -306,6 +306,15 @@ extends Node
 ## stats is read by nothing but that node. A scenario of Story 026 declares it, with the opt-ins of the pieces it needs; any other
 ## scenario, now and later, runs on a Map with no tracks.
 ##
+## The slower Fuel and the resource bars (Story 036). The shipped data now burns Fuel three times slower, and each Player's HUD
+## shows the Fuel and the ammo as two bars with icons and no text (the Fuel line and the Ammo line are gone). Every scenario
+## written before it was measured with the old rates and the old HUD, so unless the scenario script declares
+## const RESOURCE_BARS: bool = true the runner gives every UnitStats of match_rules.tres its old fuel_use and fuel_use_idle on the
+## shared resources, before any other data helper (_apply_fuel_burn_off(), LEGACY_036_FUEL_RATES), and, in the freshly instanced
+## launch scene, replaces each PlayerHud by the frozen HUD of story 032 (tools/evidence/frozen/player_hud_story_032.tscn: the Fuel
+## line, no icons, no ammo bar), with the same name, index and exports, and, for a scenario that declares AMMO, puts the Ammo line
+## of story 022 back as each view's last child (_apply_resource_bars_off()). A scenario of Story 036 declares it.
+##
 ## Output: SPLIT <scenario> t=<seconds> key=value ... (progress), CHECK <scenario> <check name> PASS|FAIL
 ## <detail> and exactly one last RESULT <scenario> ok|fail checks=<n> failed=<n> key=value ...; then quit with
 ## exit code 0 when every check passed, 1 when one failed, 2 for a missing or unknown scenario. TD-003
@@ -411,6 +420,8 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"pads": preload("res://tools/evidence/split_screen/pads.gd"),
 	&"pads_data": preload("res://tools/evidence/split_screen/pads_data.gd"),
 	&"pads_showcase": preload("res://tools/evidence/split_screen/pads_showcase.gd"),
+	&"resource_bars": preload("res://tools/evidence/split_screen/resource_bars.gd"),
+	&"resource_bars_showcase": preload("res://tools/evidence/split_screen/resource_bars_showcase.gd"),
 }
 
 ## The shared step class (drive_step.gd): keys held for a time.
@@ -565,6 +576,16 @@ const GYRO_CRASH_CONSTANT: StringName = &"GYRO_CRASH"
 ## type (Story 022), instead of the unlimited Shots and the half tank every older output was measured with
 ## (_apply_ammo_off(), _apply_ammo_counts_off(), and the notice keep rule of _apply_turrets_off()).
 const AMMO_CONSTANT: StringName = &"AMMO"
+## The constant a scenario script declares as true to keep the slower Fuel and the HUD's resource bars of Story 036
+## (_apply_fuel_burn_off(), _apply_resource_bars_off()).
+const RESOURCE_BARS_CONSTANT: StringName = &"RESOURCE_BARS"
+## Each type's Fuel burn before Story 036, by type_id: [fuel_use, fuel_use_idle] per second.
+const LEGACY_036_FUEL_RATES: Dictionary = {
+	&"motorbike": [2.0, 0.5], &"buggy": [2.5, 0.625], &"truck": [3.0, 0.75], &"gyrocopter": [5.0, 1.25]}
+## The HUD of stories 006 to 032, with the Fuel line and no resource bars (Story 036).
+const FROZEN_HUD_SCENE: PackedScene = preload("res://tools/evidence/frozen/player_hud_story_032.tscn")
+## The Ammo line of story 022, which the shipped launch scene no longer holds (Story 036).
+const AMMO_COUNT_SCENE: PackedScene = preload("res://src/ui/hud/ammo_count.tscn")
 ## The share of the tank a new Unit started with in every output written before Story 022, the half of Story 006
 ## (_apply_ammo_off()), beside LEGACY_FUEL_USE: the data says 1.0 now.
 const LEGACY_SPAWN_FUEL_FRACTION: float = 0.5
@@ -767,6 +788,7 @@ func _ready() -> void:
 	Input.use_accumulated_input = false
 	_watchdog_seconds = _scenario_watchdog_seconds(SCENARIOS[scenario])
 	get_tree().create_timer(_watchdog_seconds).timeout.connect(_on_watchdog)
+	_apply_fuel_burn_off(SCENARIOS[scenario])
 	if LEGACY_SCENARIOS.has(scenario):
 		_apply_legacy_data()
 	if LEGACY_SCENARIOS.has(scenario) or STORY_005_SCENARIOS.has(scenario):
@@ -800,6 +822,7 @@ func _ready() -> void:
 	_apply_wall_panels_off(split, SCENARIOS[scenario])
 	_apply_garage_panels_off(split, SCENARIOS[scenario])
 	_apply_mine_counts_off(split, SCENARIOS[scenario])
+	_apply_resource_bars_off(split, SCENARIOS[scenario])
 	_apply_ammo_counts_off(split, SCENARIOS[scenario])
 	_apply_explosions_off(split, SCENARIOS[scenario])
 	_apply_token_stock(split, SCENARIOS[scenario])
@@ -1447,6 +1470,57 @@ func _apply_ammo_off(script: GDScript) -> void:
 		if stats != null:
 			stats.ammo_capacity = 0
 			stats.spawn_fuel_fraction = LEGACY_SPAWN_FUEL_FRACTION
+
+
+## Gives every UnitStats of match_rules.tres the Fuel burn it had before Story 036 (LEGACY_036_FUEL_RATES), on the shared
+## resources, unless the scenario script declares RESOURCE_BARS. Runs before every other data helper, so the legacy and pre-009
+## helpers still set their own values over it.
+func _apply_fuel_burn_off(script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(RESOURCE_BARS_CONSTANT, false)):
+		return
+	var rules: MatchRules = load(MATCH_RULES_PATH) as MatchRules
+	if rules == null:
+		push_error("split_screen_harness: %s did not load as MatchRules, so the old Fuel burn is not applied." % MATCH_RULES_PATH)
+		return
+	for stats: UnitStats in rules.unit_types:
+		if stats != null and LEGACY_036_FUEL_RATES.has(stats.type_id):
+			stats.fuel_use = LEGACY_036_FUEL_RATES[stats.type_id][0]
+			stats.fuel_use_idle = LEGACY_036_FUEL_RATES[stats.type_id][1]
+
+
+## Puts the HUD of story 032 back in a freshly instanced launch scene, before it enters the tree, unless the scenario script
+## declares RESOURCE_BARS: each Player's PlayerHud is replaced by an instance of FROZEN_HUD_SCENE under the same name and index,
+## with the same match_controller, unit, player_index and edge_style; for a scenario that declares AMMO each view also gets the
+## Ammo line of story 022 back as its last child, where the launch scene held it (Story 036).
+func _apply_resource_bars_off(root: SplitScreen, script: GDScript) -> void:
+	var constants: Dictionary = script.get_script_constant_map()
+	if bool(constants.get(RESOURCE_BARS_CONSTANT, false)):
+		return
+	var weapons: Array[Weapon] = [root.player_1_weapon, root.player_2_weapon]
+	for index: int in weapons.size():
+		var view: Node = root.get_node("Views/Player%dView/SubViewport" % (index + 1))
+		var shipped: PlayerHud = view.get_node("Player%dHud" % (index + 1)) as PlayerHud
+		if shipped == null:
+			continue
+		var frozen: PlayerHud = FROZEN_HUD_SCENE.instantiate() as PlayerHud
+		frozen.match_controller = shipped.match_controller
+		frozen.unit = shipped.unit
+		frozen.player_index = shipped.player_index
+		frozen.edge_style = shipped.edge_style
+		var at: int = shipped.get_index()
+		var hud_name: StringName = shipped.name
+		view.remove_child(shipped)
+		shipped.free()
+		frozen.name = hud_name
+		view.add_child(frozen)
+		view.move_child(frozen, at)
+		frozen.owner = root
+		if bool(constants.get(AMMO_CONSTANT, false)):
+			var line: AmmoCount = AMMO_COUNT_SCENE.instantiate() as AmmoCount
+			line.weapon = weapons[index]
+			line.name = "Player%dAmmoCount" % (index + 1)
+			view.add_child(line)
+			line.owner = root
 
 
 ## Frees both AmmoCount Labels of a freshly instanced launch scene, before it enters the tree, unless the scenario script

@@ -64,7 +64,10 @@ friends at home.
   pinned with the throttle held against one, it only stops or slides. The
   sea's edge only stops it, the piece takes no damage, and a ground Unit
   never crashes.
-- Every Unit burns Fuel while moving, and a little while it stands. Fuel is
+- Every Unit burns Fuel while moving, and a little while it stands: a full
+  tank lasts a Motorbike about 150 seconds of driving, a Gyrocopter about 60
+  (story 036 made the burn three times slower). Your Fuel shows as the amber
+  bar with a jerrycan beside your hit points. Fuel is
   refilled only in the two amber Fuel zones on the ground at the sides of the
   depot in the middle of the Map, one facing each Base, each marked with a
   dashed edge: a Unit that has stopped in one is topped up, from empty to full
@@ -74,9 +77,8 @@ friends at home.
   and the Fuel Cans are gone from the Map.
 - Every Unit's gun holds a load of ammo, counted in Shots: a Motorbike 100, a
   Buggy 50, a Truck 25 and a Gyrocopter 40, which is 20 seconds of continuous
-  fire at its own rate. Each Shot spends one. Your count shows as "Ammo 100 /
-  100" under the HUD band on the left of your view (a Truck's reads beside its
-  "Mines 5 / 5"), and the last Shot says "Out of ammo" for a second and a half,
+  fire at its own rate. Each Shot spends one. Your count shows as the lavender
+  bar with three cartridges right of the Fuel bar, and the last Shot says "Out of ammo" for a second and a half,
   as does every new press of the fire key after it. An empty gun fires
   nothing, but the Unit still drives, carries the Flag and lays Mines. Ammo
   comes back with a new Unit and in the ammunition buildings' zones (next

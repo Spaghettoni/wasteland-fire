@@ -102,3 +102,11 @@ Martin asked on 2026-10-18 to play with the Xbox controllers paired with his PC,
 | # | Story | Type | Status | ADR |
 |---|-------|------|--------|-----|
 | 032 | Xbox controllers: the first two connected pads belong to Player 1 and Player 2 beside their keyboard layouts; analog triggers and stick, A fire, X Mine, Y camera, View Self-destruct, Menu restart; pads that come and go mid-Round; the hints name the pad's buttons | Integration | Ready | N/A (minimal) |
+
+## After Martin's request of 2026-10-19: slower Fuel and the resource bars
+
+Martin asked on 2026-10-19 for Fuel to burn three times slower and for the Fuel and the ammo to be two bars side by side, each its own colour, with an icon and no text. Numbered 036 so that the planned 033 to 035 (four Players, the join screen, rebinding) keep their numbers.
+
+| # | Story | Type | Status | ADR |
+|---|-------|------|--------|-----|
+| 036 | Fuel lasts three times longer, and Fuel and ammo are two coloured bars with icons: a third of every burn rate; a jerrycan and the amber Fuel bar, cartridges and a lavender ammo bar, no text, right of the hit-point bar | UI | In Progress | N/A (minimal) |

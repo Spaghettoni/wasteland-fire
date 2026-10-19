@@ -35,7 +35,6 @@
 [ext_resource type="Script" path="res://src/gameplay/mines/player_mine_input.gd" id="33_pmi"]
 [ext_resource type="PackedScene" path="res://src/ui/hud/mine_count.tscn" id="34_mcount"]
 [ext_resource type="PackedScene" path="res://src/gameplay/effects/explosion.tscn" id="35_explosion"]
-[ext_resource type="PackedScene" path="res://src/ui/hud/ammo_count.tscn" id="36_acount"]
 [ext_resource type="Script" path="res://src/gameplay/input/pad_assignment.gd" id="37_pads"]
 [ext_resource type="Resource" path="res://src/gameplay/input/data/pad_layout.tres" id="38_padlayout"]
 
@@ -208,7 +207,8 @@ settings = ExtResource("28_above")
 match_controller = NodePath("%MatchController")
 player_index = 0
 
-[node name="Player1Hud" parent="Views/Player1View/SubViewport" unique_id=9000051 node_paths=PackedStringArray("match_controller", "unit") instance=ExtResource("13_hud")]
+[node name="Player1Hud" parent="Views/Player1View/SubViewport" unique_id=9000051 node_paths=PackedStringArray("match_controller", "unit", "weapon") instance=ExtResource("13_hud")]
+weapon = NodePath("%Player1Weapon")
 match_controller = NodePath("%MatchController")
 unit = NodePath("%Player1Unit")
 player_index = 0
@@ -243,9 +243,6 @@ player_index = 0
 [node name="Player1MineCount" parent="Views/Player1View/SubViewport" node_paths=PackedStringArray("mine_layer") instance=ExtResource("34_mcount")]
 mine_layer = NodePath("%Player1MineLayer")
 
-[node name="Player1AmmoCount" parent="Views/Player1View/SubViewport" node_paths=PackedStringArray("weapon") instance=ExtResource("36_acount")]
-weapon = NodePath("%Player1Weapon")
-
 [node name="Player2View" type="SubViewportContainer" parent="Views" unique_id=9000022]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -266,7 +263,8 @@ settings = ExtResource("28_above")
 match_controller = NodePath("%MatchController")
 player_index = 1
 
-[node name="Player2Hud" parent="Views/Player2View/SubViewport" unique_id=9000052 node_paths=PackedStringArray("match_controller", "unit") instance=ExtResource("13_hud")]
+[node name="Player2Hud" parent="Views/Player2View/SubViewport" unique_id=9000052 node_paths=PackedStringArray("match_controller", "unit", "weapon") instance=ExtResource("13_hud")]
+weapon = NodePath("%Player2Weapon")
 match_controller = NodePath("%MatchController")
 unit = NodePath("%Player2Unit")
 player_index = 1
@@ -300,9 +298,6 @@ player_index = 1
 
 [node name="Player2MineCount" parent="Views/Player2View/SubViewport" node_paths=PackedStringArray("mine_layer") instance=ExtResource("34_mcount")]
 mine_layer = NodePath("%Player2MineLayer")
-
-[node name="Player2AmmoCount" parent="Views/Player2View/SubViewport" node_paths=PackedStringArray("weapon") instance=ExtResource("36_acount")]
-weapon = NodePath("%Player2Weapon")
 
 [node name="Divider" type="ColorRect" parent="." unique_id=9000004]
 layout_mode = 1
