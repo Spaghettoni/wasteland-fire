@@ -3,7 +3,7 @@
 > **Story**: `production/epics/wasteland-fire/story-038-map-02-and-map-choice.md`
 > **Type**: Integration (headless scenarios + windowed frames)
 > **Written**: 2026-10-21, by `/dev-story` in a cloud session (Linux, Godot 4.7.2 official build)
-> **Sign-off**: [ ] Martin, after playing `WastelandFire-2026-10-21-map-02-gate-west.exe` (stories 038 and 039)
+> **Sign-off**: [ ] Martin, after playing `WastelandFire-2026-10-21-map-02-turrets.exe` (stories 038 and 039)
 
 ## What was built
 
@@ -93,3 +93,7 @@ Seeded: `locks_flag` true → F1, F4 fail; the pair back at 0.0 → F2, F4 fail.
 ## Regression after the Gate turn, the way back and story 039
 
 All 97 older scenarios and `bushes` and `cover_pieces` were captured again and compared with the capture above. `bushes` and `cover_pieces` give the same CHECK and RESULT lines. The older ones differ only in the frame-rate timings, in two lint counts (`fuel_building` 70 → 72 scripts under `src/`, `tokens_data` 16 → 18 files, 5 literals as before; both pass, the new files being `map_choice_return.gd` and `map_choice_hint.gd`) and in `loss`, which failed once on the Jolt job warning its engine-log check counts (the warning the story 032 evidence describes, random under load on this 2-core machine) and passed rerun alone, byte-identical to before. The runner takes the way back to the map choice (its node, its two lines and the `round_back` action) out of every scenario that does not declare `MAP_CHOICE`.
+
+## The narrower floor and the Base Turrets (AC-11)
+
+After Martin's answers of 2026-10-21 the floor is x 30..135 with 45 m corners (the west field wall runs are 5 panels, so 59 pieces of no Player) and each Base has four more Turrets, Outposts of its Player: two 3.65 m before the field-side wall, two before the back wall. `map_02` M1 now counts 6 Outposts a Player and 83 mirrored nodes, M2 keeps every Unit inside the narrower outline, M8 takes the Flag with all six Outposts of Player 2 standing; `map_02`, `bushes`, `cover_pieces` and `map_choice` pass, each twice byte-identical. The older scenarios play Map 01 and are not touched by it. `map-02-from-above.png` is the new picture.

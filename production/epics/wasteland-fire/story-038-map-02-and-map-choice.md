@@ -47,6 +47,7 @@ The schematic, in metres, x across (0 to 160) and z down (0 to 290), mirror-symm
 - [x] AC-6: A Bush hides a ground Unit behind it from a Turret, stops no Shot and no Unit; a Buggy or a Truck that drives into it flattens it (it no longer hides anything) until the restart; a Motorbike passes and leaves it standing; the Gyrocopter is never hidden by it.
 - [x] AC-7: A car wreck and a small building stop Units and Shots, take damage from both Players' Shots (the Motorbike's too), show two damaged looks and fall into low rubble at 0 hit points; the restart stands them again.
 - [x] AC-8: Every value is data: the Map's layout in the build script's tables, the Bush's and the wrecks' numbers in resources, which types flatten a Bush in the Unit stats.
+- [x] AC-11: After the first build (Martin, 2026-10-21): two more Turrets of the Base's Player before each Base's field-side wall and two before its back wall, none toward the canyon; the floor narrowed to x 30..135 with 45 m corners ("kanon spravme uzsi": a smaller playing area).
 - [x] AC-10: From a Round that is over, Esc or a pad's B goes back to the map choice; the Round-over screen says so ("Esc or B: choose another map") in both views (Martin, 2026-10-21: "mozes", to the offer of that key).
 - [x] AC-9: The Fuel building and the two ammunition buildings refuel and rearm as on Map 01, and no Mine can be laid in their zones.
 

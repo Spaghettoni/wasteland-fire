@@ -2,8 +2,8 @@ extends RefCounted
 ## Scenario map_02 of the split screen evidence harness (split_screen_harness.gd): Map 02 plays as its schematic says (Story 038).
 ## The launch scene plays Map 02 (MAP_SCENE) with every shipped piece of the game. CHECK lines:
 ##  M1 layout: the field is Map 02; both Bases where the schematic puts them, each Gate facing west (Martin, 2026-10-21) and so
-##     each Garage east of its Flag; 65 pieces of no Player (48 field wall panels, 6 in the ridge's gap, 4 small buildings, 7 wrecks), 9 Bushes, 2
-##     outposts per Player, the Fuel zone and two ammunition zones; every listed piece has its mirror image across z = 0.
+##     each Garage east of its Flag; 59 pieces of no Player (42 field wall panels, 6 in the ridge's gap, 4 small buildings, 7
+##     wrecks), 9 Bushes, 6 outposts per Player (2 at the wall's gap, 4 round the Base), the Fuel zone and two ammunition zones; every listed piece has its mirror image across z = 0.
 ##  M2 canyon: a Buggy and a Gyrocopter driven flat out at the canyon for 4 s from the west, east, north and south stay inside the
 ##     floor's outline, and the Gyrocopter is not destroyed (the canyon's foot is the map's edge, not a Tall piece).
 ##  M3 ridge: a Buggy driven east into the ridge stops at its foot; a Gyrocopter from the same place flies over it.
@@ -47,9 +47,11 @@ const WATCHDOG_SECONDS: float = 900.0
 
 ## The Bases' places (schematic) and the counts the schematic gives.
 const BASE_PLACES: Array[Vector2] = [Vector2(76.0, 42.0), Vector2(76.0, 248.0)]
-const NEUTRAL_COUNT: int = 65
+const NEUTRAL_COUNT: int = 59
 const BUSH_COUNT: int = 9
-const OUTPOST_COUNT: int = 2
+## Per Player: the two at the wall's gap, then four more round the Base (Martin, 2026-10-21).
+const OUTPOST_COUNT: int = 6
+const FIELD_OUTPOSTS: int = 2
 const ZONE_KINDS: Array[int] = [0, 1, 1]
 ## How far apart a piece and its mirror image may be, metres.
 const MIRROR_TOLERANCE: float = 0.01
@@ -222,7 +224,7 @@ func _check_ridge_wall() -> void:
 
 func _check_outposts() -> void:
 	var problems: PackedStringArray = PackedStringArray()
-	var turrets: Array[Structure] = _m.field.player_1_outposts
+	var turrets: Array[Structure] = _m.field.player_1_outposts.slice(0, FIELD_OUTPOSTS)
 	var fired: Array[int] = [0]
 	for turret: Structure in turrets:
 		_m.kit.need(problems, turret.player_index == 0, "%s belongs to player index %d" % [turret.name, turret.player_index])
@@ -306,7 +308,7 @@ func _check_flag() -> void:
 	_m.h.place(_m.units[0], Transform3D(_m.units[0].global_basis, _m.field.player_1_base.zone.global_position), _m.split.player_1_camera)
 	await _m.kit.advance(FLAG_TICKS)
 	var won: bool = _m.controller.is_round_over() and _m.controller.winner_index() == 0
-	_m.kit.need(problems, downed == 2 and outposts_standing == 2, "%d Base Turrets down, %d outposts standing" % [downed, outposts_standing])
+	_m.kit.need(problems, downed == 2 and outposts_standing == OUTPOST_COUNT, "%d Base Turrets down, %d outposts standing" % [downed, outposts_standing])
 	_m.kit.need(problems, taken, "Player 1's Motorbike did not take Player 2's Flag (state %d)" % enemy.flag.state)
 	_m.kit.need(problems, won, "the Round is not won by Player 1 (over %s, winner %d)" % [_m.controller.is_round_over(), _m.controller.winner_index()])
 	_m.controller.restart()

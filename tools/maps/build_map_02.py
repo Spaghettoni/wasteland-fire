@@ -31,8 +31,10 @@ CENTRE = (80.0, 145.0)
 MIRROR_Z = 145.0
 
 # The floor inside the canyon: a rectangle with rounded corners.
-FLOOR_RECT = (20.0, 20.0, 140.0, 270.0)  # x0, z0, x1, z1
-FLOOR_CORNER = 50.0
+# Martin, 2026-10-21, after the first build: "kanon spravme uzsi" (make the canyon narrower; his answer: a smaller playing
+# area). The schematic's floor was x 20..140 with corners of 50 m; the west edge moves in 10 m and the east 5 m.
+FLOOR_RECT = (30.0, 20.0, 135.0, 270.0)  # x0, z0, x1, z1
+FLOOR_CORNER = 45.0
 ARC_STEPS = 12
 # How far out the canyon's rock is drawn, so the camera never sees past it.
 CANYON_OUTER = (-60.0, -60.0, 220.0, 350.0)
@@ -55,7 +57,7 @@ RIDGE_WALL_Z = (136.0, 154.0)
 # The wall across the top half (mirrored for the bottom): two runs either side of the gap between
 # the half's two Turrets, at x = 44 and 56.
 FIELD_WALL_Z = 76.0
-FIELD_WALL_RUNS = [(20.0, 44.0), (56.0, 104.0)]
+FIELD_WALL_RUNS = [(30.0, 44.0), (56.0, 104.0)]
 FIELD_TURRETS_X = [44.0, 56.0]
 # The Turrets stand this far in front of the wall's line, toward the other half, so the wall's own end panels never cut
 # their sight or their Shots (Map 01's stand 4 m in front of their Gate wall).
@@ -64,23 +66,30 @@ FIELD_TURRETS_AHEAD = 2.5
 PANEL_LENGTH = 3.0  # wall_panel_scrap.tscn is 3 m along its local z
 
 # The water at both ends of the passage: x0, z0, x1, z1 (the bottom one is the mirror image).
-WATER_NORTH = (108.0, 80.0, 140.0, 98.0)
+WATER_NORTH = (108.0, 80.0, 135.0, 98.0)
 
 # Each Base: Map 01's compound Base, its Gate facing west (yaw 90; Martin, 2026-10-21: "aby otvor smeroval na zapad"), so its
 # Garage lies east of its Flag (the schematic of 2026-10-16 had it west; the Gate's side won).
 BASE_NORTH = (76.0, 42.0)
 BASE_YAW = 90.0
 
+# More Turrets of each Base (Martin, 2026-10-21: "na kazdu stranu zakladne. smerom von netreba", on every side of the Base,
+# not toward the canyon): two before the wall that faces the field and two before the back wall, in the Base's own frame
+# (x right, z back; the Gate is at -z), 3.65 m out from each wall's outer face like the Gate's two. They are the Base's
+# Player's Outposts: armed, restored and spared by their own Player like the Base's own pieces.
+BASE_TURRETS = [("TurretFieldWest", (-19.0, -6.0)), ("TurretFieldEast", (-19.0, 6.0)),
+                ("TurretBackNorth", (8.0, 19.0)), ("TurretBackSouth", (-8.0, 19.0))]
+
 # The supply buildings: the Fuel building (shared, zone to its east) and an ammunition building per
 # half (zone to its west, so turned round).
-FUEL_BUILDING = (36.0, 145.0)
+FUEL_BUILDING = (39.0, 145.0)
 AMMO_NORTH = (90.0, 100.0)
 
 # The cover of the top half (mirrored for the bottom), then the middle's. Yaw in Godot's sense
 # (counter-clockwise seen from above): the schematic's clockwise turns are negated.
 SHACKS_NORTH = [("shack_long", (56.0, 134.0)), ("shack_square", (78.0, 88.0))]
-WRECKS_NORTH = [((50.0, 98.0), -25.0), ((74.0, 106.0), 15.0), ((28.0, 112.0), -70.0)]
-BUSHES_NORTH = [(30.0, 92.0), (64.0, 116.0), (88.0, 128.0), (40.0, 128.0)]
+WRECKS_NORTH = [((50.0, 98.0), -25.0), ((74.0, 106.0), 15.0), ((37.0, 112.0), -70.0)]
+BUSHES_NORTH = [(38.0, 90.0), (64.0, 116.0), (88.0, 128.0), (40.0, 128.0)]
 WRECK_MIDDLE = ((86.0, 145.0), -90.0)
 BUSH_MIDDLE = (70.0, 145.0)
 
@@ -402,6 +411,22 @@ def build_map():
     x, z = sx_sz(BUSH_MIDDLE)
     scene.node("BushMiddle", None, "Cover", {"transform": transform(x, 0, z)}, instance=bush)
     bushes.append("Cover/BushMiddle")
+
+    # The Bases' extra Turrets, Outposts of their Base's Player (after the field's two in each list).
+    scene.node("BaseTurrets", "Node3D", ".")
+    for half, team in enumerate((orange, teal)):
+        for turret_name, (lx, lz) in BASE_TURRETS:
+            yaw = math.radians(BASE_YAW)
+            # Base 1's frame turned by its yaw (local x -> (cos, -sin), local z -> (sin, cos) in schematic (x, z)); Base 2's
+            # Turrets are the mirror images, so its field-side pair faces north, toward the field.
+            north = (BASE_NORTH[0] + lx * math.cos(yaw) + lz * math.sin(yaw), BASE_NORTH[1] - lx * math.sin(yaw) + lz * math.cos(yaw))
+            wx, wz = north if half == 0 else mirror(north)
+            name = f"Base{half + 1}{turret_name}"
+            x, z = sx_sz((wx, wz))
+            scene.node(name, None, "BaseTurrets", {"transform": transform(x, 0, z)}, instance=turret)
+            scene.node("Band", None, f"BaseTurrets/{name}/Look/Head", {"material_override": team})
+            scene.editable(f"BaseTurrets/{name}")
+            outposts[half].append(f"BaseTurrets/{name}")
 
     scene.node("TyreTracks", None, ".", {"settings": track_settings}, instance=tracks)
 

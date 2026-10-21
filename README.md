@@ -282,9 +282,10 @@ turn and fire, and a Gyrocopter with no Fuel crashes. Self-destruct still works
 with an empty tank, and at home it swaps the Unit.
 
 Map 02 (story 038, from Martin's schematic of 2026-10-16) is a canyon about
-120 by 250 metres inside its walls, played north against south: Orange at the
+105 by 250 metres inside its walls, played north against south: Orange at the
 top, Teal at the bottom, each Base Map 01's compound turned with its Gate to the
-west and its Garage east of its Flag. A wall of Wall Panels crosses each half
+west and its Garage east of its Flag, and eight Turrets: two at the Gate,
+two facing the field and two at the back. A wall of Wall Panels crosses each half
 with a gap between two Turrets of that half's Team (they fire at the other
 Player and take no damage from their own). East of the field a rock ridge that only the
 Gyrocopter crosses shuts off a passage with slowing water at both ends; a

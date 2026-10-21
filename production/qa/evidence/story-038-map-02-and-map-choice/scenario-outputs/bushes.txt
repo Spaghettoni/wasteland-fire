@@ -1,5 +1,5 @@
-CHECK bushes B1_hiding PASS target 22.9 m from the Turret: 0 Shots behind the Bush, 2 with it flat
-CHECK bushes B2_shots_pass PASS Truck behind the Bush 220.0 -> 184.0 hit points, the Bush standing true
+CHECK bushes B1_hiding PASS target 16.5 m from the Turret: 0 Shots behind the Bush, 2 with it flat
+CHECK bushes B2_shots_pass PASS Truck behind the Bush 220.0 -> 160.0 hit points, the Bush standing true
 CHECK bushes B3_motorbike_passes PASS motorbike 13.5 m past, standing true, sight layer 128
 CHECK bushes B4_flatten PASS buggy 13.3 m past, standing false, sight layer 0; truck 12.6 m past, standing false, sight layer 0; gyrocopter 33.2 m past, standing true, sight layer 128
 CHECK bushes B5_restart PASS 9 flat, then 9 standing on the sight layer

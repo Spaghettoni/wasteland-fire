@@ -4,9 +4,9 @@
 
 [resource]
 script = ExtResource("1_settings")
-area_origin = Vector2(-60, -125)
-area_size = Vector2(120, 250)
-texture_size = Vector2i(1680, 3500)
+area_origin = Vector2(-50, -125)
+area_size = Vector2(105, 250)
+texture_size = Vector2i(1470, 3500)
 darkness = 0.7
 rut_depth = 0.05
 rut_reach = 1.5

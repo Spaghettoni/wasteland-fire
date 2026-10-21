@@ -4,4 +4,4 @@ CHECK cover_pieces C3_motorbike PASS building 100.0 -> 75.0 under the Motorbike'
 CHECK cover_pieces C4_looks PASS 79%: look 1; 34%: look 2; at 0 rubble, layer 0; a Buggy drove 17.8 m past its middle
 CHECK cover_pieces C5_restart PASS both fallen, then whole on layer 64
 CHECK cover_pieces C6_data PASS wreck 60 hp [0.8, 0.35]; shack 100 hp [0.8, 0.35]; every type 1.0 against both
-RESULT cover_pieces ok checks=6 failed=0 t=12.500 pieces=65
+RESULT cover_pieces ok checks=6 failed=0 t=12.500 pieces=59

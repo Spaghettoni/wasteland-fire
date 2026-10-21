@@ -13,9 +13,9 @@ const MAP_02_PATH: String = "res://src/gameplay/maps/map_02/map_02.tscn"
 ## The schematic's centre, the Map's origin.
 const CENTRE: Vector2 = Vector2(80.0, 145.0)
 ## The floor inside the canyon (schematic numbers) and its corners' radius.
-const FLOOR_MIN: Vector2 = Vector2(20.0, 20.0)
-const FLOOR_MAX: Vector2 = Vector2(140.0, 270.0)
-const FLOOR_CORNER: float = 50.0
+const FLOOR_MIN: Vector2 = Vector2(30.0, 20.0)
+const FLOOR_MAX: Vector2 = Vector2(135.0, 270.0)
+const FLOOR_CORNER: float = 45.0
 ## The type indices of match_rules.tres's unit_types.
 const MOTORBIKE: int = 0
 const BUGGY: int = 1
