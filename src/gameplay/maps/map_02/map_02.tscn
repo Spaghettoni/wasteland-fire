@@ -991,6 +991,8 @@ material_override = ExtResource("5_team_teal_material")
 [node name="TyreTracks" parent="." instance=ExtResource("11_tyre_tracks")]
 settings = ExtResource("12_map_02_tyre_track_settings")
 
+[editable path="WaterNorth"]
+[editable path="WaterSouth"]
 [editable path="FieldWalls/FieldWallNorth/TurretWest"]
 [editable path="FieldWalls/FieldWallNorth/TurretEast"]
 [editable path="FieldWalls/FieldWallSouth/TurretWest"]

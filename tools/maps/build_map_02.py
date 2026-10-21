@@ -334,6 +334,9 @@ def build_map():
         scene.node(name, None, ".", {"transform": transform(x, 0, z)}, instance=ford)
         scene.node("CollisionShape3D", None, name, {"shape": water_shape})
         scene.node("Water", None, name, {"mesh": water_mesh})
+        # Editable, or the export's binary scene drops the two overrides of the instance's children and the water is the ford's
+        # own 12 x 40 m (measured on 4.7.2 from an exported pack, 2026-10-21; Martin saw it in the game).
+        scene.editable(name)
 
     # The Bases.
     for index, (name, point, material) in enumerate((("Base1", BASE_NORTH, orange), ("Base2", mirror(BASE_NORTH), teal))):

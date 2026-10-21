@@ -22,3 +22,7 @@ xvfb-run -s "-screen 0 1280x720x24" godot --rendering-driver opengl3 --path . -s
 
 After a rebuild, open the project once in the editor (or run `godot --headless --editor --quit --path .`)
 so the new scenes are imported, then run the evidence scenarios `map_02`, `bushes` and `cover_pieces`.
+
+An override of a property of an instanced scene's child (a ford's water mesh, a Turret's band) survives the export only when
+that instance is marked editable (`Scene.editable()`): without it the exported game shows the instanced scene's own value
+(measured on 4.7.2, 2026-10-21). Check an exported pack with `godot --headless --main-pack <pack> -s <probe>` after changing them.

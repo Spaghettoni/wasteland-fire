@@ -3,7 +3,7 @@
 > **Story**: `production/epics/wasteland-fire/story-038-map-02-and-map-choice.md`
 > **Type**: Integration (headless scenarios + windowed frames)
 > **Written**: 2026-10-21, by `/dev-story` in a cloud session (Linux, Godot 4.7.2 official build)
-> **Sign-off**: [ ] Martin, after playing `WastelandFire-2026-10-21-map-02-turrets.exe` (stories 038 and 039)
+> **Sign-off**: [ ] Martin, after playing `WastelandFire-2026-10-21-map-02-water.exe` (stories 038 and 039)
 
 ## What was built
 
@@ -97,3 +97,7 @@ All 97 older scenarios and `bushes` and `cover_pieces` were captured again and c
 ## The narrower floor and the Base Turrets (AC-11)
 
 After Martin's answers of 2026-10-21 the floor is x 30..135 with 45 m corners (the west field wall runs are 5 panels, so 59 pieces of no Player) and each Base has four more Turrets, Outposts of its Player: two 3.65 m before the field-side wall, two before the back wall. `map_02` M1 now counts 6 Outposts a Player and 83 mirrored nodes, M2 keeps every Unit inside the narrower outline, M8 takes the Flag with all six Outposts of Player 2 standing; `map_02`, `bushes`, `cover_pieces` and `map_choice` pass, each twice byte-identical. The older scenarios play Map 01 and are not touched by it. `map-02-from-above.png` is the new picture.
+
+## The water in the exported game
+
+Martin, 2026-10-21, with a screenshot from the game: the water did not reach across the passage. Measured from an exported pack (`--export-pack "Windows Desktop"`, loaded with `--main-pack`): the export's binary scene dropped Map 02's two overrides of the ford instances' children (the water's mesh and its zone), so both waters were the ford's own 12 x 40 m, while the project's own scene, which every scenario and frame here loads, had 27 x 18 m. The Turrets' Team bands, whose instances are marked editable, kept their override. `build_map_02.py` now marks both fords editable; the same pack then gives 27 x 18 m for both. `map_02` gives the same output as before.
