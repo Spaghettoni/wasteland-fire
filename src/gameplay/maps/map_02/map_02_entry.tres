@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="MapEntry" format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/maps/map_entry.gd" id="1_entry"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/map_02/map_02.tscn" id="2_scene"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/map_02_preview.png" id="3_preview"]
+
+[resource]
+script = ExtResource("1_entry")
+display_name = "Map 02"
+blurb = "The canyon: the middle, the passage over the water, the wall in the ridge"
+scene = ExtResource("2_scene")
+preview = ExtResource("3_preview")

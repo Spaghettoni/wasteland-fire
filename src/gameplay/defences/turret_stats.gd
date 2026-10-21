@@ -46,7 +46,8 @@ extends StructureStats
 
 ## The physics layers that hide a target from the Turret's sight beyond what stops a Shot (32, the
 ## cliffs_water layer: a cliff hides a target although every Shot passes through cliffs, told to
-## the developer on 2026-10-07). The Bushes' layer joins it later, as data.
+## the developer on 2026-10-07), and since Story 038 the sight layer too (128, layer 8 "sight": a
+## Bush's sight body, which nothing collides with and no Shot stops), so 160 in turret_stats.tres.
 @export_flags_3d_physics var sight_extra_mask: int = 0
 
 ## The layers that hide a flying target (UnitStats.can_fly) beyond what stops a Shot, in place of

@@ -1,0 +1,965 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/maps/map_field.gd" id="1_map_field"]
+[ext_resource type="Resource" path="res://src/gameplay/maps/data/token_stock.tres" id="2_token_stock"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/map_01/compound_base.tscn" id="3_compound_base"]
+[ext_resource type="Material" path="res://src/gameplay/split_screen/data/team_orange_material.tres" id="4_team_orange_material"]
+[ext_resource type="Material" path="res://src/gameplay/split_screen/data/team_teal_material.tres" id="5_team_teal_material"]
+[ext_resource type="PackedScene" path="res://src/gameplay/defences/wall_panel_scrap.tscn" id="6_wall_panel_scrap"]
+[ext_resource type="PackedScene" path="res://src/gameplay/defences/turret.tscn" id="7_turret"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/ford.tscn" id="8_ford"]
+[ext_resource type="PackedScene" path="res://src/gameplay/supply/ammo_building.tscn" id="9_ammo_building"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/map_02/map_02_fuel_building.tscn" id="10_map_02_fuel_building"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/tyre_tracks.tscn" id="11_tyre_tracks"]
+[ext_resource type="Resource" path="res://src/gameplay/maps/map_02/map_02_tyre_track_settings.tres" id="12_map_02_tyre_track_settings"]
+[ext_resource type="PackedScene" path="res://src/gameplay/cover/bush.tscn" id="13_bush"]
+[ext_resource type="PackedScene" path="res://src/gameplay/cover/wreck.tscn" id="14_wreck"]
+[ext_resource type="PackedScene" path="res://src/gameplay/cover/shack_long.tscn" id="15_shack_long"]
+[ext_resource type="PackedScene" path="res://src/gameplay/cover/shack_square.tscn" id="16_shack_square"]
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/sand.tres" id="17_sand"]
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/rock.tres" id="18_rock"]
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/ridge.tres" id="19_ridge"]
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/ford.tres" id="20_ford"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(280, 1, 410)
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_desert"]
+sky_top_color = Color(0.4, 0.56, 0.76, 1)
+sky_horizon_color = Color(0.7, 0.78, 0.86, 1)
+sky_curve = 0.09
+ground_bottom_color = Color(0.5, 0.4, 0.28, 1)
+ground_horizon_color = Color(0.76, 0.67, 0.53, 1)
+
+[sub_resource type="Sky" id="Sky_desert"]
+sky_material = SubResource("ProceduralSkyMaterial_desert")
+
+[sub_resource type="Environment" id="Environment_sky"]
+background_mode = 2
+sky = SubResource("Sky_desert")
+ambient_light_source = 3
+ambient_light_color = Color(0.8, 0.8, 0.82, 1)
+ambient_light_sky_contribution = 0.6
+ambient_light_energy = 0.9
+ssao_enabled = true
+ssao_radius = 2.0
+ssao_intensity = 3.0
+ssao_light_affect = 0.4
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.84, 0.8, 0.72, 1)
+fog_density = 0.2
+fog_sky_affect = 0.3
+fog_depth_begin = 60.0
+fog_depth_end = 260.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_water"]
+size = Vector3(32, 3, 18)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_water"]
+material = ExtResource("20_ford")
+size = Vector2(32, 18)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge0"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge1"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge2"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge3"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge4"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge5"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge6"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge7"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge8"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge9"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge10"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge11"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge12"]
+size = Vector3(150.4, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge13"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge14"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge15"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge16"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge17"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge18"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge19"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge20"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge21"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge22"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge23"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge24"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge25"]
+size = Vector3(20.4, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge26"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge27"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge28"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge29"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge30"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge31"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge32"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge33"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge34"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge35"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge36"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge37"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge38"]
+size = Vector3(150.4, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge39"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge40"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge41"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge42"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge43"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge44"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge45"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge46"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge47"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge48"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge49"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge50"]
+size = Vector3(6.940313, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge51"]
+size = Vector3(20.4, 3, 2)
+
+[node name="Map" type="Node3D" node_paths=PackedStringArray("player_1_base", "player_2_base", "neutral_structures", "supply_zones", "tyre_tracks", "player_1_outposts", "player_2_outposts", "bushes")]
+script = ExtResource("1_map_field")
+player_1_base = NodePath("Base1")
+player_2_base = NodePath("Base2")
+neutral_structures = [NodePath("FieldWalls/FieldWallNorth/Panel1"), NodePath("FieldWalls/FieldWallNorth/Panel2"), NodePath("FieldWalls/FieldWallNorth/Panel3"), NodePath("FieldWalls/FieldWallNorth/Panel4"), NodePath("FieldWalls/FieldWallNorth/Panel5"), NodePath("FieldWalls/FieldWallNorth/Panel6"), NodePath("FieldWalls/FieldWallNorth/Panel7"), NodePath("FieldWalls/FieldWallNorth/Panel8"), NodePath("FieldWalls/FieldWallNorth/Panel9"), NodePath("FieldWalls/FieldWallNorth/Panel10"), NodePath("FieldWalls/FieldWallNorth/Panel11"), NodePath("FieldWalls/FieldWallNorth/Panel12"), NodePath("FieldWalls/FieldWallNorth/Panel13"), NodePath("FieldWalls/FieldWallNorth/Panel14"), NodePath("FieldWalls/FieldWallNorth/Panel15"), NodePath("FieldWalls/FieldWallNorth/Panel16"), NodePath("FieldWalls/FieldWallNorth/Panel17"), NodePath("FieldWalls/FieldWallNorth/Panel18"), NodePath("FieldWalls/FieldWallNorth/Panel19"), NodePath("FieldWalls/FieldWallNorth/Panel20"), NodePath("FieldWalls/FieldWallNorth/Panel21"), NodePath("FieldWalls/FieldWallNorth/Panel22"), NodePath("FieldWalls/FieldWallNorth/Panel23"), NodePath("FieldWalls/FieldWallNorth/Panel24"), NodePath("FieldWalls/FieldWallSouth/Panel1"), NodePath("FieldWalls/FieldWallSouth/Panel2"), NodePath("FieldWalls/FieldWallSouth/Panel3"), NodePath("FieldWalls/FieldWallSouth/Panel4"), NodePath("FieldWalls/FieldWallSouth/Panel5"), NodePath("FieldWalls/FieldWallSouth/Panel6"), NodePath("FieldWalls/FieldWallSouth/Panel7"), NodePath("FieldWalls/FieldWallSouth/Panel8"), NodePath("FieldWalls/FieldWallSouth/Panel9"), NodePath("FieldWalls/FieldWallSouth/Panel10"), NodePath("FieldWalls/FieldWallSouth/Panel11"), NodePath("FieldWalls/FieldWallSouth/Panel12"), NodePath("FieldWalls/FieldWallSouth/Panel13"), NodePath("FieldWalls/FieldWallSouth/Panel14"), NodePath("FieldWalls/FieldWallSouth/Panel15"), NodePath("FieldWalls/FieldWallSouth/Panel16"), NodePath("FieldWalls/FieldWallSouth/Panel17"), NodePath("FieldWalls/FieldWallSouth/Panel18"), NodePath("FieldWalls/FieldWallSouth/Panel19"), NodePath("FieldWalls/FieldWallSouth/Panel20"), NodePath("FieldWalls/FieldWallSouth/Panel21"), NodePath("FieldWalls/FieldWallSouth/Panel22"), NodePath("FieldWalls/FieldWallSouth/Panel23"), NodePath("FieldWalls/FieldWallSouth/Panel24"), NodePath("FieldWalls/RidgeWall/Panel1"), NodePath("FieldWalls/RidgeWall/Panel2"), NodePath("FieldWalls/RidgeWall/Panel3"), NodePath("FieldWalls/RidgeWall/Panel4"), NodePath("FieldWalls/RidgeWall/Panel5"), NodePath("FieldWalls/RidgeWall/Panel6"), NodePath("Cover/ShackNorth1"), NodePath("Cover/ShackNorth2"), NodePath("Cover/WreckNorth1"), NodePath("Cover/WreckNorth2"), NodePath("Cover/WreckNorth3"), NodePath("Cover/ShackSouth1"), NodePath("Cover/ShackSouth2"), NodePath("Cover/WreckSouth1"), NodePath("Cover/WreckSouth2"), NodePath("Cover/WreckSouth3"), NodePath("Cover/WreckMiddle")]
+supply_zones = [NodePath("FuelBuilding/FuelZone"), NodePath("AmmoBuildingNorth/AmmoZone"), NodePath("AmmoBuildingSouth/AmmoZone")]
+tyre_tracks = NodePath("TyreTracks")
+token_stock = ExtResource("2_token_stock")
+player_1_outposts = [NodePath("FieldWalls/FieldWallNorth/TurretWest"), NodePath("FieldWalls/FieldWallNorth/TurretEast")]
+player_2_outposts = [NodePath("FieldWalls/FieldWallSouth/TurretWest"), NodePath("FieldWalls/FieldWallSouth/TurretEast")]
+bushes = [NodePath("Cover/BushNorth1"), NodePath("Cover/BushNorth2"), NodePath("Cover/BushNorth3"), NodePath("Cover/BushNorth4"), NodePath("Cover/BushSouth1"), NodePath("Cover/BushSouth2"), NodePath("Cover/BushSouth3"), NodePath("Cover/BushSouth4"), NodePath("Cover/BushMiddle")]
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.81915206, 0.40557979, -0.40557979, 0, 0.70710678, 0.70710678, 0.57357645, -0.57922797, 0.57922797, 0, 0, 0)
+light_color = Color(1, 0.93, 0.82, 1)
+light_energy = 1.3
+shadow_enabled = true
+directional_shadow_max_distance = 100.0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_sky")
+
+[node name="Floor" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("BoxShape3D_floor")
+
+[node name="Terrain" type="Node3D" parent="."]
+
+[node name="Ground" type="CSGPolygon3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.198, 0)
+cast_shadow = 0
+polygon = PackedVector2Array(10, -125, 16.52631, -124.572243, 22.940952, -123.296291, 29.134172, -121.193977, 35, -118.30127, 40.438071, -114.667667, 45.355339, -110.355339, 49.667667, -105.438071, 53.30127, -100, 56.193977, -94.134172, 58.296291, -87.940952, 59.572243, -81.52631, 60, -75, 60, 75, 59.572243, 81.52631, 58.296291, 87.940952, 56.193977, 94.134172, 53.30127, 100, 49.667667, 105.438071, 45.355339, 110.355339, 40.438071, 114.667667, 35, 118.30127, 29.134172, 121.193977, 22.940952, 123.296291, 16.52631, 124.572243, 10, 125, -10, 125, -16.52631, 124.572243, -22.940952, 123.296291, -29.134172, 121.193977, -35, 118.30127, -40.438071, 114.667667, -45.355339, 110.355339, -49.667667, 105.438071, -53.30127, 100, -56.193977, 94.134172, -58.296291, 87.940952, -59.572243, 81.52631, -60, 75, -60, -75, -59.572243, -81.52631, -58.296291, -87.940952, -56.193977, -94.134172, -53.30127, -100, -49.667667, -105.438071, -45.355339, -110.355339, -40.438071, -114.667667, -35, -118.30127, -29.134172, -121.193977, -22.940952, -123.296291, -16.52631, -124.572243, -10, -125)
+depth = 0.2
+material = ExtResource("17_sand")
+
+[node name="CanyonNorth" type="CSGPolygon3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.5, 0)
+polygon = PackedVector2Array(-140, -205, 140, -205, 140, -75, 60, -75, 59.572243, -81.52631, 58.296291, -87.940952, 56.193977, -94.134172, 53.30127, -100, 49.667667, -105.438071, 45.355339, -110.355339, 40.438071, -114.667667, 35, -118.30127, 29.134172, -121.193977, 22.940952, -123.296291, 16.52631, -124.572243, 10, -125, -10, -125, -16.52631, -124.572243, -22.940952, -123.296291, -29.134172, -121.193977, -35, -118.30127, -40.438071, -114.667667, -45.355339, -110.355339, -49.667667, -105.438071, -53.30127, -100, -56.193977, -94.134172, -58.296291, -87.940952, -59.572243, -81.52631, -60, -75, -140, -75)
+depth = 6.5
+material = ExtResource("18_rock")
+
+[node name="CanyonSouth" type="CSGPolygon3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.5, 0)
+polygon = PackedVector2Array(-140, 205, -140, 75, -60, 75, -59.572243, 81.52631, -58.296291, 87.940952, -56.193977, 94.134172, -53.30127, 100, -49.667667, 105.438071, -45.355339, 110.355339, -40.438071, 114.667667, -35, 118.30127, -29.134172, 121.193977, -22.940952, 123.296291, -16.52631, 124.572243, -10, 125, 10, 125, 16.52631, 124.572243, 22.940952, 123.296291, 29.134172, 121.193977, 35, 118.30127, 40.438071, 114.667667, 45.355339, 110.355339, 49.667667, 105.438071, 53.30127, 100, 56.193977, 94.134172, 58.296291, 87.940952, 59.572243, 81.52631, 60, 75, 140, 75, 140, 205)
+depth = 6.5
+material = ExtResource("18_rock")
+
+[node name="CanyonWest" type="CSGPolygon3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.5, 0)
+polygon = PackedVector2Array(-140, -75, -60, -75, -60, 75, -140, 75)
+depth = 6.5
+material = ExtResource("18_rock")
+
+[node name="CanyonEast" type="CSGPolygon3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.5, 0)
+polygon = PackedVector2Array(60, -75, 140, -75, 140, 75, 60, 75)
+depth = 6.5
+material = ExtResource("18_rock")
+
+[node name="CanyonEdge" type="Node3D" parent="Terrain"]
+
+[node name="Edge01" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge01"]
+transform = Transform3D(0.997859, 0, -0.065403, 0, 1, 0, 0.065403, 0, 0.997859, 13.328558, 1.5, -125.78398)
+shape = SubResource("BoxShape3D_edge0")
+
+[node name="Edge02" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge02"]
+transform = Transform3D(0.980785, 0, -0.19509, 0, 1, 0, 0.19509, 0, 0.980785, 19.928721, 1.5, -124.915052)
+shape = SubResource("BoxShape3D_edge1")
+
+[node name="Edge03" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge03"]
+transform = Transform3D(0.94693, 0, -0.321439, 0, 1, 0, 0.321439, 0, 0.94693, 26.359001, 1.5, -123.192064)
+shape = SubResource("BoxShape3D_edge2")
+
+[node name="Edge04" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge04"]
+transform = Transform3D(0.896873, 0, -0.442289, 0, 1, 0, 0.442289, 0, 0.896873, 32.509374, 1.5, -120.644496)
+shape = SubResource("BoxShape3D_edge3")
+
+[node name="Edge05" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge05"]
+transform = Transform3D(0.83147, 0, -0.55557, 0, 1, 0, 0.55557, 0, 0.83147, 38.274606, 1.5, -117.315938)
+shape = SubResource("BoxShape3D_edge4")
+
+[node name="Edge06" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge06"]
+transform = Transform3D(0.75184, 0, -0.659346, 0, 1, 0, 0.659346, 0, 0.75184, 43.556051, 1.5, -113.263343)
+shape = SubResource("BoxShape3D_edge5")
+
+[node name="Edge07" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge07"]
+transform = Transform3D(0.659346, 0, -0.75184, 0, 1, 0, 0.75184, 0, 0.659346, 48.263343, 1.5, -108.556051)
+shape = SubResource("BoxShape3D_edge6")
+
+[node name="Edge08" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge08"]
+transform = Transform3D(0.55557, 0, -0.83147, 0, 1, 0, 0.83147, 0, 0.55557, 52.315938, 1.5, -103.274606)
+shape = SubResource("BoxShape3D_edge7")
+
+[node name="Edge09" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge09"]
+transform = Transform3D(0.442289, 0, -0.896873, 0, 1, 0, 0.896873, 0, 0.442289, 55.644496, 1.5, -97.509374)
+shape = SubResource("BoxShape3D_edge8")
+
+[node name="Edge10" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge10"]
+transform = Transform3D(0.321439, 0, -0.94693, 0, 1, 0, 0.94693, 0, 0.321439, 58.192064, 1.5, -91.359001)
+shape = SubResource("BoxShape3D_edge9")
+
+[node name="Edge11" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge11"]
+transform = Transform3D(0.19509, 0, -0.980785, 0, 1, 0, 0.980785, 0, 0.19509, 59.915052, 1.5, -84.928721)
+shape = SubResource("BoxShape3D_edge10")
+
+[node name="Edge12" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge12"]
+transform = Transform3D(0.065403, 0, -0.997859, 0, 1, 0, 0.997859, 0, 0.065403, 60.78398, 1.5, -78.328558)
+shape = SubResource("BoxShape3D_edge11")
+
+[node name="Edge13" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge13"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 61, 1.5, 0)
+shape = SubResource("BoxShape3D_edge12")
+
+[node name="Edge14" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge14"]
+transform = Transform3D(-0.065403, 0, -0.997859, 0, 1, 0, 0.997859, 0, -0.065403, 60.78398, 1.5, 78.328558)
+shape = SubResource("BoxShape3D_edge13")
+
+[node name="Edge15" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge15"]
+transform = Transform3D(-0.19509, 0, -0.980785, 0, 1, 0, 0.980785, 0, -0.19509, 59.915052, 1.5, 84.928721)
+shape = SubResource("BoxShape3D_edge14")
+
+[node name="Edge16" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge16"]
+transform = Transform3D(-0.321439, 0, -0.94693, 0, 1, 0, 0.94693, 0, -0.321439, 58.192064, 1.5, 91.359001)
+shape = SubResource("BoxShape3D_edge15")
+
+[node name="Edge17" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge17"]
+transform = Transform3D(-0.442289, 0, -0.896873, 0, 1, 0, 0.896873, 0, -0.442289, 55.644496, 1.5, 97.509374)
+shape = SubResource("BoxShape3D_edge16")
+
+[node name="Edge18" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge18"]
+transform = Transform3D(-0.55557, 0, -0.83147, 0, 1, 0, 0.83147, 0, -0.55557, 52.315938, 1.5, 103.274606)
+shape = SubResource("BoxShape3D_edge17")
+
+[node name="Edge19" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge19"]
+transform = Transform3D(-0.659346, 0, -0.75184, 0, 1, 0, 0.75184, 0, -0.659346, 48.263343, 1.5, 108.556051)
+shape = SubResource("BoxShape3D_edge18")
+
+[node name="Edge20" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge20"]
+transform = Transform3D(-0.75184, 0, -0.659346, 0, 1, 0, 0.659346, 0, -0.75184, 43.556051, 1.5, 113.263343)
+shape = SubResource("BoxShape3D_edge19")
+
+[node name="Edge21" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge21"]
+transform = Transform3D(-0.83147, 0, -0.55557, 0, 1, 0, 0.55557, 0, -0.83147, 38.274606, 1.5, 117.315938)
+shape = SubResource("BoxShape3D_edge20")
+
+[node name="Edge22" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge22"]
+transform = Transform3D(-0.896873, 0, -0.442289, 0, 1, 0, 0.442289, 0, -0.896873, 32.509374, 1.5, 120.644496)
+shape = SubResource("BoxShape3D_edge21")
+
+[node name="Edge23" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge23"]
+transform = Transform3D(-0.94693, 0, -0.321439, 0, 1, 0, 0.321439, 0, -0.94693, 26.359001, 1.5, 123.192064)
+shape = SubResource("BoxShape3D_edge22")
+
+[node name="Edge24" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge24"]
+transform = Transform3D(-0.980785, 0, -0.19509, 0, 1, 0, 0.19509, 0, -0.980785, 19.928721, 1.5, 124.915052)
+shape = SubResource("BoxShape3D_edge23")
+
+[node name="Edge25" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge25"]
+transform = Transform3D(-0.997859, 0, -0.065403, 0, 1, 0, 0.065403, 0, -0.997859, 13.328558, 1.5, 125.78398)
+shape = SubResource("BoxShape3D_edge24")
+
+[node name="Edge26" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge26"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1.5, 126)
+shape = SubResource("BoxShape3D_edge25")
+
+[node name="Edge27" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge27"]
+transform = Transform3D(-0.997859, 0, 0.065403, 0, 1, 0, -0.065403, 0, -0.997859, -13.328558, 1.5, 125.78398)
+shape = SubResource("BoxShape3D_edge26")
+
+[node name="Edge28" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge28"]
+transform = Transform3D(-0.980785, 0, 0.19509, 0, 1, 0, -0.19509, 0, -0.980785, -19.928721, 1.5, 124.915052)
+shape = SubResource("BoxShape3D_edge27")
+
+[node name="Edge29" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge29"]
+transform = Transform3D(-0.94693, 0, 0.321439, 0, 1, 0, -0.321439, 0, -0.94693, -26.359001, 1.5, 123.192064)
+shape = SubResource("BoxShape3D_edge28")
+
+[node name="Edge30" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge30"]
+transform = Transform3D(-0.896873, 0, 0.442289, 0, 1, 0, -0.442289, 0, -0.896873, -32.509374, 1.5, 120.644496)
+shape = SubResource("BoxShape3D_edge29")
+
+[node name="Edge31" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge31"]
+transform = Transform3D(-0.83147, 0, 0.55557, 0, 1, 0, -0.55557, 0, -0.83147, -38.274606, 1.5, 117.315938)
+shape = SubResource("BoxShape3D_edge30")
+
+[node name="Edge32" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge32"]
+transform = Transform3D(-0.75184, 0, 0.659346, 0, 1, 0, -0.659346, 0, -0.75184, -43.556051, 1.5, 113.263343)
+shape = SubResource("BoxShape3D_edge31")
+
+[node name="Edge33" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge33"]
+transform = Transform3D(-0.659346, 0, 0.75184, 0, 1, 0, -0.75184, 0, -0.659346, -48.263343, 1.5, 108.556051)
+shape = SubResource("BoxShape3D_edge32")
+
+[node name="Edge34" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge34"]
+transform = Transform3D(-0.55557, 0, 0.83147, 0, 1, 0, -0.83147, 0, -0.55557, -52.315938, 1.5, 103.274606)
+shape = SubResource("BoxShape3D_edge33")
+
+[node name="Edge35" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge35"]
+transform = Transform3D(-0.442289, 0, 0.896873, 0, 1, 0, -0.896873, 0, -0.442289, -55.644496, 1.5, 97.509374)
+shape = SubResource("BoxShape3D_edge34")
+
+[node name="Edge36" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge36"]
+transform = Transform3D(-0.321439, 0, 0.94693, 0, 1, 0, -0.94693, 0, -0.321439, -58.192064, 1.5, 91.359001)
+shape = SubResource("BoxShape3D_edge35")
+
+[node name="Edge37" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge37"]
+transform = Transform3D(-0.19509, 0, 0.980785, 0, 1, 0, -0.980785, 0, -0.19509, -59.915052, 1.5, 84.928721)
+shape = SubResource("BoxShape3D_edge36")
+
+[node name="Edge38" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge38"]
+transform = Transform3D(-0.065403, 0, 0.997859, 0, 1, 0, -0.997859, 0, -0.065403, -60.78398, 1.5, 78.328558)
+shape = SubResource("BoxShape3D_edge37")
+
+[node name="Edge39" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge39"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -61, 1.5, 0)
+shape = SubResource("BoxShape3D_edge38")
+
+[node name="Edge40" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge40"]
+transform = Transform3D(0.065403, 0, 0.997859, 0, 1, 0, -0.997859, 0, 0.065403, -60.78398, 1.5, -78.328558)
+shape = SubResource("BoxShape3D_edge39")
+
+[node name="Edge41" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge41"]
+transform = Transform3D(0.19509, 0, 0.980785, 0, 1, 0, -0.980785, 0, 0.19509, -59.915052, 1.5, -84.928721)
+shape = SubResource("BoxShape3D_edge40")
+
+[node name="Edge42" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge42"]
+transform = Transform3D(0.321439, 0, 0.94693, 0, 1, 0, -0.94693, 0, 0.321439, -58.192064, 1.5, -91.359001)
+shape = SubResource("BoxShape3D_edge41")
+
+[node name="Edge43" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge43"]
+transform = Transform3D(0.442289, 0, 0.896873, 0, 1, 0, -0.896873, 0, 0.442289, -55.644496, 1.5, -97.509374)
+shape = SubResource("BoxShape3D_edge42")
+
+[node name="Edge44" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge44"]
+transform = Transform3D(0.55557, 0, 0.83147, 0, 1, 0, -0.83147, 0, 0.55557, -52.315938, 1.5, -103.274606)
+shape = SubResource("BoxShape3D_edge43")
+
+[node name="Edge45" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge45"]
+transform = Transform3D(0.659346, 0, 0.75184, 0, 1, 0, -0.75184, 0, 0.659346, -48.263343, 1.5, -108.556051)
+shape = SubResource("BoxShape3D_edge44")
+
+[node name="Edge46" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge46"]
+transform = Transform3D(0.75184, 0, 0.659346, 0, 1, 0, -0.659346, 0, 0.75184, -43.556051, 1.5, -113.263343)
+shape = SubResource("BoxShape3D_edge45")
+
+[node name="Edge47" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge47"]
+transform = Transform3D(0.83147, 0, 0.55557, 0, 1, 0, -0.55557, 0, 0.83147, -38.274606, 1.5, -117.315938)
+shape = SubResource("BoxShape3D_edge46")
+
+[node name="Edge48" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge48"]
+transform = Transform3D(0.896873, 0, 0.442289, 0, 1, 0, -0.442289, 0, 0.896873, -32.509374, 1.5, -120.644496)
+shape = SubResource("BoxShape3D_edge47")
+
+[node name="Edge49" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge49"]
+transform = Transform3D(0.94693, 0, 0.321439, 0, 1, 0, -0.321439, 0, 0.94693, -26.359001, 1.5, -123.192064)
+shape = SubResource("BoxShape3D_edge48")
+
+[node name="Edge50" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge50"]
+transform = Transform3D(0.980785, 0, 0.19509, 0, 1, 0, -0.19509, 0, 0.980785, -19.928721, 1.5, -124.915052)
+shape = SubResource("BoxShape3D_edge49")
+
+[node name="Edge51" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge51"]
+transform = Transform3D(0.997859, 0, 0.065403, 0, 1, 0, -0.065403, 0, 0.997859, -13.328558, 1.5, -125.78398)
+shape = SubResource("BoxShape3D_edge50")
+
+[node name="Edge52" type="StaticBody3D" parent="Terrain/CanyonEdge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/CanyonEdge/Edge52"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -126)
+shape = SubResource("BoxShape3D_edge51")
+
+[node name="Cliffs" type="Node3D" parent="."]
+
+[node name="RidgeNorth" type="CSGPolygon3D" parent="Cliffs"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.5, 0)
+use_collision = true
+collision_layer = 32
+collision_mask = 0
+polygon = PackedVector2Array(25, -95, 30, -89, 37, -75, 41, -59, 40, -43, 34, -29, 29, -19, 27.5, -9, 24, -9, 23, -21, 22, -39, 21.5, -59, 22, -77, 23, -88)
+depth = 2.5
+material = ExtResource("19_ridge")
+
+[node name="RidgeSouth" type="CSGPolygon3D" parent="Cliffs"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.5, 0)
+use_collision = true
+collision_layer = 32
+collision_mask = 0
+polygon = PackedVector2Array(23, 88, 22, 77, 21.5, 59, 22, 39, 23, 21, 24, 9, 27.5, 9, 29, 19, 34, 29, 40, 43, 41, 59, 37, 75, 30, 89, 25, 95)
+depth = 2.5
+material = ExtResource("19_ridge")
+
+[node name="WaterNorth" parent="." instance=ExtResource("8_ford")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 44, 0, -56)
+
+[node name="CollisionShape3D" parent="WaterNorth"]
+shape = SubResource("BoxShape3D_water")
+
+[node name="Water" parent="WaterNorth"]
+mesh = SubResource("PlaneMesh_water")
+
+[node name="WaterSouth" parent="." instance=ExtResource("8_ford")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 44, 0, 56)
+
+[node name="CollisionShape3D" parent="WaterSouth"]
+shape = SubResource("BoxShape3D_water")
+
+[node name="Water" parent="WaterSouth"]
+mesh = SubResource("PlaneMesh_water")
+
+[node name="Base1" parent="." instance=ExtResource("3_compound_base")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -8, 0, -103)
+color_material = ExtResource("4_team_orange_material")
+
+[node name="Base2" parent="." node_paths=PackedStringArray("spawn_point", "spare_spawn_points") instance=ExtResource("3_compound_base")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -8, 0, 103)
+color_material = ExtResource("5_team_teal_material")
+spawn_point = NodePath("SpareSpawnRight")
+spare_spawn_points = [NodePath("SpareSpawnLeft")]
+
+[node name="FieldWalls" type="Node3D" parent="."]
+
+[node name="FieldWallNorth" type="Node3D" parent="FieldWalls"]
+
+[node name="Panel1" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -58.5, 0, -69)
+
+[node name="Panel2" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -55.5, 0, -69)
+
+[node name="Panel3" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -52.5, 0, -69)
+
+[node name="Panel4" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -49.5, 0, -69)
+
+[node name="Panel5" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -46.5, 0, -69)
+
+[node name="Panel6" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -43.5, 0, -69)
+
+[node name="Panel7" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -40.5, 0, -69)
+
+[node name="Panel8" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -37.5, 0, -69)
+
+[node name="Panel9" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -22.5, 0, -69)
+
+[node name="Panel10" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -19.5, 0, -69)
+
+[node name="Panel11" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -16.5, 0, -69)
+
+[node name="Panel12" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -13.5, 0, -69)
+
+[node name="Panel13" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10.5, 0, -69)
+
+[node name="Panel14" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -7.5, 0, -69)
+
+[node name="Panel15" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -4.5, 0, -69)
+
+[node name="Panel16" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -1.5, 0, -69)
+
+[node name="Panel17" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 1.5, 0, -69)
+
+[node name="Panel18" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 4.5, 0, -69)
+
+[node name="Panel19" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 7.5, 0, -69)
+
+[node name="Panel20" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10.5, 0, -69)
+
+[node name="Panel21" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 13.5, 0, -69)
+
+[node name="Panel22" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 16.5, 0, -69)
+
+[node name="Panel23" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 19.5, 0, -69)
+
+[node name="Panel24" parent="FieldWalls/FieldWallNorth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 22.5, 0, -69)
+
+[node name="TurretWest" parent="FieldWalls/FieldWallNorth" instance=ExtResource("7_turret")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36, 0, -66.5)
+
+[node name="Band" parent="FieldWalls/FieldWallNorth/TurretWest/Look/Head"]
+material_override = ExtResource("4_team_orange_material")
+
+[node name="TurretEast" parent="FieldWalls/FieldWallNorth" instance=ExtResource("7_turret")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24, 0, -66.5)
+
+[node name="Band" parent="FieldWalls/FieldWallNorth/TurretEast/Look/Head"]
+material_override = ExtResource("4_team_orange_material")
+
+[node name="FieldWallSouth" type="Node3D" parent="FieldWalls"]
+
+[node name="Panel1" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -58.5, 0, 69)
+
+[node name="Panel2" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -55.5, 0, 69)
+
+[node name="Panel3" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -52.5, 0, 69)
+
+[node name="Panel4" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -49.5, 0, 69)
+
+[node name="Panel5" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -46.5, 0, 69)
+
+[node name="Panel6" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -43.5, 0, 69)
+
+[node name="Panel7" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -40.5, 0, 69)
+
+[node name="Panel8" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -37.5, 0, 69)
+
+[node name="Panel9" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -22.5, 0, 69)
+
+[node name="Panel10" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -19.5, 0, 69)
+
+[node name="Panel11" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -16.5, 0, 69)
+
+[node name="Panel12" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -13.5, 0, 69)
+
+[node name="Panel13" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10.5, 0, 69)
+
+[node name="Panel14" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -7.5, 0, 69)
+
+[node name="Panel15" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -4.5, 0, 69)
+
+[node name="Panel16" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -1.5, 0, 69)
+
+[node name="Panel17" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 1.5, 0, 69)
+
+[node name="Panel18" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 4.5, 0, 69)
+
+[node name="Panel19" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 7.5, 0, 69)
+
+[node name="Panel20" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10.5, 0, 69)
+
+[node name="Panel21" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 13.5, 0, 69)
+
+[node name="Panel22" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 16.5, 0, 69)
+
+[node name="Panel23" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 19.5, 0, 69)
+
+[node name="Panel24" parent="FieldWalls/FieldWallSouth" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 22.5, 0, 69)
+
+[node name="TurretWest" parent="FieldWalls/FieldWallSouth" instance=ExtResource("7_turret")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -36, 0, 66.5)
+
+[node name="Band" parent="FieldWalls/FieldWallSouth/TurretWest/Look/Head"]
+material_override = ExtResource("5_team_teal_material")
+
+[node name="TurretEast" parent="FieldWalls/FieldWallSouth" instance=ExtResource("7_turret")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -24, 0, 66.5)
+
+[node name="Band" parent="FieldWalls/FieldWallSouth/TurretEast/Look/Head"]
+material_override = ExtResource("5_team_teal_material")
+
+[node name="RidgeWall" type="Node3D" parent="FieldWalls"]
+
+[node name="Panel1" parent="FieldWalls/RidgeWall" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.5, 0, -7.5)
+
+[node name="Panel2" parent="FieldWalls/RidgeWall" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.5, 0, -4.5)
+
+[node name="Panel3" parent="FieldWalls/RidgeWall" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.5, 0, -1.5)
+
+[node name="Panel4" parent="FieldWalls/RidgeWall" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.5, 0, 1.5)
+
+[node name="Panel5" parent="FieldWalls/RidgeWall" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.5, 0, 4.5)
+
+[node name="Panel6" parent="FieldWalls/RidgeWall" instance=ExtResource("6_wall_panel_scrap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.5, 0, 7.5)
+
+[node name="FuelBuilding" parent="." instance=ExtResource("10_map_02_fuel_building")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -44, 0, 0)
+
+[node name="AmmoBuildingNorth" parent="." instance=ExtResource("9_ammo_building")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 10, 0, -45)
+
+[node name="AmmoBuildingSouth" parent="." instance=ExtResource("9_ammo_building")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 10, 0, 45)
+
+[node name="Cover" type="Node3D" parent="."]
+
+[node name="ShackNorth1" parent="Cover" instance=ExtResource("15_shack_long")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24, 0, -11)
+
+[node name="ShackNorth2" parent="Cover" instance=ExtResource("16_shack_square")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -57)
+
+[node name="WreckNorth1" parent="Cover" instance=ExtResource("14_wreck")]
+transform = Transform3D(0.906308, 0, -0.422618, 0, 1, 0, 0.422618, 0, 0.906308, -30, 0, -47)
+
+[node name="WreckNorth2" parent="Cover" instance=ExtResource("14_wreck")]
+transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, -6, 0, -39)
+
+[node name="WreckNorth3" parent="Cover" instance=ExtResource("14_wreck")]
+transform = Transform3D(0.34202, 0, -0.939693, 0, 1, 0, 0.939693, 0, 0.34202, -52, 0, -33)
+
+[node name="BushNorth1" parent="Cover" instance=ExtResource("13_bush")]
+transform = Transform3D(0.798636, 0, 0.601815, 0, 1, 0, -0.601815, 0, 0.798636, -50, 0, -53)
+
+[node name="BushNorth2" parent="Cover" instance=ExtResource("13_bush")]
+transform = Transform3D(0.275637, 0, 0.961262, 0, 1, 0, -0.961262, 0, 0.275637, -16, 0, -29)
+
+[node name="BushNorth3" parent="Cover" instance=ExtResource("13_bush")]
+transform = Transform3D(-0.358368, 0, 0.93358, 0, 1, 0, -0.93358, 0, -0.358368, 8, 0, -17)
+
+[node name="BushNorth4" parent="Cover" instance=ExtResource("13_bush")]
+transform = Transform3D(-0.848048, 0, 0.529919, 0, 1, 0, -0.529919, 0, -0.848048, -40, 0, -17)
+
+[node name="ShackSouth1" parent="Cover" instance=ExtResource("15_shack_long")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -24, 0, 11)
+
+[node name="ShackSouth2" parent="Cover" instance=ExtResource("16_shack_square")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -2, 0, 57)
+
+[node name="WreckSouth1" parent="Cover" instance=ExtResource("14_wreck")]
+transform = Transform3D(0.906308, 0, 0.422618, 0, 1, 0, -0.422618, 0, 0.906308, -30, 0, 47)
+
+[node name="WreckSouth2" parent="Cover" instance=ExtResource("14_wreck")]
+transform = Transform3D(0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, 0.965926, -6, 0, 39)
+
+[node name="WreckSouth3" parent="Cover" instance=ExtResource("14_wreck")]
+transform = Transform3D(0.34202, 0, 0.939693, 0, 1, 0, -0.939693, 0, 0.34202, -52, 0, 33)
+
+[node name="BushSouth1" parent="Cover" instance=ExtResource("13_bush")]
+transform = Transform3D(0.798636, 0, -0.601815, 0, 1, 0, 0.601815, 0, 0.798636, -50, 0, 53)
+
+[node name="BushSouth2" parent="Cover" instance=ExtResource("13_bush")]
+transform = Transform3D(0.275637, 0, -0.961262, 0, 1, 0, 0.961262, 0, 0.275637, -16, 0, 29)
+
+[node name="BushSouth3" parent="Cover" instance=ExtResource("13_bush")]
+transform = Transform3D(-0.358368, 0, -0.93358, 0, 1, 0, 0.93358, 0, -0.358368, 8, 0, 17)
+
+[node name="BushSouth4" parent="Cover" instance=ExtResource("13_bush")]
+transform = Transform3D(-0.848048, 0, -0.529919, 0, 1, 0, 0.529919, 0, -0.848048, -40, 0, 17)
+
+[node name="WreckMiddle" parent="Cover" instance=ExtResource("14_wreck")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 6, 0, 0)
+
+[node name="BushMiddle" parent="Cover" instance=ExtResource("13_bush")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 0)
+
+[node name="TyreTracks" parent="." instance=ExtResource("11_tyre_tracks")]
+settings = ExtResource("12_map_02_tyre_track_settings")
+
+[editable path="FieldWalls/FieldWallNorth/TurretWest"]
+[editable path="FieldWalls/FieldWallNorth/TurretEast"]
+[editable path="FieldWalls/FieldWallSouth/TurretWest"]
+[editable path="FieldWalls/FieldWallSouth/TurretEast"]

@@ -1,0 +1,109 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/cover/bush.gd" id="1_bush"]
+[ext_resource type="Material" path="res://src/gameplay/cover/materials/bush_leaves.tres" id="2_leaves"]
+[ext_resource type="Material" path="res://src/gameplay/cover/materials/bush_leaves_dark.tres" id="3_leaves_dark"]
+[ext_resource type="Material" path="res://src/gameplay/cover/materials/bush_flat.tres" id="4_flat"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_lump"]
+material = ExtResource("2_leaves")
+radius = 1.0
+height = 2.0
+radial_segments = 10
+rings = 6
+
+[sub_resource type="SphereMesh" id="SphereMesh_lump_dark"]
+material = ExtResource("3_leaves_dark")
+radius = 1.0
+height = 2.0
+radial_segments = 10
+rings = 6
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_flat"]
+material = ExtResource("4_flat")
+top_radius = 1.0
+bottom_radius = 1.0
+height = 1.0
+radial_segments = 12
+rings = 1
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_sight"]
+height = 2.2
+radius = 1.9
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_trigger"]
+height = 2.0
+radius = 1.7
+
+[node name="Bush" type="Node3D" node_paths=PackedStringArray("trigger", "sight_body", "standing_look", "flat_look")]
+script = ExtResource("1_bush")
+trigger = NodePath("Trigger")
+sight_body = NodePath("SightBody")
+standing_look = NodePath("Standing")
+flat_look = NodePath("Flat")
+
+[node name="Standing" type="Node3D" parent="."]
+
+[node name="Lump1" type="MeshInstance3D" parent="Standing"]
+transform = Transform3D(1.25, 0, 0, 0, 1.040, 0, 0, 0, 1.25, 0, 0.892, 0)
+mesh = SubResource("SphereMesh_lump")
+
+[node name="Lump2" type="MeshInstance3D" parent="Standing"]
+transform = Transform3D(0.95, 0, 0, 0, 0.800, 0, 0, 0, 0.95, 1.25, 0.722, 0.35)
+mesh = SubResource("SphereMesh_lump_dark")
+
+[node name="Lump3" type="MeshInstance3D" parent="Standing"]
+transform = Transform3D(0.9, 0, 0, 0, 0.800, 0, 0, 0, 0.9, -1.15, 0.680, 0.55)
+mesh = SubResource("SphereMesh_lump")
+
+[node name="Lump4" type="MeshInstance3D" parent="Standing"]
+transform = Transform3D(0.9, 0, 0, 0, 0.800, 0, 0, 0, 0.9, 0.3, 0.680, -1.2)
+mesh = SubResource("SphereMesh_lump_dark")
+
+[node name="Lump5" type="MeshInstance3D" parent="Standing"]
+transform = Transform3D(0.8, 0, 0, 0, 0.680, 0, 0, 0, 0.8, -0.55, 0.595, -0.95)
+mesh = SubResource("SphereMesh_lump")
+
+[node name="Lump6" type="MeshInstance3D" parent="Standing"]
+transform = Transform3D(0.75, 0, 0, 0, 0.640, 0, 0, 0, 0.75, 0.85, 0.552, 1.05)
+mesh = SubResource("SphereMesh_lump_dark")
+
+[node name="Flat" type="Node3D" parent="."]
+visible = false
+
+[node name="Mat1" type="MeshInstance3D" parent="Flat"]
+transform = Transform3D(1.6, 0, 0, 0, 0.18, 0, 0, 0, 1.440, 0, 0.09, 0)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_flat")
+
+[node name="Mat2" type="MeshInstance3D" parent="Flat"]
+transform = Transform3D(1.0, 0, 0, 0, 0.18, 0, 0, 0, 0.900, 1.0, 0.09, 0.6)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_flat")
+
+[node name="Mat3" type="MeshInstance3D" parent="Flat"]
+transform = Transform3D(0.9, 0, 0, 0, 0.18, 0, 0, 0, 0.810, -0.9, 0.09, 0.5)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_flat")
+
+[node name="Mat4" type="MeshInstance3D" parent="Flat"]
+transform = Transform3D(0.9, 0, 0, 0, 0.18, 0, 0, 0, 0.810, 0.2, 0.09, -1.1)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_flat")
+
+[node name="SightBody" type="StaticBody3D" parent="."]
+collision_layer = 128
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SightBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+shape = SubResource("CylinderShape3D_sight")
+
+[node name="Trigger" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Trigger"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CylinderShape3D_trigger")

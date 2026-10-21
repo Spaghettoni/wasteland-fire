@@ -12,6 +12,10 @@ friends at home.
 
 ## How it plays
 
+- The game opens on the map choice (story 038): Map 01 and Map 02 side by
+  side, each with a picture of it from above. Either Player picks one with
+  A / D or Left / Right (a pad's stick or D-pad) and starts with Space, Period
+  or Enter (a pad's A), or clicks a card. R restarts the same Map.
 - Two Players share one keyboard and one screen, split side by side. Each
   Player can also play with an Xbox controller (story 032): the first pad
   connected is Player 1's, the second Player 2's, and the keyboard keeps
@@ -273,6 +277,22 @@ stands still. Stop in one of the two amber Fuel zones beside the depot to refill
 turn and fire, and a Gyrocopter with no Fuel crashes. Self-destruct still works
 with an empty tank, and at home it swaps the Unit.
 
+Map 02 (story 038, from Martin's schematic of 2026-10-16) is a canyon about
+120 by 250 metres inside its walls, played north against south: Orange at the
+top, Teal at the bottom, each Base Map 01's compound turned with its Gate to the
+east and its Garage west of its Flag. A wall of Wall Panels crosses each half
+with a gap between two Turrets of that half's Team (they fire at the other
+Player, take no damage from their own, but do not lock the Flag; only a
+Base's own Turrets do). East of the field a rock ridge that only the
+Gyrocopter crosses shuts off a passage with slowing water at both ends; a
+breakable wall in the ridge's gap opens a third way in. One shared Fuel
+building stands on the west side and each half has an ammunition building.
+The left corridor holds Bushes (they hide a ground Unit from a Turret, stop no
+Shot, and a Buggy or a Truck flattens them until the restart; the Motorbike
+passes and the Gyrocopter flies over), car wrecks and small buildings, which
+stop Units and Shots and break under anyone's fire, the Motorbike's too. The
+Tokens are Map 01's.
+
 Map 01 is an island about 300 by 100 metres. Orange is Player 1 at the west Base
 and Teal is Player 2 at the east Base; each Base is a compound walled by 2 m
 Wall Panels between four 6 m corner towers, with one gate facing the centre, a
@@ -297,7 +317,8 @@ every Unit.
 godot --path .
 ```
 
-The game launches straight into the split screen. There is no menu yet.
+The game opens on the map choice; the chosen Map then plays in the split
+screen.
 
 Tests use gdUnit4 and run headless. The same suite runs in GitHub Actions on
 every push:

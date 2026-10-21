@@ -27,7 +27,7 @@ extends Node
 ## (windowed); since Story 024, ammo_buildings, ammo_buildings_showcase and ammo_buildings_fps
 ## (windowed); since Story 032, pads, pads_data and pads_showcase
 ## (windowed); since Story 036, resource_bars and resource_bars_showcase (windowed);
-## since Story 037, turret_flying_sight and cliff_tops. Each is a script under tools/evidence/split_screen/,
+## since Story 037, turret_flying_sight and cliff_tops; since Story 038, map_02, bushes, cover_pieces and map_02_showcase (windowed). Each is a script under tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
 ## line there. A scenario reaches this script, DriveStep, UnitTrack and check_kit.gd through preload
@@ -321,6 +321,16 @@ extends Node
 ## shared TurretStats the sight every older output was measured with, a cliff hiding every target alike
 ## (_apply_flying_sight_off(): flying_sight_extra_mask = sight_extra_mask).
 ##
+## Map 02, the Bushes and the map choice (Story 038). A scenario script that declares const MAP_SCENE: String names a Map
+## scene the runner puts in place of Map 01 in the freshly instanced launch scene before any other helper touches it
+## (_apply_map_scene(): SplitScreen.use_map()); every scenario written before it declares none and plays Map 01. The shipped
+## turret_stats.tres now adds the sight layer (layer 8, a Bush's sight body) to the sight of a ground target (sight_extra_mask
+## 160), the project names that layer "sight" and declares the map choice's three menu actions with keyboard and pad events.
+## Unless the scenario script declares const BUSHES: bool = true the runner gives the shared TurretStats the sight of stories
+## 013 to 037 (sight_extra_mask 32, before _apply_flying_sight_off() copies it) and takes the layer's name away; unless it
+## declares const MAP_CHOICE: bool = true it erases the three menu actions from the InputMap (_apply_bushes_off(),
+## _apply_map_choice_off()): the scenarios that count layer names, pad events or keys were measured without them.
+##
 ## Output: SPLIT <scenario> t=<seconds> key=value ... (progress), CHECK <scenario> <check name> PASS|FAIL
 ## <detail> and exactly one last RESULT <scenario> ok|fail checks=<n> failed=<n> key=value ...; then quit with
 ## exit code 0 when every check passed, 1 when one failed, 2 for a missing or unknown scenario. TD-003
@@ -430,6 +440,10 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"resource_bars_showcase": preload("res://tools/evidence/split_screen/resource_bars_showcase.gd"),
 	&"turret_flying_sight": preload("res://tools/evidence/split_screen/turret_flying_sight.gd"),
 	&"cliff_tops": preload("res://tools/evidence/split_screen/cliff_tops.gd"),
+	&"map_02": preload("res://tools/evidence/split_screen/map_02.gd"),
+	&"bushes": preload("res://tools/evidence/split_screen/bushes.gd"),
+	&"cover_pieces": preload("res://tools/evidence/split_screen/cover_pieces.gd"),
+	&"map_02_showcase": preload("res://tools/evidence/split_screen/map_02_showcase.gd"),
 }
 
 ## The shared step class (drive_step.gd): keys held for a time.
@@ -590,6 +604,18 @@ const RESOURCE_BARS_CONSTANT: StringName = &"RESOURCE_BARS"
 ## The constant a scenario script declares as true to keep the shipped Turret sight of Story 037, no cliff hiding a flying target
 ## (_apply_flying_sight_off()).
 const TURRET_SEES_FLYING_CONSTANT: StringName = &"TURRET_SEES_FLYING"
+## The constant a scenario script declares as a res:// path to play another Map than Map 01 (Story 038, _apply_map_scene()).
+const MAP_SCENE_CONSTANT: StringName = &"MAP_SCENE"
+## The constant a scenario script declares as true to keep the shipped sight layer of Story 038 (_apply_bushes_off()).
+const BUSHES_CONSTANT: StringName = &"BUSHES"
+## The constant a scenario script declares as true to keep the map choice's menu actions (Story 038, _apply_map_choice_off()).
+const MAP_CHOICE_CONSTANT: StringName = &"MAP_CHOICE"
+## The Turret's sight of a ground target before Story 038: the cliffs_water layer only.
+const LEGACY_037_SIGHT_EXTRA_MASK: int = 32
+## The physics layer Story 038 named, and the project setting that names it.
+const SIGHT_LAYER_SETTING: String = "layer_names/3d_physics/layer_8"
+## The map choice's actions (project.godot, Story 038).
+const MENU_ACTIONS: Array[StringName] = [&"menu_left", &"menu_right", &"menu_confirm"]
 ## Each type's Fuel burn before Story 036, by type_id: [fuel_use, fuel_use_idle] per second.
 const LEGACY_036_FUEL_RATES: Dictionary = {
 	&"motorbike": [2.0, 0.5], &"buggy": [2.5, 0.625], &"truck": [3.0, 0.75], &"gyrocopter": [5.0, 1.25]}
@@ -800,6 +826,8 @@ func _ready() -> void:
 	_watchdog_seconds = _scenario_watchdog_seconds(SCENARIOS[scenario])
 	get_tree().create_timer(_watchdog_seconds).timeout.connect(_on_watchdog)
 	_apply_fuel_burn_off(SCENARIOS[scenario])
+	_apply_bushes_off(SCENARIOS[scenario])
+	_apply_map_choice_off(SCENARIOS[scenario])
 	_apply_flying_sight_off(SCENARIOS[scenario])
 	if LEGACY_SCENARIOS.has(scenario):
 		_apply_legacy_data()
@@ -819,6 +847,7 @@ func _ready() -> void:
 	_apply_turret_looks_data_off(SCENARIOS[scenario])
 	turret_scene = SHIPPED_TURRET_SCENE if _keeps_turret_looks(SCENARIOS[scenario]) else FROZEN_TURRET_SCENE
 	split = SPLIT_SCENE.instantiate() as SplitScreen
+	_apply_map_scene(split, SCENARIOS[scenario])
 	_apply_chase_camera(split, SCENARIOS[scenario])
 	if GREYBOX_SCENARIOS.has(scenario):
 		_apply_greybox_composition(split)
@@ -1510,6 +1539,44 @@ func _apply_flying_sight_off(script: GDScript) -> void:
 		push_error("split_screen_harness: %s did not load as TurretStats, so the old Turret sight is not applied." % TURRET_STATS_PATH)
 		return
 	stats.flying_sight_extra_mask = stats.sight_extra_mask
+
+
+## Puts the Map the scenario script names in MAP_SCENE in place of Map 01 in a freshly instanced launch scene, before any other
+## helper reads its field (Story 038): SplitScreen.use_map(). A script that names none keeps Map 01; a path that does not load
+## as a scene is an error and keeps Map 01.
+func _apply_map_scene(root: SplitScreen, script: GDScript) -> void:
+	var path: String = String(script.get_script_constant_map().get(MAP_SCENE_CONSTANT, ""))
+	if path.is_empty():
+		return
+	var map_scene: PackedScene = load(path) as PackedScene
+	if map_scene == null:
+		push_error("split_screen_harness: %s did not load as a scene, so the scenario plays Map 01." % path)
+		return
+	root.use_map(map_scene)
+
+
+## Gives the shared TurretStats the ground sight of stories 013 to 037 (LEGACY_037_SIGHT_EXTRA_MASK) and takes the name of the
+## sight layer away, unless the scenario script declares BUSHES (Story 038). Runs before _apply_flying_sight_off(), which copies
+## the ground sight into the flying one for the scenarios written before Story 037.
+func _apply_bushes_off(script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(BUSHES_CONSTANT, false)):
+		return
+	ProjectSettings.set_setting(SIGHT_LAYER_SETTING, "")
+	var stats: TurretStats = load(TURRET_STATS_PATH) as TurretStats
+	if stats == null:
+		push_error("split_screen_harness: %s did not load as TurretStats, so the old Turret sight is not applied." % TURRET_STATS_PATH)
+		return
+	stats.sight_extra_mask = LEGACY_037_SIGHT_EXTRA_MASK
+
+
+## Erases the map choice's three actions from the InputMap, unless the scenario script declares MAP_CHOICE (Story 038): every
+## scenario written before it counted the project's actions, keys and pad events without them.
+func _apply_map_choice_off(script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(MAP_CHOICE_CONSTANT, false)):
+		return
+	for action: StringName in MENU_ACTIONS:
+		if InputMap.has_action(action):
+			InputMap.erase_action(action)
 
 
 ## Puts the HUD of story 032 back in a freshly instanced launch scene, before it enters the tree, unless the scenario script

@@ -188,6 +188,17 @@ extends Control
 ## export and not from a search of the tree or a singleton; a Map with none hands nothing, and the
 ## evidence runner takes the node away for every scenario written before it.
 ## (production/epics/wasteland-fire/story-026-tyre-tracks.md AC-3, AC-7)
+##
+## Other Maps and their pieces (Story 038). The scene is saved with Map 01; the map choice
+## (src/ui/map_choice/map_choice.gd) instances it and calls use_map() with the chosen Map before it
+## enters the tree, so _ready() begins the Round on that Map. A Map may list a Player's pieces outside
+## the Base (MapField.player_1_outposts and player_2_outposts, Map 02's field Turrets): each is given
+## its Player, armed if it is a Turret and restored at every restart with the Base's pieces
+## (_pieces_of()). The Map's Bushes (MapField.bushes) stand again at every restart too.
+## (production/epics/wasteland-fire/story-038-map-02-and-map-choice.md AC-1, AC-5, AC-6)
+
+## The name of World's Map node, the one use_map() replaces (Story 038).
+const MAP_NODE_NAME: StringName = &"Map"
 
 ## The node group every Shot in flight belongs to; _free_shots() frees it at every Round start.
 const SHOT_GROUP: StringName = &"shots"
@@ -242,6 +253,40 @@ const FUEL_CAN_GROUP: StringName = &"fuel_cans"
 ## The picture a destroyed Unit plays (Story 016): explosion.tscn, whose root is an Explosion. Optional: with
 ## none nothing listens to the Round for it and no explosion is ever added.
 @export var explosion_scene: PackedScene
+
+## Puts `map_scene` in place of the Map this scene was saved with (Story 038), before the scene
+## enters the tree: the map choice calls it on a freshly instanced launch scene. World's Map is
+## freed at once (remove_child() and free(), so none of its nodes stays in a node group for a frame),
+## the new Map is instanced as World's first child under the same name and unique name, owned by
+## this scene, and field points at it: the export was resolved to the old Map when the scene was
+## instanced. Returns false, with an error and nothing changed, when the scene is already in the tree,
+## when map_scene is null or when its root is not a MapField.
+func use_map(map_scene: PackedScene) -> bool:
+	if is_inside_tree():
+		push_error("SplitScreen '%s': use_map() is called after the scene entered the tree, so the Map is not replaced." % name)
+		return false
+	if map_scene == null:
+		push_error("SplitScreen '%s': use_map() got no scene, so the Map is not replaced." % name)
+		return false
+	var instance: Node = map_scene.instantiate()
+	var map: MapField = instance as MapField
+	if map == null:
+		push_error("SplitScreen '%s': the root of %s is not a MapField, so the Map is not replaced." % [name, map_scene.resource_path])
+		instance.free()
+		return false
+	var world: Node3D = get_node("World") as Node3D
+	var old: Node = world.get_node_or_null(NodePath(String(MAP_NODE_NAME)))
+	if old != null:
+		world.remove_child(old)
+		old.free()
+	map.name = MAP_NODE_NAME
+	map.unique_name_in_owner = true
+	world.add_child(map)
+	world.move_child(map, 0)
+	map.owner = self
+	field = map
+	return true
+
 
 func _ready() -> void:
 	var missing: String = _first_unassigned()
@@ -306,7 +351,7 @@ func _first_unassigned() -> String:
 func _assign_players(units: Array[Unit], bases: Array[Base]) -> void:
 	for player: int in units.size():
 		units[player].player_index = player
-		for structure: Structure in bases[player].structures:
+		for structure: Structure in _pieces_of(player, bases):
 			if structure != null:
 				structure.player_index = player
 
@@ -316,7 +361,7 @@ func _assign_players(units: Array[Unit], bases: Array[Base]) -> void:
 ## the node the Units are under. A Structure that is not a Turret is left alone.
 func _arm_turrets(units: Array[Unit], bases: Array[Base]) -> void:
 	for player: int in bases.size():
-		for structure: Structure in bases[player].structures:
+		for structure: Structure in _pieces_of(player, bases):
 			var turret: Turret = structure as Turret
 			if turret != null:
 				turret.arm(units[(player + 1) % units.size()], units[player].get_parent(), match_controller.rules)
@@ -434,13 +479,25 @@ func _explode(player_index: int) -> void:
 ## benched both Units by then, so nothing stands where a piece returns. A piece that is standing is
 ## refilled, a fallen one stands again.
 func _restore_structures() -> void:
-	for base: Base in [field.player_1_base, field.player_2_base]:
-		for structure: Structure in base.structures:
+	var bases: Array[Base] = [field.player_1_base, field.player_2_base]
+	for player: int in bases.size():
+		for structure: Structure in _pieces_of(player, bases):
 			if structure != null:
 				structure.restore()
 	for structure: Structure in field.neutral_structures:
 		if structure != null:
 			structure.restore()
+	for bush: Bush in field.bushes:
+		if bush != null:
+			bush.restore()
+
+
+## The pieces of the Player at `player`: the Structures of that Player's Base, then that Player's
+## outposts on the field (MapField.outposts_of(), Story 038), in that order.
+func _pieces_of(player: int, bases: Array[Base]) -> Array[Structure]:
+	var pieces: Array[Structure] = bases[player].structures.duplicate()
+	pieces.append_array(field.outposts_of(player))
+	return pieces
 
 
 ## Brings every Fuel Can (the FUEL_CAN_GROUP nodes) back at its spot when a Round starts again

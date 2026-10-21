@@ -36,6 +36,9 @@ const MATERIALS_DIR: String = "res://src/gameplay/maps/map_01/materials"
 const TERRAIN_SCENE: String = "res://src/gameplay/maps/map_01/map_01_terrain.tscn"
 const GROUND_MATERIALS: PackedStringArray = ["road.tres", "salt_flat.tres", "sand.tres"]
 const GROUND_USERS: PackedStringArray = ["CanyonRoad", "Island", "PlaneMesh_salt_flat"]
+## The other Maps whose ground is drawn by the ground shader (Story 038), each with the one node allowed to use a ground
+## material: Map 02's Ground, its sand floor inside the canyon.
+const OTHER_GROUNDS: Dictionary = {"res://src/gameplay/maps/map_02/map_02.tscn": "Ground"}
 
 var measured: PackedStringArray = []
 var expected_errors: int = 0
@@ -160,6 +163,21 @@ func _tyres_touch_the_ground() -> void:
 	_q.kit.verdict("tyres_touch_the_ground", problems, "in the imported meshes the vertices within %.0f cm of the ground are all inside a tyre's footprint (its width and %.1f m along the Unit) and every tyre has at least %d: %s" % [TOUCH_HEIGHT * 100.0, FOOTPRINT_LENGTH, LEAST_TOUCHING, ", ".join(found)])
 
 
+## The nodes of a scene that use one of the ground materials (Story 038's other Maps).
+func _ground_users_of(path: String) -> PackedStringArray:
+	var ids: Dictionary = {}
+	var users: PackedStringArray = []
+	var holder: String = ""
+	for line: String in FileAccess.get_file_as_string(path).split("\n"):
+		if line.begins_with("[ext_resource") and GROUND_MATERIALS.has(line.get_slice("path=\"", 1).get_slice("\"", 0).get_file()):
+			ids[line.get_slice("id=\"", 1).get_slice("\"", 0)] = true
+		elif line.begins_with("["):
+			holder = line.get_slice("name=\"", 1).get_slice("\"", 0)
+		elif line.begins_with("material = ExtResource(\"") and ids.has(line.get_slice("(\"", 1).get_slice("\"", 0)):
+			users.append(holder)
+	return users
+
+
 ## ground_surfaces (AC-2): see the class doc.
 func _ground_surfaces() -> void:
 	var problems: PackedStringArray = []
@@ -183,7 +201,9 @@ func _ground_surfaces() -> void:
 	_q.kit.need(problems, users == GROUND_USERS, "the ground materials are used by %s, not %s" % [users, GROUND_USERS])
 	var elsewhere: PackedStringArray = []
 	for path: String in _scenes_under("res://src"):
-		if path != TERRAIN_SCENE and (FileAccess.get_file_as_string(path).contains("/materials/sand.tres") or FileAccess.get_file_as_string(path).contains("/materials/road.tres") or FileAccess.get_file_as_string(path).contains("/materials/salt_flat.tres")):
+		if OTHER_GROUNDS.has(path):
+			_q.kit.need(problems, _ground_users_of(path) == PackedStringArray([OTHER_GROUNDS[path]]), "%s uses a ground material on %s, not only on %s" % [path, _ground_users_of(path), OTHER_GROUNDS[path]])
+		elif path != TERRAIN_SCENE and (FileAccess.get_file_as_string(path).contains("/materials/sand.tres") or FileAccess.get_file_as_string(path).contains("/materials/road.tres") or FileAccess.get_file_as_string(path).contains("/materials/salt_flat.tres")):
 			elsewhere.append(path)
 	_q.kit.need(problems, elsewhere.is_empty(), "other scenes use a ground material: %s" % [elsewhere])
 	_q.kit.verdict("ground_surfaces", problems, "the ground shader, which reads the track map, is on %s, and those three materials are used by %s of Map 01's terrain and by no other scene: the water, the fords, the channels and the Garage floors draw no track" % [", ".join(using), ", ".join(users)])

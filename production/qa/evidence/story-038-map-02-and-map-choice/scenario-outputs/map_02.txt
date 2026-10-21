@@ -1,0 +1,9 @@
+CHECK map_02 M1_layout PASS base1 (-8,-103) garage x -15.0 flag x -1.0; base2 (-8,103) garage x -15.0 flag x -1.0; 65 pieces, 9 Bushes, outposts 2+2, zones [0, 1, 1], 81 of 81 listed nodes mirrored
+CHECK map_02 M2_canyon PASS buggy (-1.0, 0.0, 0.0) 1.50 m in; gyrocopter (-1.0, 0.0, 0.0) 1.20 m in; buggy (1.0, 0.0, 0.0) 1.50 m in; gyrocopter (1.0, 0.0, 0.0) 1.20 m in; buggy (0.0, 0.0, -1.0) 1.67 m in; gyrocopter (0.0, 0.0, -1.0) 1.36 m in; buggy (0.0, 0.0, 1.0) 1.67 m in; gyrocopter (0.0, 0.0, 1.0) 1.36 m in
+CHECK map_02 M3_ridge PASS Buggy stopped at x 100.60, Gyrocopter reached x 138.49 (schematic)
+CHECK map_02 M4_water PASS Buggy 19.60 m/s on the sand, 9.80 m/s in the water (0.50)
+CHECK map_02 M5_ridge_wall PASS 6 panels; standing: stopped at x 102.75; down: reached x 125.80
+CHECK map_02 M6_outposts PASS at Player 2: 6 Shots, 72.0 damage; at Player 1: 0 Shots; outpost 100.0 -> 100.0 (own) -> 64.0 (other)
+CHECK map_02 M7_supplies PASS Fuel 20.0 -> 94.0; ammo 94 -> 100; Mines refused at 6 of 6
+CHECK map_02 M8_flag PASS Base Turrets down 2, outposts standing 2; Flag taken true; won true; after the restart 0 of 115 pieces not whole
+RESULT map_02 ok checks=8 failed=0 t=72.350 map=map_02.tscn

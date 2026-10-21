@@ -247,6 +247,13 @@ extends Resource
 ## so a type that flies must say so in its .tres.
 @export var can_fly: bool = false
 
+## Whether a Unit of this type flattens a Bush it drives into (Story 038 AC-6; the author's board of
+## 2026-10-07, Bushes: "Keď cezeň prejde bugina alebo truck, spľasne", when a Buggy or a Truck drives
+## through it, it collapses): true for the Buggy and the Truck, so the Motorbike passes and leaves it
+## standing and the Gyrocopter, which no Bush's trigger sees, flies over. False by default (class
+## doc), so a type that flattens Bushes must say so in its .tres. No branch anywhere names a type.
+@export var crushes_bushes: bool = false
+
 ## The greybox visual of this type (models/<type>_model.tscn): a Model root with MeshInstance3D
 ## children, those in the node group "team_colour" painted with the Player's team material when
 ## the Unit spawns as this type (Story 005 AC-1 and AC-8: each type has a distinct silhouette, in

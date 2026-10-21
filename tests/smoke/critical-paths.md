@@ -6,7 +6,7 @@
 
 ## Core Stability (always run)
 
-1. Game launches straight into the Map without crash (no main menu in the First Playable — `run/main_scene` is set once story 001 lands)
+1. Game launches on the map choice without crash (story 038: Map 01 and Map 02 with their pictures; A / D or a pad's stick picks one, Space, Enter or A starts it)
 2. A new Round can be started (R on the Round-over screen, once story 004 lands)
 3. Both keyboard layouts respond without freezing
 
@@ -45,6 +45,8 @@
 24. [Story 036 — Fuel burns at half its earlier rate: a Motorbike driven flat out loses about 10 of its 100 Fuel in 10 seconds, a Gyrocopter about 25; each Player's HUD band shows, right of the hit-point bar, a jerrycan icon and the amber Fuel bar, then a cartridges icon and the blue ammo bar, with no text on them, and no "Ammo" line under the band; the Fuel bar empties as the Unit drives and fills in a Fuel zone, the ammo bar empties as the Unit fires and fills in an ammunition zone; both are full for every new Unit]
 
 25. [Story 037 — from the view from above every ridge and canyon rock shows a sandy top, the ridge west of Base A's side included (it looked hollow before); a Gyrocopter hovering over a cliff within a Turret's reach is fired on and loses hit points; a Buggy behind a cliff is not]
+
+26. [Story 038 — the game opens on the map choice; Map 02 starts with both Players in Garages west of their Flags, the Gates facing east; the canyon stops every Unit and never crashes a Gyrocopter; the ridge stops ground Units and the Gyrocopter flies over it; the passage's water halves a ground Unit's speed; the wall in the ridge's gap stops a Buggy until it is broken; the two Turrets at each wall's gap fire at the other Player only and the own Player's Shots do not hurt them, yet a Motorbike takes the Flag once the Base's own two Turrets are down; a Unit behind a Bush is not fired on, a Shot passes through a Bush, a Buggy or a Truck flattens it, a Motorbike leaves it standing; wrecks and small buildings stop Units and Shots, break under any Shot, the Motorbike's too, and R stands everything again]
 
 ## Data Integrity
 

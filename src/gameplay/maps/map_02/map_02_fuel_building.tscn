@@ -1,0 +1,103 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://src/gameplay/supply/supply_zone.tscn" id="1_supply_zone"]
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/fuel_tank.tres" id="2_fuel_tank"]
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/rust.tres" id="3_rust"]
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/wall.tres" id="4_wall"]
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/tower.tres" id="5_tower"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_tank"]
+material = ExtResource("2_fuel_tank")
+top_radius = 2.0
+bottom_radius = 2.0
+height = 3
+radial_segments = 14
+rings = 0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_band"]
+material = ExtResource("3_rust")
+top_radius = 2.06
+bottom_radius = 2.06
+height = 0.6
+radial_segments = 14
+rings = 0
+cap_top = false
+cap_bottom = false
+
+[sub_resource type="SphereMesh" id="SphereMesh_dome"]
+material = ExtResource("2_fuel_tank")
+radius = 2.0
+height = 1.0
+radial_segments = 14
+rings = 3
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_hatch"]
+material = ExtResource("5_tower")
+top_radius = 0.45
+bottom_radius = 0.45
+height = 0.3
+radial_segments = 12
+rings = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_plinth"]
+material = ExtResource("4_wall")
+size = Vector3(5.2, 0.4, 10.4)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_tank"]
+height = 3.0
+radius = 2.06
+
+[node name="FuelBuilding" type="Node3D"]
+
+[node name="Plinth" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+mesh = SubResource("BoxMesh_plinth")
+
+[node name="TankNorth" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, -2.6)
+mesh = SubResource("CylinderMesh_tank")
+
+[node name="Band" type="MeshInstance3D" parent="TankNorth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+mesh = SubResource("CylinderMesh_band")
+
+[node name="Dome" type="MeshInstance3D" parent="TankNorth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+mesh = SubResource("SphereMesh_dome")
+
+[node name="Hatch" type="MeshInstance3D" parent="TankNorth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.05, 0)
+mesh = SubResource("CylinderMesh_hatch")
+
+[node name="Collider" type="StaticBody3D" parent="TankNorth"]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TankNorth/Collider"]
+shape = SubResource("CylinderShape3D_tank")
+
+[node name="TankSouth" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 2.6)
+mesh = SubResource("CylinderMesh_tank")
+
+[node name="Band" type="MeshInstance3D" parent="TankSouth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+mesh = SubResource("CylinderMesh_band")
+
+[node name="Dome" type="MeshInstance3D" parent="TankSouth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+mesh = SubResource("SphereMesh_dome")
+
+[node name="Hatch" type="MeshInstance3D" parent="TankSouth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.05, 0)
+mesh = SubResource("CylinderMesh_hatch")
+
+[node name="Collider" type="StaticBody3D" parent="TankSouth"]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TankSouth/Collider"]
+shape = SubResource("CylinderShape3D_tank")
+
+[node name="FuelZone" parent="." instance=ExtResource("1_supply_zone")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 0, 0)
+kind = 0
+size = Vector3(6, 6, 6)

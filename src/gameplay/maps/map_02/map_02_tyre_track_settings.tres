@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="TyreTrackSettings" format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/maps/tyre_track_settings.gd" id="1_settings"]
+
+[resource]
+script = ExtResource("1_settings")
+area_origin = Vector2(-60, -125)
+area_size = Vector2(120, 250)
+texture_size = Vector2i(1680, 3500)
+darkness = 0.7
+rut_depth = 0.05
+rut_reach = 1.5
+smoothing = 0.3
+rim_pixels = 1.0
+hold_seconds = 20.0
+fade_seconds = 40.0
+jump_step = 2.0
+min_step = 0.01

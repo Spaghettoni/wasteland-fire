@@ -1,0 +1,151 @@
+[gd_scene format=3]
+
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/wall.tres" id="1_wall"]
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/rust.tres" id="2_rust"]
+[ext_resource type="Material" path="res://src/gameplay/defences/materials/flag_wall_damaged_1.tres" id="3_flag_wall_damaged_1"]
+[ext_resource type="Material" path="res://src/gameplay/defences/materials/flag_wall_damaged_2.tres" id="4_flag_wall_damaged_2"]
+[ext_resource type="Material" path="res://src/gameplay/defences/materials/flag_wall_chips.tres" id="5_flag_wall_chips"]
+[ext_resource type="Resource" path="res://src/gameplay/cover/data/shack_stats.tres" id="6_shack_stats"]
+[ext_resource type="Script" path="res://src/gameplay/defences/structure.gd" id="7_structure"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(6.4, 2, 6.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_body"]
+material = ExtResource("1_wall")
+size = Vector3(6.4, 2, 6.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_roof"]
+material = ExtResource("2_rust")
+size = Vector3(6.9, 0.14, 6.9)
+
+[sub_resource type="BoxMesh" id="BoxMesh_door"]
+material = ExtResource("2_rust")
+size = Vector3(1.1, 1.7, 0.06)
+
+[sub_resource type="BoxMesh" id="BoxMesh_chip"]
+material = ExtResource("5_flag_wall_chips")
+size = Vector3(0.6, 0.26, 0.44)
+
+[sub_resource type="BoxMesh" id="BoxMesh_rubble"]
+material = ExtResource("1_wall")
+size = Vector3(1.792, 0.28, 2.048)
+
+[node name="Shack" type="StaticBody3D" node_paths=PackedStringArray("intact", "wreck", "damaged_looks")]
+collision_layer = 64
+collision_mask = 0
+script = ExtResource("7_structure")
+stats = ExtResource("6_shack_stats")
+intact = NodePath("Intact")
+wreck = NodePath("Rubble")
+damaged_looks = [NodePath("Damaged1"), NodePath("Damaged2")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_body")
+
+[node name="Intact" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="Intact"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("BoxMesh_body")
+
+[node name="Roof" type="MeshInstance3D" parent="Intact"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.07, 0)
+mesh = SubResource("BoxMesh_roof")
+
+[node name="Door" type="MeshInstance3D" parent="Intact"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.28, 0.85, 3.23)
+mesh = SubResource("BoxMesh_door")
+
+[node name="Damaged1" type="Node3D" parent="."]
+visible = false
+
+[node name="Body" type="MeshInstance3D" parent="Damaged1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("BoxMesh_body")
+material_override = ExtResource("3_flag_wall_damaged_1")
+
+[node name="Roof" type="MeshInstance3D" parent="Damaged1"]
+transform = Transform3D(1, 0, 0, 0, 0.999391, -0.034899, 0, 0.034899, 0.999391, 0, 2.02, 0)
+mesh = SubResource("BoxMesh_roof")
+material_override = ExtResource("3_flag_wall_damaged_1")
+
+[node name="Door" type="MeshInstance3D" parent="Damaged1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.28, 0.85, 3.23)
+mesh = SubResource("BoxMesh_door")
+
+[node name="Chip1" type="MeshInstance3D" parent="Damaged1"]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -3.072, 0.13, -2.688)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_chip")
+
+[node name="Chip2" type="MeshInstance3D" parent="Damaged1"]
+transform = Transform3D(0.642788, 0, -0.766044, 0, 1, 0, 0.766044, 0, 0.642788, 3.008, 0.13, 2.56)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_chip")
+
+[node name="Damaged2" type="Node3D" parent="."]
+visible = false
+
+[node name="Body" type="MeshInstance3D" parent="Damaged2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("BoxMesh_body")
+material_override = ExtResource("4_flag_wall_damaged_2")
+
+[node name="Roof" type="MeshInstance3D" parent="Damaged2"]
+transform = Transform3D(1, 0, 0, 0, 0.997564, -0.069756, 0, 0.069756, 0.997564, 0, 1.97, 0)
+mesh = SubResource("BoxMesh_roof")
+material_override = ExtResource("4_flag_wall_damaged_2")
+
+[node name="Door" type="MeshInstance3D" parent="Damaged2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.28, 0.85, 3.23)
+mesh = SubResource("BoxMesh_door")
+
+[node name="Chip1" type="MeshInstance3D" parent="Damaged2"]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -3.072, 0.13, -2.688)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_chip")
+
+[node name="Chip2" type="MeshInstance3D" parent="Damaged2"]
+transform = Transform3D(0.642788, 0, -0.766044, 0, 1, 0, 0.766044, 0, 0.642788, 3.008, 0.13, 2.56)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_chip")
+
+[node name="Chip3" type="MeshInstance3D" parent="Damaged2"]
+transform = Transform3D(0.173648, 0, 0.984808, 0, 1, 0, -0.984808, 0, 0.173648, -2.88, 0.13, 2.56)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_chip")
+
+[node name="Chip4" type="MeshInstance3D" parent="Damaged2"]
+transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, 2.944, 0.13, -2.816)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_chip")
+
+[node name="Rubble" type="Node3D" parent="."]
+visible = false
+
+[node name="Chunk1" type="MeshInstance3D" parent="Rubble"]
+transform = Transform3D(0.906308, 0, 0.422618, 0, 1, 0, -0.422618, 0, 0.906308, -1.92, 0.14, -1.6)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_rubble")
+
+[node name="Chunk2" type="MeshInstance3D" parent="Rubble"]
+transform = Transform3D(0.766044, 0, -0.642788, 0, 1, 0, 0.642788, 0, 0.766044, 1.6, 0.14, -1.28)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_rubble")
+
+[node name="Chunk3" type="MeshInstance3D" parent="Rubble"]
+transform = Transform3D(0.34202, 0, 0.939693, 0, 1, 0, -0.939693, 0, 0.34202, -0.64, 0.14, 1.6)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_rubble")
+
+[node name="Chunk4" type="MeshInstance3D" parent="Rubble"]
+transform = Transform3D(0.984808, 0, 0.173648, 0, 1, 0, -0.173648, 0, 0.984808, 2.048, 0.14, 1.408)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_rubble")
+
+[node name="Chunk5" type="MeshInstance3D" parent="Rubble"]
+transform = Transform3D(0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, 0.965926, 0, 0.14, 0)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_rubble")

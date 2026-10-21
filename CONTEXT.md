@@ -131,8 +131,24 @@ _Avoid_: depot, jerrycan, gas can, water canister
 ### World
 
 **Map (mapa)**:
-A bounded playfield holding Base A, Base B, their Garages and the supply buildings (decided 2026-10-10; the fixed Fuel Can places left with story 023); it also sets each Player's Token stock. The First Playable has one, Map 01.
+A bounded playfield holding Base A, Base B, their Garages and the supply buildings (decided 2026-10-10; the fixed Fuel Can places left with story 023); it also sets each Player's Token stock. The First Playable has one, Map 01; since story 038 there is also Map 02, the canyon from Martin's schematic of 2026-10-16, and the game opens on the Map choice.
 _Avoid_: level, arena, world, stage
+
+**Map choice**:
+The screen the game opens on (story 038, Martin 2026-10-21: "Výber mapy pred zápasom"): the Maps side by side, each with its picture from above; either Player picks one and the Round starts on it. The restart replays the same Map.
+_Avoid_: main menu, level select, lobby
+
+**Outpost**:
+A piece of a Player that stands on the Map outside that Player's Base (story 038): Map 02's two Turrets at the gap of the wall across each half. It belongs to that Player like the Base's own pieces (it fires at the other Player, takes no damage from its own and is stood again at the restart), but it never locks the Flag: only the Base's own Turrets do.
+_Avoid_: forward turret, field turret, tower
+
+**Bush (krík)**:
+Cover of a kind of its own on Map 02 (the author's board, 2026-10-07; story 038): it hides a ground Unit behind it from a Turret, stops no Shot and no Unit, and a Buggy or a Truck that drives into it flattens it until the restart; the Motorbike passes and leaves it standing, and it never hides the Gyrocopter, which flies over. It is not Cover (Cover stops Units and Shots).
+_Avoid_: shrub, foliage, hedge
+
+**Wreck and small building (vrak auta, malá budova)**:
+Map 02's breakable cover (story 038): a car wreck or a low hut that stops ground Units and every Shot like Cover, lets the Gyrocopter over, but takes damage from both Players' Shots, the Motorbike's too, shows two damaged looks and falls into low rubble until the restart. Not Cover, which is never destroyed; Map 01's wrecks stay Cover.
+_Avoid_: destructible cover, prop
 
 **Gate**:
 The one opening in a Base's wall, in the wall that faces the Map's centre; every ground Unit leaves and enters its Base through it while the Base's Wall Panels stand, and the Gyrocopter flies over them (decided 2026-10-10). On Map 01 about 11 m wide (drawn at 10 m and widened so the Truck clears it). Its Base's two Turrets stand outside it, one on each side, and no Mine can be laid in it or on the approach about 10 m in front of it (decided 2026-10-07). It stays the Base's built opening now that the Base's walls are Wall Panels: a fallen panel is a breach, not a Gate (reading, 2026-10-10).

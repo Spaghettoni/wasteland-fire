@@ -49,6 +49,13 @@ extends Node3D
 ## with none, the greybox field among them, shows no tracks and logs nothing
 ## (production/epics/wasteland-fire/story-026-tyre-tracks.md AC-7).
 ##
+## Outposts and Bushes (Story 038). A Player's pieces that stand outside that Player's Base, Map 02's
+## two Turrets at each wall's gap, are listed in player_1_outposts and player_2_outposts: SplitScreen
+## treats them as the Base's own pieces for the Player, the arming and the restart, but never for the
+## Flag, whose lock reads only the Base's structures. The Map's Bushes are listed in bushes, and
+## SplitScreen stands them again at every restart
+## (production/epics/wasteland-fire/story-038-map-02-and-map-choice.md AC-5, AC-6).
+##
 ## Data, almost no behaviour: the Map's scene sets the exports and nothing here checks them but
 ## the warnings for an unassigned entry of neutral_structures and of supply_zones. SplitScreen
 ## refuses to begin a Round while either Base is missing, and the MatchController refuses it
@@ -96,6 +103,34 @@ extends Node3D
 ## it both Units and the restarts.
 @export var tyre_tracks: TyreTracks
 
+## The pieces of Player 1 that stand outside Player 1's Base (Story 038): Map 02 lists the two
+## Turrets at the gap of the wall across Player 1's half. SplitScreen gives each one Player 1's
+## player_index, arms each Turret among them as it arms a Base's Turrets and restores them at every
+## restart beside the Base's pieces. They are not the Base's structures, so FlagRules never reads
+## them: an outpost never locks the Flag. Optional and empty by default (Map 01 lists none). An
+## entry that is not assigned is skipped with a warning.
+@export var player_1_outposts: Array[Structure] = []
+
+## The pieces of Player 2 that stand outside Player 2's Base (Story 038): the same for the second
+## Player.
+@export var player_2_outposts: Array[Structure] = []
+
+## The Bushes of this Map (Story 038): SplitScreen stands every one of them again at every restart,
+## from this list and with no search of the tree. A Bush flattens itself when a Unit whose type
+## crushes Bushes drives into it (Bush). Optional and empty by default (Map 01 has none). An entry
+## that is not assigned is skipped with a warning.
+@export var bushes: Array[Bush] = []
+
+
+## The outposts of the Player at `player_index` (0 for Player 1, 1 for Player 2): player_1_outposts
+## or player_2_outposts, and an empty list for any other index.
+func outposts_of(player_index: int) -> Array[Structure]:
+	if player_index == 0:
+		return player_1_outposts
+	if player_index == 1:
+		return player_2_outposts
+	return []
+
 
 func _ready() -> void:
 	for index: int in neutral_structures.size():
@@ -104,3 +139,12 @@ func _ready() -> void:
 	for index: int in supply_zones.size():
 		if supply_zones[index] == null:
 			push_warning("MapField '%s': supply_zones entry %d is not assigned, so that zone is skipped." % [name, index])
+	var lists: Array = [player_1_outposts, player_2_outposts]
+	for list_index: int in lists.size():
+		var outposts: Array[Structure] = lists[list_index]
+		for index: int in outposts.size():
+			if outposts[index] == null:
+				push_warning("MapField '%s': player_%d_outposts entry %d is not assigned, so that piece is skipped." % [name, list_index + 1, index])
+	for index: int in bushes.size():
+		if bushes[index] == null:
+			push_warning("MapField '%s': bushes entry %d is not assigned, so that Bush is skipped." % [name, index])
