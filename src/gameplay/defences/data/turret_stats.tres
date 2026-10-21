@@ -17,4 +17,4 @@ type_id = &"turret"
 display_name = "Turret"
 max_hit_points = 100.0
 damaged_below = Array[float]([0.8, 0.35])
-locks_flag = true
+locks_flag = false

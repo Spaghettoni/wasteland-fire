@@ -123,4 +123,5 @@ Martin asked on 2026-10-21 to put Map 02, the schematic of 2026-10-16, into the 
 
 | # | Story | Type | Status | ADR |
 |---|-------|------|--------|-----|
-| 038 | Map 02, a map choice before the match, and the Bushes, wrecks and small buildings: the canyon Map from the schematic, built by `tools/maps/build_map_02.py`; the launch screen with both Maps; Outposts; Bushes that hide from Turrets and fall under a Buggy or a Truck; breakable wrecks and huts | Integration | In Progress | N/A (minimal) |
+| 038 | Map 02, a map choice before the match, and the Bushes, wrecks and small buildings: the canyon Map from the schematic, built by `tools/maps/build_map_02.py`; the launch screen with both Maps and the way back to it from the Round-over screen; Outposts; Bushes that hide from Turrets and fall under a Buggy or a Truck; breakable wrecks and huts | Integration | In Progress | N/A (minimal) |
+| 039 | No Turret locks a Flag, and the Motorbike breaks Wall Panels and Flag Walls (Martin, 2026-10-21) | Logic | In Progress | N/A (minimal) |

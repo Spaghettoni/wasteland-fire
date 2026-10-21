@@ -15,7 +15,11 @@ friends at home.
 - The game opens on the map choice (story 038): Map 01 and Map 02 side by
   side, each with a picture of it from above. Either Player picks one with
   A / D or Left / Right (a pad's stick or D-pad) and starts with Space, Period
-  or Enter (a pad's A), or clicks a card. R restarts the same Map.
+  or Enter (a pad's A), or clicks a card. R restarts the same Map; Esc (a
+  pad's B) on the Round-over screen goes back to the map choice.
+- A Flag can be taken whatever stands around it (story 039): no Turret locks
+  it any more, and the Motorbike's Shots break the other Player's walls and
+  Turrets like everyone else's.
 - Two Players share one keyboard and one screen, split side by side. Each
   Player can also play with an Xbox controller (story 032): the first pad
   connected is Player 1's, the second Player 2's, and the keyboard keeps
@@ -280,10 +284,9 @@ with an empty tank, and at home it swaps the Unit.
 Map 02 (story 038, from Martin's schematic of 2026-10-16) is a canyon about
 120 by 250 metres inside its walls, played north against south: Orange at the
 top, Teal at the bottom, each Base Map 01's compound turned with its Gate to the
-east and its Garage west of its Flag. A wall of Wall Panels crosses each half
+west and its Garage east of its Flag. A wall of Wall Panels crosses each half
 with a gap between two Turrets of that half's Team (they fire at the other
-Player, take no damage from their own, but do not lock the Flag; only a
-Base's own Turrets do). East of the field a rock ridge that only the
+Player and take no damage from their own). East of the field a rock ridge that only the
 Gyrocopter crosses shuts off a passage with slowing water at both ends; a
 breakable wall in the ridge's gap opens a third way in. One shared Fuel
 building stands on the west side and each half has an ammunition building.

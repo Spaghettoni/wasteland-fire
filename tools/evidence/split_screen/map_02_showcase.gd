@@ -1,7 +1,7 @@
 extends RefCounted
 ## Scenario map_02_showcase of the split screen evidence harness (split_screen_harness.gd): the frames of Story 038 on Map 02,
 ## windowed, saved as PNGs in the folder named by the environment variable MAP_02_SHOTS:
-##  01 both Players at the start, each in the Garage west of its Flag, the Gate to the east;
+##  01 both Players at the start, each in its Garage, the Gate to the west;
 ##  02 Player 1's Buggy in front of the middle Bush and wreck; Player 2's Buggy in front of Player 1's wall gap, its Turrets firing;
 ##  03 Player 1's Buggy through the Bush, which lies flat; Player 2 at the wall gap, hit;
 ##  04 a wreck and a small building damaged (staged: hit points set below 80% and 35%), seen from Player 1's Unit; Player 2 by
@@ -47,7 +47,7 @@ var _saved: PackedStringArray = PackedStringArray()
 func run(harness: Node) -> void:
 	_m = M2.new(harness)
 	await _m.kit.advance(SETTLE_TICKS)
-	await _save("map-02-01-start-garages-west-of-the-flags")
+	await _save("map-02-01-start-gates-west")
 	var bush: Bush = _m.piece("Cover/BushMiddle") as Bush
 	await _m.put(0, M2.BUGGY, bush.global_position + Vector3.LEFT * 9.0, Vector3.RIGHT)
 	await _m.put(1, M2.BUGGY, M2.at(50.0, 92.0), Vector3.FORWARD)

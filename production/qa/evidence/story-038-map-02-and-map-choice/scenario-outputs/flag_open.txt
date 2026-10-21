@@ -1,0 +1,5 @@
+CHECK flag_open F1_flag_open PASS 2 Turrets standing; Flag taken true, lock reported false; won true
+CHECK flag_open F2_motorbike_walls PASS Motorbike's Shots: Player 2's Wall Panel -25.0, Player 1's own -0.0, Player 2's Flag Wall -25.0
+CHECK flag_open F3_motorbike_turret PASS Motorbike's Shots: Player 2's Turret -25.0
+CHECK flag_open F4_data PASS locks_flag false; motorbike>flag_wall 1.00 (listed false)
+RESULT flag_open ok checks=4 failed=0 t=6.900 map=map_01.tscn

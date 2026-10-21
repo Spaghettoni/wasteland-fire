@@ -1,8 +1,8 @@
 extends RefCounted
 ## Scenario map_02 of the split screen evidence harness (split_screen_harness.gd): Map 02 plays as its schematic says (Story 038).
 ## The launch scene plays Map 02 (MAP_SCENE) with every shipped piece of the game. CHECK lines:
-##  M1 layout: the field is Map 02; both Bases where the schematic puts them, each Gate facing east and each Garage west of its
-##     Flag; 65 pieces of no Player (48 field wall panels, 6 in the ridge's gap, 4 small buildings, 7 wrecks), 9 Bushes, 2
+##  M1 layout: the field is Map 02; both Bases where the schematic puts them, each Gate facing west (Martin, 2026-10-21) and so
+##     each Garage east of its Flag; 65 pieces of no Player (48 field wall panels, 6 in the ridge's gap, 4 small buildings, 7 wrecks), 9 Bushes, 2
 ##     outposts per Player, the Fuel zone and two ammunition zones; every listed piece has its mirror image across z = 0.
 ##  M2 canyon: a Buggy and a Gyrocopter driven flat out at the canyon for 4 s from the west, east, north and south stay inside the
 ##     floor's outline, and the Gyrocopter is not destroyed (the canyon's foot is the map's edge, not a Tall piece).
@@ -46,7 +46,7 @@ const MAP_CHOICE: bool = true
 const WATCHDOG_SECONDS: float = 900.0
 
 ## The Bases' places (schematic) and the counts the schematic gives.
-const BASE_PLACES: Array[Vector2] = [Vector2(72.0, 42.0), Vector2(72.0, 248.0)]
+const BASE_PLACES: Array[Vector2] = [Vector2(76.0, 42.0), Vector2(76.0, 248.0)]
 const NEUTRAL_COUNT: int = 65
 const BUSH_COUNT: int = 9
 const OUTPOST_COUNT: int = 2
@@ -114,8 +114,8 @@ func _check_layout() -> void:
 		var garage: Node3D = base.get_node("Garage/GarageFloor") as Node3D
 		var flag: Node3D = base.flag_seat
 		_m.kit.need(problems, base.global_position.distance_to(want) < 0.01, "Base %d at %s, not %s" % [index + 1, base.global_position, want])
-		_m.kit.need(problems, gate_way.dot(Vector3.RIGHT) > 0.999, "Base %d's Gate faces %s" % [index + 1, gate_way])
-		_m.kit.need(problems, garage.global_position.x < flag.global_position.x - 1.0, "Base %d's Garage at x %.1f, its Flag at %.1f" % [index + 1, garage.global_position.x, flag.global_position.x])
+		_m.kit.need(problems, gate_way.dot(Vector3.LEFT) > 0.999, "Base %d's Gate faces %s" % [index + 1, gate_way])
+		_m.kit.need(problems, garage.global_position.x > flag.global_position.x + 1.0, "Base %d's Garage at x %.1f, its Flag at %.1f" % [index + 1, garage.global_position.x, flag.global_position.x])
 		details.append("base%d (%.0f,%.0f) garage x %.1f flag x %.1f" % [index + 1, base.global_position.x, base.global_position.z, garage.global_position.x, flag.global_position.x])
 	_m.kit.need(problems, f.neutral_structures.size() == NEUTRAL_COUNT, "%d pieces of no Player" % f.neutral_structures.size())
 	_m.kit.need(problems, f.bushes.size() == BUSH_COUNT, "%d Bushes" % f.bushes.size())

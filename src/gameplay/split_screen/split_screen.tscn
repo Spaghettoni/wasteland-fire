@@ -37,6 +37,8 @@
 [ext_resource type="PackedScene" path="res://src/gameplay/effects/explosion.tscn" id="35_explosion"]
 [ext_resource type="Script" path="res://src/gameplay/input/pad_assignment.gd" id="37_pads"]
 [ext_resource type="Resource" path="res://src/gameplay/input/data/pad_layout.tres" id="38_padlayout"]
+[ext_resource type="Script" path="res://src/gameplay/match/map_choice_return.gd" id="39_back"]
+[ext_resource type="PackedScene" path="res://src/ui/hud/map_choice_hint.tscn" id="40_backhint"]
 
 [node name="SplitScreen" type="Control" unique_id=9000001 node_paths=PackedStringArray("field", "player_1_unit", "player_2_unit", "player_1_camera", "player_2_camera", "match_controller", "player_1_mine_layer", "player_2_mine_layer", "player_1_weapon", "player_2_weapon")]
 layout_mode = 3
@@ -243,6 +245,9 @@ player_index = 0
 [node name="Player1MineCount" parent="Views/Player1View/SubViewport" node_paths=PackedStringArray("mine_layer") instance=ExtResource("34_mcount")]
 mine_layer = NodePath("%Player1MineLayer")
 
+[node name="Player1MapChoiceHint" parent="Views/Player1View/SubViewport" node_paths=PackedStringArray("match_controller") instance=ExtResource("40_backhint")]
+match_controller = NodePath("%MatchController")
+
 [node name="Player2View" type="SubViewportContainer" parent="Views" unique_id=9000022]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -299,6 +304,9 @@ player_index = 1
 [node name="Player2MineCount" parent="Views/Player2View/SubViewport" node_paths=PackedStringArray("mine_layer") instance=ExtResource("34_mcount")]
 mine_layer = NodePath("%Player2MineLayer")
 
+[node name="Player2MapChoiceHint" parent="Views/Player2View/SubViewport" node_paths=PackedStringArray("match_controller") instance=ExtResource("40_backhint")]
+match_controller = NodePath("%MatchController")
+
 [node name="Divider" type="ColorRect" parent="." unique_id=9000004]
 layout_mode = 1
 anchor_left = 0.5
@@ -325,6 +333,13 @@ process_mode = 3
 script = ExtResource("37_pads")
 layout = ExtResource("38_padlayout")
 action_prefixes = Array[StringName]([&"p1_", &"p2_"])
+
+[node name="MapChoiceReturn" type="Node" parent="." node_paths=PackedStringArray("match_controller", "launch_root")]
+process_mode = 3
+script = ExtResource("39_back")
+match_controller = NodePath("%MatchController")
+map_choice_path = "res://src/ui/map_choice/map_choice.tscn"
+launch_root = NodePath("..")
 
 [editable path="World/Player1Unit"]
 [editable path="World/Player2Unit"]

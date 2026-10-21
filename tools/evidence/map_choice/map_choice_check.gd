@@ -9,7 +9,10 @@ extends SceneTree
 ##     as the current scene and frees the screen.
 ##  K4 nothing carried over: in the match's first second both Players are still choosing, so the Space that started it did not
 ##     also confirm Player 1's Unit.
-##  K5 the other Map: Enter on a fresh screen with the cursor on the first card starts Map 01.
+##  K5 back to the choice: with the Round over (Player 1's Motorbike brings Player 2's Flag home; no Turret locks it since
+##     story 039) the line "Esc or B: choose another map" shows, and Esc puts the map choice back as the current scene, the
+##     match freed and the tree running.
+##  K6 the other Map: Enter on a fresh screen with the cursor on the first card starts Map 01.
 ## With --frames=<folder> (windowed only) it also saves the screen with each card chosen and the start of the match on Map 02.
 ## Implements: production/epics/wasteland-fire/story-038-map-02-and-map-choice.md AC-1.
 ## Tooling only: nothing under src/ depends on this file.
@@ -84,7 +87,38 @@ func _run() -> void:
 	_need(problems, choosing == [true, true], "choosing after a second: %s" % [choosing])
 	_check("K4_nothing_carried", problems, "both Players choosing a second in: %s" % [choosing])
 	await _save("choice-03-match-on-map-02.png")
+
+	problems = PackedStringArray()
+	var back: MapChoice = null
+	var hint_shown: bool = false
 	if split != null:
+		for key: Key in [KEY_SPACE, KEY_PERIOD]:
+			await _key(key, true)
+		await _wait(MATCH_FRAMES)
+		for key: Key in [KEY_SPACE, KEY_PERIOD]:
+			await _key(key, false)
+		var unit: Unit = split.player_1_unit
+		unit.global_position = split.field.player_2_base.flag_seat.global_position
+		unit.reset_motion()
+		await _wait(SETTLE_FRAMES)
+		unit.global_position = split.field.player_1_base.zone.global_position
+		unit.reset_motion()
+		await _wait(SETTLE_FRAMES)
+		var over: bool = split.match_controller.is_round_over()
+		var hint: Label = split.get_node_or_null("Views/Player1View/SubViewport/Player1MapChoiceHint") as Label
+		hint_shown = hint != null and hint.visible
+		_need(problems, over, "the Round did not end")
+		_need(problems, hint_shown, "the line back to the map choice is not shown")
+		await _save("choice-04-round-over-back-line.png")
+		await _key(KEY_ESCAPE, true)
+		await _key(KEY_ESCAPE, false)
+		await _wait(SETTLE_FRAMES)
+		back = current_scene as MapChoice
+	_need(problems, back != null and not paused and not is_instance_valid(split), "after Esc the current scene is %s, paused %s, the match freed %s" % [current_scene, paused, not is_instance_valid(split)])
+	_check("K5_back_to_choice", problems, "Round over with the line shown %s; Esc: the map choice is the scene %s, the tree running %s" % [hint_shown, back != null, not paused])
+	if back != null:
+		back.queue_free()
+	elif split != null and is_instance_valid(split):
 		split.queue_free()
 	await _wait(SETTLE_FRAMES)
 
@@ -95,7 +129,7 @@ func _run() -> void:
 	await _wait(SETTLE_FRAMES)
 	split = current_scene as SplitScreen
 	_need(problems, split != null and split.field.scene_file_path == MAP_PATHS[0], "Enter started %s" % [current_scene])
-	_check("K5_other_map", problems, "Enter on the first card plays %s" % (split.field.scene_file_path if split != null else "nothing"))
+	_check("K6_other_map", problems, "Enter on the first card plays %s" % (split.field.scene_file_path if split != null else "nothing"))
 	print("RESULT map_choice %s checks=%d failed=%d" % ["ok" if _failed == 0 else "fail", _checks, _failed])
 	quit(0 if _failed == 0 else 1)
 

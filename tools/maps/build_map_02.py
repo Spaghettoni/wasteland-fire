@@ -66,9 +66,10 @@ PANEL_LENGTH = 3.0  # wall_panel_scrap.tscn is 3 m along its local z
 # The water at both ends of the passage: x0, z0, x1, z1 (the bottom one is the mirror image).
 WATER_NORTH = (108.0, 80.0, 140.0, 98.0)
 
-# Each Base: Map 01's compound Base, its Gate facing east (yaw -90: its Garage lies west of its Flag).
-BASE_NORTH = (72.0, 42.0)
-BASE_YAW = -90.0
+# Each Base: Map 01's compound Base, its Gate facing west (yaw 90; Martin, 2026-10-21: "aby otvor smeroval na zapad"), so its
+# Garage lies east of its Flag (the schematic of 2026-10-16 had it west; the Gate's side won).
+BASE_NORTH = (76.0, 42.0)
+BASE_YAW = 90.0
 
 # The supply buildings: the Fuel building (shared, zone to its east) and an ammunition building per
 # half (zone to its west, so turned round).
@@ -330,8 +331,9 @@ def build_map():
         x, z = sx_sz(point)
         props = {"transform": transform(x, 0, z, BASE_YAW), "color_material": material}
         paths = None
-        if index == 1:
-            # Mirrored: the first spawn spot is the one toward the canyon, as Map 01's Base B.
+        if index == 0:
+            # Turned Gate-west, the Base's right side faces north: Base 1's first spawn spot is its right one, toward the
+            # canyon, and Base 2 keeps the compound's own (its left one, south, toward its canyon), mirror images.
             props["spawn_point"] = 'NodePath("SpareSpawnRight")'
             props["spare_spawn_points"] = '[NodePath("SpareSpawnLeft")]'
             paths = ["spawn_point", "spare_spawn_points"]

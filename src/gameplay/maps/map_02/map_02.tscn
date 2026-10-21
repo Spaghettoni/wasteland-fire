@@ -681,15 +681,15 @@ shape = SubResource("BoxShape3D_water")
 [node name="Water" parent="WaterSouth"]
 mesh = SubResource("PlaneMesh_water")
 
-[node name="Base1" parent="." instance=ExtResource("3_compound_base")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -8, 0, -103)
+[node name="Base1" parent="." node_paths=PackedStringArray("spawn_point", "spare_spawn_points") instance=ExtResource("3_compound_base")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -4, 0, -103)
 color_material = ExtResource("4_team_orange_material")
-
-[node name="Base2" parent="." node_paths=PackedStringArray("spawn_point", "spare_spawn_points") instance=ExtResource("3_compound_base")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -8, 0, 103)
-color_material = ExtResource("5_team_teal_material")
 spawn_point = NodePath("SpareSpawnRight")
 spare_spawn_points = [NodePath("SpareSpawnLeft")]
+
+[node name="Base2" parent="." instance=ExtResource("3_compound_base")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -4, 0, 103)
+color_material = ExtResource("5_team_teal_material")
 
 [node name="FieldWalls" type="Node3D" parent="."]
 

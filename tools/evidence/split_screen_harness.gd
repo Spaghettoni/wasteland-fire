@@ -27,7 +27,7 @@ extends Node
 ## (windowed); since Story 024, ammo_buildings, ammo_buildings_showcase and ammo_buildings_fps
 ## (windowed); since Story 032, pads, pads_data and pads_showcase
 ## (windowed); since Story 036, resource_bars and resource_bars_showcase (windowed);
-## since Story 037, turret_flying_sight and cliff_tops; since Story 038, map_02, bushes, cover_pieces and map_02_showcase (windowed). Each is a script under tools/evidence/split_screen/,
+## since Story 037, turret_flying_sight and cliff_tops; since Story 038, map_02, bushes, cover_pieces and map_02_showcase (windowed); since Story 039, flag_open. Each is a script under tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
 ## line there. A scenario reaches this script, DriveStep, UnitTrack and check_kit.gd through preload
@@ -329,7 +329,13 @@ extends Node
 ## Unless the scenario script declares const BUSHES: bool = true the runner gives the shared TurretStats the sight of stories
 ## 013 to 037 (sight_extra_mask 32, before _apply_flying_sight_off() copies it) and takes the layer's name away; unless it
 ## declares const MAP_CHOICE: bool = true it erases the three menu actions from the InputMap (_apply_bushes_off(),
-## _apply_map_choice_off()): the scenarios that count layer names, pad events or keys were measured without them.
+## _apply_map_choice_off()): the scenarios that count layer names, pad events or keys were measured without them. Without
+## MAP_CHOICE the launch scene also loses its way back to the map choice (_apply_map_choice_nodes_off()).
+##
+## The open Flag (Story 039). The shipped data no longer lets a Turret lock its Base's Flag (turret_stats.tres locks_flag
+## false) and lets the Motorbike's Shots break Wall Panels (no motorbike>flag_wall pair in damage_matrix.tres). Unless the
+## scenario script declares const FLAG_OPEN: bool = true the runner puts both back on the shared resources
+## (_apply_flag_open_off()).
 ##
 ## Output: SPLIT <scenario> t=<seconds> key=value ... (progress), CHECK <scenario> <check name> PASS|FAIL
 ## <detail> and exactly one last RESULT <scenario> ok|fail checks=<n> failed=<n> key=value ...; then quit with
@@ -444,6 +450,7 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"bushes": preload("res://tools/evidence/split_screen/bushes.gd"),
 	&"cover_pieces": preload("res://tools/evidence/split_screen/cover_pieces.gd"),
 	&"map_02_showcase": preload("res://tools/evidence/split_screen/map_02_showcase.gd"),
+	&"flag_open": preload("res://tools/evidence/split_screen/flag_open.gd"),
 }
 
 ## The shared step class (drive_step.gd): keys held for a time.
@@ -614,8 +621,16 @@ const MAP_CHOICE_CONSTANT: StringName = &"MAP_CHOICE"
 const LEGACY_037_SIGHT_EXTRA_MASK: int = 32
 ## The physics layer Story 038 named, and the project setting that names it.
 const SIGHT_LAYER_SETTING: String = "layer_names/3d_physics/layer_8"
-## The map choice's actions (project.godot, Story 038).
-const MENU_ACTIONS: Array[StringName] = [&"menu_left", &"menu_right", &"menu_confirm"]
+## The map choice's actions (project.godot, Story 038), the key back to it from a Round that is over among them.
+const MENU_ACTIONS: Array[StringName] = [&"menu_left", &"menu_right", &"menu_confirm", &"round_back"]
+## The launch scene's nodes of the way back to the map choice (Story 038).
+const MAP_CHOICE_NODES: Array[String] = ["MapChoiceReturn", "Views/Player1View/SubViewport/Player1MapChoiceHint", "Views/Player2View/SubViewport/Player2MapChoiceHint"]
+## The constant a scenario script declares as true to keep the shipped open Flag of Story 039: no Turret locks a Flag and the
+## Motorbike's Shots break Wall Panels (_apply_flag_open_off()).
+const FLAG_OPEN_CONSTANT: StringName = &"FLAG_OPEN"
+## The damage matrix the Shots read, and its pair Story 039 took out.
+const DAMAGE_MATRIX_PATH_039: String = "res://src/gameplay/combat/data/damage_matrix.tres"
+const MOTORBIKE_WALL_PAIR: StringName = &"motorbike>flag_wall"
 ## Each type's Fuel burn before Story 036, by type_id: [fuel_use, fuel_use_idle] per second.
 const LEGACY_036_FUEL_RATES: Dictionary = {
 	&"motorbike": [2.0, 0.5], &"buggy": [2.5, 0.625], &"truck": [3.0, 0.75], &"gyrocopter": [5.0, 1.25]}
@@ -828,6 +843,7 @@ func _ready() -> void:
 	_apply_fuel_burn_off(SCENARIOS[scenario])
 	_apply_bushes_off(SCENARIOS[scenario])
 	_apply_map_choice_off(SCENARIOS[scenario])
+	_apply_flag_open_off(SCENARIOS[scenario])
 	_apply_flying_sight_off(SCENARIOS[scenario])
 	if LEGACY_SCENARIOS.has(scenario):
 		_apply_legacy_data()
@@ -848,6 +864,7 @@ func _ready() -> void:
 	turret_scene = SHIPPED_TURRET_SCENE if _keeps_turret_looks(SCENARIOS[scenario]) else FROZEN_TURRET_SCENE
 	split = SPLIT_SCENE.instantiate() as SplitScreen
 	_apply_map_scene(split, SCENARIOS[scenario])
+	_apply_map_choice_nodes_off(split, SCENARIOS[scenario])
 	_apply_chase_camera(split, SCENARIOS[scenario])
 	if GREYBOX_SCENARIOS.has(scenario):
 		_apply_greybox_composition(split)
@@ -1577,6 +1594,36 @@ func _apply_map_choice_off(script: GDScript) -> void:
 	for action: StringName in MENU_ACTIONS:
 		if InputMap.has_action(action):
 			InputMap.erase_action(action)
+
+
+## Takes the way back to the map choice (MAP_CHOICE_NODES) out of a freshly instanced launch scene, unless the scenario script
+## declares MAP_CHOICE (Story 038): each node is removed and freed at once, so the views hold the children they were measured with.
+func _apply_map_choice_nodes_off(root: SplitScreen, script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(MAP_CHOICE_CONSTANT, false)):
+		return
+	for path: String in MAP_CHOICE_NODES:
+		var node: Node = root.get_node_or_null(NodePath(path))
+		if node != null:
+			node.get_parent().remove_child(node)
+			node.free()
+
+
+## Gives the shared data the Flag rules of stories 013 to 038, unless the scenario script declares FLAG_OPEN (Story 039): the
+## Turrets lock their Base's Flag again (TurretStats.locks_flag) and the Motorbike's Shots do nothing to a Wall Panel (the pair
+## motorbike>flag_wall at 0 in the damage matrix).
+func _apply_flag_open_off(script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(FLAG_OPEN_CONSTANT, false)):
+		return
+	var stats: TurretStats = load(TURRET_STATS_PATH) as TurretStats
+	if stats == null:
+		push_error("split_screen_harness: %s did not load as TurretStats, so the old Flag lock is not applied." % TURRET_STATS_PATH)
+	else:
+		stats.locks_flag = true
+	var matrix: DamageMatrix = load(DAMAGE_MATRIX_PATH_039) as DamageMatrix
+	if matrix == null:
+		push_error("split_screen_harness: %s did not load as DamageMatrix, so the old Motorbike pair is not applied." % DAMAGE_MATRIX_PATH_039)
+	else:
+		matrix.multipliers[MOTORBIKE_WALL_PAIR] = 0.0
 
 
 ## Puts the HUD of story 032 back in a freshly instanced launch scene, before it enters the tree, unless the scenario script
