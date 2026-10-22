@@ -353,7 +353,8 @@ extends Node
 ## smoke layer out of the Turret's sight and its name away, and gives a STICK_DRIVE scenario story 041's pad layout
 ## (_apply_secondary_off(), _apply_secondary_nodes_off()). Since Story 044 the same opt-in keeps the recharging secondaries:
 ## without it the Truck counts its Mines again (mine_cooldown_seconds 0), the Motorbike's FlagDroppers go, and every Bush is
-## the size of story 038 (Bush.size 1.0).
+## the size of story 038 (Bush.size 1.0). Since Story 045 also: the HUD's Tokens line shows again and the supply zones' markings
+## are lit, the ammunition zone's in the tracer's pale yellow (_restore_zone_look_044()).
 ##
 ## Output: SPLIT <scenario> t=<seconds> key=value ... (progress), CHECK <scenario> <check name> PASS|FAIL
 ## <detail> and exactly one last RESULT <scenario> ok|fail checks=<n> failed=<n> key=value ...; then quit with
@@ -679,6 +680,8 @@ const SMOKE_LAYER_SETTING: String = "layer_names/3d_physics/layer_9"
 ## The Truck's data, whose Mines recharge since Story 044 (mine_cooldown_seconds), and the Bush scene's size before it.
 const TRUCK_STATS_PATH_044: String = "res://src/gameplay/units/data/truck_stats.tres"
 const LEGACY_043_BUSH_SIZE: float = 1.0
+## The ammunition zone's marking before Story 045: the Shots' tracer colour (ammo_building.tscn's paint).
+const LEGACY_044_AMMO_ZONE_COLOUR: Color = Color(1, 0.95, 0.55, 1)
 const SECONDARY_NODES: Array[String] = ["World/Player1NitroBooster", "World/Player2NitroBooster", "World/Player1SmokeLauncher",
 	"World/Player2SmokeLauncher", "World/Player1FlagDropper", "World/Player2FlagDropper", "Views/Player1View/SubViewport/Player1SecondaryStatus", "Views/Player2View/SubViewport/Player2SecondaryStatus"]
 ## Each type's Fuel burn before Story 036, by type_id: [fuel_use, fuel_use_idle] per second.
@@ -1731,6 +1734,24 @@ func _apply_secondary_nodes_off(root: SplitScreen, script: GDScript) -> void:
 	for node: Node in root.find_children("*", "", true, false):
 		if node is Bush:
 			(node as Bush).size = LEGACY_043_BUSH_SIZE
+		elif node is PlayerHud:
+			(node as PlayerHud).show_tokens_line = true
+		elif node is SupplyZone:
+			_restore_zone_look_044(node as SupplyZone)
+
+
+## Gives a supply zone's marking its look before Story 045: lit, and an ammunition zone's in the Shots' tracer colour. The
+## material is the scene's shared one, so every zone of the kind changes with it.
+func _restore_zone_look_044(zone: SupplyZone) -> void:
+	var slab: MeshInstance3D = zone.slab as MeshInstance3D
+	if slab == null or slab.mesh == null:
+		return
+	var material: StandardMaterial3D = slab.mesh.surface_get_material(0) as StandardMaterial3D
+	if material == null:
+		return
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
+	if zone.kind == SupplyZone.Kind.AMMO:
+		material.albedo_color = LEGACY_044_AMMO_ZONE_COLOUR
 
 
 ## Gives the shared data the Flag rules of stories 013 to 038, unless the scenario script declares FLAG_OPEN (Story 039): the

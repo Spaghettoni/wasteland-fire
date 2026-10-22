@@ -4,7 +4,8 @@ extends RefCounted
 ## 02 Player 1's Gyrocopter dropping its smoke screen ahead of it (the bar empty), 03 Player 1's Truck just after a Mine (the
 ## bar "Mine" filling), 04 Player 1's Motorbike carrying Player 2's Flag ("Drop flag"; it then drops it), 05 Player 1's Motorbike hidden in a
 ## Bush, the
-## Bush 1.4 times its old size. On Map 01. Implements: story-044-secondaries-recharge.md AC-7 (the look). Tooling only.
+## Bush 1.4 times its old size, 06 (Story 045) an ammunition zone in the ammo bar's blue (Player 1) and a Fuel zone in the
+## fuel bar's amber (Player 2). On Map 01. Implements: story-044-secondaries-recharge.md AC-7 (the look). Tooling only.
 ## Run: SHOTS=<folder> godot --path . --windowed --resolution 1280x720 \
 ##     res://tools/evidence/split_screen_harness.tscn -- --scenario=recharge_showcase
 
@@ -40,7 +41,7 @@ const WATCHDOG_SECONDS: float = 1800.0
 const SPOT: Vector3 = Vector3(-30.0, 0.0, -2.0)
 const RUN_UP_TICKS: int = 90
 const SETTLE_TICKS: int = 30
-const FRAMES: int = 5
+const FRAMES: int = 6
 const BUSH_SCENE: PackedScene = preload("res://src/gameplay/cover/bush.tscn")
 
 var _m: M2
@@ -84,6 +85,11 @@ func run(harness: Node) -> void:
 	await _m.put(1, M2.BUGGY, bush.global_position + Vector3(8.0, 0.0, -6.0), Vector3.FORWARD)
 	await _m.kit.advance(SETTLE_TICKS)
 	await _save("05-motorbike-hidden-in-a-bush")
+	var ammo: SupplyZone = _m.split.field.get_node("AmmoBuildingWest/AmmoZone") as SupplyZone
+	await _m.put(0, M2.TRUCK, ammo.global_position + Vector3(0.0, 0.0, 9.0), Vector3.FORWARD)
+	await _m.put(1, M2.TRUCK, Vector3(-12.0, 0.0, 9.0), Vector3.FORWARD)
+	await _m.kit.advance(SETTLE_TICKS)
+	await _save("06-ammo-zone-blue-fuel-zone-amber")
 	var problems: PackedStringArray = PackedStringArray() if _saved.size() == FRAMES else PackedStringArray(["%d frames" % _saved.size()])
 	_m.kit.verdict("S1_frames", problems, ", ".join(_saved))
 	_m.h.finish("frames=%d" % _saved.size())

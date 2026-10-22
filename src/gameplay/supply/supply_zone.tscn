@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://src/gameplay/supply/data/supply_settings.tres" id="2_sz_settings"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_amber"]
+shading_mode = 0
 albedo_color = Color(0.96, 0.7, 0.18, 1)
 roughness = 1.0
 

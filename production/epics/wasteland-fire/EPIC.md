@@ -128,5 +128,6 @@ Martin asked on 2026-10-21 to put Map 02, the schematic of 2026-10-16, into the 
 | 042 | Secondary weapons on E / Comma / LT: the Truck's Mines, the Buggy's nitro, the Gyrocopter's smoke screen that hides it from the Turrets and both views; LT no longer fires (Martin, 2026-10-22) | Integration | In Progress | N/A (minimal) |
 | 043 | A real flag: a 3 m pole with a waving Team-colour cloth, a banner on the Motorbike, planted when dropped (Martin, 2026-10-22) | Visual/Feel | In Progress | N/A (minimal) |
 | 044 | Secondaries recharge in 15 s with a bar (Boost / Smoke / Mine / Drop flag); smoke 10 m ahead for 3 s; unlimited Mines; the Motorbike drops the Flag; bigger Bushes (Martin, 2026-10-22) | Integration | In Progress | N/A (minimal) |
+| 045 | The secondary bar takes the Tokens line's place; "Drop flag" without a bar; the boost white on grey; Fuel zones amber and ammunition zones blue like their bars (Martin, 2026-10-22) | UI | In Progress | N/A (minimal) |
 | 040 | On a pad the left stick drives (up forward, down reverse) and either trigger or A fires (Martin, 2026-10-22) | Integration | In Progress | N/A (minimal) |
 | 039 | No Turret locks a Flag, and the Motorbike breaks Wall Panels and Flag Walls (Martin, 2026-10-21) | Logic | In Progress | N/A (minimal) |

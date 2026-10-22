@@ -16,6 +16,30 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_boost_bg"]
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.05, 0.05, 0.06, 1)
+bg_color = Color(0.45, 0.46, 0.48, 0.9)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_boost_fill"]
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.05, 0.05, 0.06, 1)
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_charging"]
 bg_color = Color(0.62, 0.62, 0.64, 1)
 corner_radius_top_left = 4
@@ -28,15 +52,18 @@ visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_left = 332.0
-offset_top = 92.0
+offset_top = 47.0
 offset_right = 624.0
-offset_bottom = 120.0
+offset_bottom = 75.0
 mouse_filter = 2
 script = ExtResource("1_status")
 name_label = NodePath("Name")
 bar = NodePath("Bar")
 ready_style = SubResource("StyleBoxFlat_ready")
 charging_style = SubResource("StyleBoxFlat_charging")
+background_style = SubResource("StyleBoxFlat_bg")
+boost_fill_style = SubResource("StyleBoxFlat_boost_fill")
+boost_background_style = SubResource("StyleBoxFlat_boost_bg")
 boost_text = "Boost"
 smoke_text = "Smoke"
 mine_text = "Mine"

@@ -8,8 +8,13 @@
 albedo_color = Color(1, 0.95, 0.55, 1)
 roughness = 1.0
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_zone"]
+shading_mode = 0
+albedo_color = Color(0.24, 0.545, 1, 1)
+roughness = 1.0
+
 [sub_resource type="BoxMesh" id="BoxMesh_slab_ammo"]
-material = SubResource("StandardMaterial3D_paint")
+material = SubResource("StandardMaterial3D_zone")
 size = Vector3(1, 0.02, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_plinth"]
@@ -108,3 +113,5 @@ size = Vector3(6, 6, 6)
 
 [node name="Slab" parent="AmmoZone/Marking" index="0"]
 mesh = SubResource("BoxMesh_slab_ammo")
+
+[editable path="AmmoZone"]

@@ -29,12 +29,15 @@ friends at home.
   042), A confirms the Unit (story 040), Y switch the camera, View Self-destruct, Menu restart the Round. A pad
   can be plugged in or out during a Round; the Player's view says so.
 - Every Unit has a secondary weapon on E / Comma / LT (stories 042 and 044),
-  each refilling in 15 s, with a bar under the HUD: the Truck lays a Mine
+  each refilling in 15 s, with a bar on the HUD where the Tokens line was
+  (story 045): the Truck lays a Mine
   ("Mine", unlimited), the Buggy boosts for 2 s at 1.6 times its top speed
   ("Boost"), the Gyrocopter drops a big smoke screen 10 m ahead of it for 3 s
   that hides it, and everything in and behind it, from both views and from the
   Turrets ("Smoke"), and a Motorbike carrying a Flag drops it ("Drop flag").
 - Bushes are bigger (story 044): a Motorbike can hide in one.
+- Fuel zones are the fuel bar's amber and ammunition zones the ammo bar's
+  blue (story 045).
 - The Flag is a real flag (story 043): a 3 m pole with a waving cloth in its
   Team colour, carried on the Motorbike like a banner, planted where it falls.
 - Each Player spawns Units from the Garage at their Base, paying one Token of
@@ -273,8 +276,8 @@ them Motorbike 5, Buggy 3, Truck 2 and Gyrocopter 2. A destroyed Unit costs one
 Token of its type, taken when it is destroyed: enemy fire, a Self-destruct, a
 Gyrocopter's empty-tank crash and its crash into a Tall piece all count. The
 choice panel shows how many Tokens each type has left and dims a type with
-none, which the cursor skips; the HUD shows your Motorbike Tokens, counting the
-Motorbike you are driving. A Round ends when a Player delivers the other's
+none, which the cursor skips (the HUD's Motorbike Tokens line is gone since
+story 045: the choice panel's counts are the place to look). A Round ends when a Player delivers the other's
 Flag, or when a Player's last Motorbike Token is gone: that Player loses. If
 both lose their last one on the same tick, nobody wins and the screen says so.
 R starts the Round again with full stocks.

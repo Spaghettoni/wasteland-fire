@@ -15,10 +15,12 @@ extends RefCounted
 ##     away from it and comes back it does.
 ##  X5 the Bushes: every Bush of Map 02 is 1.4 times its scene's size (sight radius 2.66 m); a Motorbike inside a Bush draws
 ##     no Shot from a Turret 15 m off, which fires at it once it drives out.
-##  X6 the data: LT is the secondary key and fires nothing, X is free; nitro 2 s x 1.6 and 15 s; smoke 15 s, 12 m, 3 s, 10 m
+##     Since Story 045 "Drop flag" is a name with no bar.
+##  X6 the data, and the HUD (Story 045): no Tokens line, the bar on the band's second row; Map 01's Fuel zone drawn unshaded in
+##     the fuel bar's amber and its ammunition zone in the ammo bar's blue; LT is the secondary key and fires nothing, X is free; nitro 2 s x 1.6 and 15 s; smoke 15 s, 12 m, 3 s, 10 m
 ##     ahead; Mines 15 s; the Turret's sight holds the smoke layer (416, 256).
 ## Implements: production/epics/wasteland-fire/story-042-secondary-weapons.md AC-1 to AC-6,
-## story-044-secondaries-recharge.md AC-1 to AC-6.
+## story-044-secondaries-recharge.md AC-1 to AC-6, story-045-hud-and-zone-colours.md AC-1 and AC-2.
 ## Tooling only: nothing under src/ depends on this file.
 ## Run: godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=secondary
 
@@ -79,6 +81,8 @@ const BUSH_SIZE: float = 1.4
 const BUSH_SIGHT_RADIUS: float = 1.9
 const CLOUD_AHEAD: float = 10.0
 const FLAG_AWAY: float = 12.0
+## Where the bar stands since Story 045: the HUD band's second row, the Tokens line's place.
+const STATUS_TOP: float = 47.0
 
 var _m: M2
 var _status: SecondaryStatus
@@ -293,6 +297,7 @@ func _check_flag_drop() -> void:
 	var picked: int = await _wait_until(func() -> bool: return flag.state == Flag.State.CARRIED)
 	await _m.kit.advance(30)
 	var carry_bar: String = await _bar()
+	var drop_has_bar: bool = _status.bar.visible
 	await _press(KEY_SECONDARY_1)
 	var state_after: String = String(Flag.State.keys()[flag.state])
 	var drop_gap: float = flag.global_position.distance_to(_m.units[0].global_position)
@@ -307,11 +312,11 @@ func _check_flag_drop() -> void:
 	var repicked: int = await _wait_until(func() -> bool: return flag.state == Flag.State.CARRIED)
 	await _m.park(0)
 	_m.kit.need(problems, empty_bar.is_empty() and empty_drops == 0, "no Flag: bar '%s', %d drops" % [empty_bar, empty_drops])
-	_m.kit.need(problems, picked > 0 and carry_bar == "Drop flag 1.00", "picked up after %d ticks, bar '%s'" % [picked, carry_bar])
+	_m.kit.need(problems, picked > 0 and carry_bar == "Drop flag 1.00" and not drop_has_bar, "picked up after %d ticks, bar '%s', a bar drawn %s" % [picked, carry_bar, drop_has_bar])
 	_m.kit.need(problems, dropped == [1] and state_after == "DROPPED" and still_dropped and after_bar.is_empty(), "drops %s, state %s, still dropped %s, bar '%s'" % [dropped, state_after, still_dropped, after_bar])
 	_m.kit.need(problems, repicked > 0, "not picked up again after being away (%d)" % repicked)
-	_m.kit.verdict("X4_flag_drop", problems, "no Flag: bar '%s', %d drops; picked up after %d ticks, bar '%s'; E: flag_dropped %s, %s %.2f m from the Motorbike, still dropped 0.5 s on %s, bar '%s'; picked up again after being away: %d ticks" % [
-		empty_bar, empty_drops, picked, carry_bar, dropped, state_after, drop_gap, still_dropped, after_bar, repicked])
+	_m.kit.verdict("X4_flag_drop", problems, "no Flag: bar '%s', %d drops; picked up after %d ticks, name '%s' (a bar drawn %s); E: flag_dropped %s, %s %.2f m from the Motorbike, still dropped 0.5 s on %s, bar '%s'; picked up again after being away: %d ticks" % [
+		empty_bar, empty_drops, picked, carry_bar, drop_has_bar, dropped, state_after, drop_gap, still_dropped, after_bar, repicked])
 
 
 func _wait_until(done: Callable) -> int:
@@ -377,7 +382,22 @@ func _check_data() -> void:
 	_m.kit.need(problems, is_equal_approx(buggy.nitro_seconds, 2.0) and is_equal_approx(buggy.nitro_speed_share, 1.6) and is_equal_approx(buggy.nitro_cooldown_seconds, 15.0), "nitro %.1f s x %.2f, %.1f s" % [buggy.nitro_seconds, buggy.nitro_speed_share, buggy.nitro_cooldown_seconds])
 	_m.kit.need(problems, is_equal_approx(gyro.smoke_cooldown_seconds, 15.0) and is_equal_approx(smoke.radius, 12.0) and is_equal_approx(smoke.seconds, 3.0) and is_equal_approx(smoke.ahead, CLOUD_AHEAD), "smoke %.1f s, %.1f m, %.1f s, %.1f m ahead" % [gyro.smoke_cooldown_seconds, smoke.radius, smoke.seconds, smoke.ahead])
 	_m.kit.need(problems, is_equal_approx(truck.mine_cooldown_seconds, 15.0), "Mines %.1f s" % truck.mine_cooldown_seconds)
+	var huds: Array[PlayerHud] = [_m.split.get_node("Views/Player1View/SubViewport/Player1Hud") as PlayerHud, _m.split.get_node("Views/Player2View/SubViewport/Player2Hud") as PlayerHud]
+	var tokens_shown: bool = false
+	for hud: PlayerHud in huds:
+		tokens_shown = tokens_shown or (hud.get_node("%TokensLabel") as Label).visible or hud.show_tokens_line
+	var status_top: float = _status.position.y
+	var colours: Array[String] = []
+	var zone_ok: bool = true
+	for pair: Array in [["Depot/FuelZoneWest", "%FuelBar"], ["AmmoBuildingWest/AmmoZone", "%AmmoBar"]]:
+		var zone: SupplyZone = _m.split.field.get_node(String(pair[0])) as SupplyZone
+		var material: StandardMaterial3D = (zone.slab as MeshInstance3D).mesh.surface_get_material(0) as StandardMaterial3D
+		var bar_colour: Color = (huds[0].get_node(String(pair[1])).get_theme_stylebox("fill") as StyleBoxFlat).bg_color
+		zone_ok = zone_ok and material.albedo_color.is_equal_approx(bar_colour) and material.shading_mode == BaseMaterial3D.SHADING_MODE_UNSHADED
+		colours.append("%s %s (bar %s)" % [pair[0], material.albedo_color.to_html(false), bar_colour.to_html(false)])
+	_m.kit.need(problems, zone_ok, "zones %s" % [colours])
+	_m.kit.need(problems, not tokens_shown and is_equal_approx(status_top, STATUS_TOP), "the Tokens line shows %s; the bar at y %.0f" % [tokens_shown, status_top])
 	_m.kit.need(problems, turret.sight_extra_mask == 416 and turret.flying_sight_extra_mask == 256, "Turret sight %d / %d" % [turret.sight_extra_mask, turret.flying_sight_extra_mask])
-	_m.kit.verdict("X6_data", problems, "LT %s, X bound %s; nitro %.1f s x %.2f, %.1f s; smoke %.1f s, %.0f m, %.1f s, %.0f m ahead; Mines %.1f s; Turret sight %d / %d" % [
-		lt, x_bound, buggy.nitro_seconds, buggy.nitro_speed_share, buggy.nitro_cooldown_seconds, gyro.smoke_cooldown_seconds, smoke.radius, smoke.seconds, smoke.ahead,
+	_m.kit.verdict("X6_data", problems, "the Tokens line shown %s, the bar at y %.0f (its row); zones unshaded in their bars' colours: %s; LT %s, X bound %s; nitro %.1f s x %.2f, %.1f s; smoke %.1f s, %.0f m, %.1f s, %.0f m ahead; Mines %.1f s; Turret sight %d / %d" % [
+		tokens_shown, status_top, ", ".join(colours), lt, x_bound, buggy.nitro_seconds, buggy.nitro_speed_share, buggy.nitro_cooldown_seconds, gyro.smoke_cooldown_seconds, smoke.radius, smoke.seconds, smoke.ahead,
 		truck.mine_cooldown_seconds, turret.sight_extra_mask, turret.flying_sight_extra_mask])

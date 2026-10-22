@@ -203,8 +203,17 @@ Martin, 2026-10-22, after playing story 042: "zvacsi trochu kricky, paci sa mi m
 - Gyrocopter: the smoke screen is dropped 10 m ahead of it, so it flies into it; it hangs 3 s with a 1 s fade.
 - Truck: one Mine, then 15 s to the next; the Mines are unlimited and the "Mines N / 5" line is gone.
 - Motorbike: while it carries a Flag the key drops it at its tail; the Flag lies like one whose Carrier was destroyed, and that Motorbike cannot take it again until it has been 5 m away from it (data: `match_rules.tres` flag_release_metres).
-- Each view shows a bar under the HUD with the weapon's name, "Boost", "Smoke", "Mine" or "Drop flag": yellow and full when ready, grey while it refills (the boost's drains while it runs).
+- Each view shows a bar on the HUD with the weapon's name (story 045 put it where the Tokens line was), "Boost", "Smoke", "Mine" or "Drop flag": yellow and full when ready, grey while it refills (the boost's drains while it runs).
 - Bushes are 1.4 times their size of story 038, so a Motorbike can hide in one (data: `bush.tscn` size).
+
+## The HUD's bar and the zones' colours (2026-10-22)
+
+Martin, 2026-10-22: "drop flag nepotrebuje bar. a dajme prec tu info kolko ostava moto a tam posunme ten bar. tiez zmenme farbu tankovacich ploch, nech benzinova ma rovnaku ako ma fuel bar a ammo plocha modru ako ammo bar. boost moze byt sede pozadie biely bar". Built in story 045.
+
+- The HUD no longer shows the Motorbike Tokens left; the secondary weapon's bar stands in that place, on the band's second row.
+- "Drop flag" is a name with no bar.
+- The boost's bar is white on grey.
+- A Fuel zone's marking is the fuel bar's amber and an ammunition zone's the ammo bar's blue, both drawn flat (unshaded) so they read as the same colours.
 
 ## A real flag (2026-10-22)
 

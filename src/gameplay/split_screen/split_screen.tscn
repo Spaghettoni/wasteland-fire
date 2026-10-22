@@ -263,6 +263,7 @@ match_controller = NodePath("%MatchController")
 unit = NodePath("%Player1Unit")
 player_index = 0
 edge_style = ExtResource("24_edge_orange")
+show_tokens_line = false
 
 [node name="Player1UnitChoice" parent="Views/Player1View/SubViewport" node_paths=PackedStringArray("match_controller", "choice_input", "pad_assignment") instance=ExtResource("21_choice")]
 pad_assignment = NodePath("%PadAssignment")
@@ -328,6 +329,7 @@ match_controller = NodePath("%MatchController")
 unit = NodePath("%Player2Unit")
 player_index = 1
 edge_style = ExtResource("25_edge_teal")
+show_tokens_line = false
 
 [node name="Player2UnitChoice" parent="Views/Player2View/SubViewport" node_paths=PackedStringArray("match_controller", "choice_input", "pad_assignment") instance=ExtResource("21_choice")]
 pad_assignment = NodePath("%PadAssignment")

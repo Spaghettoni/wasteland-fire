@@ -169,6 +169,11 @@ extends Control
 ## in this script.
 @export var tokens_format: String = ""
 
+## Whether the Tokens line shows (Story 045; Martin, 2026-10-22: "dajme prec tu info kolko ostava moto
+## a tam posunme ten bar"): the launch scene turns it off and the secondary weapon's bar stands in its
+## place. Its place stays part of the band.
+@export var show_tokens_line: bool = true
+
 ## The status line while this Player's Unit carries the other Player's Flag
 ## (FlagStatus.CARRYING_ENEMY). Looked up with tr(). Required, with no default.
 @export var carrying_text: String = ""
@@ -374,7 +379,7 @@ func _show_tokens() -> void:
 		return
 	var tokens: int = match_controller.tokens_left(player_index, carrier)
 	_tokens_label.text = tr(tokens_format) % [tr(types[carrier].display_name), tokens]
-	_tokens_label.visible = true
+	_tokens_label.visible = show_tokens_line
 
 
 ## A Unit picked up a Flag: either Player's status can have changed (the Carrier's, or the
