@@ -2,7 +2,8 @@ class_name Flag
 extends Node3D
 ## The Flag, one per Base, that a Motorbike picks up by touching it, carries on its tail,
 ## drops where it is destroyed and, when it is the opponent's, delivers to its own Base to win the
-## Round. This node is the thing itself: a small water tank in its owner's colour and a touch zone.
+## Round. This node is the thing itself: a flag on a 3 m pole, its cloth in its owner's colour and
+## waving (Story 043), and a touch zone.
 ## It holds where it is (at home, carried, dropped) and the Unit carrying it, and nothing else.
 ##
 ## Implements: production/epics/wasteland-fire/story-004-water-canister-and-win.md AC-1 (a visible
@@ -13,7 +14,8 @@ extends Node3D
 ## it back on its Base's seat when its owner brings it home); design/game-brief.md MVP feature 4;
 ## design/rules.md "Resources" (one Flag sits in each Base; when the Carrier is destroyed
 ## the Flag stays lying where it was; its handling: a Motorbike picks a Flag up by touching
-## it, a dropped Flag never returns home on its own). Vocabulary: CONTEXT.md (Flag, Carrier,
+## it, a dropped Flag never returns home on its own); story-043-a-real-flag.md AC-1 to AC-3 (the
+## look: pole, waving cloth, banner, planted). Vocabulary: CONTEXT.md (Flag, Carrier,
 ## Unit, Base, Round, Player).
 ##
 ## A dumb actor. The Flag knows no Round, Player, Base or owner, connects no signal of its
@@ -31,18 +33,22 @@ extends Node3D
 ## carried (the Story 004 evidence doc keeps the probe). Signals up, calls down, as the Unit has it,
 ## except that the Flag has nothing to say.
 ##
-## The scene (flag.tscn), origin at the centre of the base so a seat or a drop position is
-## a point on the ground:
+## The scene (flag.tscn), origin at the foot of the pole so a seat or a drop position is a point on
+## the ground (Story 043; Martin, 2026-10-22: "vlajka je teraz kanister, spravme z nej realnu
+## vlajku"; until then a carryable water tank about 1 m tall, Story 004 and 007):
 ##   Flag (this Node3D)
-##     Body (MeshInstance3D): a 0.56 m wide, 0.72 m tall cylinder from 0.10 m up, light grey
-##       until apply_color() paints it in the owning Player's colour (on Map 01 its Team colour:
-##       production/epics/wasteland-fire/story-007-the-map.md AC-12, the Flag is a carryable water
-##       tank about 1 m tall)
-##     Stand, BandLow, BandHigh, Lid (MeshInstance3D): its dark steel parts, a base ring, two bands
-##       0.6 m across and a domed lid, 0.94 m tall in all; never painted, so the Flag reads as the
-##       same tank in either Player colour, on its seat and on a Unit's tail
-##     PickupZone (Area3D): a 1 m sphere about the body's middle, on physics layer 4 ("flags",
-##       project.godot) watching layer 2 ("units"); it only reports
+##     Stand (MeshInstance3D): a dark steel foot 0.68 m across, shown only while the Flag stands on
+##       its Base's seat (AT_HOME); a carried Flag rides as a banner and a dropped one is planted
+##     Mast (Node3D): what stands up from the foot, tilted and sunk a little while DROPPED
+##       (drop_tilt_degrees, drop_sink), so a dropped Flag looks stuck in the ground
+##       Pole, Finial (MeshInstance3D): a 3 m steel pole and its knob, never painted
+##       Cloth (Node3D): the cloth, 1.92 m by 1.1 m with its top 2.95 m up, hanging off the pole as
+##         a chain of cloth_hinges (Hinge1 .. Hinge4), each turning a little about the up axis
+##         every frame (wave_amplitude, wave_speed, wave_phase), so the cloth waves; each hinge
+##         holds one panel (body_mesh is the first, cloth_meshes the others), every panel painted
+##         by apply_color()
+##     PickupZone (Area3D): a 1 m sphere 0.6 m up, on physics layer 4 ("flags", project.godot)
+##       watching layer 2 ("units"); it only reports
 ## No solid collision anywhere. Picking up is touching (AC-2): a Unit drives into the Flag and
 ## the overlap is the pick-up, so a collider that stopped the Unit at the Flag's surface would
 ## stop it short of the touch and bounce it off the Flag; a dropped Flag in a lane
@@ -103,9 +109,34 @@ enum State {
 ## "units", a 1 m sphere): is_touching() reads it. The scene sets it to the PickupZone child.
 @export var pickup_zone: Area3D
 
-## The body mesh apply_color() paints in the owning Player's colour. The scene sets it to the
-## Body child; the steel parts are not exported because nothing paints them.
+## The first panel of the cloth, which apply_color() paints in the owning Player's colour with the
+## cloth_meshes. The scene sets it to Mast/Cloth/Hinge1/Panel1; the steel parts are not exported
+## because nothing paints them.
 @export var body_mesh: MeshInstance3D
+
+@export_group("Look")
+## The other panels of the cloth, painted with body_mesh (Story 043).
+@export var cloth_meshes: Array[MeshInstance3D] = []
+## The cloth's hinges, from the pole out: each turns by the wave about the up axis (Story 043).
+@export var cloth_hinges: Array[Node3D] = []
+## The foot, shown only while the Flag stands on its seat (Story 043).
+@export var stand: Node3D
+## What stands up from the foot, tilted and sunk while the Flag is DROPPED (Story 043).
+@export var mast: Node3D
+## The largest turn of each hinge, radians: how far the cloth waves.
+@export_range(0.0, 1.0, 0.01) var wave_amplitude: float = 0.42
+## How fast the cloth waves, radians of the wave per second.
+@export_range(0.0, 20.0, 0.1) var wave_speed: float = 4.2
+## How far the wave runs behind from one hinge to the next, radians.
+@export_range(0.0, 3.0, 0.01) var wave_phase: float = 0.9
+## How far a dropped Flag's mast leans, degrees.
+@export_range(0.0, 45.0, 0.5) var drop_tilt_degrees: float = 9.0
+## How deep a dropped Flag's mast sinks into the ground, metres.
+@export_range(0.0, 1.0, 0.01) var drop_sink: float = 0.25
+## How far a carried Flag's mast turns about the up axis, degrees: -90 lets the cloth stream
+## behind the Carrier (the cloth hangs off the pole along the mast's +x, a Unit drives along -z).
+@export_range(-180.0, 180.0, 1.0) var carry_yaw_degrees: float = -90.0
+@export_group("")
 
 ## Where the Flag is (State): AT_HOME from _ready() until the controller moves it. Read-only:
 ## assigning to it pushes an error and changes nothing; it moves only through carry_by(), drop_at()
@@ -129,12 +160,24 @@ var _carrier: Unit = null
 ## The node the Flag started under (its Base), read once in _ready() because reparent() does
 ## not run _ready() again. drop_at() and seat_at() put the Flag back under it.
 var _home_parent: Node = null
+var _wave_clock: float = 0.0
 
 
 func _ready() -> void:
 	_home_parent = get_parent()
 	if pickup_zone == null or body_mesh == null:
 		push_error("Flag '%s': pickup_zone or body_mesh is not assigned, so the Flag can neither report a touch nor take a colour." % name)
+	_show_state()
+
+
+## Waves the cloth (Story 043): hinge i turns by wave_amplitude * sin(wave_speed * t - wave_phase * i)
+## about the up axis, so the wave runs out from the pole. A picture only: nothing reads it.
+func _process(delta: float) -> void:
+	_wave_clock += delta
+	for index: int in cloth_hinges.size():
+		var hinge: Node3D = cloth_hinges[index]
+		if hinge != null:
+			hinge.rotation.y = wave_amplitude * sin(wave_speed * _wave_clock - wave_phase * index)
 
 
 ## Paints the Body in the given material, a material_override on body_mesh only (the steel parts
@@ -145,6 +188,9 @@ func _ready() -> void:
 ## it.
 func apply_color(material: Material) -> void:
 	body_mesh.material_override = material
+	for mesh: MeshInstance3D in cloth_meshes:
+		if mesh != null:
+			mesh.material_override = material
 
 
 ## True while the Unit overlaps the PickupZone, as the physics server last reported it (a tick or
@@ -166,6 +212,7 @@ func carry_by(unit: Unit) -> void:
 	_carrier = unit
 	reparent(unit, false)
 	transform = Transform3D(Basis.IDENTITY, unit.carry_offset)
+	_show_state()
 
 
 ## Stands the Flag where its Carrier was destroyed (AC-3): state DROPPED, no carrier, the node
@@ -179,6 +226,7 @@ func drop_at(at: Vector3) -> void:
 	_carrier = null
 	_return_home()
 	global_transform = Transform3D(Basis.IDENTITY, at)
+	_show_state()
 	reset_physics_interpolation()
 
 
@@ -192,6 +240,7 @@ func seat_at(seat: Transform3D) -> void:
 	_carrier = null
 	_return_home()
 	global_transform = seat
+	_show_state()
 	reset_physics_interpolation()
 
 
@@ -202,3 +251,19 @@ func seat_at(seat: Transform3D) -> void:
 func _return_home() -> void:
 	if get_parent() != _home_parent:
 		reparent(_home_parent, false)
+
+
+## Shows the foot only at home, turns the mast of a carried Flag so the cloth streams behind and
+## plants the mast of a dropped one (Story 043): it leans drop_tilt_degrees about its local x axis
+## and sinks drop_sink; upright and on the foot at home.
+func _show_state() -> void:
+	if stand != null:
+		stand.visible = _state == State.AT_HOME
+	if mast != null:
+		if _state == State.DROPPED:
+			mast.transform = Transform3D(Basis(Vector3.RIGHT, deg_to_rad(drop_tilt_degrees)), Vector3.DOWN * drop_sink)
+		elif _state == State.CARRIED:
+			mast.transform = Transform3D(Basis(Vector3.UP, deg_to_rad(carry_yaw_degrees)), Vector3.ZERO)
+		else:
+			mast.transform = Transform3D.IDENTITY
+		mast.reset_physics_interpolation()

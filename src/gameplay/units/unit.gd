@@ -446,6 +446,10 @@ var _speed_cap: float = 1.0
 ## The physics frame (Engine.get_physics_frames()) of the last limit_speed() call, or -1 before
 ## the first: the cap applies on that tick and the next one, then lapses by itself.
 var _speed_cap_frame: int = -1
+## The nitro's share of the top speed and the acceleration (Story 042) and the physics frame of the
+## last boost_speed() call; it applies on that tick and the next, like the ford's cap.
+var _boost_share: float = 1.0
+var _boost_frame: int = -1
 
 
 func _ready() -> void:
@@ -508,6 +512,21 @@ func limit_speed(fraction: float) -> void:
 		return
 	_speed_cap = fraction
 	_speed_cap_frame = Engine.get_physics_frames()
+
+
+## Raises the top speed forward and the acceleration to `share` times the type's own for this physics
+## tick and the next (Story 042, the Buggy's nitro): NitroBooster calls it every tick the nitro lasts,
+## before the Unit's own tick. A ford's cap still clamps. A share below 1 or NaN is ignored.
+func boost_speed(share: float) -> void:
+	if not (share >= 1.0):
+		return
+	_boost_share = share
+	_boost_frame = Engine.get_physics_frames()
+
+
+## True while the last boost_speed() call is at most one physics tick old (Story 042).
+func is_boosted() -> bool:
+	return _boost_frame >= 0 and Engine.get_physics_frames() - _boost_frame <= 1
 
 
 ## Stops the Unit dead after a teleport: zeroes speed, velocity, the held command, the blocked flag
@@ -740,10 +759,12 @@ func _approach_speed(delta: float) -> float:
 	if is_zero_approx(throttle):
 		return move_toward(speed, 0.0, stats.coast_deceleration * delta)
 	var top_speed: float = stats.max_speed if throttle > 0.0 else stats.reverse_max_speed
+	var boost: float = _boost_share if throttle > 0.0 and is_boosted() else 1.0
+	top_speed *= boost
 	if _is_badly_damaged():
 		top_speed *= stats.badly_damaged_speed_share
 	var opposing: bool = signf(throttle) * signf(speed) < 0.0
-	var rate: float = stats.braking if opposing else stats.acceleration
+	var rate: float = stats.braking if opposing else stats.acceleration * boost
 	return move_toward(speed, top_speed * throttle, rate * delta)
 
 

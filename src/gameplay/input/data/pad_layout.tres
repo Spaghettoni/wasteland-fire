@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="PadLayout" load_steps=17 format=3]
+[gd_resource type="Resource" script_class="PadLayout" load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://src/gameplay/input/pad_layout.gd" id="1_layout"]
 [ext_resource type="Script" path="res://src/gameplay/input/pad_binding.gd" id="2_binding"]
@@ -61,14 +61,6 @@ axis = 5
 axis_direction = 1
 display_name = "RT"
 
-[sub_resource type="Resource" id="PadBinding_12"]
-script = ExtResource("2_binding")
-action_suffix = &"fire"
-kind = 1
-axis = 4
-axis_direction = 1
-display_name = "LT"
-
 [sub_resource type="Resource" id="PadBinding_13"]
 script = ExtResource("2_binding")
 action_suffix = &"fire_high"
@@ -78,8 +70,10 @@ display_name = "RB"
 [sub_resource type="Resource" id="PadBinding_07"]
 script = ExtResource("2_binding")
 action_suffix = &"lay_mine"
-button = 2
-display_name = "X"
+kind = 1
+axis = 4
+axis_direction = 1
+display_name = "LT"
 
 [sub_resource type="Resource" id="PadBinding_08"]
 script = ExtResource("2_binding")
@@ -102,6 +96,6 @@ display_name = "Menu"
 
 [resource]
 script = ExtResource("1_layout")
-bindings = Array[ExtResource("2_binding")]([SubResource("PadBinding_00"), SubResource("PadBinding_01"), SubResource("PadBinding_02"), SubResource("PadBinding_03"), SubResource("PadBinding_04"), SubResource("PadBinding_05"), SubResource("PadBinding_06"), SubResource("PadBinding_11"), SubResource("PadBinding_12"), SubResource("PadBinding_13"), SubResource("PadBinding_07"), SubResource("PadBinding_08"), SubResource("PadBinding_09"), SubResource("PadBinding_10")])
+bindings = Array[ExtResource("2_binding")]([SubResource("PadBinding_00"), SubResource("PadBinding_01"), SubResource("PadBinding_02"), SubResource("PadBinding_03"), SubResource("PadBinding_04"), SubResource("PadBinding_05"), SubResource("PadBinding_06"), SubResource("PadBinding_11"), SubResource("PadBinding_13"), SubResource("PadBinding_07"), SubResource("PadBinding_08"), SubResource("PadBinding_09"), SubResource("PadBinding_10")])
 deadzone = 0.2
 unbound_suffixes = PackedStringArray("debug_damage")

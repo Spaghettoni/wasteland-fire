@@ -209,6 +209,9 @@ const MINE_GROUP: StringName = &"mines"
 ## The node group every Explosion belongs to; _free_explosions() frees it at every restart.
 const EXPLOSION_GROUP: StringName = &"explosions"
 
+## The node group every smoke screen belongs to (Story 042); _free_smokes() frees it at every restart.
+const SMOKE_GROUP: StringName = &"smokes"
+
 ## The node group every Fuel Can belongs to; _restock_fuel_cans() brings the whole group back
 ## whenever a Round starts again. Empty on the shipped Map 01 since Story 023.
 const FUEL_CAN_GROUP: StringName = &"fuel_cans"
@@ -309,6 +312,7 @@ func _ready() -> void:
 	match_controller.round_started.connect(_restock_fuel_cans)
 	match_controller.round_started.connect(_restore_structures)
 	match_controller.round_started.connect(_free_mines)
+	match_controller.round_started.connect(_free_smokes)
 	if field.tyre_tracks != null:
 		match_controller.round_started.connect(field.tyre_tracks.clear)
 	if explosion_scene != null:
@@ -441,6 +445,13 @@ func _free_mines() -> void:
 	for mine: Node in get_tree().get_nodes_in_group(MINE_GROUP):
 		mine.set_physics_process(false)
 		mine.queue_free()
+
+
+## Frees every smoke screen still hanging (the SMOKE_GROUP nodes) when a Round starts again (Story 042).
+func _free_smokes() -> void:
+	for cloud: Node in get_tree().get_nodes_in_group(SMOKE_GROUP):
+		cloud.set_physics_process(false)
+		cloud.queue_free()
 
 
 ## Frees every Explosion still playing (the EXPLOSION_GROUP nodes) when a Round starts again (Story 016

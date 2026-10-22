@@ -163,6 +163,7 @@ p2_lay_mine={
 3d_physics/layer_6="cliffs_water"
 3d_physics/layer_7="cover"
 3d_physics/layer_8="sight"
+3d_physics/layer_9="smoke"
 3d_render/layer_2="tower_top"
 
 [physics]

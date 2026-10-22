@@ -125,5 +125,7 @@ Martin asked on 2026-10-21 to put Map 02, the schematic of 2026-10-16, into the 
 |---|-------|------|--------|-----|
 | 038 | Map 02, a map choice before the match, and the Bushes, wrecks and small buildings: the canyon Map from the schematic, built by `tools/maps/build_map_02.py`; the launch screen with both Maps and the way back to it from the Round-over screen; Outposts; Bushes that hide from Turrets and fall under a Buggy or a Truck; breakable wrecks and huts | Integration | In Progress | N/A (minimal) |
 | 041 | Shots in two Heights: low Shots hit ground Units, high Shots (Left / Right Shift, RB) hit the Gyrocopter and fly over walls and cover; Turrets are hit by both and fire high at a Gyrocopter (Martin, 2026-10-22) | Integration | In Progress | N/A (minimal) |
+| 042 | Secondary weapons on E / Comma / LT: the Truck's Mines, the Buggy's nitro, the Gyrocopter's smoke screen that hides it from the Turrets and both views; LT no longer fires (Martin, 2026-10-22) | Integration | In Progress | N/A (minimal) |
+| 043 | A real flag: a 3 m pole with a waving Team-colour cloth, a banner on the Motorbike, planted when dropped (Martin, 2026-10-22) | Visual/Feel | In Progress | N/A (minimal) |
 | 040 | On a pad the left stick drives (up forward, down reverse) and either trigger or A fires (Martin, 2026-10-22) | Integration | In Progress | N/A (minimal) |
 | 039 | No Turret locks a Flag, and the Motorbike breaks Wall Panels and Flag Walls (Martin, 2026-10-21) | Logic | In Progress | N/A (minimal) |

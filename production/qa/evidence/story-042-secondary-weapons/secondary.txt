@@ -1,0 +1,7 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK secondary X1_truck PASS Mines [5, 4, 3] (E, then LT); LT fired 0 Shots; status line ''
+CHECK secondary X2_nitro PASS Buggy top 19.60 m/s, with nitro 31.36, after 19.60, a press while cooling 19.60, ready again true; Motorbike 24.00 -> 24.00; lines ["Nitro ready", "Nitro!", "Nitro in 7 s"]
+CHECK secondary X3_smoke PASS line 'Smoke 2 / 2'; Turret 20 m off: 3 Shots in the open, 0 while the cloud hung, 5 after it was gone (0 left); smoke left [2, 1, 0, 0]; 1 hanging, 0 after the restart
+CHECK secondary X5_data PASS LT ["lay_mine"], X bound false; nitro 2.0 s x 1.60, cooldown 8.0 s; smoke 2 x 12 m, 6 s; Turret sight 416 / 256
+RESULT secondary ok checks=4 failed=0 t=39.150 arena=1

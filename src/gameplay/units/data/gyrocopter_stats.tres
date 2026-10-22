@@ -28,6 +28,7 @@ can_fly = true
 model = ExtResource("2_model")
 collision_size = Vector3(1.6, 1, 2.4)
 collision_center = Vector3(0, 0.5, 0)
+smoke_capacity = 2
 collision_layer = 16
 collision_mask = 1
 spot_mask = 18

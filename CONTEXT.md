@@ -30,6 +30,7 @@ _Avoid_: bunker, HQ, spawn point, camp
 
 **Flag (vlajka)**:
 The objective; it replaces the Water Canister of the earlier rules. One per Base. Only a Motorbike can carry it. When its Carrier is destroyed it stays where it fell. It sits inside its Base's Flag Walls, and the other Player cannot pick it up while any Turret of its Base stands; its owner can always pick up their own dropped Flag (decided 2026-10-07).
+It looks like a real flag (story 043, 2026-10-22): a pole about 3 m tall with a waving cloth in its owner's Team colour, carried on a Motorbike like a banner, planted in the ground when dropped; until then it was drawn as a tank.
 _Avoid_: Water Canister, canister, water, banner, standard, objective, token
 
 **Carrier (nosič)**:
@@ -185,6 +186,18 @@ _Avoid_: decal, splat map, trail texture
 **Cover**:
 A static obstacle on the Map that stops every ground Unit and every shot and is never destroyed; the Gyrocopter flies over it (decided 2026-10-03, after the first playtest). On Map 01 the eight wrecks and the two long containers; the drawings' wrecks are cover, not destroyed Units. The two scrap walls were cover too until story 019 made them Wall Panels of no Player (decided 2026-10-10; built 2026-10-12); they are no longer Cover (reading, 2026-10-10). The depot's three Fuel tanks are not cover: they stop every Unit, the Gyrocopter included, as Tall pieces (decided 2026-10-10). Nor are the Wall Panels, the Flag Walls among them, although the Gyrocopter flies over them too: a Wall Panel can be destroyed (reading, 2026-10-10). Nor is an ammunition building, although it stops ground Units and every Shot like cover and the Gyrocopter flies over it: it is a building (reading, 2026-10-10; story 024). Nor are the Turrets (reading, 2026-10-07).
 _Avoid_: obstacle, barricade, prop, destructible
+
+**Secondary weapon (sekundárna zbraň)**:
+What a Unit does on the secondary key (E, Comma, a pad's LT; story 042, 2026-10-22): the Truck lays a Mine, the Buggy fires its nitro, the Gyrocopter drops a smoke screen, the Motorbike has none. The Input Map action keeps its old name, `lay_mine`.
+_Avoid_: special, ability, alt fire
+
+**Smoke screen (dymová clona)**:
+The Gyrocopter's secondary weapon: a cloud 12 m in radius that hangs 6 s where it was dropped and hides what is in and behind it from both views and from every Turret (story 042).
+_Avoid_: smoke bomb, fog
+
+**Nitro**:
+The Buggy's secondary weapon: 2 s of 1.6 times its top speed and acceleration, then 8 s of cooldown (story 042).
+_Avoid_: boost, turbo
 
 **Height (výšková úroveň)**:
 One of the two heights the Map's pieces and the Units are sorted into, low and high (the comments). The ground Units and the walls are in the low Height (the comments), and so is every low piece, which stops ground Units but not the Gyrocopter: the Wall Panels, the cover, the cliffs and the water (reading, 2026-10-10). The Gyrocopter flies in the high Height and never descends into the low one, and the Turrets' heads reach it (the comments), as does every Tall piece (decided 2026-10-10). Every hit volume spans both Heights (the comments), so every Unit still hits every Unit at the one shooting height, and a wall or a piece of cover between shooter and target stops the Shot, even one the Gyrocopter fires from above it: no height advantage for fire (decided 2026-10-10). Written with a capital to tell it from a height in metres, such as the 0.5 m shooting height or the Gyrocopter's flying height (2.5 m); in the code a Height is not a physics layer of its own (reading, 2026-10-10).

@@ -1,0 +1,86 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/secondary/smoke_cloud.gd" id="1_cloud"]
+[ext_resource type="Resource" path="res://src/gameplay/secondary/data/smoke_settings.tres" id="2_settings"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_smoke"]
+transparency = 1
+cull_mode = 2
+albedo_color = Color(0.62, 0.6, 0.57, 1)
+roughness = 1.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_puff"]
+radius = 1.0
+height = 2.0
+radial_segments = 12
+rings = 6
+
+[node name="SmokeCloud" type="Node3D" groups=["smokes"] node_paths=PackedStringArray("puffs", "sight_body", "sight_shape")]
+script = ExtResource("1_cloud")
+settings = ExtResource("2_settings")
+puffs = NodePath("Puffs")
+sight_body = NodePath("SightBody")
+sight_shape = NodePath("SightBody/CollisionShape3D")
+
+[node name="Puffs" type="Node3D" parent="."]
+
+[node name="Puff1" type="MeshInstance3D" parent="Puffs"]
+transform = Transform3D(0.55, 0, 0, 0, 0.385, 0, 0, 0, 0.55, 0, 0.25, 0)
+cast_shadow = 0
+material_override = SubResource("StandardMaterial3D_smoke")
+mesh = SubResource("SphereMesh_puff")
+
+[node name="Puff2" type="MeshInstance3D" parent="Puffs"]
+transform = Transform3D(0.45, 0, 0, 0, 0.315, 0, 0, 0, 0.45, 0.45, 0.2, 0.1)
+cast_shadow = 0
+material_override = SubResource("StandardMaterial3D_smoke")
+mesh = SubResource("SphereMesh_puff")
+
+[node name="Puff3" type="MeshInstance3D" parent="Puffs"]
+transform = Transform3D(0.45, 0, 0, 0, 0.315, 0, 0, 0, 0.45, -0.4, 0.22, 0.2)
+cast_shadow = 0
+material_override = SubResource("StandardMaterial3D_smoke")
+mesh = SubResource("SphereMesh_puff")
+
+[node name="Puff4" type="MeshInstance3D" parent="Puffs"]
+transform = Transform3D(0.45, 0, 0, 0, 0.315, 0, 0, 0, 0.45, 0.1, 0.2, -0.45)
+cast_shadow = 0
+material_override = SubResource("StandardMaterial3D_smoke")
+mesh = SubResource("SphereMesh_puff")
+
+[node name="Puff5" type="MeshInstance3D" parent="Puffs"]
+transform = Transform3D(0.4, 0, 0, 0, 0.280, 0, 0, 0, 0.4, -0.25, 0.18, -0.35)
+cast_shadow = 0
+material_override = SubResource("StandardMaterial3D_smoke")
+mesh = SubResource("SphereMesh_puff")
+
+[node name="Puff6" type="MeshInstance3D" parent="Puffs"]
+transform = Transform3D(0.4, 0, 0, 0, 0.280, 0, 0, 0, 0.4, 0.3, 0.45, 0.35)
+cast_shadow = 0
+material_override = SubResource("StandardMaterial3D_smoke")
+mesh = SubResource("SphereMesh_puff")
+
+[node name="Puff7" type="MeshInstance3D" parent="Puffs"]
+transform = Transform3D(0.5, 0, 0, 0, 0.4, 0, 0, 0, 0.5, -0.05, 0.62, -0.05)
+cast_shadow = 0
+material_override = SubResource("StandardMaterial3D_smoke")
+mesh = SubResource("SphereMesh_puff")
+
+[node name="Puff8" type="MeshInstance3D" parent="Puffs"]
+transform = Transform3D(0.35, 0, 0, 0, 0.245, 0, 0, 0, 0.35, 0.55, 0.15, -0.35)
+cast_shadow = 0
+material_override = SubResource("StandardMaterial3D_smoke")
+mesh = SubResource("SphereMesh_puff")
+
+[node name="Puff9" type="MeshInstance3D" parent="Puffs"]
+transform = Transform3D(0.35, 0, 0, 0, 0.245, 0, 0, 0, 0.35, -0.55, 0.15, -0.1)
+cast_shadow = 0
+material_override = SubResource("StandardMaterial3D_smoke")
+mesh = SubResource("SphereMesh_puff")
+
+[node name="SightBody" type="StaticBody3D" parent="."]
+collision_layer = 256
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SightBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)

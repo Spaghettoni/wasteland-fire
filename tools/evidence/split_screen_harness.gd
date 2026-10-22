@@ -27,7 +27,7 @@ extends Node
 ## (windowed); since Story 024, ammo_buildings, ammo_buildings_showcase and ammo_buildings_fps
 ## (windowed); since Story 032, pads, pads_data and pads_showcase
 ## (windowed); since Story 036, resource_bars and resource_bars_showcase (windowed);
-## since Story 037, turret_flying_sight and cliff_tops; since Story 038, map_02, bushes, cover_pieces and map_02_showcase (windowed); since Story 039, flag_open; since Story 040, pads_stick; since Story 041, fire_heights and fire_heights_showcase (windowed). Each is a script under tools/evidence/split_screen/,
+## since Story 037, turret_flying_sight and cliff_tops; since Story 038, map_02, bushes, cover_pieces and map_02_showcase (windowed); since Story 039, flag_open; since Story 040, pads_stick; since Story 041, fire_heights and fire_heights_showcase (windowed); since Story 042, secondary; since Story 043, real_flag; since Stories 042 and 043, secondary_flag_showcase (windowed). Each is a script under tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
 ## line there. A scenario reaches this script, DriveStep, UnitTrack and check_kit.gd through preload
@@ -347,6 +347,12 @@ extends Node
 ## a pad's RB) and a Turret fires high at a Gyrocopter. Unless the scenario script declares const FIRE_HEIGHTS: bool = true
 ## the runner gives both Shots the old mask (83) and no lift, and erases the high fire actions (_apply_fire_heights_off()).
 ##
+## Secondary weapons (Story 042). The secondary key (the lay_mine action: E, Comma, now a pad's LT, no longer X) also fires the
+## Buggy's nitro and drops the Gyrocopter's smoke screen; the Turrets' sight holds the smoke layer (layer 9). Unless the scenario
+## script declares const SECONDARY: bool = true the runner takes the nitro, smoke and status nodes out of the launch scene, the
+## smoke layer out of the Turret's sight and its name away, and gives a STICK_DRIVE scenario story 041's pad layout
+## (_apply_secondary_off(), _apply_secondary_nodes_off()).
+##
 ## Output: SPLIT <scenario> t=<seconds> key=value ... (progress), CHECK <scenario> <check name> PASS|FAIL
 ## <detail> and exactly one last RESULT <scenario> ok|fail checks=<n> failed=<n> key=value ...; then quit with
 ## exit code 0 when every check passed, 1 when one failed, 2 for a missing or unknown scenario. TD-003
@@ -464,6 +470,9 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"pads_stick": preload("res://tools/evidence/split_screen/pads_stick.gd"),
 	&"fire_heights": preload("res://tools/evidence/split_screen/fire_heights.gd"),
 	&"fire_heights_showcase": preload("res://tools/evidence/split_screen/fire_heights_showcase.gd"),
+	&"secondary": preload("res://tools/evidence/split_screen/secondary.gd"),
+	&"real_flag": preload("res://tools/evidence/split_screen/real_flag.gd"),
+	&"secondary_flag_showcase": preload("res://tools/evidence/split_screen/secondary_flag_showcase.gd"),
 }
 
 ## The shared step class (drive_step.gd): keys held for a time.
@@ -656,6 +665,16 @@ const FIRE_HEIGHTS_CONSTANT: StringName = &"FIRE_HEIGHTS"
 const LEGACY_040_SHOT_MASK: int = 83
 ## The high fire's actions (project.godot, Story 041).
 const FIRE_HIGH_ACTIONS: Array[StringName] = [&"p1_fire_high", &"p2_fire_high"]
+## The constant a scenario script declares as true to keep the shipped secondary weapons of Story 042 (_apply_secondary_off()).
+const SECONDARY_CONSTANT: StringName = &"SECONDARY"
+## The pad layout of story 041 (the left stick drives, both triggers and A fire low, RB high, X lays a Mine), frozen.
+const FROZEN_PAD_LAYOUT_041: PadLayout = preload("res://tools/evidence/frozen/pad_layout_story_041.tres")
+## The smoke layer Story 042 named (layer 9, 256) and its setting.
+const SMOKE_LAYER_BIT: int = 256
+const SMOKE_LAYER_SETTING: String = "layer_names/3d_physics/layer_9"
+## The launch scene's nodes of the secondary weapons (Story 042).
+const SECONDARY_NODES: Array[String] = ["World/Player1NitroBooster", "World/Player2NitroBooster", "World/Player1SmokeLauncher",
+	"World/Player2SmokeLauncher", "Views/Player1View/SubViewport/Player1SecondaryStatus", "Views/Player2View/SubViewport/Player2SecondaryStatus"]
 ## Each type's Fuel burn before Story 036, by type_id: [fuel_use, fuel_use_idle] per second.
 const LEGACY_036_FUEL_RATES: Dictionary = {
 	&"motorbike": [2.0, 0.5], &"buggy": [2.5, 0.625], &"truck": [3.0, 0.75], &"gyrocopter": [5.0, 1.25]}
@@ -866,6 +885,7 @@ func _ready() -> void:
 	_watchdog_seconds = _scenario_watchdog_seconds(SCENARIOS[scenario])
 	get_tree().create_timer(_watchdog_seconds).timeout.connect(_on_watchdog)
 	_apply_fuel_burn_off(SCENARIOS[scenario])
+	_apply_secondary_off(SCENARIOS[scenario])
 	_apply_bushes_off(SCENARIOS[scenario])
 	_apply_map_choice_off(SCENARIOS[scenario])
 	_apply_flag_open_off(SCENARIOS[scenario])
@@ -892,6 +912,7 @@ func _ready() -> void:
 	split = SPLIT_SCENE.instantiate() as SplitScreen
 	_apply_map_scene(split, SCENARIOS[scenario])
 	_apply_map_choice_nodes_off(split, SCENARIOS[scenario])
+	_apply_secondary_nodes_off(split, SCENARIOS[scenario])
 	_apply_chase_camera(split, SCENARIOS[scenario])
 	if GREYBOX_SCENARIOS.has(scenario):
 		_apply_greybox_composition(split)
@@ -1666,6 +1687,38 @@ func _apply_stick_drive_off(script: GDScript) -> void:
 		return
 	shipped.bindings = FROZEN_PAD_LAYOUT.bindings.duplicate()
 	shipped.deadzone = FROZEN_PAD_LAYOUT.deadzone
+
+
+## Gives the shared data the Turret sight and the pad layout of stories 038 to 041, unless the scenario script declares SECONDARY
+## (Story 042): the smoke layer out of both sight masks (before _apply_bushes_off() and _apply_flying_sight_off()), no name for
+## layer 9, and for a scenario that declares STICK_DRIVE the layout of story 041 (X lays the Mine, LT fires low). A scenario
+## without STICK_DRIVE gets story 032's layout from _apply_stick_drive_off().
+func _apply_secondary_off(script: GDScript) -> void:
+	var constants: Dictionary = script.get_script_constant_map()
+	if bool(constants.get(SECONDARY_CONSTANT, false)):
+		return
+	ProjectSettings.set_setting(SMOKE_LAYER_SETTING, "")
+	var stats: TurretStats = load(TURRET_STATS_PATH) as TurretStats
+	if stats != null:
+		stats.sight_extra_mask &= ~SMOKE_LAYER_BIT
+		stats.flying_sight_extra_mask &= ~SMOKE_LAYER_BIT
+	if bool(constants.get(STICK_DRIVE_CONSTANT, false)):
+		var shipped: PadLayout = load(PAD_LAYOUT_PATH) as PadLayout
+		if shipped != null:
+			shipped.bindings = FROZEN_PAD_LAYOUT_041.bindings.duplicate()
+			shipped.deadzone = FROZEN_PAD_LAYOUT_041.deadzone
+
+
+## Takes the secondary weapons' nodes (SECONDARY_NODES) out of a freshly instanced launch scene, unless the scenario script
+## declares SECONDARY (Story 042): each is removed and freed at once.
+func _apply_secondary_nodes_off(root: SplitScreen, script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(SECONDARY_CONSTANT, false)):
+		return
+	for path: String in SECONDARY_NODES:
+		var node: Node = root.get_node_or_null(NodePath(path))
+		if node != null:
+			node.get_parent().remove_child(node)
+			node.free()
 
 
 ## Gives the shared data the Flag rules of stories 013 to 038, unless the scenario script declares FLAG_OPEN (Story 039): the

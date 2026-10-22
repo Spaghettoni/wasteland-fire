@@ -52,6 +52,8 @@
 28. [Story 040 — on a pad the left stick pushed up drives forward, pulled down reverses (half the stick drives slowly), left and right steer; either trigger or A fires; the triggers no longer drive]
 
 29. [Story 041 — Space fires low: a Gyrocopter in front takes nothing, a Buggy is hit; Left Shift fires high: the Gyrocopter is hit, a Buggy takes nothing; a high Shot flies over a Wall Panel and hits a Gyrocopter behind it, a low one breaks the panel; a fuel tank or a tower stops a high Shot; a Turret takes damage from both and shoots a Gyrocopter over a wall; Right Shift and a pad's RB fire high too]
+30. [Story 042 — a Truck lays a Mine on E and on a pad's LT, and LT fires nothing; a Buggy on E runs at 1.6 times its top speed for 2 s, its line reads "Nitro!", then "Nitro in N s", and E does nothing until it reads "Nitro ready"; a Gyrocopter on E drops a big grey cloud ("Smoke 1 / 2"), a Turret stops shooting at it while it hangs in the cloud, a third press drops nothing; R clears every cloud]
+31. [Story 043 — each Flag is a 3 m pole with a waving cloth in its Team colour on a steel foot; a Motorbike carries it with the cloth streaming behind; a destroyed Carrier leaves it planted and leaning; carrying it home still wins]
 
 ## Data Integrity
 

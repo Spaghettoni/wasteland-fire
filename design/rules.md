@@ -177,11 +177,29 @@ Martin, 2026-10-22: "chcem aby pohyb fungoval s lavou packou na controlleri, ted
 
 Martin, 2026-10-22: "hitbox bude rozdeleny - gyro hore, vozidla dole, vezicky cez obe vysky. a teda strielat sa bude dat ukazovakom dole a ukazovakom na tom mensom buttone hore. tak isto treba pridat klavesy na to", and "ano" to a high Shot flying over the walls and the cover. Built in story 041; it replaces Heights' "Hit volumes through both Heights" (every Unit hit every Unit at the one shooting height).
 
-- A Player fires low (Space / Period, a pad's RT, LT or A) or high (Left Shift / Right Shift, a pad's RB), from the same load at the type's cadence.
+- A Player fires low (Space / Period, a pad's RT or A; LT until story 042) or high (Left Shift / Right Shift, a pad's RB), from the same load at the type's cadence.
 - A low Shot hits ground Units and Turrets and stops at every low piece; it passes under the Gyrocopter.
 - A high Shot hits the Gyrocopter and Turrets, flies over every low piece and every ground Unit, and stops at a Tall piece.
 - A Turret fires high at a Gyrocopter, so no wall hides one from it, and low at a ground Unit; a cliff and a Bush hide only ground Units, as before.
 - The hit test stays at the one shooting height, 0.5 m, against colliders that stand through both Heights; a high Shot's tracer is drawn 2.9 m higher, at the Gyrocopter's height (data: `match_rules.tres`).
+
+## Secondary weapons (2026-10-22)
+
+Martin, 2026-10-22: "rovnako by som chcel aby malo kazde vozidlo secondary zbran. truck ma miny - lavy ukazovak", then "1. ano 2. skusme nitro 3. dajme ze velka dymova clona - gyro bude v strede a nikto nebude vediet kam poleti 4. zatial nic". Built in story 042.
+
+- Every Unit's secondary weapon is on one key: E (Player 1), Comma (Player 2), a pad's LT. LT no longer fires; X is free.
+- Truck: lays a Mine, as before (story 014's rules unchanged).
+- Buggy: nitro, 2 s at 1.6 times its top speed and acceleration forward, then 8 s before it can be fired again; unlimited, and ready on every new Buggy (data: `buggy_stats.tres`).
+- Gyrocopter: a big smoke screen dropped where it is, 12 m across in radius, hanging 6 s with a 1.5 s fade; 2 per Gyrocopter, refilled only by a new one. It hides everything in and behind it from both views and from every Turret (a Turret's sight holds the smoke layer); no Unit and no Shot collides with it. A restart clears every cloud (data: `gyrocopter_stats.tres`, `smoke_settings.tres`).
+- Motorbike: nothing for now.
+- Each view shows the secondary's state under the HUD: "Nitro ready", "Nitro!", "Nitro in N s", or "Smoke N / 2"; the Truck keeps its "Mines N / 5" line.
+
+## A real flag (2026-10-22)
+
+Martin, 2026-10-22: "vlajka je teraz kanister, spravme z nej realnu vlajku". Built in story 043; it replaces the Flag's look of story 004 and 007 (a carryable tank about 1 m tall). The rules do not change.
+
+- The Flag is a steel pole about 3 m tall with a cloth in its owner's Team colour that waves; on its seat it stands on a steel foot.
+- A Motorbike carries it as a banner, the cloth streaming behind it; a dropped Flag is planted in the ground, leaning a little.
 
 ## Technology and conventions
 

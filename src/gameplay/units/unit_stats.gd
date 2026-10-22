@@ -366,6 +366,24 @@ extends Resource
 ## 0.8 m trigger 0.4 m clear of it.
 @export var mine_drop_offset: Vector3 = Vector3.ZERO
 
+@export_group("Secondary")
+
+## Seconds the nitro lasts, the Buggy's secondary weapon on the secondary key (Story 042; Martin,
+## 2026-10-22: "skusme nitro"). Zero by default (class doc): a type with none has no nitro. While it
+## lasts the type's top speed forward and its acceleration are nitro_speed_share times their own.
+@export_range(0.0, 30.0, 0.1, "or_greater", "suffix:s") var nitro_seconds: float = 0.0
+
+## How many times the type's own top speed and acceleration the nitro gives (Story 042).
+@export_range(1.0, 5.0, 0.05, "or_greater") var nitro_speed_share: float = 1.0
+
+## Seconds after the nitro ends before it can be fired again (Story 042). A new Unit starts ready.
+@export_range(0.0, 120.0, 0.5, "or_greater", "suffix:s") var nitro_cooldown_seconds: float = 0.0
+
+## Smoke screens a Unit of this type carries, the Gyrocopter's secondary weapon on the secondary key
+## (Story 042; Martin, 2026-10-22: "velka dymova clona - gyro bude v strede a nikto nebude vediet kam
+## poleti"). Each new Unit comes with all of them, as a Truck with its Mines. Zero by default.
+@export_range(0, 20, 1, "or_greater") var smoke_capacity: int = 0
+
 @export_group("Badly damaged")
 
 ## The share of max_hit_points at or below which a Unit of this type is badly damaged (Story 017
