@@ -1,16 +1,24 @@
 extends RefCounted
 ## Scenario secondary of the split screen evidence harness (split_screen_harness.gd): the secondary weapons on the secondary key
-## (Story 042). On an arena of its own 400 m south of Map 01, with the shipped data. CHECK lines:
-##  X1 the Truck: E lays a Mine and a pad's LT lays one, its count going 5 -> 4 -> 3; LT fires no Shot; the HUD's
-##     secondary line is hidden (the Mines have their own line).
-##  X2 the Buggy's nitro: at top speed, E lifts it to about nitro_speed_share times that within the nitro's 2 s, and it falls
-##     back after; the HUD's line reads "Nitro ready", "Nitro!", "Nitro in N s"; a press while it cools does nothing; it is ready again after the cooldown; E on a Motorbike changes nothing.
-##  X3 the Gyrocopter's smoke: the HUD's line reads "Smoke 2 / 2"; E drops a cloud where it is (2 -> 1 left); a Turret 20 m off fires nothing at it while the cloud
-##     hangs, and fires again after the cloud is gone; the second press drops the last, a third drops nothing; a restart frees
-##     every cloud.
-##  X5 the data: the pad's LT is the secondary key and fires nothing, X is free; the Buggy's nitro 2 s x 1.6, 8 s cooldown; the
-##     Gyrocopter's 2 smoke screens; smoke_settings.tres 12 m, 6 s; the Turret's sight holds the smoke layer (416, 256).
-## Implements: production/epics/wasteland-fire/story-042-secondary-weapons.md AC-1 to AC-7.
+## (Story 042), each recharging in 15 s with its bar, the Motorbike's Flag drop and the bigger Bushes (Story 044). On an
+## arena of its own 400 m south of Map 01 (the Flag checks at Map 01's Base 2), with the shipped data. CHECK lines:
+##  X1 the Truck: E lays a Mine; E again at once lays none; after the recharge a pad's LT lays one; LT fires no Shot; the
+##     count stays full and its line hidden; the bar reads "Mine", empty after a lay, about half way at half the time, full
+##     and ready after it.
+##  X2 the Buggy's nitro: at top speed, E lifts it to about nitro_speed_share times that and it falls back after; a press while
+##     it recharges does nothing; ready again after 15 s; the bar "Boost" full, draining while the nitro runs, filling after.
+##  X3 the Gyrocopter's smoke: E drops a cloud about 10 m ahead of it; a Turret 20 m ahead fires at it in the open, not while
+##     the cloud hangs between them, and again after the 3 s cloud is gone; a press while it recharges drops nothing; ready
+##     after 15 s; a restart frees every cloud; the bar "Smoke".
+##  X4 the Motorbike: E with no Flag does nothing and shows no bar; carrying Player 2's Flag the bar reads "Drop flag"; E drops
+##     the Flag at its tail (flag_dropped, DROPPED), the Motorbike standing on it does not take it again; once it has been
+##     away from it and comes back it does.
+##  X5 the Bushes: every Bush of Map 02 is 1.4 times its scene's size (sight radius 2.66 m); a Motorbike inside a Bush draws
+##     no Shot from a Turret 15 m off, which fires at it once it drives out.
+##  X6 the data: LT is the secondary key and fires nothing, X is free; nitro 2 s x 1.6 and 15 s; smoke 15 s, 12 m, 3 s, 10 m
+##     ahead; Mines 15 s; the Turret's sight holds the smoke layer (416, 256).
+## Implements: production/epics/wasteland-fire/story-042-secondary-weapons.md AC-1 to AC-6,
+## story-044-secondaries-recharge.md AC-1 to AC-6.
 ## Tooling only: nothing under src/ depends on this file.
 ## Run: godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=secondary
 
@@ -47,20 +55,30 @@ const ARENA: Vector3 = Vector3(0.0, 0.0, 400.0)
 const ARENA_SIZE: float = 400.0
 const PAD_1: int = 0
 const KEY_SECONDARY_1: Key = KEY_E
+const TICKS: int = 60
+const RECHARGE_TICKS: int = 15 * TICKS
 const RUN_UP_TICKS: int = 150
 const NITRO_SAMPLE_TICKS: int = 90
-const COOLDOWN_TICKS: int = 480
 const TURRET_GAP: float = 20.0
-const WATCH_TICKS: int = 240
-const CLOUD_TICKS: int = 360
+const WATCH_TICKS: int = 120
+const CLOUD_TICKS: int = 3 * TICKS
 const SPEED_SHARE_LOW: float = 1.4
+const TOLERANCE: float = 0.05
 const TURRET_SCENE: PackedScene = preload("res://src/gameplay/defences/turret.tscn")
-const TEXTS: Array[String] = ["Nitro ready", "Nitro!", "Nitro in %d s", "Smoke 2 / 2"]
+const BUSH_SCENE: PackedScene = preload("res://src/gameplay/cover/bush.tscn")
+const MAP_02_SCENE: PackedScene = preload("res://src/gameplay/maps/map_02/map_02.tscn")
+const NAMES: Array[String] = ["Mine", "Boost", "Smoke", "Drop flag"]
 ## Where each check runs, apart, so a Mine of X1 lies under nobody else.
 const NITRO_SPOT: Vector3 = ARENA + Vector3(60.0, 0.0, 0.0)
 const SMOKE_SPOT: Vector3 = ARENA + Vector3(-60.0, 0.0, 0.0)
-## The Gyrocopter of X3 takes the Turret's Shots all through the test (the cloud's fade lets them through again).
+const BUSH_SPOT: Vector3 = ARENA + Vector3(0.0, 0.0, 80.0)
+const BUSH_GAP: float = 15.0
+const OUT_OF_BUSH: float = 8.0
 const STURDY_HIT_POINTS: float = 10000.0
+const BUSH_SIZE: float = 1.4
+const BUSH_SIGHT_RADIUS: float = 1.9
+const CLOUD_AHEAD: float = 10.0
+const FLAG_AWAY: float = 12.0
 
 var _m: M2
 var _status: SecondaryStatus
@@ -74,6 +92,8 @@ func run(harness: Node) -> void:
 	await _check_truck()
 	await _check_nitro()
 	await _check_smoke()
+	await _check_flag_drop()
+	await _check_bushes()
 	_check_data()
 	_m.h.finish("arena=1")
 
@@ -96,22 +116,46 @@ func _press(key: Key) -> void:
 	await _m.kit.advance(2)
 
 
-func _status_text() -> String:
+## The bar's name and value now, as "Name 0.50" (empty when hidden).
+func _bar() -> String:
 	await _m.h.get_tree().process_frame
-	return _status.text if _status.visible else ""
+	return "" if _status.shown_name().is_empty() else "%s %.2f" % [_status.shown_name(), _status.shown_charge()]
+
+
+func _mines_on_field() -> int:
+	var count: int = 0
+	for node: Node in _m.split.get_node("World").find_children("*", "", true, false):
+		if node is Mine and not node.is_queued_for_deletion():
+			count += 1
+	return count
+
+
+func _sturdy(type_index: int) -> UnitStats:
+	var copy: UnitStats = _m.stats(type_index).duplicate() as UnitStats
+	copy.max_hit_points = STURDY_HIT_POINTS
+	return copy
 
 
 func _check_truck() -> void:
 	var problems: PackedStringArray = PackedStringArray()
-	# MineLayer refills on a Unit coming into play, so the parked Motorbike leaves play first.
 	_m.units[0].leave_play()
 	await _m.kit.advance(2)
 	await _m.put(0, M2.TRUCK, ARENA, Vector3.FORWARD)
 	var layer: MineLayer = _m.split.player_1_mine_layer
-	var counts: Array[int] = [layer.mines_left]
+	var bars: PackedStringArray = PackedStringArray([await _bar()])
+	var laid: Array[int] = [_mines_on_field()]
 	await _press(KEY_SECONDARY_1)
-	counts.append(layer.mines_left)
+	laid.append(_mines_on_field())
+	bars.append(await _bar())
 	await _m.drive_for(0, 1, 0, 30)
+	await _press(KEY_SECONDARY_1)
+	laid.append(_mines_on_field())
+	await _m.kit.advance(RECHARGE_TICKS / 2 - 40)
+	bars.append(await _bar())
+	await _m.kit.advance(RECHARGE_TICKS / 2)
+	bars.append(await _bar())
+	# Away from the first Mines, so the next lands on open ground.
+	await _m.drive_for(0, 1, 0, 90)
 	var pads: PadAssignment = _m.split.get_node("PadAssignment") as PadAssignment
 	pads.connect_pad(PAD_1)
 	var shots_before: int = _m.split.player_1_weapon.shots_left
@@ -122,14 +166,19 @@ func _check_truck() -> void:
 		motion.axis_value = value
 		Input.parse_input_event(motion)
 		await _m.kit.advance(3)
-	counts.append(layer.mines_left)
+	laid.append(_mines_on_field())
 	var lt_shots: int = shots_before - _m.split.player_1_weapon.shots_left
 	pads.disconnect_pad(PAD_1)
-	var truck_line: String = await _status_text()
-	_m.kit.need(problems, counts == [5, 4, 3], "Mines %s" % [counts])
-	_m.kit.need(problems, lt_shots == 0, "LT fired %d Shots" % lt_shots)
-	_m.kit.need(problems, truck_line.is_empty(), "the status line reads '%s' for a Truck" % truck_line)
-	_m.kit.verdict("X1_truck", problems, "Mines %s (E, then LT); LT fired %d Shots; status line '%s'" % [counts, lt_shots, truck_line])
+	var line_shown: bool = false
+	for node: Node in _m.split.get_node("Views/Player1View/SubViewport").find_children("*", "", true, false):
+		if node is MineCount and (node as MineCount).visible:
+			line_shown = true
+	_m.kit.need(problems, laid == [0, 1, 1, 2], "Mines on the field %s" % [laid])
+	_m.kit.need(problems, layer.mines_left == layer.capacity and layer.recharges(), "mines_left %d of %d, recharges %s" % [layer.mines_left, layer.capacity, layer.recharges()])
+	_m.kit.need(problems, lt_shots == 0 and not line_shown, "LT fired %d Shots; the Mines line shows %s" % [lt_shots, line_shown])
+	_m.kit.need(problems, bars[0] == "Mine 1.00" and bars[1] == "Mine 0.00" and absf(float(bars[2].get_slice(" ", 1)) - 0.5) < 0.1 and bars[3] == "Mine 1.00", "bars %s" % [bars])
+	_m.kit.verdict("X1_truck", problems, "Mines on the field %s (E, E at once, LT after the recharge); count %d of %d; LT fired %d Shots; Mines line shown %s; bars %s" % [
+		laid, layer.mines_left, layer.capacity, lt_shots, line_shown, bars])
 
 
 func _speed() -> float:
@@ -139,55 +188,47 @@ func _speed() -> float:
 
 func _check_nitro() -> void:
 	var problems: PackedStringArray = PackedStringArray()
-	var texts: PackedStringArray = PackedStringArray()
 	await _m.put(0, M2.BUGGY, NITRO_SPOT, Vector3.FORWARD)
-	texts.append(await _status_text())
+	var bars: PackedStringArray = PackedStringArray([await _bar()])
 	_m.h.drive(0, 1, 0)
 	await _m.kit.advance(RUN_UP_TICKS)
 	var top: float = _speed()
 	_m.h.set_key(KEY_SECONDARY_1, true)
 	await _m.kit.advance(2)
 	_m.h.set_key(KEY_SECONDARY_1, false)
-	texts.append(await _status_text())
 	var fastest: float = 0.0
-	for _tick: int in NITRO_SAMPLE_TICKS:
+	for tick: int in NITRO_SAMPLE_TICKS:
 		await _m.kit.tick()
 		fastest = maxf(fastest, _speed())
+		if tick == TICKS / 2:
+			bars.append(await _bar())
 	await _m.kit.advance(RUN_UP_TICKS)
 	var after: float = _speed()
-	var booster: NitroBooster = _m.split.get_node("World/Player1NitroBooster") as NitroBooster
-	var cooling_line: String = await _status_text()
-	var cooling_left: float = booster.seconds_left()
-	texts.append(cooling_line)
+	bars.append(await _bar())
 	await _press(KEY_SECONDARY_1)
 	var cooling_press: float = 0.0
 	for _tick: int in NITRO_SAMPLE_TICKS:
 		await _m.kit.tick()
 		cooling_press = maxf(cooling_press, _speed())
-	await _m.kit.advance(COOLDOWN_TICKS)
+	# The recharge starts when the nitro ends, 2 s after the press.
+	await _m.kit.advance(RECHARGE_TICKS - RUN_UP_TICKS - NITRO_SAMPLE_TICKS + 2 * TICKS)
+	var booster: NitroBooster = _m.split.get_node("World/Player1NitroBooster") as NitroBooster
 	var ready_again: bool = booster.state() == NitroBooster.State.READY
+	bars.append(await _bar())
 	_m.h.drive(0, 0, 0)
-	# A Motorbike: the key changes nothing.
-	await _m.put(0, M2.MOTORBIKE, NITRO_SPOT + Vector3(-20.0, 0.0, 0.0), Vector3.FORWARD)
-	_m.h.drive(0, 1, 0)
-	await _m.kit.advance(RUN_UP_TICKS)
-	var bike_top: float = _speed()
-	await _press(KEY_SECONDARY_1)
-	var bike_fastest: float = 0.0
-	for _tick: int in NITRO_SAMPLE_TICKS / 2:
-		await _m.kit.tick()
-		bike_fastest = maxf(bike_fastest, _speed())
-	_m.h.drive(0, 0, 0)
-	var bike_line: String = await _status_text()
 	var share: float = _m.stats(M2.BUGGY).nitro_speed_share
 	_m.kit.need(problems, fastest > top * SPEED_SHARE_LOW and fastest <= top * share + 0.01, "nitro: top %.2f m/s, fastest %.2f m/s (share %.2f)" % [top, fastest, share])
-	_m.kit.need(problems, absf(after - top) < 0.05, "after the nitro %.2f m/s, before %.2f" % [after, top])
-	_m.kit.need(problems, cooling_press <= top + 0.05, "a press while cooling reached %.2f m/s" % cooling_press)
-	_m.kit.need(problems, ready_again, "the nitro is not ready after the cooldown")
-	_m.kit.need(problems, bike_fastest <= bike_top + 0.05 and bike_line.is_empty(), "Motorbike %.2f -> %.2f m/s, line '%s'" % [bike_top, bike_fastest, bike_line])
-	_m.kit.need(problems, texts == PackedStringArray([TEXTS[0], TEXTS[1], TEXTS[2] % ceili(cooling_left)]) and cooling_left > 0.0 and cooling_left < _m.stats(M2.BUGGY).nitro_cooldown_seconds, "status lines %s" % [texts])
-	_m.kit.verdict("X2_nitro", problems, "Buggy top %.2f m/s, with nitro %.2f, after %.2f, a press while cooling %.2f, ready again %s; Motorbike %.2f -> %.2f; lines %s" % [
-		top, fastest, after, cooling_press, ready_again, bike_top, bike_fastest, texts])
+	_m.kit.need(problems, absf(after - top) < TOLERANCE and cooling_press <= top + TOLERANCE, "after %.2f, a press while recharging %.2f, before %.2f" % [after, cooling_press, top])
+	_m.kit.need(problems, ready_again, "the nitro is not ready 15 s on")
+	var draining: float = float(bars[1].get_slice(" ", 1)) if bars.size() > 1 else -1.0
+	var filling: float = float(bars[2].get_slice(" ", 1)) if bars.size() > 2 else -1.0
+	_m.kit.need(problems, bars[0] == "Boost 1.00" and bars[1].begins_with("Boost") and draining > 0.6 and draining < 0.9 and filling > 0.0 and filling < 0.3 and bars[3] == "Boost 1.00", "bars %s" % [bars])
+	_m.kit.verdict("X2_nitro", problems, "Buggy top %.2f m/s, with nitro %.2f, after %.2f, a press while recharging %.2f, ready 15 s on %s; bars %s" % [
+		top, fastest, after, cooling_press, ready_again, bars])
+
+
+func _clouds() -> Array[Node]:
+	return _m.h.get_tree().get_nodes_in_group(&"smokes")
 
 
 func _check_smoke() -> void:
@@ -198,45 +239,123 @@ func _check_smoke() -> void:
 	turret.player_index = 1
 	var fired: Array[int] = [0]
 	turret.fired.connect(func(_shot: Shot) -> void: fired[0] += 1)
-	var sturdy: UnitStats = _m.stats(M2.GYROCOPTER).duplicate() as UnitStats
-	sturdy.max_hit_points = STURDY_HIT_POINTS
-	await _m.put(0, M2.GYROCOPTER, SMOKE_SPOT, Vector3.FORWARD, sturdy)
-	var line: String = await _status_text()
+	await _m.put(0, M2.GYROCOPTER, SMOKE_SPOT, Vector3.FORWARD, _sturdy(M2.GYROCOPTER))
+	var bars: PackedStringArray = PackedStringArray([await _bar()])
 	turret.arm(_m.units[0], _m.units[0].get_parent(), _m.controller.rules)
-	await _m.kit.advance(WATCH_TICKS)
+	await _m.kit.advance(2 * WATCH_TICKS)
 	var open_shots: int = fired[0]
-	var launcher: SmokeLauncher = _m.split.get_node("World/Player1SmokeLauncher") as SmokeLauncher
-	var lefts: Array[int] = [launcher.smoke_left()]
 	await _press(KEY_SECONDARY_1)
-	lefts.append(launcher.smoke_left())
-	var clouds: int = _m.h.get_tree().get_nodes_in_group(&"smokes").size()
-	await _m.kit.advance(30)
+	var dropped: Array[Node] = _clouds()
+	var ahead: float = -1.0
+	if dropped.size() == 1:
+		var cloud: Node3D = dropped[0] as Node3D
+		ahead = (cloud.global_position - _m.units[0].global_position).dot(-_m.units[0].global_transform.basis.z)
+	bars.append(await _bar())
 	fired[0] = 0
 	await _m.kit.advance(WATCH_TICKS)
 	var smoked_shots: int = fired[0]
 	await _m.kit.advance(CLOUD_TICKS)
-	var gone: int = _m.h.get_tree().get_nodes_in_group(&"smokes").size()
+	var gone: int = _clouds().size()
 	fired[0] = 0
 	await _m.kit.advance(WATCH_TICKS)
 	var after_shots: int = fired[0]
 	turret.queue_free()
 	await _press(KEY_SECONDARY_1)
-	lefts.append(launcher.smoke_left())
+	var while_recharging: int = _clouds().size()
+	await _m.kit.advance(RECHARGE_TICKS - 2 * WATCH_TICKS - CLOUD_TICKS)
+	bars.append(await _bar())
 	await _press(KEY_SECONDARY_1)
-	lefts.append(launcher.smoke_left())
-	var hanging: int = _m.h.get_tree().get_nodes_in_group(&"smokes").size()
+	var again: int = _clouds().size()
 	_m.controller.round_started.emit()
 	await _m.kit.advance(2)
-	var after_restart: int = _m.h.get_tree().get_nodes_in_group(&"smokes").size()
+	var after_restart: int = _clouds().size()
 	await _m.park(0)
-	_m.kit.need(problems, line == TEXTS[3], "the status line reads '%s'" % line)
-	_m.kit.need(problems, open_shots > 0, "the Turret fired %d Shots at the Gyrocopter in the open" % open_shots)
-	_m.kit.need(problems, clouds == 1 and smoked_shots == 0, "%d clouds, %d Shots while it hung" % [clouds, smoked_shots])
-	_m.kit.need(problems, gone == 0 and after_shots > 0, "%d clouds after its time, %d Shots then" % [gone, after_shots])
-	_m.kit.need(problems, lefts == [2, 1, 0, 0] and hanging == 1, "smoke left %s, %d hanging after the last presses" % [lefts, hanging])
-	_m.kit.need(problems, after_restart == 0, "%d clouds after the restart" % after_restart)
-	_m.kit.verdict("X3_smoke", problems, "line '%s'; Turret 20 m off: %d Shots in the open, %d while the cloud hung, %d after it was gone (%d left); smoke left %s; %d hanging, %d after the restart" % [
-		line, open_shots, smoked_shots, after_shots, gone, lefts, hanging, after_restart])
+	_m.kit.need(problems, dropped.size() == 1 and absf(ahead - CLOUD_AHEAD) < 0.5, "%d clouds, %.2f m ahead" % [dropped.size(), ahead])
+	_m.kit.need(problems, open_shots > 0 and smoked_shots == 0 and gone == 0 and after_shots > 0, "Shots %d open, %d smoked, %d after (%d clouds left)" % [open_shots, smoked_shots, after_shots, gone])
+	_m.kit.need(problems, while_recharging == 0 and again == 1 and after_restart == 0, "%d clouds from a press while recharging, %d when ready again, %d after the restart" % [while_recharging, again, after_restart])
+	_m.kit.need(problems, bars[0] == "Smoke 1.00" and bars[1] == "Smoke 0.00" and bars[2] == "Smoke 1.00", "bars %s" % [bars])
+	_m.kit.verdict("X3_smoke", problems, "cloud %.2f m ahead; Turret 20 m ahead: %d Shots in the open, %d while the cloud hung, %d after it was gone; clouds: %d from a press while recharging, %d when ready, %d after the restart; bars %s" % [
+		ahead, open_shots, smoked_shots, after_shots, while_recharging, again, after_restart, bars])
+
+
+func _check_flag_drop() -> void:
+	var problems: PackedStringArray = PackedStringArray()
+	var flag: Flag = _m.field.player_2_base.flag
+	var dropped: Array[int] = []
+	_m.controller.flag_dropped.connect(func(index: int) -> void: dropped.append(index))
+	await _m.put(0, M2.MOTORBIKE, ARENA + Vector3(-20.0, 0.0, 40.0), Vector3.FORWARD, _sturdy(M2.MOTORBIKE))
+	var empty_bar: String = await _bar()
+	await _press(KEY_SECONDARY_1)
+	var empty_drops: int = dropped.size()
+	# The Flag stands boxed in by its Flag Walls: the Motorbike is put down on it.
+	var home: Vector3 = flag.global_position
+	await _m.put(0, M2.MOTORBIKE, home, Vector3.FORWARD, _sturdy(M2.MOTORBIKE))
+	var picked: int = await _wait_until(func() -> bool: return flag.state == Flag.State.CARRIED)
+	await _m.kit.advance(30)
+	var carry_bar: String = await _bar()
+	await _press(KEY_SECONDARY_1)
+	var state_after: String = String(Flag.State.keys()[flag.state])
+	var drop_gap: float = flag.global_position.distance_to(_m.units[0].global_position)
+	await _m.kit.advance(30)
+	var still_dropped: bool = flag.state == Flag.State.DROPPED
+	var after_bar: String = await _bar()
+	# Away from it for a moment, then back on it.
+	var lying: Vector3 = flag.global_position
+	await _m.put(0, M2.MOTORBIKE, home + Vector3.RIGHT * FLAG_AWAY, Vector3.FORWARD, _sturdy(M2.MOTORBIKE))
+	await _m.kit.advance(10)
+	await _m.put(0, M2.MOTORBIKE, lying, Vector3.FORWARD, _sturdy(M2.MOTORBIKE))
+	var repicked: int = await _wait_until(func() -> bool: return flag.state == Flag.State.CARRIED)
+	await _m.park(0)
+	_m.kit.need(problems, empty_bar.is_empty() and empty_drops == 0, "no Flag: bar '%s', %d drops" % [empty_bar, empty_drops])
+	_m.kit.need(problems, picked > 0 and carry_bar == "Drop flag 1.00", "picked up after %d ticks, bar '%s'" % [picked, carry_bar])
+	_m.kit.need(problems, dropped == [1] and state_after == "DROPPED" and still_dropped and after_bar.is_empty(), "drops %s, state %s, still dropped %s, bar '%s'" % [dropped, state_after, still_dropped, after_bar])
+	_m.kit.need(problems, repicked > 0, "not picked up again after being away (%d)" % repicked)
+	_m.kit.verdict("X4_flag_drop", problems, "no Flag: bar '%s', %d drops; picked up after %d ticks, bar '%s'; E: flag_dropped %s, %s %.2f m from the Motorbike, still dropped 0.5 s on %s, bar '%s'; picked up again after being away: %d ticks" % [
+		empty_bar, empty_drops, picked, carry_bar, dropped, state_after, drop_gap, still_dropped, after_bar, repicked])
+
+
+func _wait_until(done: Callable) -> int:
+	for count: int in range(1, 121):
+		await _m.kit.tick()
+		if done.call():
+			return count
+	return -1
+
+
+func _check_bushes() -> void:
+	var problems: PackedStringArray = PackedStringArray()
+	var map_02: Node = MAP_02_SCENE.instantiate()
+	var sizes: Array[float] = []
+	for node: Node in map_02.find_children("*", "", true, false):
+		if node is Bush and not sizes.has((node as Bush).size):
+			sizes.append((node as Bush).size)
+	map_02.free()
+	var bush: Bush = BUSH_SCENE.instantiate() as Bush
+	_m.split.get_node("World").add_child(bush)
+	bush.global_position = BUSH_SPOT
+	var radius: float = ((bush.sight_body.get_child(0) as CollisionShape3D).shape as CylinderShape3D).radius
+	var turret: Turret = TURRET_SCENE.instantiate() as Turret
+	_m.split.get_node("World").add_child(turret)
+	turret.global_position = BUSH_SPOT + Vector3.FORWARD * BUSH_GAP
+	turret.player_index = 1
+	var fired: Array[int] = [0]
+	turret.fired.connect(func(_shot: Shot) -> void: fired[0] += 1)
+	await _m.put(0, M2.MOTORBIKE, BUSH_SPOT + Vector3.BACK * 0.5, Vector3.RIGHT, _sturdy(M2.MOTORBIKE))
+	turret.arm(_m.units[0], _m.units[0].get_parent(), _m.controller.rules)
+	await _m.kit.advance(WATCH_TICKS)
+	var hidden_shots: int = fired[0]
+	var standing: bool = bush.is_standing
+	await _m.put(0, M2.MOTORBIKE, BUSH_SPOT + Vector3.RIGHT * OUT_OF_BUSH, Vector3.RIGHT, _sturdy(M2.MOTORBIKE))
+	fired[0] = 0
+	await _m.kit.advance(WATCH_TICKS)
+	var open_shots: int = fired[0]
+	turret.queue_free()
+	bush.queue_free()
+	await _m.park(0)
+	_m.kit.need(problems, sizes == [BUSH_SIZE] and is_equal_approx(radius, BUSH_SIGHT_RADIUS * BUSH_SIZE), "Map 02's Bush sizes %s, a sight radius of %.2f m" % [sizes, radius])
+	_m.kit.need(problems, standing and hidden_shots == 0 and open_shots > 0, "in the Bush %d Shots (standing %s), out of it %d" % [hidden_shots, standing, open_shots])
+	_m.kit.verdict("X5_bushes", problems, "Map 02's Bushes all %s times their scene, sight radius %.2f m; a Motorbike in a Bush 15 m from a Turret: %d Shots, the Bush standing %s; 8 m out of it: %d Shots" % [
+		sizes, radius, hidden_shots, standing, open_shots])
 
 
 func _check_data() -> void:
@@ -251,11 +370,14 @@ func _check_data() -> void:
 			x_bound = true
 	var buggy: UnitStats = _m.stats(M2.BUGGY)
 	var gyro: UnitStats = _m.stats(M2.GYROCOPTER)
+	var truck: UnitStats = _m.stats(M2.TRUCK)
 	var smoke: SmokeSettings = load("res://src/gameplay/secondary/data/smoke_settings.tres") as SmokeSettings
 	var turret: TurretStats = load("res://src/gameplay/defences/data/turret_stats.tres") as TurretStats
 	_m.kit.need(problems, lt == ["lay_mine"] and not x_bound, "LT is bound to %s, X bound %s" % [lt, x_bound])
-	_m.kit.need(problems, is_equal_approx(buggy.nitro_seconds, 2.0) and is_equal_approx(buggy.nitro_speed_share, 1.6) and is_equal_approx(buggy.nitro_cooldown_seconds, 8.0), "Buggy nitro %.1f s x %.2f, %.1f s" % [buggy.nitro_seconds, buggy.nitro_speed_share, buggy.nitro_cooldown_seconds])
-	_m.kit.need(problems, gyro.smoke_capacity == 2 and is_equal_approx(smoke.radius, 12.0) and is_equal_approx(smoke.seconds, 6.0), "Gyrocopter smoke %d, %.1f m, %.1f s" % [gyro.smoke_capacity, smoke.radius, smoke.seconds])
+	_m.kit.need(problems, is_equal_approx(buggy.nitro_seconds, 2.0) and is_equal_approx(buggy.nitro_speed_share, 1.6) and is_equal_approx(buggy.nitro_cooldown_seconds, 15.0), "nitro %.1f s x %.2f, %.1f s" % [buggy.nitro_seconds, buggy.nitro_speed_share, buggy.nitro_cooldown_seconds])
+	_m.kit.need(problems, is_equal_approx(gyro.smoke_cooldown_seconds, 15.0) and is_equal_approx(smoke.radius, 12.0) and is_equal_approx(smoke.seconds, 3.0) and is_equal_approx(smoke.ahead, CLOUD_AHEAD), "smoke %.1f s, %.1f m, %.1f s, %.1f m ahead" % [gyro.smoke_cooldown_seconds, smoke.radius, smoke.seconds, smoke.ahead])
+	_m.kit.need(problems, is_equal_approx(truck.mine_cooldown_seconds, 15.0), "Mines %.1f s" % truck.mine_cooldown_seconds)
 	_m.kit.need(problems, turret.sight_extra_mask == 416 and turret.flying_sight_extra_mask == 256, "Turret sight %d / %d" % [turret.sight_extra_mask, turret.flying_sight_extra_mask])
-	_m.kit.verdict("X5_data", problems, "LT %s, X bound %s; nitro %.1f s x %.2f, cooldown %.1f s; smoke %d x %.0f m, %.0f s; Turret sight %d / %d" % [
-		lt, x_bound, buggy.nitro_seconds, buggy.nitro_speed_share, buggy.nitro_cooldown_seconds, gyro.smoke_capacity, smoke.radius, smoke.seconds, turret.sight_extra_mask, turret.flying_sight_extra_mask])
+	_m.kit.verdict("X6_data", problems, "LT %s, X bound %s; nitro %.1f s x %.2f, %.1f s; smoke %.1f s, %.0f m, %.1f s, %.0f m ahead; Mines %.1f s; Turret sight %d / %d" % [
+		lt, x_bound, buggy.nitro_seconds, buggy.nitro_speed_share, buggy.nitro_cooldown_seconds, gyro.smoke_cooldown_seconds, smoke.radius, smoke.seconds, smoke.ahead,
+		truck.mine_cooldown_seconds, turret.sight_extra_mask, turret.flying_sight_extra_mask])

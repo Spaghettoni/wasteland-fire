@@ -19,3 +19,4 @@ shooting_height = 0.5
 shot_collision_mask = 67
 high_shot_collision_mask = 17
 high_shot_lift = 2.9
+flag_release_metres = 5.0

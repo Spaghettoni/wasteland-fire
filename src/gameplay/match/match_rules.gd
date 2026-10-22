@@ -99,6 +99,11 @@ extends Resource
 ## shooting_height. Zero by default (class doc).
 @export_range(0.0, 10.0, 0.05, "or_greater", "suffix:m") var high_shot_lift: float = 0.0
 
+## How far the Unit that dropped a Flag on its secondary key (Story 044) must get from it, metres,
+## before it may pick that Flag up again: measured from the Unit's origin to the Flag's, so the
+## physics server's late overlap data cannot hand it straight back. Zero by default (class doc).
+@export_range(0.0, 50.0, 0.5, "or_greater", "suffix:m") var flag_release_metres: float = 0.0
+
 
 ## The layers that stop a shot fired low (high false) or high (high true).
 func shot_mask(high: bool) -> int:

@@ -41,6 +41,7 @@ trigger = NodePath("Trigger")
 sight_body = NodePath("SightBody")
 standing_look = NodePath("Standing")
 flat_look = NodePath("Flat")
+size = 1.4
 
 [node name="Standing" type="Node3D" parent="."]
 

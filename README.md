@@ -28,11 +28,13 @@ friends at home.
   low and RB fires high (story 041), LT fires the secondary weapon (story
   042), A confirms the Unit (story 040), Y switch the camera, View Self-destruct, Menu restart the Round. A pad
   can be plugged in or out during a Round; the Player's view says so.
-- Every Unit but the Motorbike has a secondary weapon on E / Comma / LT (story
-  042): the Truck lays a Mine, the Buggy fires a 2 s nitro (1.6 times its top
-  speed, 8 s to recharge), the Gyrocopter drops a big smoke screen (12 m, 6 s,
-  two per Gyrocopter) that hides it, and everything in and behind it, from
-  both views and from the Turrets.
+- Every Unit has a secondary weapon on E / Comma / LT (stories 042 and 044),
+  each refilling in 15 s, with a bar under the HUD: the Truck lays a Mine
+  ("Mine", unlimited), the Buggy boosts for 2 s at 1.6 times its top speed
+  ("Boost"), the Gyrocopter drops a big smoke screen 10 m ahead of it for 3 s
+  that hides it, and everything in and behind it, from both views and from the
+  Turrets ("Smoke"), and a Motorbike carrying a Flag drops it ("Drop flag").
+- Bushes are bigger (story 044): a Motorbike can hide in one.
 - The Flag is a real flag (story 043): a 3 m pole with a waving cloth in its
   Team colour, carried on the Motorbike like a banner, planted where it falls.
 - Each Player spawns Units from the Garage at their Base, paying one Token of
@@ -251,7 +253,7 @@ greybox field.
 | Confirm the Unit | Space | Period |
 | Self-destruct | Tab | Enter |
 | Lay a Mine (Truck) | E | Comma |
-| Nitro (Buggy), smoke screen (Gyrocopter): the same secondary key | E | Comma |
+| Boost (Buggy), smoke screen (Gyrocopter), drop the Flag (Motorbike): the same secondary key | E | Comma |
 | Switch the camera view | Q | Slash |
 
 Each Player chooses a Unit type at the start of a Round and after every

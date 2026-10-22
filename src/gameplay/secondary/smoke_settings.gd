@@ -9,5 +9,8 @@ extends Resource
 @export_range(0.5, 60.0, 0.5, "or_greater", "suffix:s") var seconds: float = 0.0
 ## Seconds at the end over which it fades out.
 @export_range(0.0, 30.0, 0.1, "or_greater", "suffix:s") var fade_seconds: float = 0.0
+## How far ahead of the Gyrocopter the cloud is dropped, metres along its heading, so it flies into it
+## (Story 044: "nech sa spravi pred gyro").
+@export_range(0.0, 50.0, 0.5, "or_greater", "suffix:m") var ahead: float = 0.0
 ## How opaque the puffs are at full strength (0 to 1).
 @export_range(0.0, 1.0, 0.01) var opacity: float = 0.0

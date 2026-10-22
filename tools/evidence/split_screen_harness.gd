@@ -27,7 +27,7 @@ extends Node
 ## (windowed); since Story 024, ammo_buildings, ammo_buildings_showcase and ammo_buildings_fps
 ## (windowed); since Story 032, pads, pads_data and pads_showcase
 ## (windowed); since Story 036, resource_bars and resource_bars_showcase (windowed);
-## since Story 037, turret_flying_sight and cliff_tops; since Story 038, map_02, bushes, cover_pieces and map_02_showcase (windowed); since Story 039, flag_open; since Story 040, pads_stick; since Story 041, fire_heights and fire_heights_showcase (windowed); since Story 042, secondary; since Story 043, real_flag; since Stories 042 and 043, secondary_flag_showcase (windowed). Each is a script under tools/evidence/split_screen/,
+## since Story 037, turret_flying_sight and cliff_tops; since Story 038, map_02, bushes, cover_pieces and map_02_showcase (windowed); since Story 039, flag_open; since Story 040, pads_stick; since Story 041, fire_heights and fire_heights_showcase (windowed); since Story 042, secondary; since Story 043, real_flag; since Stories 042 and 043, secondary_flag_showcase (windowed); since Story 044, recharge_showcase (windowed). Each is a script under tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
 ## line there. A scenario reaches this script, DriveStep, UnitTrack and check_kit.gd through preload
@@ -351,7 +351,9 @@ extends Node
 ## Buggy's nitro and drops the Gyrocopter's smoke screen; the Turrets' sight holds the smoke layer (layer 9). Unless the scenario
 ## script declares const SECONDARY: bool = true the runner takes the nitro, smoke and status nodes out of the launch scene, the
 ## smoke layer out of the Turret's sight and its name away, and gives a STICK_DRIVE scenario story 041's pad layout
-## (_apply_secondary_off(), _apply_secondary_nodes_off()).
+## (_apply_secondary_off(), _apply_secondary_nodes_off()). Since Story 044 the same opt-in keeps the recharging secondaries:
+## without it the Truck counts its Mines again (mine_cooldown_seconds 0), the Motorbike's FlagDroppers go, and every Bush is
+## the size of story 038 (Bush.size 1.0).
 ##
 ## Output: SPLIT <scenario> t=<seconds> key=value ... (progress), CHECK <scenario> <check name> PASS|FAIL
 ## <detail> and exactly one last RESULT <scenario> ok|fail checks=<n> failed=<n> key=value ...; then quit with
@@ -473,6 +475,7 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"secondary": preload("res://tools/evidence/split_screen/secondary.gd"),
 	&"real_flag": preload("res://tools/evidence/split_screen/real_flag.gd"),
 	&"secondary_flag_showcase": preload("res://tools/evidence/split_screen/secondary_flag_showcase.gd"),
+	&"recharge_showcase": preload("res://tools/evidence/split_screen/recharge_showcase.gd"),
 }
 
 ## The shared step class (drive_step.gd): keys held for a time.
@@ -673,8 +676,11 @@ const FROZEN_PAD_LAYOUT_041: PadLayout = preload("res://tools/evidence/frozen/pa
 const SMOKE_LAYER_BIT: int = 256
 const SMOKE_LAYER_SETTING: String = "layer_names/3d_physics/layer_9"
 ## The launch scene's nodes of the secondary weapons (Story 042).
+## The Truck's data, whose Mines recharge since Story 044 (mine_cooldown_seconds), and the Bush scene's size before it.
+const TRUCK_STATS_PATH_044: String = "res://src/gameplay/units/data/truck_stats.tres"
+const LEGACY_043_BUSH_SIZE: float = 1.0
 const SECONDARY_NODES: Array[String] = ["World/Player1NitroBooster", "World/Player2NitroBooster", "World/Player1SmokeLauncher",
-	"World/Player2SmokeLauncher", "Views/Player1View/SubViewport/Player1SecondaryStatus", "Views/Player2View/SubViewport/Player2SecondaryStatus"]
+	"World/Player2SmokeLauncher", "World/Player1FlagDropper", "World/Player2FlagDropper", "Views/Player1View/SubViewport/Player1SecondaryStatus", "Views/Player2View/SubViewport/Player2SecondaryStatus"]
 ## Each type's Fuel burn before Story 036, by type_id: [fuel_use, fuel_use_idle] per second.
 const LEGACY_036_FUEL_RATES: Dictionary = {
 	&"motorbike": [2.0, 0.5], &"buggy": [2.5, 0.625], &"truck": [3.0, 0.75], &"gyrocopter": [5.0, 1.25]}
@@ -1698,6 +1704,9 @@ func _apply_secondary_off(script: GDScript) -> void:
 	if bool(constants.get(SECONDARY_CONSTANT, false)):
 		return
 	ProjectSettings.set_setting(SMOKE_LAYER_SETTING, "")
+	var truck: UnitStats = load(TRUCK_STATS_PATH_044) as UnitStats
+	if truck != null:
+		truck.mine_cooldown_seconds = 0.0
 	var stats: TurretStats = load(TURRET_STATS_PATH) as TurretStats
 	if stats != null:
 		stats.sight_extra_mask &= ~SMOKE_LAYER_BIT
@@ -1719,6 +1728,9 @@ func _apply_secondary_nodes_off(root: SplitScreen, script: GDScript) -> void:
 		if node != null:
 			node.get_parent().remove_child(node)
 			node.free()
+	for node: Node in root.find_children("*", "", true, false):
+		if node is Bush:
+			(node as Bush).size = LEGACY_043_BUSH_SIZE
 
 
 ## Gives the shared data the Flag rules of stories 013 to 038, unless the scenario script declares FLAG_OPEN (Story 039): the

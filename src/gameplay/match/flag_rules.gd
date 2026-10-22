@@ -56,6 +56,11 @@ var _units: Array[Unit] = []
 var _bases: Array[Base] = []
 ## One entry per Player: the index of the Flag that Player's Unit carries, or NONE.
 var _carried: Array[int] = []
+## One entry per Flag: the Player whose Unit dropped it on the secondary key (release()) and has not
+## been farther than the release distance, and out of its touch, since, or NONE. That Unit may not pick it up again until then (Story 044).
+var _released_by: Array[int] = []
+## How far the Unit must get from a Flag it released before it may take it again (release()).
+var _release_metres: float = 0.0
 
 
 ## Keeps the controller's own Unit and Base arrays, one entry per Player in Player order (the same
@@ -67,6 +72,8 @@ func _init(units: Array[Unit], bases: Array[Base]) -> void:
 	_bases = bases
 	_carried.resize(_units.size())
 	_carried.fill(NONE)
+	_released_by.resize(_bases.size())
+	_released_by.fill(NONE)
 
 
 ## The Flag of the given index: bases[flag_index].flag.
@@ -102,6 +109,11 @@ func taker_of(flag_index: int, may_act: Array[bool]) -> int:
 	var target: Flag = flag(flag_index)
 	if target.state == Flag.State.CARRIED:
 		return NONE
+	var releaser: int = _released_by[flag_index]
+	if releaser != NONE and (not _units[releaser].is_alive \
+			or (_units[releaser].global_position.distance_to(target.global_position) > _release_metres
+			and not target.is_touching(_units[releaser]))):
+		_released_by[flag_index] = NONE
 	for player_index: int in _units.size():
 		if may_act[player_index] and _qualifies(player_index, target, flag_index):
 			return player_index
@@ -113,6 +125,7 @@ func taker_of(flag_index: int, may_act: Array[bool]) -> int:
 func pick_up(player_index: int, flag_index: int) -> void:
 	flag(flag_index).carry_by(_units[player_index])
 	_carried[player_index] = flag_index
+	_released_by[flag_index] = NONE
 
 
 ## Stands the Flag the Player's Unit carries where the Unit is (the wreck, when called from the
@@ -124,6 +137,21 @@ func drop(player_index: int) -> int:
 		return NONE
 	flag(flag_index).drop_at(_units[player_index].global_position)
 	_carried[player_index] = NONE
+	return flag_index
+
+
+## Lays down the Flag the Player's Unit carries at a point (its Carrier dropped it on the secondary
+## key, Story 044) and forgets the carry; that Unit does not pick it up again until it has been
+## farther than clear_metres from the Flag (_released_by). Returns that Flag's index, or NONE when
+## the Unit carried nothing.
+func release(player_index: int, at: Vector3, clear_metres: float) -> int:
+	var flag_index: int = _carried[player_index]
+	if flag_index == NONE:
+		return NONE
+	flag(flag_index).drop_at(at)
+	_carried[player_index] = NONE
+	_released_by[flag_index] = player_index
+	_release_metres = clear_metres
 	return flag_index
 
 
@@ -145,6 +173,7 @@ func seat_all() -> void:
 	for flag_index: int in _bases.size():
 		_seat(flag_index)
 	_carried.fill(NONE)
+	_released_by.fill(NONE)
 
 
 ## True when the Player's Unit would take a Flag on this tick but for the lock (class doc): the
@@ -173,6 +202,8 @@ func _qualifies(player_index: int, target: Flag, flag_index: int, honour_lock: b
 	if player_index == flag_index and target.state == Flag.State.AT_HOME:
 		return false
 	if honour_lock and _is_locked_for(player_index, flag_index):
+		return false
+	if _released_by[flag_index] == player_index:
 		return false
 	return target.is_touching(unit)
 

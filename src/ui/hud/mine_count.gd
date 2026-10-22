@@ -73,6 +73,7 @@ func _first_problem() -> String:
 ## The MineLayer's count or capacity changed (and once from _ready()): shows the line with the
 ## numbers while the capacity is above zero, hides it otherwise.
 func _on_mines_changed(mines_left: int, capacity: int) -> void:
-	visible = capacity > 0
+	# A Truck that recharges its Mines (Story 044) has no count to show: its secondary bar shows it.
+	visible = capacity > 0 and not mine_layer.recharges()
 	if visible:
 		text = tr(format) % _numbers(mines_left, capacity)

@@ -194,6 +194,18 @@ Martin, 2026-10-22: "rovnako by som chcel aby malo kazde vozidlo secondary zbran
 - Motorbike: nothing for now.
 - Each view shows the secondary's state under the HUD: "Nitro ready", "Nitro!", "Nitro in N s", or "Smoke N / 2"; the Truck keeps its "Mines N / 5" line.
 
+## Secondaries recharge (2026-10-22)
+
+Martin, 2026-10-22, after playing story 042: "zvacsi trochu kricky, paci sa mi myslienka ze sa schovas s moto do kricku", "nitro super, daj 15 s nabijanie", "smoke, super len nech sa spravi pred gyro, nech trva 3 sek a tiez sa nabija ale 15s", "skusme dat aj miny ze sa nabijaju 15s a dat tam ku kazdemu vozitku nejaky bar co sa dobija aj s popisom smoke/mine/boost a pri moto drop flag ked je to aktualne". Built in story 044; it replaces the counts and times of "Secondary weapons" above (the 2 smoke screens per Gyrocopter, the 6 s cloud, the 8 s nitro cooldown, the Truck's 5 Mines) and the Motorbike's "nothing for now".
+
+- Every secondary weapon has one charge that refills in 15 s after use; there is no count. A new Unit starts charged.
+- Buggy: boost (the nitro), 2 s at 1.6 ×; its 15 s start when the boost ends.
+- Gyrocopter: the smoke screen is dropped 10 m ahead of it, so it flies into it; it hangs 3 s with a 1 s fade.
+- Truck: one Mine, then 15 s to the next; the Mines are unlimited and the "Mines N / 5" line is gone.
+- Motorbike: while it carries a Flag the key drops it at its tail; the Flag lies like one whose Carrier was destroyed, and that Motorbike cannot take it again until it has been 5 m away from it (data: `match_rules.tres` flag_release_metres).
+- Each view shows a bar under the HUD with the weapon's name, "Boost", "Smoke", "Mine" or "Drop flag": yellow and full when ready, grey while it refills (the boost's drains while it runs).
+- Bushes are 1.4 times their size of story 038, so a Motorbike can hide in one (data: `bush.tscn` size).
+
 ## A real flag (2026-10-22)
 
 Martin, 2026-10-22: "vlajka je teraz kanister, spravme z nej realnu vlajku". Built in story 043; it replaces the Flag's look of story 004 and 007 (a carryable tank about 1 m tall). The rules do not change.

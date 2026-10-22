@@ -188,15 +188,15 @@ A static obstacle on the Map that stops every ground Unit and every shot and is 
 _Avoid_: obstacle, barricade, prop, destructible
 
 **Secondary weapon (sekundárna zbraň)**:
-What a Unit does on the secondary key (E, Comma, a pad's LT; story 042, 2026-10-22): the Truck lays a Mine, the Buggy fires its nitro, the Gyrocopter drops a smoke screen, the Motorbike has none. The Input Map action keeps its old name, `lay_mine`.
+What a Unit does on the secondary key (E, Comma, a pad's LT; story 042, 2026-10-22): the Truck lays a Mine, the Buggy fires its nitro (the HUD's "Boost"), the Gyrocopter drops a smoke screen, the Motorbike drops the Flag it carries (story 044). Each has one charge that refills in 15 s (story 044), shown by a bar under the HUD. The Input Map action keeps its old name, `lay_mine`.
 _Avoid_: special, ability, alt fire
 
 **Smoke screen (dymová clona)**:
-The Gyrocopter's secondary weapon: a cloud 12 m in radius that hangs 6 s where it was dropped and hides what is in and behind it from both views and from every Turret (story 042).
+The Gyrocopter's secondary weapon: a cloud 12 m in radius dropped 10 m ahead of it that hangs 3 s and hides what is in and behind it from both views and from every Turret (story 042; story 044 put it ahead and made it 3 s).
 _Avoid_: smoke bomb, fog
 
 **Nitro**:
-The Buggy's secondary weapon: 2 s of 1.6 times its top speed and acceleration, then 8 s of cooldown (story 042).
+The Buggy's secondary weapon, "Boost" on the HUD: 2 s of 1.6 times its top speed and acceleration, then 15 s to recharge (story 042; 15 s since story 044).
 _Avoid_: boost, turbo
 
 **Height (výšková úroveň)**:

@@ -366,6 +366,12 @@ extends Resource
 ## 0.8 m trigger 0.4 m clear of it.
 @export var mine_drop_offset: Vector3 = Vector3.ZERO
 
+## Seconds the Mine takes to recharge after a lay (Story 044; Martin, 2026-10-22: "skusme dat aj miny
+## ze sa nabijaju 15s"). Above zero the load is unlimited: no lay takes a Mine from mines_left and
+## the next lay waits this long; zero (the default, and every scenario before story 044) keeps the
+## count of Story 014 with no wait.
+@export_range(0.0, 120.0, 0.5, "or_greater", "suffix:s") var mine_cooldown_seconds: float = 0.0
+
 @export_group("Secondary")
 
 ## Seconds the nitro lasts, the Buggy's secondary weapon on the secondary key (Story 042; Martin,
@@ -379,10 +385,11 @@ extends Resource
 ## Seconds after the nitro ends before it can be fired again (Story 042). A new Unit starts ready.
 @export_range(0.0, 120.0, 0.5, "or_greater", "suffix:s") var nitro_cooldown_seconds: float = 0.0
 
-## Smoke screens a Unit of this type carries, the Gyrocopter's secondary weapon on the secondary key
-## (Story 042; Martin, 2026-10-22: "velka dymova clona - gyro bude v strede a nikto nebude vediet kam
-## poleti"). Each new Unit comes with all of them, as a Truck with its Mines. Zero by default.
-@export_range(0, 20, 1, "or_greater") var smoke_capacity: int = 0
+## Seconds the smoke screen takes to recharge after a drop, the Gyrocopter's secondary weapon on
+## the secondary key (Story 042; Martin, 2026-10-22: "velka dymova clona - gyro bude v strede a nikto
+## nebude vediet kam poleti"; story 044, the same day: "nech sa spravi pred gyro, nech trva 3 sek a
+## tiez sa nabija ale 15s"). Zero by default: a type with none has no smoke. A new Unit starts ready.
+@export_range(0.0, 120.0, 0.5, "or_greater", "suffix:s") var smoke_cooldown_seconds: float = 0.0
 
 @export_group("Badly damaged")
 

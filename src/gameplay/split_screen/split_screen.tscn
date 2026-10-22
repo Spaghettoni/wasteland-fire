@@ -43,6 +43,8 @@
 [ext_resource type="Script" path="res://src/gameplay/secondary/smoke_launcher.gd" id="42_smoke"]
 [ext_resource type="PackedScene" path="res://src/gameplay/secondary/smoke_cloud.tscn" id="43_cloud"]
 [ext_resource type="PackedScene" path="res://src/ui/hud/secondary_status.tscn" id="44_status"]
+[ext_resource type="Resource" path="res://src/gameplay/secondary/data/smoke_settings.tres" id="45_smoke_set"]
+[ext_resource type="Script" path="res://src/gameplay/secondary/flag_dropper.gd" id="46_dropper"]
 
 [node name="SplitScreen" type="Control" unique_id=9000001 node_paths=PackedStringArray("field", "player_1_unit", "player_2_unit", "player_1_camera", "player_2_camera", "match_controller", "player_1_mine_layer", "player_2_mine_layer", "player_1_weapon", "player_2_weapon")]
 layout_mode = 3
@@ -190,6 +192,14 @@ script = ExtResource("42_smoke")
 unit = NodePath("%Player1Unit")
 action_prefix = &"p1_"
 cloud_scene = ExtResource("43_cloud")
+settings = ExtResource("45_smoke_set")
+
+[node name="Player1FlagDropper" type="Node" parent="World" node_paths=PackedStringArray("match_controller")]
+unique_name_in_owner = true
+script = ExtResource("46_dropper")
+match_controller = NodePath("%MatchController")
+player_index = 0
+action_prefix = &"p1_"
 
 [node name="Player2NitroBooster" type="Node" parent="World" node_paths=PackedStringArray("unit")]
 unique_name_in_owner = true
@@ -203,6 +213,14 @@ script = ExtResource("42_smoke")
 unit = NodePath("%Player2Unit")
 action_prefix = &"p2_"
 cloud_scene = ExtResource("43_cloud")
+settings = ExtResource("45_smoke_set")
+
+[node name="Player2FlagDropper" type="Node" parent="World" node_paths=PackedStringArray("match_controller")]
+unique_name_in_owner = true
+script = ExtResource("46_dropper")
+match_controller = NodePath("%MatchController")
+player_index = 1
+action_prefix = &"p2_"
 
 [node name="Body" parent="World/Player1Unit" index="1" unique_id=1812089259]
 material_override = ExtResource("7_m1")
@@ -278,9 +296,11 @@ mine_layer = NodePath("%Player1MineLayer")
 [node name="Player1MapChoiceHint" parent="Views/Player1View/SubViewport" node_paths=PackedStringArray("match_controller") instance=ExtResource("40_backhint")]
 match_controller = NodePath("%MatchController")
 
-[node name="Player1SecondaryStatus" parent="Views/Player1View/SubViewport" node_paths=PackedStringArray("nitro_booster", "smoke_launcher") instance=ExtResource("44_status")]
+[node name="Player1SecondaryStatus" parent="Views/Player1View/SubViewport" node_paths=PackedStringArray("nitro_booster", "smoke_launcher", "mine_layer", "flag_dropper") instance=ExtResource("44_status")]
 nitro_booster = NodePath("%Player1NitroBooster")
 smoke_launcher = NodePath("%Player1SmokeLauncher")
+mine_layer = NodePath("%Player1MineLayer")
+flag_dropper = NodePath("%Player1FlagDropper")
 
 [node name="Player2View" type="SubViewportContainer" parent="Views" unique_id=9000022]
 layout_mode = 2
@@ -341,9 +361,11 @@ mine_layer = NodePath("%Player2MineLayer")
 [node name="Player2MapChoiceHint" parent="Views/Player2View/SubViewport" node_paths=PackedStringArray("match_controller") instance=ExtResource("40_backhint")]
 match_controller = NodePath("%MatchController")
 
-[node name="Player2SecondaryStatus" parent="Views/Player2View/SubViewport" node_paths=PackedStringArray("nitro_booster", "smoke_launcher") instance=ExtResource("44_status")]
+[node name="Player2SecondaryStatus" parent="Views/Player2View/SubViewport" node_paths=PackedStringArray("nitro_booster", "smoke_launcher", "mine_layer", "flag_dropper") instance=ExtResource("44_status")]
 nitro_booster = NodePath("%Player2NitroBooster")
 smoke_launcher = NodePath("%Player2SmokeLauncher")
+mine_layer = NodePath("%Player2MineLayer")
+flag_dropper = NodePath("%Player2FlagDropper")
 
 [node name="Divider" type="ColorRect" parent="." unique_id=9000004]
 layout_mode = 1

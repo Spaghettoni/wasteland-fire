@@ -58,6 +58,19 @@ func seconds_left() -> float:
 	return maxf(_ends_at - _clock, 0.0) if _state == State.BOOSTING or _state == State.COOLING else 0.0
 
 
+## How charged the nitro is (Story 044's bar): it drains from 1 to 0 while BOOSTING, fills from 0 to
+## 1 while COOLING, is 1 when READY and 0 for a type with none.
+func charge() -> float:
+	match _state:
+		State.READY:
+			return 1.0
+		State.BOOSTING:
+			return clampf(seconds_left() / maxf(unit.stats.nitro_seconds, 0.001), 0.0, 1.0)
+		State.COOLING:
+			return clampf(1.0 - seconds_left() / maxf(unit.stats.nitro_cooldown_seconds, 0.001), 0.0, 1.0)
+	return 0.0
+
+
 func _physics_process(delta: float) -> void:
 	_clock += delta
 	_follow_unit()

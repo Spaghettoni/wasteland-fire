@@ -264,6 +264,8 @@ var _round_state: RoundState = RoundState.RUNNING
 var _winner: int = NO_WINNER
 ## One flag per Player: that Player's Self-destruct press of this frame was read as a swap and waits
 ## for this node's tick (request_self_destruct()). Cleared at the end of every tick and at a restart.
+## One entry per Player: a Flag drop asked for this tick (request_flag_drop(), Story 044).
+var _drop_requested: Array[bool] = []
 var _swap_requested: Array[bool] = []
 var _has_begun: bool = false
 
@@ -293,12 +295,14 @@ func _physics_process(_delta: float) -> void:
 	if _round_state != RoundState.RUNNING or _flags == null:
 		return
 	var may_act: Array[bool] = _garage.may_act()
+	_apply_flag_drops(may_act)
 	_apply_pick_ups(may_act)
 	_apply_deliveries(may_act)
 	if _round_state == RoundState.RUNNING:
 		_apply_swaps()
 		_apply_losses()
 	_swap_requested.fill(false)
+	_drop_requested.fill(false)
 	if _round_state == RoundState.OVER:
 		get_tree().paused = true
 		round_over.emit(_winner)
@@ -741,3 +745,37 @@ func is_flag_locked_for(player_index: int) -> bool:
 	if not _is_player(player_index) or _flags == null or _round_state != RoundState.RUNNING:
 		return false
 	return _flags.is_locked_out(player_index, _garage.may_act())
+
+
+
+## True while the Round runs and the Player's Unit carries a Flag (Story 044: the Motorbike's
+## secondary key may drop it). Read-only.
+func is_carrying(player_index: int) -> bool:
+	return _round_state == RoundState.RUNNING and _flags != null and _is_player(player_index) \
+			and _flags.carried_flag(player_index) != FlagRules.NONE
+
+
+## Asks for the Player's Unit to drop the Flag it carries (Story 044, the Motorbike's secondary key):
+## applied in the next tick, before the pick-ups, while the Player may act; the Flag lies DROPPED at
+## the Unit's carry point on the ground and flag_dropped goes out, as when a Carrier is destroyed. The
+## Unit does not take it again until it has been farther than rules.flag_release_metres from it
+## (FlagRules.release()). A request with no
+## Flag carried does nothing.
+func request_flag_drop(player_index: int) -> void:
+	if _is_player(player_index):
+		if _drop_requested.size() != _units.size():
+			_drop_requested.resize(_units.size())
+			_drop_requested.fill(false)
+		_drop_requested[player_index] = true
+
+
+func _apply_flag_drops(may_act: Array[bool]) -> void:
+	for player_index: int in _drop_requested.size():
+		if not _drop_requested[player_index] or not may_act[player_index]:
+			continue
+		var unit: Unit = _units[player_index]
+		var at: Vector3 = unit.global_transform * unit.carry_offset
+		at.y = unit.global_position.y
+		var dropped: int = _flags.release(player_index, at, rules.flag_release_metres)
+		if dropped != FlagRules.NONE:
+			flag_dropped.emit(dropped)

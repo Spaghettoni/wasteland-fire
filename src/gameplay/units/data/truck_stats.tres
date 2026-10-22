@@ -59,6 +59,7 @@ spawn_fuel_fraction = 1.0
 empty_turn_rate = 0.45
 mine_capacity = 5
 mine_drop_offset = Vector3(0, 0, 3.4)
+mine_cooldown_seconds = 15.0
 badly_damaged_fraction = 0.2
 badly_damaged_speed_share = 0.5
 tyres = Array[ExtResource("3_tyre")]([SubResource("Resource_front_left"), SubResource("Resource_front_right"), SubResource("Resource_rear_left"), SubResource("Resource_rear_right")])

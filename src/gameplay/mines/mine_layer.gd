@@ -134,6 +134,10 @@ var _left: int = 0
 var _capacity: int = 0
 var _in_play: bool = false
 var _lay_requested: bool = false
+## Story 044: the type's mine_cooldown_seconds (zero keeps the count of Story 014) and the seconds
+## left until the next lay.
+var _cooldown: float = 0.0
+var _cool_left: float = 0.0
 
 
 func _ready() -> void:
@@ -145,8 +149,10 @@ func _ready() -> void:
 	process_physics_priority = unit.process_physics_priority + PRIORITY_OFFSET
 
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	_follow_unit()
+	if _cool_left > 0.0:
+		_cool_left = maxf(_cool_left - delta, 0.0)
 	if not _lay_requested:
 		return
 	_lay_requested = false
@@ -206,6 +212,23 @@ func is_open_ground(point: Vector3) -> bool:
 	return unit.get_world_3d().direct_space_state.intersect_shape(query, 1).is_empty()
 
 
+## True while the Unit in play recharges its Mines instead of counting them (Story 044: its type's
+## mine_cooldown_seconds above zero): the load is unlimited and a lay waits for the charge.
+func recharges() -> bool:
+	return _cooldown > 0.0 and _capacity > 0 and is_instance_valid(unit) and unit.stats != null \
+			and unit.stats.mine_capacity > 0
+
+
+## How charged the next Mine is, 0 just after a lay to 1 when ready (Story 044); 1 for a Truck that
+## counts its Mines instead, 0 out of play.
+func charge() -> float:
+	if _capacity <= 0:
+		return 0.0
+	if _cooldown <= 0.0:
+		return 1.0
+	return clampf(1.0 - _cool_left / _cooldown, 0.0, 1.0)
+
+
 ## Refills the count when the Unit has come into play and zeroes it when the Unit has left play,
 ## each with one mines_changed (the class doc, "The count").
 func _follow_unit() -> void:
@@ -213,6 +236,8 @@ func _follow_unit() -> void:
 	if in_play == _in_play:
 		return
 	_in_play = in_play
+	_cooldown = maxf(unit.stats.mine_cooldown_seconds, 0.0) if in_play else 0.0
+	_cool_left = 0.0
 	var load_size: int = maxi(unit.stats.mine_capacity, 0) if in_play else 0
 	_report(load_size, load_size)
 
@@ -229,6 +254,8 @@ func _report(left: int, load_size: int) -> void:
 ## Applies one press for a Unit in play (the class doc, "A press, in this order").
 func _lay() -> void:
 	if _capacity <= 0:
+		return
+	if _cool_left > 0.0:
 		return
 	if _left <= 0:
 		lay_refused.emit(Refusal.NONE_LEFT)
@@ -250,7 +277,11 @@ func _lay() -> void:
 		return
 	unit.get_parent().add_child(mine)
 	mine.lay(point, unit.player_index, unit.team_material)
-	_report(_left - 1, _capacity)
+	if _cooldown > 0.0:
+		_cool_left = _cooldown
+		mines_changed.emit(_left, _capacity)
+	else:
+		_report(_left - 1, _capacity)
 
 
 ## The box of a Base's zone (the first CollisionShape3D child of its zone that holds a box), or

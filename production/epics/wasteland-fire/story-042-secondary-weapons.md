@@ -51,4 +51,4 @@
 ## Dependencies
 
 - Depends on: story 014 (Mines), story 041 (the pad layout's fire bindings).
-- Unlocks: a Motorbike secondary later (Martin: "zatial nic").
+- Unlocks: story 044 (the secondaries recharge in 15 s, the Motorbike drops the Flag), which changes the counts and times above.
