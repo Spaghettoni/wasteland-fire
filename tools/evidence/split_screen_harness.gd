@@ -27,7 +27,7 @@ extends Node
 ## (windowed); since Story 024, ammo_buildings, ammo_buildings_showcase and ammo_buildings_fps
 ## (windowed); since Story 032, pads, pads_data and pads_showcase
 ## (windowed); since Story 036, resource_bars and resource_bars_showcase (windowed);
-## since Story 037, turret_flying_sight and cliff_tops; since Story 038, map_02, bushes, cover_pieces and map_02_showcase (windowed); since Story 039, flag_open; since Story 040, pads_stick. Each is a script under tools/evidence/split_screen/,
+## since Story 037, turret_flying_sight and cliff_tops; since Story 038, map_02, bushes, cover_pieces and map_02_showcase (windowed); since Story 039, flag_open; since Story 040, pads_stick; since Story 041, fire_heights and fire_heights_showcase (windowed). Each is a script under tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
 ## line there. A scenario reaches this script, DriveStep, UnitTrack and check_kit.gd through preload
@@ -342,6 +342,11 @@ extends Node
 ## the runner gives the cached layout the bindings of stories 032 to 039 (tools/evidence/frozen/pad_layout_story_032.tres;
 ## _apply_stick_drive_off()).
 ##
+## Fire in two Heights (Story 041). The shipped match_rules.tres now gives a low Shot the map, the units and the cover (67) and a
+## high Shot the map and the gyrocopters (17), drawn 2.9 m higher; each Player has a high fire action (Left Shift, Right Shift,
+## a pad's RB) and a Turret fires high at a Gyrocopter. Unless the scenario script declares const FIRE_HEIGHTS: bool = true
+## the runner gives both Shots the old mask (83) and no lift, and erases the high fire actions (_apply_fire_heights_off()).
+##
 ## Output: SPLIT <scenario> t=<seconds> key=value ... (progress), CHECK <scenario> <check name> PASS|FAIL
 ## <detail> and exactly one last RESULT <scenario> ok|fail checks=<n> failed=<n> key=value ...; then quit with
 ## exit code 0 when every check passed, 1 when one failed, 2 for a missing or unknown scenario. TD-003
@@ -457,6 +462,8 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"map_02_showcase": preload("res://tools/evidence/split_screen/map_02_showcase.gd"),
 	&"flag_open": preload("res://tools/evidence/split_screen/flag_open.gd"),
 	&"pads_stick": preload("res://tools/evidence/split_screen/pads_stick.gd"),
+	&"fire_heights": preload("res://tools/evidence/split_screen/fire_heights.gd"),
+	&"fire_heights_showcase": preload("res://tools/evidence/split_screen/fire_heights_showcase.gd"),
 }
 
 ## The shared step class (drive_step.gd): keys held for a time.
@@ -643,6 +650,12 @@ const STICK_DRIVE_CONSTANT: StringName = &"STICK_DRIVE"
 ## The shipped pad layout, and the layout of stories 032 to 039 (triggers throttle and reverse), frozen.
 const PAD_LAYOUT_PATH: String = "res://src/gameplay/input/data/pad_layout.tres"
 const FROZEN_PAD_LAYOUT: PadLayout = preload("res://tools/evidence/frozen/pad_layout_story_032.tres")
+## The constant a scenario script declares as true to keep the shipped fire in two Heights of Story 041 (_apply_fire_heights_off()).
+const FIRE_HEIGHTS_CONSTANT: StringName = &"FIRE_HEIGHTS"
+## The one Shot mask of stories 005 to 040 (the map, the units, the gyrocopters and the cover), for low and high alike.
+const LEGACY_040_SHOT_MASK: int = 83
+## The high fire's actions (project.godot, Story 041).
+const FIRE_HIGH_ACTIONS: Array[StringName] = [&"p1_fire_high", &"p2_fire_high"]
 ## Each type's Fuel burn before Story 036, by type_id: [fuel_use, fuel_use_idle] per second.
 const LEGACY_036_FUEL_RATES: Dictionary = {
 	&"motorbike": [2.0, 0.5], &"buggy": [2.5, 0.625], &"truck": [3.0, 0.75], &"gyrocopter": [5.0, 1.25]}
@@ -857,6 +870,7 @@ func _ready() -> void:
 	_apply_map_choice_off(SCENARIOS[scenario])
 	_apply_flag_open_off(SCENARIOS[scenario])
 	_apply_stick_drive_off(SCENARIOS[scenario])
+	_apply_fire_heights_off(SCENARIOS[scenario])
 	_apply_flying_sight_off(SCENARIOS[scenario])
 	if LEGACY_SCENARIOS.has(scenario):
 		_apply_legacy_data()
@@ -1619,6 +1633,25 @@ func _apply_map_choice_nodes_off(root: SplitScreen, script: GDScript) -> void:
 		if node != null:
 			node.get_parent().remove_child(node)
 			node.free()
+
+
+## Gives the shared MatchRules the one Shot of stories 005 to 040, unless the scenario script declares FIRE_HEIGHTS (Story 041):
+## the low and the high mask both LEGACY_040_SHOT_MASK, no lift for a high tracer, and the two high fire actions erased from the
+## InputMap (PlayerFireInput then fires low only, and nothing is logged), so every Shot, the Turrets' at a Gyrocopter
+## included, stops where it did and is drawn where it was.
+func _apply_fire_heights_off(script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(FIRE_HEIGHTS_CONSTANT, false)):
+		return
+	var rules: MatchRules = load(MATCH_RULES_PATH) as MatchRules
+	if rules == null:
+		push_error("split_screen_harness: %s did not load as MatchRules, so the old Shot is not applied." % MATCH_RULES_PATH)
+	else:
+		rules.shot_collision_mask = LEGACY_040_SHOT_MASK
+		rules.high_shot_collision_mask = LEGACY_040_SHOT_MASK
+		rules.high_shot_lift = 0.0
+	for action: StringName in FIRE_HIGH_ACTIONS:
+		if InputMap.has_action(action):
+			InputMap.erase_action(action)
 
 
 ## Gives the shared pad layout the bindings of stories 032 to 039, the right trigger throttle and the left reverse, unless the

@@ -59,6 +59,9 @@ extends Node3D
 ## -Z is the direction of flight. Nothing here is a gameplay value: the numbers all come through
 ## launch() from UnitStats and MatchRules.
 
+## The drawn tracer, which lift_tracer() raises for a high shot (Story 041).
+@export var tracer: Node3D
+
 var _shooter_rid: RID
 var _shooter_type: StringName = &""
 ## The Player the shooter belongs to (Unit.player_index), or -1 for a shooter no Player owns.
@@ -125,6 +128,14 @@ func _damage_target(collider: Object) -> void:
 ## space), the direction (normalised here; the shooter's facing), the damage the shot carries, its
 ## speed in m/s, the range in metres it flies at most, the damage matrix and the collision mask of
 ## the layers that stop it. One call to launch_from().
+## Draws the tracer `height` metres above the shot's flight line (Story 041: a high shot is drawn at
+## the Gyrocopter's height while its hit test stays at the shooting height). A picture only; call it
+## after launch. With no tracer assigned it does nothing.
+func lift_tracer(height: float) -> void:
+	if tracer != null:
+		tracer.position.y = height
+
+
 func launch(shooter: Unit, origin: Vector3, direction: Vector3, damage: float, speed: float,
 		max_range: float, matrix: DamageMatrix, mask: int) -> void:
 	launch_from(shooter.get_rid(), shooter.type_id, shooter.player_index, origin, direction,

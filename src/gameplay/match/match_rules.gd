@@ -82,3 +82,24 @@ extends Resource
 ## at the cover and at Units. A bit mask, written as a plain int in the .tres. Zero by default
 ## (class doc): a zero mask would stop a shot nowhere, so the tuned mask lives in match_rules.tres.
 @export_flags_3d_physics var shot_collision_mask: int = 0
+
+## The physics layers that stop a high shot (Story 041; Martin, 2026-10-22: the hit volumes are
+## split, the Gyrocopter high, the ground Units low, the Turrets through both, and a Player fires
+## low or high on two keys): the map layer, where the Tall pieces are (the corner towers, the water
+## towers' legs, the Fuel tanks, the Turrets and the Map's edge), and the gyrocopters (1 + 16 = 17).
+## A high shot flies over every low piece (the Wall Panels, the cover, the cliffs, the water) and
+## passes over the ground Units; since Story 041 shot_collision_mask, the low shot's, leaves the
+## gyrocopters out (1 + 2 + 64 = 67), so a low shot passes under the Gyrocopter. Both are hit tests
+## at shooting_height: the colliders stand from the ground through both Heights; only the drawing
+## of a high shot is raised (high_shot_lift). Zero by default (class doc).
+@export_flags_3d_physics var high_shot_collision_mask: int = 0
+
+## Metres a high shot's tracer is drawn above shooting_height (Story 041), so it is seen at the
+## Gyrocopter's height (its drawn band is 2.5 to 4.3 m): a picture only, the hit test stays at
+## shooting_height. Zero by default (class doc).
+@export_range(0.0, 10.0, 0.05, "or_greater", "suffix:m") var high_shot_lift: float = 0.0
+
+
+## The layers that stop a shot fired low (high false) or high (high true).
+func shot_mask(high: bool) -> int:
+	return high_shot_collision_mask if high else shot_collision_mask

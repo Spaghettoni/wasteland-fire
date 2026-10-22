@@ -110,6 +110,9 @@ var capacity: int:
 		push_error("Weapon '%s': capacity is read-only. It is the Unit type's data." % name)
 
 var _trigger: bool = false
+## The high trigger (Story 041): held, the Weapon fires high shots, at the same cadence and from the
+## same load as the low ones; with both held the high one wins.
+var _trigger_high: bool = false
 ## Whether the trigger was held on the previous tick, to tell a new press from a held key.
 var _was_held: bool = false
 ## The physics frame from which the next shot may be fired; zero lets the first held tick fire.
@@ -143,9 +146,10 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 	_follow_unit()
-	var pressed: bool = _trigger and not _was_held
-	_was_held = _trigger
-	if not _trigger or not is_instance_valid(unit) or not unit.is_alive:
+	var held: bool = _trigger or _trigger_high
+	var pressed: bool = held and not _was_held
+	_was_held = held
+	if not held or not is_instance_valid(unit) or not unit.is_alive:
 		return
 	if _capacity > 0 and _left <= 0:
 		if pressed:
@@ -154,7 +158,7 @@ func _physics_process(_delta: float) -> void:
 	var now: int = Engine.get_physics_frames()
 	if now < _next_fire_frame:
 		return
-	_fire()
+	_fire(_trigger_high)
 	var interval_ticks: int = roundi(
 			unit.stats.fire_interval_seconds * Engine.physics_ticks_per_second)
 	_next_fire_frame = now + maxi(interval_ticks, 1)
@@ -165,6 +169,11 @@ func _physics_process(_delta: float) -> void:
 ## the next call.
 func set_trigger(held: bool) -> void:
 	_trigger = held
+
+
+## Holds or releases the high trigger (Story 041): high shots, stopped by MatchRules.high_shot_collision_mask.
+func set_high_trigger(held: bool) -> void:
+	_trigger_high = held
 
 
 ## Adds Shots to the load of the Unit in play, up to its capacity, and returns the whole Shots it
@@ -195,7 +204,7 @@ func rearm(shots: float) -> int:
 ## Fires one Shot from the muzzle along the Unit's facing with the Unit type's weapon values and
 ## the Round's, added to the Unit's parent and launched in this tick, and spends one Shot of the
 ## load.
-func _fire() -> void:
+func _fire(high: bool) -> void:
 	var stats: UnitStats = unit.stats
 	var facing: Vector3 = -unit.global_transform.basis.z.normalized()
 	var muzzle: Vector3 = (unit.global_position + facing * stats.muzzle_forward
@@ -210,7 +219,9 @@ func _fire() -> void:
 		return
 	unit.get_parent().add_child(shot)
 	shot.launch(unit, muzzle, facing, stats.damage, stats.shot_speed, stats.weapon_range,
-			rules.damage_matrix, rules.shot_collision_mask)
+			rules.damage_matrix, rules.shot_mask(high))
+	if high:
+		shot.lift_tracer(rules.high_shot_lift)
 	_spend()
 
 

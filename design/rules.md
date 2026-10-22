@@ -173,6 +173,16 @@ Martin, 2026-10-21: "to pravidlo ze treba znicit vezicky aby sa dala ukradnut vl
 
 Martin, 2026-10-22: "chcem aby pohyb fungoval s lavou packou na controlleri, teda aj dopredu/dozadu. ukazovakom sa bude strielat". Built in story 040; it replaces story 032's triggers for the throttle and the reverse: on a pad the left stick drives (up throttle, down reverse, both analog past the 0.2 dead zone; left and right steer, the D-pad too) and either trigger or A fires; A still confirms the Unit choice.
 
+## Shots in two Heights (2026-10-22)
+
+Martin, 2026-10-22: "hitbox bude rozdeleny - gyro hore, vozidla dole, vezicky cez obe vysky. a teda strielat sa bude dat ukazovakom dole a ukazovakom na tom mensom buttone hore. tak isto treba pridat klavesy na to", and "ano" to a high Shot flying over the walls and the cover. Built in story 041; it replaces Heights' "Hit volumes through both Heights" (every Unit hit every Unit at the one shooting height).
+
+- A Player fires low (Space / Period, a pad's RT, LT or A) or high (Left Shift / Right Shift, a pad's RB), from the same load at the type's cadence.
+- A low Shot hits ground Units and Turrets and stops at every low piece; it passes under the Gyrocopter.
+- A high Shot hits the Gyrocopter and Turrets, flies over every low piece and every ground Unit, and stops at a Tall piece.
+- A Turret fires high at a Gyrocopter, so no wall hides one from it, and low at a ground Unit; a cliff and a Bush hide only ground Units, as before.
+- The hit test stays at the one shooting height, 0.5 m, against colliders that stand through both Heights; a high Shot's tracer is drawn 2.9 m higher, at the Gyrocopter's height (data: `match_rules.tres`).
+
 ## Technology and conventions
 
 The source's choices, and how the project already matches them:

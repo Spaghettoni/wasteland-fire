@@ -32,6 +32,9 @@ extends Node
 const PRIORITY_OFFSET: int = -1
 
 const _SUFFIX_FIRE: String = "fire"
+## The high fire's suffix (Story 041): <prefix>fire_high. Optional: a project without the action
+## fires low only, and nothing is logged.
+const _SUFFIX_FIRE_HIGH: String = "fire_high"
 
 ## The Weapon this node holds the trigger of. Assign it before this node enters the tree.
 @export var weapon: Weapon
@@ -41,6 +44,7 @@ const _SUFFIX_FIRE: String = "fire"
 @export var action_prefix: StringName = &""
 
 var _fire_action: StringName
+var _high_action: StringName = &""
 ## True once the fire key was seen up while the Unit is alive; cleared while the Unit is out of
 ## play, so the key that confirmed the choice never fires the shot of the spawn tick.
 var _armed: bool = false
@@ -60,6 +64,9 @@ func _ready() -> void:
 		push_error("PlayerFireInput '%s': Input Map action '%s' does not exist." % [name, _fire_action])
 		set_physics_process(false)
 		return
+	var high: StringName = StringName(String(action_prefix) + _SUFFIX_FIRE_HIGH)
+	if InputMap.has_action(high):
+		_high_action = high
 	process_physics_priority = weapon.process_physics_priority + PRIORITY_OFFSET
 
 
@@ -67,8 +74,10 @@ func _physics_process(_delta: float) -> void:
 	if not is_instance_valid(weapon):
 		return
 	var pressed: bool = Input.is_action_pressed(_fire_action)
+	var high: bool = not _high_action.is_empty() and Input.is_action_pressed(_high_action)
 	if not is_instance_valid(weapon.unit) or not weapon.unit.is_alive:
 		_armed = false
-	elif not pressed:
+	elif not pressed and not high:
 		_armed = true
 	weapon.set_trigger(pressed and _armed)
+	weapon.set_high_trigger(high and _armed)

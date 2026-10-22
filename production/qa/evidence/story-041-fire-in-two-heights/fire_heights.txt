@@ -1,0 +1,8 @@
+CHECK fire_heights H1_at_gyro PASS Gyrocopter 70.0 -> 70.0 (low) -> 58.0 (high)
+CHECK fire_heights H2_at_ground PASS Truck 220.0 -> 220.0 (high) -> 184.0 (low)
+CHECK fire_heights H3_over_wall PASS high: Gyrocopter 70.0 -> 58.0, panel 40.0; low: Truck 220.0 -> 220.0, panel 16.0
+CHECK fire_heights H4_tall_piece PASS Gyrocopter behind the map-layer block 70.0 -> 70.0
+CHECK fire_heights H5_turret PASS Turret 100.0 -> 76.0 (low) -> 52.0 (high); over a panel: 3 Shots at the Gyrocopter (70.0 -> 34.0), 0 at the Buggy
+CHECK fire_heights H6_inputs PASS Right Shift -12.0, RB -12.0 (Left Shift: H1); tracers high [2.90000009536743], low [0.0]
+CHECK fire_heights H7_data PASS low mask 67, high mask 17, lift 2.90; p1_fire_high Shift (location 1), p2_fire_high Shift (location 2)
+RESULT fire_heights ok checks=7 failed=0 t=22.950 arena=1

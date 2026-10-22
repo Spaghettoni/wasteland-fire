@@ -10,8 +10,9 @@ albedo_color = Color(1, 0.95, 0.55, 1)
 material = SubResource("StandardMaterial3D_tracer")
 size = Vector3(0.3, 0.3, 1.2)
 
-[node name="Shot" type="Node3D" groups=["shots"]]
+[node name="Shot" type="Node3D" groups=["shots"] node_paths=PackedStringArray("tracer")]
 script = ExtResource("1_shot")
+tracer = NodePath("Tracer")
 
 [node name="Tracer" type="MeshInstance3D" parent="."]
 cast_shadow = 0

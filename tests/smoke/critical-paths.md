@@ -51,6 +51,8 @@
 
 28. [Story 040 — on a pad the left stick pushed up drives forward, pulled down reverses (half the stick drives slowly), left and right steer; either trigger or A fires; the triggers no longer drive]
 
+29. [Story 041 — Space fires low: a Gyrocopter in front takes nothing, a Buggy is hit; Left Shift fires high: the Gyrocopter is hit, a Buggy takes nothing; a high Shot flies over a Wall Panel and hits a Gyrocopter behind it, a low one breaks the panel; a fuel tank or a tower stops a high Shot; a Turret takes damage from both and shoots a Gyrocopter over a wall; Right Shift and a pad's RB fire high too]
+
 ## Data Integrity
 
 23. Restarting a Round resets Units, Flags, both Token stocks, HUD and every Flag Wall, Turret, Mine, explosion and badly damaged state (R brings all eight Flag Walls and all 88 Wall Panels (the Base walls', the Garages' and the field's) back with 40 hit points and the whole look, a Unit standing in a breach benched first, and all four Turrets back with 100 hit points and their whole look, the head in its own steel, standing, solid, the barrel at rest and ready to fire; a fallen or damaged one stays as it is, and shows its look, until then; every Mine, arming, live or flashing, is gone and the first Truck of the new Round comes with 5; every explosion still playing, behind the Round-over screen too, is gone at once) (once stories 014 and 016 land)

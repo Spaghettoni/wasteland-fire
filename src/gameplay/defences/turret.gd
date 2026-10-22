@@ -296,13 +296,20 @@ func _aimed_muzzle(aim: Vector3) -> Vector3:
 	return global_position + toward * _data.muzzle_forward + Vector3.UP * _rules.shooting_height
 
 
+## The layers the Turret's Shots, sight and path test use against the current target (Story 041): the
+## high shot's for a target whose type flies, the low shot's for a ground one. A Turret stands through
+## both Heights, so it fires at each in its own way.
+func _target_mask() -> int:
+	return _rules.shot_mask(_target.stats.can_fly)
+
+
 ## True when the sight ray from the muzzle to the target's centre meets the target first.
 func _sees(muzzle: Vector3) -> bool:
 	var centre: Vector3 = Vector3(_target.global_position.x, _rules.shooting_height, _target.global_position.z)
 	var excluded: Array[RID] = [get_rid()]
 	var extra: int = _data.flying_sight_extra_mask if _target.stats.can_fly else _data.sight_extra_mask
 	var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(
-			muzzle, centre, _rules.shot_collision_mask | extra, excluded)
+			muzzle, centre, _target_mask() | extra, excluded)
 	query.hit_from_inside = true
 	var hit: Dictionary = get_world_3d().direct_space_state.intersect_ray(query)
 	return not hit.is_empty() and hit["collider"] == _target
@@ -312,7 +319,7 @@ func _sees(muzzle: Vector3) -> bool:
 func _path_clear(muzzle: Vector3, aim: Vector3) -> bool:
 	var excluded: Array[RID] = [get_rid(), _target.get_rid()]
 	var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(
-			muzzle, aim, _rules.shot_collision_mask, excluded)
+			muzzle, aim, _target_mask(), excluded)
 	query.hit_from_inside = true
 	return get_world_3d().direct_space_state.intersect_ray(query).is_empty()
 
@@ -358,7 +365,9 @@ func _fire() -> void:
 	var muzzle: Vector3 = global_position + facing * _data.muzzle_forward + Vector3.UP * _rules.shooting_height
 	_shots_parent.add_child(shot)
 	shot.launch_from(get_rid(), type_id, player_index, muzzle, facing, _data.damage,
-			_data.shot_speed, _data.weapon_range, _rules.damage_matrix, _rules.shot_collision_mask)
+			_data.shot_speed, _data.weapon_range, _rules.damage_matrix, _target_mask())
+	if _target.stats.can_fly:
+		shot.lift_tracer(_rules.high_shot_lift)
 	_next_fire = _ticks + maxi(roundi(_data.fire_interval_seconds * Engine.physics_ticks_per_second), 1)
 	fired.emit(shot)
 

@@ -25,7 +25,7 @@ friends at home.
   connected is Player 1's, the second Player 2's, and the keyboard keeps
   working beside it. The left stick drives (up forward, down reverse, left and
   right steer and move the Unit choice; the D-pad steers too), either trigger
-  or A fires, A confirms the Unit (story 040), X lay a
+  or A fires low and RB fires high (story 041), A confirms the Unit (story 040), X lay a
   Mine, Y switch the camera, View Self-destruct, Menu restart the Round. A pad
   can be plugged in or out during a Round; the Player's view says so.
 - Each Player spawns Units from the Garage at their Base, paying one Token of
@@ -238,7 +238,8 @@ greybox field.
 |---|---|---|
 | Throttle / reverse | W / S | Up / Down |
 | Steer | A / D | Left / Right |
-| Fire | Space | Period |
+| Fire low (ground Units, Turrets) | Space | Period |
+| Fire high (the Gyrocopter, Turrets; over walls and cover) | Left Shift | Right Shift |
 | Choose a Unit (previous / next) | A / D | Left / Right |
 | Confirm the Unit | Space | Period |
 | Self-destruct | Tab | Enter |

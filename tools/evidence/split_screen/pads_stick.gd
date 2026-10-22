@@ -18,6 +18,8 @@ const Harness: GDScript = preload("res://tools/evidence/split_screen_harness.gd"
 const Kit: GDScript = preload("res://tools/evidence/split_screen/check_kit.gd")
 
 const STICK_DRIVE: bool = true
+## The shipped layout binds RB to the high fire (Story 041), whose actions the runner keeps only for this opt-in.
+const FIRE_HEIGHTS: bool = true
 const MINES: bool = true
 const AMMO: bool = true
 const RESOURCE_BARS: bool = true
