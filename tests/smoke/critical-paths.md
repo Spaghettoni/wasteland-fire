@@ -56,6 +56,7 @@
 31. [Story 043 — each Flag is a 3 m pole with a waving cloth in its Team colour on a steel foot; a Motorbike carries it with the cloth streaming behind; a destroyed Carrier leaves it planted and leaning; carrying it home still wins]
 32. [Story 044 — every Unit's bar under the HUD: a Truck's "Mine" empties on E and fills in 15 s, E does nothing until then, no "Mines N / 5" line; a Buggy's "Boost" drains for 2 s, then fills in 15 s; a Gyrocopter's E drops the cloud ahead of it, gone after 3 s, "Smoke" fills in 15 s; a Motorbike with the enemy Flag reads "Drop flag", E drops it behind it and it is not picked up again until the Motorbike drives off and comes back; a Motorbike in a Bush is not shot by a Turret]
 33. [Story 045 — the HUD shows no "Motorbike Tokens" line; the secondary bar sits in its place; "Drop flag" has no bar; the boost bar is white on grey; the Fuel zones are amber like the fuel bar and the ammunition zones blue like the ammo bar]
+34. [Story 046 — your own Shots break your own Base's walls and Flag Walls, not your own Turrets; the Flag is about 2 m tall and a Motorbike carrying it hides in a Bush; the Mine and Smoke bars are white on grey like the Boost]
 
 ## Data Integrity
 

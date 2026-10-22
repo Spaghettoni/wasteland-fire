@@ -30,7 +30,7 @@ _Avoid_: bunker, HQ, spawn point, camp
 
 **Flag (vlajka)**:
 The objective; it replaces the Water Canister of the earlier rules. One per Base. Only a Motorbike can carry it. When its Carrier is destroyed it stays where it fell. It sits inside its Base's Flag Walls, and the other Player cannot pick it up while any Turret of its Base stands; its owner can always pick up their own dropped Flag (decided 2026-10-07).
-It looks like a real flag (story 043, 2026-10-22): a pole about 3 m tall with a waving cloth in its owner's Team colour, carried on a Motorbike like a banner, planted in the ground when dropped; until then it was drawn as a tank.
+It looks like a real flag (story 043, 2026-10-22): a pole about 2 m tall (3 m until story 046) with a waving cloth in its owner's Team colour, carried on a Motorbike like a banner, planted in the ground when dropped; until then it was drawn as a tank.
 _Avoid_: Water Canister, canister, water, banner, standard, objective, token
 
 **Carrier (nosič)**:

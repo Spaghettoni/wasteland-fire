@@ -48,6 +48,12 @@ extends Resource
 ## lock.
 @export var locks_flag: bool = false
 
+## Whether a Shot of the piece's own Player leaves it untouched (Story 013's "no friendly damage").
+## True by default: a Turret keeps it. False makes the piece fair game for both Players (Story 046;
+## Martin, 2026-10-22: "chcem aby uplne vsetky mury boli rovnake a znicitelne pre obe strany"):
+## every Wall Panel and Flag Wall, through flag_wall_stats.tres, which they all share.
+@export var spared_by_owner: bool = true
+
 
 ## The reason a Structure cannot use these stats, or an empty String when it can: the type id must
 ## name a type, max_hit_points must be above zero (the rule UnitStats.first_problem() applies to a

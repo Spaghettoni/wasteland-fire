@@ -106,7 +106,8 @@ func _physics_process(delta: float) -> void:
 ## Applies the shot's damage to what it ended on, when that is something it may damage (the class
 ## doc's contract): the collider offers apply_damage(), it has a type_id that is a StringName (the
 ## key of the matrix; DamageMatrix.multiplier() takes typed arguments, so a body without one would
-## be a script error at the hit) and it does not belong to the shooter's own Player. Anything else
+## be a script error at the hit) and it does not belong to the shooter's own Player, unless it says
+## spares_owner false (Story 046: every wall is fair game for both Players). Anything else
 ## is a stop with no damage, and nothing is logged. A local is never named owner: a Node has one.
 func _damage_target(collider: Object) -> void:
 	if collider == null or not collider.has_method(&"apply_damage"):
@@ -117,7 +118,9 @@ func _damage_target(collider: Object) -> void:
 	var target_type: StringName = type_value
 	var player_value: Variant = collider.get(&"player_index")
 	var target_player: int = int(player_value) if typeof(player_value) == TYPE_INT else -1
-	if _shooter_player_index >= 0 and target_player == _shooter_player_index:
+	var spares: Variant = collider.get(&"spares_owner")
+	if _shooter_player_index >= 0 and target_player == _shooter_player_index \
+			and (typeof(spares) != TYPE_BOOL or spares):
 		return
 	collider.call(&"apply_damage", _damage * _matrix.multiplier(_shooter_type, target_type))
 

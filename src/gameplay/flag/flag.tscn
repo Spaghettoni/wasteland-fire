@@ -8,7 +8,7 @@ roughness = 0.9
 
 [sub_resource type="BoxMesh" id="BoxMesh_panel"]
 material = SubResource("StandardMaterial3D_cloth")
-size = Vector3(0.48, 1.10, 0.03)
+size = Vector3(0.33, 0.70, 0.025)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_steel"]
 albedo_color = Color(0.3, 0.31, 0.33, 1)
@@ -25,16 +25,16 @@ rings = 0
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_pole"]
 material = SubResource("StandardMaterial3D_steel")
-top_radius = 0.035
-bottom_radius = 0.045
-height = 3.0
+top_radius = 0.03
+bottom_radius = 0.04
+height = 1.9
 radial_segments = 8
 rings = 0
 
 [sub_resource type="SphereMesh" id="SphereMesh_finial"]
 material = SubResource("StandardMaterial3D_steel")
-radius = 0.08
-height = 0.16
+radius = 0.06
+height = 0.12
 radial_segments = 8
 rings = 4
 
@@ -57,43 +57,43 @@ mesh = SubResource("CylinderMesh_stand")
 [node name="Mast" type="Node3D" parent="."]
 
 [node name="Pole" type="MeshInstance3D" parent="Mast"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
 mesh = SubResource("CylinderMesh_pole")
 
 [node name="Finial" type="MeshInstance3D" parent="Mast"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.04, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.94, 0)
 cast_shadow = 0
 mesh = SubResource("SphereMesh_finial")
 
 [node name="Cloth" type="Node3D" parent="Mast"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.04, 2.400, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.035, 1.500, 0)
 
 [node name="Hinge1" type="Node3D" parent="Mast/Cloth"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00, 0, 0)
 
 [node name="Panel1" type="MeshInstance3D" parent="Mast/Cloth/Hinge1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.24, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.165, 0, 0)
 mesh = SubResource("BoxMesh_panel")
 
 [node name="Hinge2" type="Node3D" parent="Mast/Cloth/Hinge1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.48, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.33, 0, 0)
 
 [node name="Panel2" type="MeshInstance3D" parent="Mast/Cloth/Hinge1/Hinge2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.24, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.165, 0, 0)
 mesh = SubResource("BoxMesh_panel")
 
 [node name="Hinge3" type="Node3D" parent="Mast/Cloth/Hinge1/Hinge2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.48, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.33, 0, 0)
 
 [node name="Panel3" type="MeshInstance3D" parent="Mast/Cloth/Hinge1/Hinge2/Hinge3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.24, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.165, 0, 0)
 mesh = SubResource("BoxMesh_panel")
 
 [node name="Hinge4" type="Node3D" parent="Mast/Cloth/Hinge1/Hinge2/Hinge3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.48, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.33, 0, 0)
 
 [node name="Panel4" type="MeshInstance3D" parent="Mast/Cloth/Hinge1/Hinge2/Hinge3/Hinge4"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.24, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.165, 0, 0)
 mesh = SubResource("BoxMesh_panel")
 
 [node name="PickupZone" type="Area3D" parent="."]

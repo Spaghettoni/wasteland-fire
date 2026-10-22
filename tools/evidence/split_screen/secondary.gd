@@ -16,11 +16,13 @@ extends RefCounted
 ##  X5 the Bushes: every Bush of Map 02 is 1.4 times its scene's size (sight radius 2.66 m); a Motorbike inside a Bush draws
 ##     no Shot from a Turret 15 m off, which fires at it once it drives out.
 ##     Since Story 045 "Drop flag" is a name with no bar.
+##  X7 the walls (Story 046): every wall shares the data that spares no owner; Player 1's Buggy breaks Player 1's own wall,
+##     and its Shots still do nothing to Player 1's own Turret.
 ##  X6 the data, and the HUD (Story 045): no Tokens line, the bar on the band's second row; Map 01's Fuel zone drawn unshaded in
 ##     the fuel bar's amber and its ammunition zone in the ammo bar's blue; LT is the secondary key and fires nothing, X is free; nitro 2 s x 1.6 and 15 s; smoke 15 s, 12 m, 3 s, 10 m
 ##     ahead; Mines 15 s; the Turret's sight holds the smoke layer (416, 256).
 ## Implements: production/epics/wasteland-fire/story-042-secondary-weapons.md AC-1 to AC-6,
-## story-044-secondaries-recharge.md AC-1 to AC-6, story-045-hud-and-zone-colours.md AC-1 and AC-2.
+## story-044-secondaries-recharge.md AC-1 to AC-6, story-045-hud-and-zone-colours.md AC-1 and AC-2, story-046-walls-flag-bars.md AC-1 and AC-3.
 ## Tooling only: nothing under src/ depends on this file.
 ## Run: godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=secondary
 
@@ -83,6 +85,9 @@ const CLOUD_AHEAD: float = 10.0
 const FLAG_AWAY: float = 12.0
 ## Where the bar stands since Story 045: the HUD band's second row, the Tokens line's place.
 const STATUS_TOP: float = 47.0
+## X7: how far from a piece the Buggy fires, and for how long.
+const WALL_GAP: float = 6.0
+const WALL_FIRE_TICKS: int = 90
 
 var _m: M2
 var _status: SecondaryStatus
@@ -98,6 +103,7 @@ func run(harness: Node) -> void:
 	await _check_smoke()
 	await _check_flag_drop()
 	await _check_bushes()
+	await _check_walls()
 	_check_data()
 	_m.h.finish("arena=1")
 
@@ -361,6 +367,49 @@ func _check_bushes() -> void:
 	_m.kit.need(problems, standing and hidden_shots == 0 and open_shots > 0, "in the Bush %d Shots (standing %s), out of it %d" % [hidden_shots, standing, open_shots])
 	_m.kit.verdict("X5_bushes", problems, "Map 02's Bushes all %s times their scene, sight radius %.2f m; a Motorbike in a Bush 15 m from a Turret: %d Shots, the Bush standing %s; 8 m out of it: %d Shots" % [
 		sizes, radius, hidden_shots, standing, open_shots])
+
+
+## X7 (Story 046): a Player's own Shots break that Player's walls; a Turret still takes nothing from its own Player.
+func _check_walls() -> void:
+	var problems: PackedStringArray = PackedStringArray()
+	var own_wall: Structure = null
+	var own_turret: Turret = null
+	var kinds: Array[String] = []
+	for node: Node in _m.split.field.find_children("*", "", true, false):
+		var piece: Structure = node as Structure
+		if piece == null:
+			continue
+		if piece is Turret:
+			if piece.player_index == 0 and own_turret == null:
+				own_turret = piece as Turret
+			continue
+		var kind: String = "%s spares %s" % [piece.stats.resource_path.get_file(), piece.spares_owner]
+		if not kinds.has(kind):
+			kinds.append(kind)
+		if piece.player_index == 0 and own_wall == null and piece.is_standing:
+			own_wall = piece
+	var results: Array[String] = []
+	for target: Structure in [own_wall, own_turret]:
+		if target == null:
+			results.append("none")
+			continue
+		var facing: Vector3 = target.global_transform.basis.z
+		facing.y = 0.0
+		var from: Vector3 = target.global_position + facing.normalized() * WALL_GAP
+		await _m.put(0, M2.BUGGY, from, (target.global_position - from).normalized(), _sturdy(M2.BUGGY))
+		var before: float = target.hit_points
+		_m.h.set_key(_m.h.fire_key(0), true)
+		await _m.kit.advance(WALL_FIRE_TICKS)
+		_m.h.set_key(_m.h.fire_key(0), false)
+		await _m.kit.advance(10)
+		results.append("%s %.0f -> %.0f" % [target.name, before, target.hit_points])
+		if target == own_wall:
+			_m.kit.need(problems, target.hit_points < before, "Player 1's own wall %s kept %.0f of %.0f" % [target.name, target.hit_points, before])
+		else:
+			_m.kit.need(problems, is_equal_approx(target.hit_points, before), "Player 1's own Turret %s %.0f -> %.0f" % [target.name, before, target.hit_points])
+	await _m.park(0)
+	_m.kit.need(problems, kinds.size() == 1 and kinds[0].ends_with("spares false"), "walls %s" % [kinds])
+	_m.kit.verdict("X7_walls", problems, "every wall of Map 01: %s; Player 1's Buggy firing at its own pieces: %s" % [kinds, results])
 
 
 func _check_data() -> void:

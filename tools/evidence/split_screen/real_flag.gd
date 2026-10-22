@@ -1,7 +1,8 @@
 extends RefCounted
 ## Scenario real_flag of the split screen evidence harness (split_screen_harness.gd): the Flag is a real flag (Story 043), on
 ## Map 01 with its rules as they are. CHECK lines:
-##  F1 at home: each Flag stands about 3 m tall on its foot (the top of its meshes 2.9 m or more above the seat), every panel
+##  F1 at home: each Flag stands about 2 m tall on its foot (the top of its meshes 1.9 to 2.2 m above the seat; 3 m until
+##     Story 046), every panel
 ##     of its cloth painted in its Base's colour, the two Flags in different colours.
 ##  F2 it waves: each hinge of the cloth turns about the up axis, a different turn 0.25 s later, never past wave_amplitude.
 ##  F3 carried: Player 1's Motorbike picks up Flag 2; the foot is hidden and the cloth streams behind the Carrier (its middle
@@ -19,7 +20,8 @@ const Flags: GDScript = preload("res://tools/evidence/split_screen/flag_kit.gd")
 const FLAG_OPEN: bool = true
 const THIEF: int = 0
 const OWNER: int = 1
-const TALL_METRES: float = 2.9
+const TALL_METRES: float = 1.9
+const TALL_MAX_METRES: float = 2.2
 const WAVE_GAP_TICKS: int = 15
 const BEHIND_METRES: float = 0.3
 const TOLERANCE: float = 0.01
@@ -77,7 +79,7 @@ func _check_home() -> void:
 				painted += 1
 		colours.append(expected.albedo_color)
 		var top: float = _top(flag)
-		_kit.need(problems, top >= TALL_METRES and flag.stand.visible and painted == _panels(flag).size() and _panels(flag).size() == 4,
+		_kit.need(problems, top >= TALL_METRES and top <= TALL_MAX_METRES and flag.stand.visible and painted == _panels(flag).size() and _panels(flag).size() == 4,
 			"flag %d: %.2f m tall, foot %s, %d of %d panels painted" % [index + 1, top, flag.stand.visible, painted, _panels(flag).size()])
 		lines.append("flag_%d %.2f m, foot %s, %d / %d panels in its colour" % [index + 1, top, flag.stand.visible, painted, _panels(flag).size()])
 	_kit.need(problems, colours[0] != colours[1], "both Flags in %s" % colours[0])

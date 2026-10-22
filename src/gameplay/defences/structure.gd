@@ -86,6 +86,15 @@ signal restored
 ## end on a Player's own piece and do nothing to it; at -1 every Shot damages it.
 var player_index: int = -1
 
+## Whether a Shot of this piece's own Player leaves it untouched: stats.spared_by_owner (Story 046:
+## false for every wall, so both Players' Shots break them). True while the stats are refused.
+## Read-only.
+var spares_owner: bool:
+	get:
+		return stats.spared_by_owner if _usable else true
+	set(_value):
+		push_error("Structure '%s': spares_owner is read-only. It is the StructureStats data." % name)
+
 ## Which kind of piece this is: stats.type_id, for the damage matrix. Empty while the stats are
 ## refused. Read-only: assigning to it pushes an error and changes nothing; it is the StructureStats
 ## data.

@@ -1,7 +1,7 @@
 Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
 
-CHECK real_flag F1_at_home PASS flag_1 3.12 m, foot true, 4 / 4 panels in its colour; flag_2 3.12 m, foot true, 4 / 4 panels in its colour
+CHECK real_flag F1_at_home PASS flag_1 2.00 m, foot true, 4 / 4 panels in its colour; flag_2 2.00 m, foot true, 4 / 4 panels in its colour
 CHECK real_flag F2_waves PASS 4 of 4 hinges turned in 15 ticks, widest 0.389 rad (amplitude 0.42)
-CHECK real_flag F3_carried PASS picked up after 62 ticks; foot false; the cloth's middle 0.85 m behind its pole
+CHECK real_flag F3_carried PASS picked up after 62 ticks; foot false; the cloth's middle 0.59 m behind its pole
 CHECK real_flag F4_dropped PASS dropped: true, leaning 9.0 deg, sunk 0.25 m, foot false; seated again AT_HOME on its foot true
 RESULT real_flag ok checks=4 failed=0 t=1.950 flags=2

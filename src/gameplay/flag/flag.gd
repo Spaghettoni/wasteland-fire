@@ -2,8 +2,8 @@ class_name Flag
 extends Node3D
 ## The Flag, one per Base, that a Motorbike picks up by touching it, carries on its tail,
 ## drops where it is destroyed and, when it is the opponent's, delivers to its own Base to win the
-## Round. This node is the thing itself: a flag on a 3 m pole, its cloth in its owner's colour and
-## waving (Story 043), and a touch zone.
+## Round. This node is the thing itself: a flag on a 1.9 m pole (3 m in Story 043, smaller since
+## Story 046), its cloth in its owner's colour and waving, and a touch zone.
 ## It holds where it is (at home, carried, dropped) and the Unit carrying it, and nothing else.
 ##
 ## Implements: production/epics/wasteland-fire/story-004-water-canister-and-win.md AC-1 (a visible
@@ -41,8 +41,9 @@ extends Node3D
 ##       its Base's seat (AT_HOME); a carried Flag rides as a banner and a dropped one is planted
 ##     Mast (Node3D): what stands up from the foot, tilted and sunk a little while DROPPED
 ##       (drop_tilt_degrees, drop_sink), so a dropped Flag looks stuck in the ground
-##       Pole, Finial (MeshInstance3D): a 3 m steel pole and its knob, never painted
-##       Cloth (Node3D): the cloth, 1.92 m by 1.1 m with its top 2.95 m up, hanging off the pole as
+##       Pole, Finial (MeshInstance3D): a 1.9 m steel pole and its knob, never painted (3 m until
+##         Story 046: Martin, 2026-10-22, "vlajka by mala byt mensia, prilis ju vidno v kricku")
+##       Cloth (Node3D): the cloth, 1.32 m by 0.7 m with its top 1.85 m up, hanging off the pole as
 ##         a chain of cloth_hinges (Hinge1 .. Hinge4), each turning a little about the up axis
 ##         every frame (wave_amplitude, wave_speed, wave_phase), so the cloth waves; each hinge
 ##         holds one panel (body_mesh is the first, cloth_meshes the others), every panel painted

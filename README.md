@@ -36,9 +36,11 @@ friends at home.
   that hides it, and everything in and behind it, from both views and from the
   Turrets ("Smoke"), and a Motorbike carrying a Flag drops it ("Drop flag").
 - Bushes are bigger (story 044): a Motorbike can hide in one.
+- Every wall breaks under either Player's Shots, your own included (story
+  046); Turrets still ignore their own Player's Shots.
 - Fuel zones are the fuel bar's amber and ammunition zones the ammo bar's
   blue (story 045).
-- The Flag is a real flag (story 043): a 3 m pole with a waving cloth in its
+- The Flag is a real flag (story 043): a 1.9 m pole (story 046) with a waving cloth in its
   Team colour, carried on the Motorbike like a banner, planted where it falls.
 - Each Player spawns Units from the Garage at their Base, paying one Token of
   that type per spawn. The Map sets the Token stock.

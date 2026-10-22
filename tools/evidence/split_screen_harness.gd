@@ -354,7 +354,8 @@ extends Node
 ## (_apply_secondary_off(), _apply_secondary_nodes_off()). Since Story 044 the same opt-in keeps the recharging secondaries:
 ## without it the Truck counts its Mines again (mine_cooldown_seconds 0), the Motorbike's FlagDroppers go, and every Bush is
 ## the size of story 038 (Bush.size 1.0). Since Story 045 also: the HUD's Tokens line shows again and the supply zones' markings
-## are lit, the ammunition zone's in the tracer's pale yellow (_restore_zone_look_044()).
+## are lit, the ammunition zone's in the tracer's pale yellow (_restore_zone_look_044()); since Story 046 a Player's own Shots
+## spare that Player's walls again (flag_wall_stats.tres spared_by_owner true).
 ##
 ## Output: SPLIT <scenario> t=<seconds> key=value ... (progress), CHECK <scenario> <check name> PASS|FAIL
 ## <detail> and exactly one last RESULT <scenario> ok|fail checks=<n> failed=<n> key=value ...; then quit with
@@ -680,6 +681,8 @@ const SMOKE_LAYER_SETTING: String = "layer_names/3d_physics/layer_9"
 ## The Truck's data, whose Mines recharge since Story 044 (mine_cooldown_seconds), and the Bush scene's size before it.
 const TRUCK_STATS_PATH_044: String = "res://src/gameplay/units/data/truck_stats.tres"
 const LEGACY_043_BUSH_SIZE: float = 1.0
+## Every wall's data, which since Story 046 no longer spares its owner's Shots (spared_by_owner false).
+const WALL_STATS_PATH_046: String = "res://src/gameplay/defences/data/flag_wall_stats.tres"
 ## The ammunition zone's marking before Story 045: the Shots' tracer colour (ammo_building.tscn's paint).
 const LEGACY_044_AMMO_ZONE_COLOUR: Color = Color(1, 0.95, 0.55, 1)
 const SECONDARY_NODES: Array[String] = ["World/Player1NitroBooster", "World/Player2NitroBooster", "World/Player1SmokeLauncher",
@@ -1710,6 +1713,9 @@ func _apply_secondary_off(script: GDScript) -> void:
 	var truck: UnitStats = load(TRUCK_STATS_PATH_044) as UnitStats
 	if truck != null:
 		truck.mine_cooldown_seconds = 0.0
+	var walls: StructureStats = load(WALL_STATS_PATH_046) as StructureStats
+	if walls != null:
+		walls.spared_by_owner = true
 	var stats: TurretStats = load(TURRET_STATS_PATH) as TurretStats
 	if stats != null:
 		stats.sight_extra_mask &= ~SMOKE_LAYER_BIT

@@ -167,7 +167,7 @@ On 2026-10-21 Martin asked to put "the new version of the map I last worked on w
 Martin, 2026-10-21: "to pravidlo ze treba znicit vezicky aby sa dala ukradnut vlajka chcem prec. a aby aj motorka moze nicit veze aj mury" (I want the rule that the Turrets must be destroyed before the Flag can be stolen gone; and the Motorbike should be able to destroy the Turrets and the walls too). Built in story 039; it replaces the hard rule of Turrets, Flag Walls and Mines and the Motorbike's 0.0 against the Wall Panels and Flag Walls in that section.
 
 - No Turret locks a Flag: a Motorbike that reaches the other Player's Flag takes it whatever stands, and "Destroy the turrets first" never shows (data: `TurretStats.locks_flag` false; the code stays).
-- The Motorbike's Shots damage the other Player's Wall Panels, Flag Walls and Turrets at the full multiplier, like every type's; a Player's own pieces still take no damage from that Player.
+- The Motorbike's Shots damage the other Player's Wall Panels, Flag Walls and Turrets at the full multiplier, like every type's; a Player's own pieces still take no damage from that Player (walls changed by story 046: both Players break them).
 
 ## The left stick drives (2026-10-22)
 
@@ -215,11 +215,19 @@ Martin, 2026-10-22: "drop flag nepotrebuje bar. a dajme prec tu info kolko ostav
 - The boost's bar is white on grey.
 - A Fuel zone's marking is the fuel bar's amber and an ammunition zone's the ammo bar's blue, both drawn flat (unshaded) so they read as the same colours.
 
+## Every wall for both sides; a smaller Flag; white bars (2026-10-22)
+
+Martin, 2026-10-22: "vlajka by mala byt mensia, prilis ju vidno v kricku", "truck aj gyro maju zlty bar, nie biely", "chcem aby uplne vsetky mury boli rovnake a znicitelne pre obe strany". Built in story 046; it replaces "a Player's own pieces still take no damage from that Player" (story 039) for walls.
+
+- Every wall (each Wall Panel and Flag Wall, a Base's and the field's alike) is the same and either Player's Shots break it, its owner's included. Turrets keep sparing their own Player's Shots.
+- The Flag's pole is 1.9 m (from 3 m) and its cloth 1.32 by 0.7 m, so a Motorbike carrying it hides in a Bush.
+- Every secondary bar is white on grey, as the boost's.
+
 ## A real flag (2026-10-22)
 
 Martin, 2026-10-22: "vlajka je teraz kanister, spravme z nej realnu vlajku". Built in story 043; it replaces the Flag's look of story 004 and 007 (a carryable tank about 1 m tall). The rules do not change.
 
-- The Flag is a steel pole about 3 m tall with a cloth in its owner's Team colour that waves; on its seat it stands on a steel foot.
+- The Flag is a steel pole (about 3 m tall; 1.9 m since story 046) with a cloth in its owner's Team colour that waves; on its seat it stands on a steel foot.
 - A Motorbike carries it as a banner, the cloth streaming behind it; a dropped Flag is planted in the ground, leaning a little.
 
 ## Technology and conventions

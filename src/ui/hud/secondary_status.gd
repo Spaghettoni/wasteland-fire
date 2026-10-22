@@ -13,7 +13,8 @@ extends Control
 ## tr().
 ##
 ## Since Story 045 it stands where the HUD's Tokens line was, on the band's second row, and the
-## boost is a white bar on grey.
+## boost is a white bar on grey; since Story 046 every bar is (the scene gives ready_style,
+## charging_style and background_style the boost's look).
 ##
 ## Implements: production/epics/wasteland-fire/story-044-secondaries-recharge.md AC-5,
 ## story-045-hud-and-zone-colours.md AC-1 to AC-3.
