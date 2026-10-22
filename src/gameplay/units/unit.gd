@@ -272,6 +272,12 @@ const AXIS_LIMIT: float = 1.0
 ## spawn() paints them with team_material. A scene convention, not a gameplay value.
 const TEAM_COLOUR_GROUP: StringName = &"team_colour"
 
+## The node group UnitModel._add_mesh() puts every mesh a model draws in (the Accent, the Neutral,
+## the Lamp and the turning parts' meshes; never a rotor's smear or the smoke): _dress_silhouette()
+## gives each one its silhouette (Story 027). A scene convention like TEAM_COLOUR_GROUP, and the one
+## place the name is written in code.
+const SILHOUETTE_GROUP: StringName = &"silhouette"
+
 ## Name of the child spawn() instances from UnitStats.model.
 const MODEL_NODE_NAME: StringName = &"Model"
 
@@ -293,6 +299,16 @@ const MAP_EDGE_GROUP: StringName = &"map_edge"
 ## every mesh of the type's model that is in the "team_colour" group with it as material_override;
 ## null leaves the model its own neutral colour.
 @export var team_material: Material
+
+## The see-through silhouette of this Unit (Story 027;
+## src/gameplay/units/data/silhouette_settings.tres, which split_screen.tscn stores on both Units):
+## where cover hides the Unit's model the hidden part is drawn over it in the Team colour, in this
+## Player's views only, and nowhere on the part in sight. _swap_model() dresses every model it
+## instances with it (UnitSilhouette). Optional: null, the default, dresses none, so no copy and no
+## quad is made and the Unit is drawn as it was before the story. A Unit with no Player
+## (player_index below 0) or no team_material with an albedo has none either. The resource is
+## shared, so never write to it at runtime.
+@export var silhouette: SilhouetteSettings
 
 ## The Player this Unit belongs to (Story 012 AC-3): 0 for Player 1, 1 for Player 2, -1 for a Unit
 ## no Player owns (the driving toy's, a stand-in). SplitScreen sets it once, before the Round
@@ -434,6 +450,10 @@ var _scene_collision_mask: int = 0
 ## The type's model instanced by spawn() (the child named Model), or null while the scene's own
 ## meshes show.
 var _model: Node3D
+## The silhouette of the model above, made when the first model was dressed and kept while the
+## settings, the Player and the Team colour it was made from stand (Story 027): the material of
+## its fill quad is made once.
+var _silhouette: UnitSilhouette
 ## Fuel in the tank, what fuel reads (Story 006): full from _ready(), then set by spawn(), burned
 ## by _burn_fuel(), added to by refuel() and zeroed by destroy() and leave_play().
 var _fuel: float = 0.0
@@ -882,7 +902,8 @@ func _apply_type(new_stats: UnitStats) -> void:
 ## MeshInstance3D children are hidden and left in the tree, the previous Model child is removed
 ## from the tree before it is freed (so its name is free at once), and the new one is instanced as
 ## the LAST child, named Model, so the CollisionShape3D stays the first child (_find_shape_node()),
-## then painted with team_material. A scene whose root is not a Node3D is refused with an error.
+## then painted with team_material and, when `silhouette` is set, dressed with it
+## (_dress_silhouette()). A scene whose root is not a Node3D is refused with an error.
 func _swap_model(model_scene: PackedScene) -> void:
 	var instance: Node = model_scene.instantiate()
 	if not (instance is Node3D):
@@ -901,6 +922,7 @@ func _swap_model(model_scene: PackedScene) -> void:
 	_model.name = MODEL_NODE_NAME
 	add_child(_model)
 	_paint_team_colour(_model)
+	_dress_silhouette()
 
 
 ## Paints every MeshInstance3D under `node` that is in TEAM_COLOUR_GROUP with team_material as
@@ -913,6 +935,25 @@ func _paint_team_colour(node: Node) -> void:
 		if child is MeshInstance3D and child.is_in_group(TEAM_COLOUR_GROUP):
 			(child as MeshInstance3D).material_override = team_material
 		_paint_team_colour(child)
+
+
+## Gives the model just instanced and painted its see-through silhouette (Story 027): UnitSilhouette
+## makes two invisible copies of every mesh of SILHOUETTE_GROUP and one fill quad, all on this
+## Player's layer. Nothing is done without `silhouette`, a Player or a team_material with an
+## albedo; unusable settings (SilhouetteSettings.first_problem()) are one named error, and the
+## model is then drawn as it was. The copies and the quad are children of the model, so a Unit that
+## leaves play (hidden) shows none, and a model replaced at a retype takes them with it.
+func _dress_silhouette() -> void:
+	var team: BaseMaterial3D = team_material as BaseMaterial3D
+	if silhouette == null or team == null or player_index < 0:
+		return
+	var problem: String = silhouette.first_problem()
+	if not problem.is_empty():
+		push_error("Unit '%s': silhouette is unusable (%s), so the Unit has none." % [name, problem])
+		return
+	if _silhouette == null or not _silhouette.is_for(silhouette, player_index, team.albedo_color):
+		_silhouette = UnitSilhouette.new(silhouette, player_index, team.albedo_color)
+	_silhouette.dress(_model)
 
 
 ## The first CollisionShape3D child, or null: the shape is_spot_taken() moves to the spawn point

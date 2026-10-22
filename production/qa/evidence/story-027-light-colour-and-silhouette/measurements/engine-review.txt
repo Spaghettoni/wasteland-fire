@@ -1,0 +1,106 @@
+=== PROMPT ===
+READ-ONLY engine review of one feature of the Godot 4.7.2 game in /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire (a split-screen vehicle game: two SubViewports share one World3D). Do NOT edit or write any file, do NOT run godot or any other process (a timing measurement is running on this machine: use Read, Grep and Glob only). Report in at most 10 findings by your 12th tool turn; stop exploring then and write the report. Your reading list is closed: do not read anything outside it.
+
+The feature (story 027, the player's own Unit drawn through cover as a flat see-through silhouette in its Team colour, in its own view only). The engine fact this design rests on, measured on 4.7.2: BaseMaterial3D.stencil_flags READ and WRITE are mutually exclusive in one material (setting 3 reads back 1, then 2), so a copy that reads the stencil cannot write it, and per-mesh coloured copies would blend twice where hidden parts overlap. The design is therefore three TRANSPARENT passes ordered only by render_priority, all drawn only by the Player's own camera (render layers; ChaseCamera.never_drawn_layers): (1) per drawn mesh an invisible (alpha 0) MASK copy, no depth test, priority 90, stencil WRITE value 1; (2) per mesh an invisible SIGHT copy, depth tested, priority 95, stencil WRITE value 2 (overwrites 1 where the mesh passes the depth test, i.e. where the part is in sight); (3) ONE FILL quad per model (QuadMesh 1000 m, material billboard, no depth test, no fog, unshaded, Team colour at alpha 0.55, priority 100) that READs stencil EQUAL 1. The Unit's own opaque meshes are untouched. It was observed windowed on Metal (Apple M4 Pro, 4x MSAA on the SubViewports, default depth prepass) and the picture is right and flat; nothing was observed on Vulkan or D3D12, which the Windows export uses.
+
+Read ONLY these files: src/gameplay/units/models/silhouette_settings.gd, src/gameplay/units/models/unit_silhouette.gd, src/gameplay/units/data/silhouette_settings.tres, src/gameplay/units/data/silhouette_mask_material.tres, src/gameplay/units/data/silhouette_sight_material.tres, src/gameplay/units/data/silhouette_fill_material.tres, src/gameplay/camera/chase_camera.gd (never_drawn_layers and _apply_hidden_layers), src/gameplay/units/unit.gd (only `silhouette`, `_silhouette`, `SILHOUETTE_GROUP`, `_swap_model`, `_dress_silhouette`), src/gameplay/units/models/unit_model.gd (only `_add_mesh`), src/gameplay/split_screen/split_screen.tscn (only the Unit nodes' `silhouette` and the cameras' `never_drawn_layers`), src/gameplay/maps/map_01/map_01.tscn (only the Environment sub-resource at the top), tools/colour_grade/build_colour_grade_lut.gd and tools/colour_grade/colour_grade.json, and under docs/engine-reference/godot/ the files that mention stencil, render_priority, Environment tonemap, glow or adjustment (use Grep first).
+
+Judge, with your own knowledge of the 4.7 renderer (RenderForwardClustered / RenderingDevice) and the docs in docs/engine-reference: (1) whether the assumptions hold on every rendering driver and with MSAA: transparent surfaces sorted by render_priority first and then by depth, the stencil buffer cleared per viewport render, a depth-tested transparent copy of an opaque mesh passing the depth test at equality against the depth prepass, and per-sample stencil with MSAA; (2) whether anything about the fill quad can fail (extra_cull_margin limits, AABB or frustum culling of a 1000 m billboard quad, billboard_mode with a non-uniform scale or a rotated parent, precision, near and far planes, fog and SSAO and glow interplay); (3) whether render_priority has a clamp or semantics that make 90/95/100 unsafe next to the other transparent materials of the game (grep src for render_priority and transparency quickly); (4) GDScript and resource-lifetime problems in the listed code (typed arrays, a shared Material mutated at runtime, Resource.duplicate() semantics for stencil properties, a freed node in a group, first_problem() holes: NaN, INF, a material of another class); (5) the 3D colour lookup: ImageTexture3D saved as .res and used as Environment.adjustment_color_correction, its sampling convention (the tool assumes the engine reads texel i at (i + 0.5) / size with no half-texel correction, measured on Metal) and whether that is the same on the other drivers. Give each finding: file:line or doc path, severity (blocker, major, minor), what could go wrong and on what backend, and the evidence (an engine source fact or a docs line, not a guess). Say plainly what you could not judge from the listed files. If you find nothing in an area say so in one line.
+=== LAST REPORT ===
+No blocker found. Everything below is Read-only. Grep and Glob are not available in this session and you barred other processes, so I read `unit.gd`, `unit_model.gd`, `split_screen.tscn` and `chase_camera.gd` whole and judged only the named parts. For the docs I read `rendering.md`, `breaking-changes.md`, `current-best-practices.md` and `deprecated-apis.md` instead of grepping. The src-wide `render_priority`/`transparency` grep was not run.
+
+Statements marked "(memory)" come from my memory of the 4.x renderer, not from a file here. The repo docs say only this about these topics:
+- Stencil support arrived in 4.5 (`rendering.md:34`, `breaking-changes.md:82`).
+- Glow runs before tonemapping since 4.6 (`rendering.md:27`).
+- AgX gained white and contrast controls (`rendering.md:28`).
+- Windows defaults to D3D12 (`rendering.md:26,72`).
+- `draw_list_begin` was reworked in 4.4 (`breaking-changes.md:105`).
+
+The docs say nothing on `render_priority`, depth prepass or colour-correction LUTs.
+
+## Area verdicts
+
+- **(1) Drivers and MSAA.** Sorting holds on every driver, because it is a CPU-side sort: priority ascending, then back to front (memory). The stencil clear and its persistence across prepass, opaque and transparent passes are decided in shared renderer code (memory), so the Metal picture should transfer. I know of no driver-specific defect, but I could not check the 4.7.1/4.7.2 changelogs. Per-sample stencil under 4x MSAA is standard hardware behaviour on Vulkan, D3D12 and Metal. The one assumption that is not guaranteed is depth equality (F1).
+- **(2) Fill quad.** Nothing fails (F6).
+- **(3) `render_priority`.** No clamp problem (F7).
+- **(4) GDScript and lifetime.** The code is sound; the holes are in F3, F4 and F5.
+  - `Resource.duplicate()` copies the stencil properties. Each saved flag value is a single bit, so the read/write exclusivity setter cannot alter it.
+  - No shared material is written at runtime: the fill is duplicated before its colour is set (`unit_silhouette.gd:50-51`).
+  - Typed arrays are correct.
+  - `Unit` discards the array `dress()` returns (`unit.gd:935`), and group membership holds no stale references.
+- **(5) Colour lookup.** Same convention on all drivers (F8).
+
+## Findings
+
+**F1. Major, unobserved on Vulkan and D3D12: the sight copy needs bit-equal depth from two different shader programs.**
+- **Where:** `silhouette_sight_material.tres:4-12` (depth tested, no bias); `unit_silhouette.gd:95-105`.
+- **Risk:** Transparent pipelines test GREATER_OR_EQUAL in reverse-Z (memory). The copy therefore passes only if its depth is not even one ulp below what the opaque material wrote. Vulkan and D3D12 promise identical `gl_Position` across programs only if the output is declared invariant, and I don't know whether the 4.7 scene shader does that. If the copy lands a hair behind, the visible Unit keeps stencil 1 at those pixels, and the fill tints them in speckles that shimmer.
+- **Likelihood:** Low. `material_overlay` depends on the same equality and is reliable in practice.
+- **Certain failure:** Any silhouette mesh whose own material moves vertices (a ShaderMaterial `vertex()`, `grow`, z-clip, FOV override). I could not see those materials.
+- **Prepass note:** "Apple" is in the default `rendering/driver/depth_prepass/disable_for_vendors` (memory), so the optional prepass is off on the M4 Pro. Map 01 has SSAO on (`map_01.tscn:45`), and I believe SSAO forces the depth and normal prepass on every GPU (memory), so the Metal run probably saw one. A scene without SSAO would differ between the Mac and Windows.
+- **Checks:**
+  - Run Windows D3D12 with strength 1.0 and a plain-colour Unit in the open; speckle means failure.
+  - Run the Mac with `--rendering-driver vulkan` (MoltenVK, per `rendering.md:73-74`).
+  - Run a stub scene without SSAO.
+- **Mitigation if it speckles:** Bias the sight copy toward the camera with `grow` or `use_z_clip_scale`/`z_clip_scale`. Neither is in the repo docs, so both are unverified.
+
+**F2. Minor, with a gameplay leak if it drifts: layer values live in unlinked places.**
+- **Where:** `silhouette_settings.tres:15-16` (4 and 8), `split_screen.tscn:207` (P1 camera hides 8) and `:262` (P2 camera hides 4), plus `settings.hidden_layers` OR-ed in at `chase_camera.gd:120`.
+- **Risk:** `first_problem()` cannot see the cameras. If the numbers drift, a view draws the opponent's silhouette, which shows the enemy's hidden position, or loses its own. Any other `Camera3D` or `ReflectionProbe` with the default cull mask draws both Players' passes. `split_screen.tscn` has only the two cameras; I could not see probes or cameras inside the map.
+- **Fix:** Have SplitScreen set `camera.never_drawn_layers = silhouette.layer_of(1 - index)`, or assert it.
+
+**F3. Minor: `first_problem()` holes.**
+- **Where:** `silhouette_settings.gd:120` and `:142` accept any transparency except DISABLED; `:108` has no upper bound on `fill_extent`.
+- **Risk:** ALPHA_SCISSOR and ALPHA_HASH go to the opaque pass, because `render_priority` sorts only transparent surfaces. They also discard alpha-0 fragments, so nothing is written to the stencil. Use `!= TRANSPARENCY_ALPHA`.
+- **Evidence:** Material.render_priority and BaseMaterial3D.Transparency class references, which are not in the repo docs.
+- **Also unchecked on the three materials:** `blend_mode`, `depth_draw_mode`, `cull_mode`, `next_pass`, `grow`, `billboard_keep_scale`, `albedo_texture`.
+- **Handled correctly:**
+  - NaN and INF of strength (`:100`) and `fill_extent` (`:108`).
+  - NaN alpha (`:122`).
+  - Null or wrong-class material: a typed export drops the mismatched assignment, then `:118` and `:140` catch it.
+  - `render_priority` outside -128..127: the setter rejects it, then `:97-99` catch it.
+
+**F4. Minor: the copies are a one-time snapshot.**
+- **Where:** `unit_silhouette.gd:98-103` copies mesh and transform once; `unit_model.gd:312-323` returns the node to subclasses.
+- **Risk:**
+  - A source mesh that a script hides (rotor blades versus smear, Story 025) still gets mask and sight copies, so it shows as a ghost behind cover.
+  - A mesh animated through its own transform rather than its pivot leaves its copy behind, which also breaks F1.
+- **Not judged:** I could not read the subclasses.
+- **Check:** `.visible =`, `.mesh =` and own-transform tweens on nodes returned by `_add_mesh`.
+
+**F5. Minor, all backends: no `ignore_occlusion_culling` on the copies** (`unit_silhouette.gd:96-103`).
+- **Risk:** If `rendering/occlusion_culling/use_occlusion_culling` is ever enabled and cover gets OccluderInstance3D nodes, a fully hidden Unit's copies are culled. The silhouette then vanishes exactly when it is needed. The default is off, and `project.godot` is not on my list.
+- **Evidence:** GeometryInstance3D.ignore_occlusion_culling class reference.
+
+**F6. Minor, nothing fails: the fill quad.**
+- **Culling:** The margin of 1000 (`unit_silhouette.gd:117`) is far below the 16384 editor range. The Unit is always in view, so the quad is never culled.
+- **Billboard:** BILLBOARD_ENABLED builds the model-view from the camera basis and the model origin only (memory). Scale survives only with `billboard_keep_scale`, which is off (`silhouette_fill_material.tres:8`). A rotated parent or `model_scale` therefore cannot distort it.
+- **Near and far planes:** The quad is flat at the Unit's view depth, so they cannot clip it.
+- **Fog, SSAO, glow:** Fog is off (`:6`) and the material is unshaded, so SSAO does not touch it. Glow's HDR threshold is 2.0 (`map_01.tscn:61`), above anything the fill adds.
+- **Post chain:** The tint goes through tonemap, exposure, adjustments and the LUT like everything else, so the on-screen colour is not the raw Team colour. That is a visual call for the author.
+- **Soft point, low confidence:** 1000 m is 20 to 60 times the visible half-width at the above and chase distances. Both triangles are therefore guard-band clipped, and their shared diagonal crosses the screen centre.
+  - Unclipped shared edges are watertight by the rasterization rules. I cannot say the same for clipped ones.
+  - The symptom would be a faint diagonal of doubled or missing blend over a hidden part. Metal showed none.
+  - A smaller `fill_extent` in the `.tres` removes the question.
+
+**F7. Minor: `render_priority`.**
+- **Range and semantics:** The range is -128..127 (Material class reference). 90, 95 and 100 are inside it. Priority affects only transparent surfaces: lower draws first, ties go back to front.
+- **Effect:** All three passes draw after every default-priority (0) transparent in the viewport. The fill therefore blends over smoke, explosions, the rotor smear and water wherever the stencil is 1. That is harmless to the stencil logic.
+- **Collisions:** Any other game material at exactly 90, 95 or 100 sorts by depth against a pass. Anything below 100 gets tinted by the fill; anything above does not.
+- **Not run:** The src-wide check. Run `rg -n "render_priority|transparency" src --glob "*.{gd,tscn,tres}"`.
+
+**F8. Minor: colour lookup.**
+- **Same on every backend.** The convention is identical on all backends. One shared tone-map shader is cross-compiled for Vulkan, D3D12 and Metal. It samples with the default linear-clamp sampler, and texel centres at (i+0.5)/N are API-defined. RGBA8 3D is read as plain UNORM. The Metal identity measurement therefore carries over (memory, not verified on 4.7.2). The tool matches it (`build_colour_grade_lut.gd:75-83`).
+- **Residuals** (none depend on the driver):
+  - **Flat toe:** The first/last-texel rule sends every input in [0, 0.5/32], about 4 of 255 codes, to `grade(black)`.
+  - **Stacked saturation:** The engine applies contrast and saturation before the lookup (memory). `map_01.tscn:64-65` (1.04, 0.97) therefore stack with the LUT's 0.94 (`colour_grade.json:9`) to about 0.91. Confirm that is intended.
+  - **Clamp:** The lookup clamps to [0,1]. That is fine for AgX in SDR, but it would clip highlights if HDR output is ever requested (`current-best-practices.md:16-24`).
+
+## Could not judge
+
+- The src-wide `render_priority`/`transparency` grep. Neither Grep nor Bash was available to me.
+- `project.godot`: rendering method and driver, prepass vendor list, occlusion culling, layer names, HDR.
+- The mesh and kit model subclasses, rotor code, and the Unit's opaque materials (`player_*_body_material.tres`, Neutral and Lamp).
+- `ChaseCameraSettings.hidden_layers` values.
+- `split_screen.gd`. If it sets `player_index` after the first `spawn()`, the first model gets no silhouette until the next retype (`unit.gd:927`).
+- Any observation on Vulkan, D3D12, Compatibility or Mobile. The repo docs only say stencil arrived in 4.5 (`rendering.md:34`).

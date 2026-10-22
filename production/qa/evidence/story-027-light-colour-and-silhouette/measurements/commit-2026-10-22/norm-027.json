@@ -1,0 +1,28 @@
+{
+ "see_through": [
+  [
+   "_apply_type (res://src/gameplay/units/unit.gd:877)",
+   "_apply_type (res://src/gameplay/units/unit.gd:898)"
+  ],
+  [
+   "_dress_silhouette (res://src/gameplay/units/unit.gd:931)",
+   "_dress_silhouette (res://src/gameplay/units/unit.gd:952)"
+  ],
+  [
+   "_swap_model (res://src/gameplay/units/unit.gd:904)",
+   "_swap_model (res://src/gameplay/units/unit.gd:925)"
+  ],
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1703)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2073)"
+  ],
+  [
+   "spawn (res://src/gameplay/units/unit.gd:684)",
+   "spawn (res://src/gameplay/units/unit.gd:703)"
+  ],
+  [
+   "the Map's 2260 meshes (48 of them",
+   "the Map's 2264 meshes (54 of them"
+  ]
+ ]
+}

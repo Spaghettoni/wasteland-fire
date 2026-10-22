@@ -1,0 +1,41 @@
+#!/bin/sh
+# /story-done 027 on the live tree. Reads the repo, writes only under sd27 (and gdUnit's gitignored reports/).
+# The headless half: the tree against the dev chain's final manifest and the morning's, parse, see_through twice, the showcase headless, the cited check names, the 81 older outputs
+# through the exact rewrites, gdUnit. The windowed recordings follow in rec27.sh.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire
+MY=$S/a9ae9e24-5b29-451c-b62f-a16425b4fa8f/scratchpad/sd27
+DEV=$S/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad
+E=production/qa/evidence/story-027-light-colour-and-silhouette
+CO=$E/measurements/close-out-2026-10-22
+O=$MY/out
+mkdir -p $O
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+date +%H:%M:%S > $O/progress.txt
+# 0 the tree against the final chain's manifest and against the morning's, before its seeded defects and its final recordings (sorted by path)
+sh $MY/manifest.sh $O/manifest-before.txt
+LC_ALL=C sort -k2 $O/manifest-before.txt > $O/manifest-before.sorted
+LC_ALL=C sort -k2 $CO/final-chain-manifest-after-chain.txt > $O/manifest-chain.sorted
+LC_ALL=C sort -k2 $DEV/mutout/manifest-before-mutants.txt > $O/manifest-morning.sorted
+diff $O/manifest-before.sorted $O/manifest-chain.sorted > $O/manifest-diff-chain.txt && echo "TREE = THE FINAL CHAIN'S MANIFEST ($(wc -l < $O/manifest-chain.sorted) files)" || { echo "TREE DIFFERS FROM THE CHAIN MANIFEST:"; head -20 $O/manifest-diff-chain.txt; }
+diff $O/manifest-before.sorted $O/manifest-morning.sorted > $O/manifest-diff-morning.txt && echo "TREE = THE MORNING'S MANIFEST OF 12:51 ($(wc -l < $O/manifest-morning.sorted) files)" || { echo "TREE DIFFERS FROM THE MORNING MANIFEST:"; head -20 $O/manifest-diff-morning.txt; }
+# 1 parse every .gd the story's chain parsed
+sed 's#^#res://#' $CO/final-chain-gd-list.txt | xargs godot --headless --path . -s res://.claude/scripts/godot-parse-check.gd -- > $O/parse.txt 2>&1; echo "parse rc=$?"; grep -c "^ok:" $O/parse.txt; grep "PARSE FAIL" $O/parse.txt
+echo "parse done $(date +%H:%M:%S)" >> $O/progress.txt
+# 2 the story's scenario twice in parallel, and the showcase headless
+for run in a b; do godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=see_through > $O/see_through-$run.txt 2>&1 & done; wait
+grep -c "^CHECK" $O/see_through-a.txt; grep -E "^RESULT|FAIL" $O/see_through-a.txt | cut -c1-300
+cmp $O/see_through-a.txt $O/see_through-b.txt && echo "see_through a/b BYTE-IDENTICAL"
+cmp $O/see_through-a.txt $E/scenario-outputs/split-see_through.txt && echo "see_through = the retained output"
+godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=light_showcase > $O/showcase-headless.txt 2>&1; echo "showcase rc=$?"; grep -E "^RESULT|FAIL" $O/showcase-headless.txt | cut -c1-200
+cmp $O/showcase-headless.txt $E/scenario-outputs/split-light_showcase.txt && echo "showcase headless = the retained output"
+echo "scenarios done $(date +%H:%M:%S)" >> $O/progress.txt
+python3 -I $MY/xcheck27.py $O/see_through-a.txt > $O/xcheck.txt; cat $O/xcheck.txt
+# 3 the 81 older outputs against story 027's baseline, through its exact rewrites
+sh $MY/kit/regress.sh live $MY/kit/normalizers27.json 2>&1 | tail -24
+echo "regress done $(date +%H:%M:%S)" >> $O/progress.txt
+# 4 gdUnit
+godot --headless -s -d --remote-debug tcp://127.0.0.1:0 res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a res://tests --ignoreHeadlessMode > $O/gdunit.txt 2>&1; echo "gdunit rc=$?"; grep -a "Overall Summary" $O/gdunit.txt | cut -c1-200
+sh $MY/manifest.sh $O/manifest-after.txt
+cmp $O/manifest-before.txt $O/manifest-after.txt && echo "TREE UNCHANGED BY THE CHECK"
+echo VERIFY_DONE
+echo "done $(date +%H:%M:%S) VERIFY_DONE" >> $O/progress.txt

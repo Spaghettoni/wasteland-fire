@@ -1,0 +1,43 @@
+--- retained frames 01 to 32 against finalA (dev), finalA2 (dev's repeat) and finalA3 (fresh):
+finalA:SAME  finalA2:SAME  finalA3:SAME  01-flat-from-above-linear-before.png = f00000408.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  02-flat-from-above-agx-as-shipped.png = f00000418.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  03-flat-from-above-filmic.png = f00000438.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  04-flat-from-above-aces.png = f00000448.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  05-flat-from-above-agx-without-the-grade.png = f00000428.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  06-base-in-shade-linear-before.png = f00000504.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  07-base-in-shade-agx-as-shipped.png = f00000514.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  08-base-in-shade-filmic.png = f00000534.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  09-base-in-shade-aces.png = f00000544.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  10-close-in-sun-linear-before.png = f00000590.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  11-close-in-sun-agx-as-shipped.png = f00000600.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  12-close-in-sun-filmic.png = f00000620.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  13-close-in-sun-aces.png = f00000630.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  14-close-in-sun-agx-without-the-grade.png = f00000610.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  15-close-in-shade-linear-before.png = f00000706.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  16-close-in-shade-agx-as-shipped.png = f00000716.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  17-close-in-shade-filmic.png = f00000736.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  18-close-in-shade-aces.png = f00000746.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  19-ford-from-above-linear-before.png = f00000822.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  20-ford-from-above-agx-as-shipped.png = f00000832.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  21-glow-three-probes-glow-on.png = f00000938.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  22-glow-three-probes-glow-off.png = f00000948.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  23-silhouette-behind-a-turret-chase-view.png = f00001059.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  24-silhouette-behind-a-corner-tower-chase-view.png = f00001125.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  25-silhouette-behind-a-water-tower-leg-chase-view.png = f00001191.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  26-silhouette-behind-a-container-chase-view.png = f00001257.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  27-silhouette-behind-a-cliff-chase-view.png = f00001323.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  28-silhouette-both-behind-the-depot-tank-each-view-shows-only-its-own-chase-view.png = f00001389.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  29-silhouette-gyrocopters-under-the-tank-chase-view.png = f00001455.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  30-silhouette-over-the-other-players-truck-chase-view.png = f00001521.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  31-silhouette-behind-a-corner-tower-from-above.png = f00000074.png
+finalA:SAME  finalA2:SAME  finalA3:SAME  32-silhouette-behind-a-cliff-from-above.png = f00000272.png
+retained frames equal to all three recordings: 32 of 32
+--- launch: retained frame 00 against the fresh recording's frame 89 and the morning's:
+00 = fresh launch frame 89: SAME
+00 = the morning's launch frame 89: SAME
+--- every frame of each fresh recording against the dev's same-numbered frame:
+launch: frames compared 90, differing 0, missing in the dev's 0
+finalA3: frames compared 1553, differing 0, missing in the dev's 0
+--- the windowed .out premise lines (SPLIT and RESULT) of finalA3 against finalA's:
+SPLIT and RESULT lines identical
+CMP_DONE

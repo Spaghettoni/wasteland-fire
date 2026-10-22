@@ -1,0 +1,42 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+SPLIT light_fps t=1.083 phase=above_exit staging=0 fps=35.0 frame_ms_max=20.40 draw_calls=254 primitives=265648 objects=640 p1_x=-98.82 p1_z=0.00 p2_x=100.19 p2_z=0.00
+SPLIT light_fps t=2.083 phase=above_exit staging=0 fps=120.0 frame_ms_max=11.75 draw_calls=183 primitives=231186 objects=528 p1_x=-81.35 p1_z=0.00 p2_x=83.58 p2_z=0.00
+SPLIT light_fps t=3.083 phase=above_flat_and_road staging=0 fps=120.0 frame_ms_max=12.59 draw_calls=225 primitives=263314 objects=595 p1_x=-83.64 p1_z=-3.75 p2_x=111.11 p2_z=-26.00
+SPLIT light_fps t=4.083 phase=above_flat_and_road staging=0 fps=120.0 frame_ms_max=12.13 draw_calls=196 primitives=236600 objects=520 p1_x=-65.55 p1_z=-15.57 p2_x=92.84 p2_z=-26.00
+SPLIT light_fps t=5.083 phase=above_flat_and_road staging=0 fps=120.0 frame_ms_max=12.57 draw_calls=189 primitives=275635 objects=519 p1_x=-44.16 p1_z=-15.48 p2_x=74.23 p2_z=-30.15
+SPLIT light_fps t=6.083 phase=above_flat_and_road staging=0 fps=119.0 frame_ms_max=11.98 draw_calls=205 primitives=275950 objects=533 p1_x=-32.16 p1_z=-15.49 p2_x=56.32 p2_z=-36.21
+SPLIT light_fps t=7.083 phase=above_flat_and_road staging=0 fps=121.0 frame_ms_max=12.55 draw_calls=209 primitives=300469 objects=552 p1_x=-11.67 p1_z=-15.50 p2_x=37.23 p2_z=-33.08
+SPLIT light_fps t=8.083 phase=above_flat_and_road staging=0 fps=120.0 frame_ms_max=12.39 draw_calls=227 primitives=342256 objects=551 p1_x=12.33 p1_z=-15.50 p2_x=18.72 p2_z=-27.84
+SPLIT light_fps t=9.083 phase=above_flat_and_road staging=0 fps=120.0 frame_ms_max=12.23 draw_calls=206 primitives=289078 objects=519 p1_x=34.72 p1_z=-15.50 p2_x=-0.88 p2_z=-28.00
+SPLIT light_fps t=10.083 phase=above_flat_and_road staging=0 fps=120.0 frame_ms_max=12.02 draw_calls=201 primitives=284992 objects=521 p1_x=46.72 p1_z=-15.47 p2_x=-20.48 p2_z=-28.00
+SPLIT light_fps t=11.083 phase=above_flat_and_road staging=0 fps=119.0 frame_ms_max=12.49 draw_calls=192 primitives=279825 objects=535 p1_x=64.51 p1_z=-15.46 p2_x=-38.89 p2_z=-33.67
+SPLIT light_fps t=12.083 phase=above_flat_and_road staging=0 fps=121.0 frame_ms_max=12.10 draw_calls=195 primitives=275960 objects=543 p1_x=66.82 p1_z=-15.44 p2_x=-58.09 p2_z=-36.08
+SPLIT light_fps t=13.083 phase=above_flat_and_road staging=0 fps=120.0 frame_ms_max=12.00 draw_calls=213 primitives=278722 objects=577 p1_x=66.82 p1_z=-15.44 p2_x=-75.85 p2_z=-29.42
+SPLIT light_fps t=14.083 phase=above_flat_and_road staging=0 fps=120.0 frame_ms_max=12.61 draw_calls=209 primitives=274524 objects=593 p1_x=66.82 p1_z=-15.44 p2_x=-94.61 p2_z=-25.90
+SPLIT light_fps t=15.083 phase=above_flat_and_road staging=0 fps=120.0 frame_ms_max=12.39 draw_calls=195 primitives=209749 objects=571 p1_x=66.82 p1_z=-15.44 p2_x=-114.21 p2_z=-26.00
+SPLIT light_fps t=16.083 phase=above_into_bases staging=0 fps=120.0 frame_ms_max=11.89 draw_calls=221 primitives=205766 objects=621 p1_x=70.95 p1_z=0.00 p2_x=-70.81 p2_z=0.00
+SPLIT light_fps t=17.083 phase=above_into_bases staging=0 fps=120.0 frame_ms_max=12.33 draw_calls=236 primitives=213741 objects=702 p1_x=87.00 p1_z=0.00 p2_x=-84.34 p2_z=0.00
+SPLIT light_fps t=18.083 phase=above_into_bases staging=0 fps=120.0 frame_ms_max=12.33 draw_calls=237 primitives=162235 objects=759 p1_x=109.40 p1_z=0.00 p2_x=-103.94 p2_z=0.00
+SPLIT light_fps t=19.083 phase=above_into_bases staging=1 fps=120.0 frame_ms_max=12.28 draw_calls=230 primitives=145896 objects=657 p1_x=109.39 p1_z=0.00 p2_x=-109.19 p2_z=0.00
+SPLIT light_fps t=20.083 phase=chase_exit staging=0 fps=119.0 frame_ms_max=12.25 draw_calls=287 primitives=338633 objects=972 p1_x=-104.88 p1_z=0.00 p2_x=65.50 p2_z=-0.00
+SPLIT light_fps t=21.083 phase=chase_exit staging=0 fps=121.0 frame_ms_max=11.86 draw_calls=242 primitives=314200 objects=875 p1_x=-85.45 p1_z=0.00 p2_x=65.50 p2_z=-0.00
+SPLIT light_fps t=22.083 phase=chase_flat_and_road staging=0 fps=120.0 frame_ms_max=11.74 draw_calls=265 primitives=306778 objects=795 p1_x=-86.52 p1_z=-1.27 p2_x=114.34 p2_z=-26.00
+SPLIT light_fps t=23.083 phase=chase_flat_and_road staging=0 fps=120.0 frame_ms_max=12.41 draw_calls=236 primitives=296542 objects=696 p1_x=-72.65 p1_z=-13.12 p2_x=99.04 p2_z=-26.00
+SPLIT light_fps t=24.083 phase=chase_flat_and_road staging=0 fps=120.0 frame_ms_max=11.98 draw_calls=225 primitives=316766 objects=808 p1_x=-49.16 p1_z=-15.53 p2_x=79.57 p2_z=-27.02
+SPLIT light_fps t=25.083 phase=chase_flat_and_road staging=0 fps=120.0 frame_ms_max=12.41 draw_calls=231 primitives=310785 objects=771 p1_x=-35.96 p1_z=-15.49 p2_x=62.52 p2_z=-36.07
+SPLIT light_fps t=26.083 phase=chase_flat_and_road staging=0 fps=119.0 frame_ms_max=11.73 draw_calls=264 primitives=324768 objects=853 p1_x=-19.26 p1_z=-15.50 p2_x=42.98 p2_z=-35.37
+SPLIT light_fps t=27.083 phase=chase_flat_and_road staging=0 fps=121.0 frame_ms_max=12.22 draw_calls=280 primitives=361746 objects=816 p1_x=4.73 p1_z=-15.49 p2_x=24.92 p2_z=-28.08
+SPLIT light_fps t=28.083 phase=chase_flat_and_road staging=0 fps=120.0 frame_ms_max=12.28 draw_calls=228 primitives=298758 objects=684 p1_x=28.72 p1_z=-15.50 p2_x=5.33 p2_z=-27.97
+SPLIT light_fps t=29.083 phase=chase_flat_and_road staging=0 fps=120.0 frame_ms_max=11.20 draw_calls=221 primitives=289020 objects=686 p1_x=42.92 p1_z=-15.48 p2_x=-14.27 p2_z=-28.00
+SPLIT light_fps t=30.083 phase=chase_flat_and_road staging=0 fps=120.0 frame_ms_max=12.35 draw_calls=202 primitives=284140 objects=617 p1_x=58.62 p1_z=-15.51 p2_x=-33.42 p2_z=-30.75
+SPLIT light_fps t=31.083 phase=chase_flat_and_road staging=0 fps=120.0 frame_ms_max=11.86 draw_calls=210 primitives=271212 objects=672 p1_x=66.82 p1_z=-15.44 p2_x=-51.88 p2_z=-36.16
+SPLIT light_fps t=32.083 phase=chase_flat_and_road staging=0 fps=120.0 frame_ms_max=11.66 draw_calls=233 primitives=273351 objects=722 p1_x=66.82 p1_z=-15.44 p2_x=-70.89 p2_z=-33.14
+SPLIT light_fps t=33.083 phase=chase_flat_and_road staging=0 fps=120.0 frame_ms_max=11.88 draw_calls=222 primitives=259941 objects=695 p1_x=66.82 p1_z=-15.44 p2_x=-88.41 p2_z=-25.77
+SPLIT light_fps t=34.083 phase=chase_flat_and_road staging=0 fps=120.0 frame_ms_max=12.37 draw_calls=195 primitives=226893 objects=592 p1_x=66.82 p1_z=-15.44 p2_x=-108.00 p2_z=-25.99
+SPLIT light_fps t=35.083 phase=chase_into_bases staging=1 fps=120.0 frame_ms_max=12.53 draw_calls=242 primitives=225861 objects=723 p1_x=70.00 p1_z=0.00 p2_x=-70.00 p2_z=0.00
+SPLIT light_fps t=36.083 phase=chase_into_bases staging=0 fps=120.0 frame_ms_max=11.97 draw_calls=218 primitives=211872 objects=691 p1_x=79.83 p1_z=0.00 p2_x=-78.36 p2_z=0.00
+SPLIT light_fps t=37.083 phase=chase_into_bases staging=0 fps=120.0 frame_ms_max=12.06 draw_calls=228 primitives=144268 objects=713 p1_x=103.40 p1_z=0.00 p2_x=-97.74 p2_z=0.00
+SPLIT light_fps t=38.083 phase=end staging=0 fps=120.0 frame_ms_max=12.53 draw_calls=230 primitives=145920 objects=659 p1_x=109.39 p1_z=0.00 p2_x=-109.19 p2_z=0.00
+RESULT light_fps ok checks=0 failed=0 t=38.767 fps_avg=117.8 fps_avg_steady=120.0 fps_min=35.0 fps_min_steady=119.0 frame_ms_max=20.40 frame_ms_max_steady=12.61 refresh_hz=120.0 draw_calls_max=287 primitives_max=361746 samples=38 steady_samples=35 legs=above_exit:ok,above_flat_and_road:ok,above_into_bases:ok,chase_exit:ok,chase_flat_and_road:ok,chase_into_bases:ok no_sil=1 no_look=1 no_glow=0 no_grade=0 linear=0 display=macOS

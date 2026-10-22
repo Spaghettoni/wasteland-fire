@@ -89,7 +89,7 @@ The developer asked on 2026-10-15 whether the game uses shaders and whether they
 
 | # | Story | Type | Status | ADR |
 |---|-------|------|--------|-----|
-| 027 | The light and the colour, and your own Unit through cover: a tone mapper instead of Linear, glow for what is brighter than white, a colour grade, and a Team-coloured silhouette of your own Unit where cover hides it, in your view only | Visual/Feel | Ready | N/A (minimal) |
+| 027 | The light and the colour, and your own Unit through cover: a tone mapper instead of Linear, glow for what is brighter than white, a colour grade, and a Team-coloured silhouette of your own Unit where cover hides it, in your view only | Visual/Feel | Complete | N/A (minimal) |
 | 028 | Water that moves and shines: ripples, the sun's glint and the sky's reflection on the sea, the channels and the fords, and foam along the banks and the shore | Visual/Feel | Ready | N/A (minimal) |
 | 029 | Fire and smoke drawn by shaders: a ragged, white-hot fireball that darkens to soot, and smoke that breaks up from its edges with a lit and a shaded side | Visual/Feel | Ready | N/A (minimal) |
 | 030 | Hits and shots: a white flash on whatever a Shot damages, Units that char as they lose hit points, glowing tracers, muzzle flashes, and sparks or dust where a Shot ends | Visual/Feel | Ready | N/A (minimal) |

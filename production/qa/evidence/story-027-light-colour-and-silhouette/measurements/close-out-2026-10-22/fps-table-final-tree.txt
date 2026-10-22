@@ -1,0 +1,7 @@
+run                    steady long>16.6  min fps longest ms  draws  unpaced t=8 draws/prim  no_sil
+fps/before-f1              35         0      120      12.55    287        0    227/342256       1
+fps/before-f2              35         2      118      24.56    287        0    227/342256       1
+fps/before-f3              35         0      120      12.64    287        0    227/342256       1
+fps/shipped-f1             35         0      120      12.86    301        0    241/388288       0
+fps/shipped-f2             35         4      119      17.57    301        0    241/382144       0
+fps/shipped-f3             35         2      117      34.54    301        0    241/382144       0

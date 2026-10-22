@@ -301,6 +301,7 @@ func _ready() -> void:
 	var bases: Array[Base] = [field.player_1_base, field.player_2_base]
 	var cameras: Array[ChaseCamera] = [player_1_camera, player_2_camera]
 	_assign_players(units, bases)
+	_hand_silhouette_layers(units, cameras)
 	_arm_turrets(units, bases)
 	_hand_bases_to_mine_layers(bases)
 	_hand_supply_zones()
@@ -358,6 +359,17 @@ func _assign_players(units: Array[Unit], bases: Array[Base]) -> void:
 		for structure: Structure in _pieces_of(player, bases):
 			if structure != null:
 				structure.player_index = player
+
+
+## Gives each Player's camera the silhouette layer it never draws, the other Player's (Story 027 AC-4),
+## read from the SilhouetteSettings the Units carry, so the layers are written in one file and a
+## camera cannot be left drawing the other Player's silhouette. Units with no settings leave their
+## cameras drawing every layer, as before the story.
+func _hand_silhouette_layers(units: Array[Unit], cameras: Array[ChaseCamera]) -> void:
+	for player: int in cameras.size():
+		var other: SilhouetteSettings = units[1 - player].silhouette
+		if other != null:
+			cameras[player].never_drawn_layers = other.layer_of(1 - player)
 
 
 ## Arms every Turret in each Base's structures list (Story 013): the target is the other Player's

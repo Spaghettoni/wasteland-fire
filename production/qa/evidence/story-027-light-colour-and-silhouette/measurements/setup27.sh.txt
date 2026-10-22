@@ -1,0 +1,15 @@
+#!/bin/sh
+# Sets up the rg27 tooling and the clean pre-edit export (pre27 = git archive HEAD) of this session.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad
+R=/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire
+M=$R/production/qa/evidence/story-026-tyre-tracks/measurements
+cd $R || exit 9
+mkdir -p $S/rg27 $S/pre27
+git archive HEAD | tar -x -C $S/pre27
+for f in capture_in.sh run_one_in.sh filter.sh compare.py mk_normalizers.py manifest.sh jobs.txt; do cp $M/$f.txt $S/rg27/$f 2>/dev/null || cp $M/$f $S/rg27/$f; done
+cp $M/jobs.txt $S/rg27/jobs.txt
+printf 'split tyre_tracks\nsplit tyre_tracks_showcase\n' >> $S/rg27/jobs.txt
+wc -l $S/rg27/jobs.txt
+cd $S/pre27 && godot --headless --path . --import > $S/rg27/pre27-import.txt 2>&1
+echo "import rc=$?"
+echo IMPORT_DONE >> $S/rg27/pre27-import.txt

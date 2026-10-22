@@ -45,6 +45,7 @@
 [ext_resource type="PackedScene" path="res://src/ui/hud/secondary_status.tscn" id="44_status"]
 [ext_resource type="Resource" path="res://src/gameplay/secondary/data/smoke_settings.tres" id="45_smoke_set"]
 [ext_resource type="Script" path="res://src/gameplay/secondary/flag_dropper.gd" id="46_dropper"]
+[ext_resource type="Resource" path="res://src/gameplay/units/data/silhouette_settings.tres" id="47_silhouette"]
 
 [node name="SplitScreen" type="Control" unique_id=9000001 node_paths=PackedStringArray("field", "player_1_unit", "player_2_unit", "player_1_camera", "player_2_camera", "match_controller", "player_1_mine_layer", "player_2_mine_layer", "player_1_weapon", "player_2_weapon")]
 layout_mode = 3
@@ -75,10 +76,12 @@ unique_name_in_owner = true
 [node name="Player1Unit" parent="World" unique_id=1111111111 instance=ExtResource("3_bike")]
 unique_name_in_owner = true
 team_material = ExtResource("22_team_orange")
+silhouette = ExtResource("47_silhouette")
 
 [node name="Player2Unit" parent="World" unique_id=1222222222 instance=ExtResource("3_bike")]
 unique_name_in_owner = true
 team_material = ExtResource("23_team_teal")
+silhouette = ExtResource("47_silhouette")
 
 [node name="Player1DriveInput" type="Node" parent="World" unique_id=9000011 node_paths=PackedStringArray("unit")]
 script = ExtResource("4_pdi")

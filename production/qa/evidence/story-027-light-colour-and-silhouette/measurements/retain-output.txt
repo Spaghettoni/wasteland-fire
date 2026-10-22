@@ -1,0 +1,34 @@
+light_flat_linear              frame   408 -> 01-flat-from-above-linear-before.png byte copy
+light_flat_agx                 frame   418 -> 02-flat-from-above-agx-as-shipped.png byte copy
+light_flat_filmic              frame   438 -> 03-flat-from-above-filmic.png byte copy
+light_flat_aces                frame   448 -> 04-flat-from-above-aces.png byte copy
+light_flat_agx_no_grade        frame   428 -> 05-flat-from-above-agx-without-the-grade.png byte copy
+light_base_linear              frame   504 -> 06-base-in-shade-linear-before.png byte copy
+light_base_agx                 frame   514 -> 07-base-in-shade-agx-as-shipped.png byte copy
+light_base_filmic              frame   534 -> 08-base-in-shade-filmic.png byte copy
+light_base_aces                frame   544 -> 09-base-in-shade-aces.png byte copy
+light_sun_close_linear         frame   590 -> 10-close-in-sun-linear-before.png byte copy
+light_sun_close_agx            frame   600 -> 11-close-in-sun-agx-as-shipped.png byte copy
+light_sun_close_filmic         frame   620 -> 12-close-in-sun-filmic.png byte copy
+light_sun_close_aces           frame   630 -> 13-close-in-sun-aces.png byte copy
+light_sun_close_agx_no_grade   frame   610 -> 14-close-in-sun-agx-without-the-grade.png byte copy
+light_shade_close_linear       frame   706 -> 15-close-in-shade-linear-before.png byte copy
+light_shade_close_agx          frame   716 -> 16-close-in-shade-agx-as-shipped.png byte copy
+light_shade_close_filmic       frame   736 -> 17-close-in-shade-filmic.png byte copy
+light_shade_close_aces         frame   746 -> 18-close-in-shade-aces.png byte copy
+light_ford_linear              frame   822 -> 19-ford-from-above-linear-before.png byte copy
+light_ford_agx                 frame   832 -> 20-ford-from-above-agx-as-shipped.png byte copy
+glow_probes_on                 frame   938 -> 21-glow-three-probes-glow-on.png byte copy
+glow_probes_off                frame   948 -> 22-glow-three-probes-glow-off.png byte copy
+sil_turret_chase               frame  1059 -> 23-silhouette-behind-a-turret-chase-view.png byte copy
+sil_tower_chase                frame  1125 -> 24-silhouette-behind-a-corner-tower-chase-view.png byte copy
+sil_leg_chase                  frame  1191 -> 25-silhouette-behind-a-water-tower-leg-chase-view.png byte copy
+sil_container_chase            frame  1257 -> 26-silhouette-behind-a-container-chase-view.png byte copy
+sil_cliff_chase                frame  1323 -> 27-silhouette-behind-a-cliff-chase-view.png byte copy
+sil_leak_chase                 frame  1389 -> 28-silhouette-both-behind-the-depot-tank-each-view-shows-only-its-own-chase-view.png byte copy
+sil_tank_chase                 frame  1455 -> 29-silhouette-gyrocopters-under-the-tank-chase-view.png byte copy
+sil_unit_in_front_chase        frame  1521 -> 30-silhouette-over-the-other-players-truck-chase-view.png byte copy
+sil_tower_above                frame    74 -> 31-silhouette-behind-a-corner-tower-from-above.png byte copy
+sil_cliff_above                frame   272 -> 32-silhouette-behind-a-cliff-from-above.png byte copy
+MISSING moment sil_turret_above
+retained 32 frames, 1 problems

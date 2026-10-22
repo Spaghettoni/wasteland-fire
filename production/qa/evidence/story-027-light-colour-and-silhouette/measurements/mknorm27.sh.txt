@@ -1,0 +1,6 @@
+#!/bin/sh
+# usage: mknorm27.sh   Regenerates normalizers27.json from the SOURCE: the printed line rewrites of the files the story edited.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+python3 -I $S/rg27/mk_normalizers27.py . $S/pre27 $S/rg27/base-a $S/rg27/normalizers27.json tools/evidence/split_screen_harness.gd src/gameplay/units/unit.gd src/gameplay/units/models/unit_model.gd src/gameplay/camera/chase_camera.gd tools/evidence/split_screen/quick_fix_kit.gd src/gameplay/split_screen/split_screen.gd
+python3 -I $S/rg27/mklint27.py . $S/pre27 $S/rg27/base-a $S/rg27/normalizers27.json

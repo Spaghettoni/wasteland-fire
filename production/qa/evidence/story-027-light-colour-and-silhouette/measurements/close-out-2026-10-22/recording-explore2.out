@@ -1,0 +1,21 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+Movie Maker mode enabled, recording movie in 1280×720 @ 60 FPS...
+SPLIT light_showcase t=0.100 frame=5 moment=garage_spawn_above both Motorbikes spawned in their Garages by the choice keys
+SPLIT light_showcase t=1.317 frame=78 moment=explore_e1.3_c1.5_w10.0 AgX at exposure 1.3, contrast 1.5, white 10.0 on the flat
+SPLIT light_showcase t=1.483 frame=88 moment=explore_e1.3_c1.8_w10.0 AgX at exposure 1.3, contrast 1.8, white 10.0 on the flat
+SPLIT light_showcase t=1.650 frame=98 moment=explore_e1.3_c2.1_w10.0 AgX at exposure 1.3, contrast 2.1, white 10.0 on the flat
+SPLIT light_showcase t=1.817 frame=108 moment=explore_e1.3_c2.4_w10.0 AgX at exposure 1.3, contrast 2.4, white 10.0 on the flat
+SPLIT light_showcase t=1.983 frame=118 moment=explore_e1.2_c2.1_w10.0 AgX at exposure 1.2, contrast 2.1, white 10.0 on the flat
+SPLIT light_showcase t=2.150 frame=128 moment=explore_e1.4_c2.1_w10.0 AgX at exposure 1.4, contrast 2.1, white 10.0 on the flat
+SPLIT light_showcase t=2.317 frame=138 moment=explore_e1.3_c2.1_w6.0 AgX at exposure 1.3, contrast 2.1, white 6.0 on the flat
+SPLIT light_showcase t=2.483 frame=148 moment=explore_e1.3_c2.1_w16.29 AgX at exposure 1.3, contrast 2.1, white 16.29 on the flat
+RESULT light_showcase ok checks=0 failed=0 t=3.617 moments=9
+--------------------------------------------------------------------------------
+Done recording movie at path: /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a9ae9e24-5b29-451c-b62f-a16425b4fa8f/scratchpad/c27/rec/explore2/f.png
+218 frames at 60 FPS (movie length: 00:00:03:38), recorded in 00:00:46 (6% of real-time speed).
+CPU render time: 0.01 seconds (average: 0.03 ms/frame)
+GPU render time: 0.00 seconds (average: 0.00 ms/frame)
+Encoding time: 41.26 seconds (average: 189.25 ms/frame)
+--------------------------------------------------------------------------------

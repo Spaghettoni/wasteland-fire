@@ -1,0 +1,129 @@
+extends SceneTree
+# Windowed probe of the see-through silhouette designs on 4.7.2 (Story 027). VARIANT=naive|mask3|opaque_m
+#  naive    : the Unit's opaque meshes write V; one copy per mesh READs (compare NOT_EQUAL V) and draws the Team colour (read and write are exclusive, so copies cannot write)
+#  mask3    : opaque Unit meshes are plain; per mesh an invisible M-writer copy (no depth test, priority 90) and an invisible V-writer copy (depth tested, priority 95); one huge billboard quad
+#             READs EQUAL M and draws the colour once per pixel (priority 100)
+#  opaque_m : opaque M-writer copies (priority -100, no depth test) drawn before the Unit's opaque meshes, which write V; the billboard quad fills where the stencil is M
+const UNIT_COLOUR: Color = Color(0.9, 0.45, 0.14)
+const SILHOUETTE_COLOUR: Color = Color(0.18, 0.6, 0.58)
+const ALPHA: float = 0.55
+const MASK: int = 2
+const SIGHT: int = 1
+
+func _plain(colour: Color) -> StandardMaterial3D:
+	var m: StandardMaterial3D = StandardMaterial3D.new()
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.albedo_color = colour
+	return m
+
+func _invisible(priority: int, depth: bool, value: int) -> StandardMaterial3D:
+	var m: StandardMaterial3D = StandardMaterial3D.new()
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.albedo_color = Color(0, 0, 0, 0)
+	m.no_depth_test = not depth
+	m.disable_fog = true
+	m.render_priority = priority
+	m.stencil_mode = BaseMaterial3D.STENCIL_MODE_CUSTOM
+	m.stencil_flags = BaseMaterial3D.STENCIL_FLAG_WRITE
+	m.stencil_compare = BaseMaterial3D.STENCIL_COMPARE_ALWAYS
+	m.stencil_reference = value
+	return m
+
+func _box(parent: Node, size: Vector3, at: Vector3, material: Material, layers: int = 1) -> MeshInstance3D:
+	var mesh: BoxMesh = BoxMesh.new()
+	mesh.size = size
+	var instance: MeshInstance3D = MeshInstance3D.new()
+	instance.mesh = mesh
+	instance.position = at
+	instance.material_override = material
+	instance.layers = layers
+	parent.add_child(instance)
+	return instance
+
+func _initialize() -> void:
+	var variant: String = OS.get_environment("VARIANT")
+	root.msaa_3d = Viewport.MSAA_4X
+	var cam: Camera3D = Camera3D.new()
+	root.add_child(cam)
+	cam.position = Vector3(0, 1.5, 10)
+	cam.look_at_from_position(cam.position, Vector3(0.5, 1.2, 0), Vector3.UP)
+	cam.current = true
+	var ground: MeshInstance3D = _box(root, Vector3(60, 0.2, 60), Vector3(0, -0.1, -10), _plain(Color(0.8, 0.7, 0.5)))
+	var wall: MeshInstance3D = _box(root, Vector3(2, 3, 0.3), Vector3(0, 1.5, 0), _plain(Color(0.5, 0.5, 0.55)))
+	var unit_material: StandardMaterial3D = _plain(UNIT_COLOUR)
+	if variant == "naive" or variant == "opaque_m":
+		unit_material.stencil_mode = BaseMaterial3D.STENCIL_MODE_CUSTOM
+		unit_material.stencil_flags = BaseMaterial3D.STENCIL_FLAG_WRITE
+		unit_material.stencil_compare = BaseMaterial3D.STENCIL_COMPARE_ALWAYS
+		unit_material.stencil_reference = SIGHT
+	var parts: Array[MeshInstance3D] = []
+	parts.append(_box(root, Vector3(3, 1.2, 1.2), Vector3(0.5, 0.8, -3), unit_material))      # B: the body, half behind the wall
+	parts.append(_box(root, Vector3(0.6, 1.0, 0.6), Vector3(0.6, 0.7, -1.6), unit_material))   # A: a pillar in front of B, hidden by the wall too
+	parts.append(_box(root, Vector3(0.6, 1.0, 0.6), Vector3(2.0, 0.7, -1.6), unit_material))   # C: a pillar in front of B beside the wall: in sight
+	var silhouette: StandardMaterial3D = _plain(Color(SILHOUETTE_COLOUR, ALPHA))
+	silhouette.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	silhouette.no_depth_test = true
+	silhouette.disable_fog = true
+	silhouette.render_priority = 100
+	if variant == "naive":
+		silhouette.stencil_mode = BaseMaterial3D.STENCIL_MODE_CUSTOM
+		silhouette.stencil_flags = BaseMaterial3D.STENCIL_FLAG_READ
+		silhouette.stencil_compare = BaseMaterial3D.STENCIL_COMPARE_NOT_EQUAL
+		silhouette.stencil_reference = SIGHT
+		for part: MeshInstance3D in parts:
+			_box(root, (part.mesh as BoxMesh).size, part.position, silhouette)
+	elif variant == "mask3":
+		for part: MeshInstance3D in parts:
+			_box(root, (part.mesh as BoxMesh).size, part.position, _invisible(90, false, MASK))
+			_box(root, (part.mesh as BoxMesh).size, part.position, _invisible(95, true, SIGHT))
+	elif variant == "opaque_m":
+		var m_writer: StandardMaterial3D = _plain(Color(1, 0, 1))
+		m_writer.no_depth_test = true
+		m_writer.render_priority = -100
+		m_writer.stencil_mode = BaseMaterial3D.STENCIL_MODE_CUSTOM
+		m_writer.stencil_flags = BaseMaterial3D.STENCIL_FLAG_WRITE
+		m_writer.stencil_compare = BaseMaterial3D.STENCIL_COMPARE_ALWAYS
+		m_writer.stencil_reference = MASK
+		for part: MeshInstance3D in parts:
+			_box(root, (part.mesh as BoxMesh).size, part.position, m_writer)
+	if variant == "mask3" or variant == "opaque_m":
+		var fill: StandardMaterial3D = _plain(Color(SILHOUETTE_COLOUR, ALPHA))
+		fill.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		fill.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+		fill.no_depth_test = true
+		fill.disable_fog = true
+		fill.render_priority = 100
+		fill.stencil_mode = BaseMaterial3D.STENCIL_MODE_CUSTOM
+		fill.stencil_flags = BaseMaterial3D.STENCIL_FLAG_READ
+		fill.stencil_compare = BaseMaterial3D.STENCIL_COMPARE_EQUAL
+		fill.stencil_reference = MASK
+		var quad: QuadMesh = QuadMesh.new()
+		quad.size = Vector2(1000, 1000)
+		var instance: MeshInstance3D = MeshInstance3D.new()
+		instance.mesh = quad
+		instance.material_override = fill
+		instance.position = Vector3(0.5, 0.8, -3)
+		root.add_child(instance)
+	for _i: int in 8:
+		await process_frame
+	await RenderingServer.frame_post_draw
+	var image: Image = root.get_texture().get_image()
+	image.save_png("res://../probe-%s.png" % variant if false else OS.get_environment("OUT") + "/probe-%s.png" % variant)
+	var points: Dictionary = {
+		"wall (plain)": Vector3(-0.5, 2.2, 0.16),
+		"B hidden by the wall only": Vector3(-0.3, 0.8, -2.4),
+		"B hidden, A in front (overlap)": Vector3(0.6, 0.7, -1.3),
+		"B visible beside the wall": Vector3(1.6, 1.2, -2.4),
+		"C in sight, in front of B": Vector3(2.0, 0.7, -1.3),
+		"ground (plain)": Vector3(4.0, 0.0, 1.0),
+	}
+	var size: Vector2 = Vector2(image.get_size())
+	var scale: Vector2 = size / root.get_visible_rect().size
+	print("%s | image %s root.size %s visible %s" % [variant, image.get_size(), root.size, root.get_visible_rect().size])
+	for key: String in points:
+		var p: Vector2 = cam.unproject_position(points[key]) * scale
+		var inside: bool = p.x >= 0 and p.y >= 0 and p.x < size.x and p.y < size.y
+		var c: Color = image.get_pixelv(Vector2i(p)) if inside else Color.BLACK
+		print("%s | %-34s px=(%d,%d) rgb=(%d,%d,%d)" % [variant, key, p.x, p.y, round(c.r * 255.0), round(c.g * 255.0), round(c.b * 255.0)])
+	quit()

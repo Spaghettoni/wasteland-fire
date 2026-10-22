@@ -1,0 +1,83 @@
+extends SceneTree
+## Difference masks for Story 027's evidence, run headless with arguments after "--":
+##   diff A B OUT       the pixels that differ between two frames (any channel), counted in the whole frame and in each half (Player 1's view x < 640,
+##                      Player 2's x >= 640) with each half's bounding box, and written to OUT as a mask: white where they differ, black elsewhere
+##   overlap M1 M2      for two masks written by diff: the white pixels in both, in M1 only and in M2 only, whole frame and by half
+##   near M1 M2 R       the white pixels of M1 with no white pixel of M2 within R pixels (and the other way round): what an edge of a pixel or two cannot explain
+
+func _initialize() -> void:
+	var args: PackedStringArray = OS.get_cmdline_user_args()
+	match args[0]:
+		"diff":
+			var a: Image = _load(args[1])
+			var b: Image = _load(args[2])
+			var mask: Image = Image.create(a.get_width(), a.get_height(), false, Image.FORMAT_L8)
+			var counts: Array[int] = [0, 0]
+			var boxes: Array[Rect2i] = [Rect2i(), Rect2i()]
+			var largest: int = 0
+			for y: int in a.get_height():
+				for x: int in a.get_width():
+					var ca: Color = a.get_pixel(x, y)
+					var cb: Color = b.get_pixel(x, y)
+					var d: int = maxi(absi(ca.r8 - cb.r8), maxi(absi(ca.g8 - cb.g8), absi(ca.b8 - cb.b8)))
+					if d == 0:
+						continue
+					largest = maxi(largest, d)
+					mask.set_pixel(x, y, Color.WHITE)
+					var half: int = 0 if x < a.get_width() / 2 else 1
+					counts[half] += 1
+					boxes[half] = Rect2i(x, y, 1, 1) if boxes[half].size == Vector2i.ZERO else boxes[half].expand(Vector2i(x, y)).expand(Vector2i(x + 1, y + 1))
+			mask.save_png(args[3])
+			print("DIFF %s vs %s differing=%d p1=%d p2=%d largest_delta=%d p1_box=%s p2_box=%s" % [args[1].get_file(), args[2].get_file(), counts[0] + counts[1], counts[0], counts[1], largest, boxes[0], boxes[1]])
+		"overlap":
+			var m1: Image = _load(args[1])
+			var m2: Image = _load(args[2])
+			var both: Array[int] = [0, 0]
+			var only1: Array[int] = [0, 0]
+			var only2: Array[int] = [0, 0]
+			for y: int in m1.get_height():
+				for x: int in m1.get_width():
+					var w1: bool = m1.get_pixel(x, y).r8 > 127
+					var w2: bool = m2.get_pixel(x, y).r8 > 127
+					var half: int = 0 if x < m1.get_width() / 2 else 1
+					if w1 and w2:
+						both[half] += 1
+					elif w1:
+						only1[half] += 1
+					elif w2:
+						only2[half] += 1
+			print("OVERLAP %s vs %s both=%d (p1 %d, p2 %d) only_first=%d (p1 %d, p2 %d) only_second=%d (p1 %d, p2 %d)" % [args[1].get_file(), args[2].get_file(), both[0] + both[1], both[0], both[1], only1[0] + only1[1], only1[0], only1[1], only2[0] + only2[1], only2[0], only2[1]])
+		"near":
+			var m1: Image = _load(args[1])
+			var m2: Image = _load(args[2])
+			var r: int = int(args[3])
+			print("NEAR %s vs %s r=%d first_not_near_second=%d second_not_near_first=%d" % [args[1].get_file(), args[2].get_file(), r, _far(m1, m2, r), _far(m2, m1, r)])
+	quit()
+
+
+## The white pixels of m1 with no white pixel of m2 within r pixels (a square window).
+func _far(m1: Image, m2: Image, r: int) -> int:
+	var far: int = 0
+	var w: int = m1.get_width()
+	var h: int = m1.get_height()
+	for y: int in h:
+		for x: int in w:
+			if m1.get_pixel(x, y).r8 <= 127:
+				continue
+			var found: bool = false
+			for yy: int in range(maxi(y - r, 0), mini(y + r + 1, h)):
+				for xx: int in range(maxi(x - r, 0), mini(x + r + 1, w)):
+					if m2.get_pixel(xx, yy).r8 > 127:
+						found = true
+						break
+				if found:
+					break
+			if not found:
+				far += 1
+	return far
+
+
+func _load(path: String) -> Image:
+	var image: Image = Image.load_from_file(path)
+	image.convert(Image.FORMAT_RGB8)
+	return image

@@ -1,0 +1,44 @@
+#!/bin/bash
+# The two seeded defects of Story 027's list that the story asks to see in a window (Implementation Notes, Seeded defects), each one exact replacement in a fresh scratch copy of
+# the repo, recorded windowed with Movie Maker over the half of light_showcase that shows it, then the file put back:
+#   wm-no-sight  the sight copy never made (no_sight_copy): nothing marks the parts in sight, so the fill draws over the whole Unit, the visible parts too (chase pass, sil half)
+#   wm-glow-low  the glow's threshold at 1.0, under the brightest lit value measured (1.08 flat, 1.18 ford): the sunlit flat should bloom (above pass, light half)
+# At the end the copy is diffed against the repo (it must equal it). Progress in wm.progress.
+C=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a9ae9e24-5b29-451c-b62f-a16425b4fa8f/scratchpad/c27
+R=/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire
+W=$C/wm/copy
+mkdir -p $W
+date +%H:%M:%S > $C/wm.progress
+rsync -a --delete --exclude .git --exclude production --exclude design --exclude docs --exclude tests --exclude assets/art/svaty_jur $R/ $W/
+echo "copy made $(date +%H:%M:%S)" >> $C/wm.progress
+mutate() {  # file old new: replaces the one occurrence or stops
+  python3 -I - "$W/$1" "$2" "$3" <<'PY'
+import sys
+path, old, new = sys.argv[1], sys.argv[2].encode().decode("unicode_escape"), sys.argv[3].encode().decode("unicode_escape")
+t = open(path, encoding="utf-8").read()
+n = t.count(old)
+if n != 1:
+    print("NOT APPLIED: found %d times in %s" % (n, path)); sys.exit(3)
+open(path, "w", encoding="utf-8").write(t.replace(old, new))
+print("applied in", path)
+PY
+}
+record() {  # tag VAR=value...
+  local tag="$1"; shift
+  mkdir -p $C/rec/$tag
+  (cd $W && env "$@" godot --path . --windowed --resolution 1280x720 --write-movie $C/rec/$tag/f.png res://tools/evidence/split_screen_harness.tscn -- --scenario=light_showcase > $C/rec/$tag.out 2>&1)
+  echo "$tag rc=$? $(date +%H:%M:%S)" >> $C/wm.progress
+}
+F=src/gameplay/units/models/unit_silhouette.gd
+cp $W/$F $C/wm/orig-silhouette.gd
+mutate $F '\t\tcopies.append(_add_copy(mesh, SIGHT_SUFFIX, _settings.sight_material))\n' '' >> $C/wm.progress || exit 3
+record wm-no-sight LIGHT_PASS=chase LIGHT_MOMENTS=sil
+cp $C/wm/orig-silhouette.gd $W/$F
+M=src/gameplay/maps/map_01/map_01.tscn
+cp $W/$M $C/wm/orig-map.tscn
+mutate $M 'glow_hdr_threshold = 2.0\n' 'glow_hdr_threshold = 1.0\n' >> $C/wm.progress || exit 3
+record wm-glow-low LIGHT_PASS=above LIGHT_MOMENTS=light
+cp $C/wm/orig-map.tscn $W/$M
+d=$(diff -rq --exclude=.godot --exclude=production --exclude=.git --exclude=design --exclude=docs --exclude=tests --exclude=svaty_jur $R $W)
+if [ -z "$d" ]; then echo "the copy equals the repo again" >> $C/wm.progress; else echo "COPY DIFFERS: $d" | head -5 >> $C/wm.progress; fi
+echo WM_DONE >> $C/wm.progress

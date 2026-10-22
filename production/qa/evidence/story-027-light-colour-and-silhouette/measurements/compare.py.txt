@@ -1,0 +1,64 @@
+"""Compare a capture of the retained outputs with a baseline, byte for byte.
+
+usage: compare.py BASE_DIR NEW_DIR [normalizers.json] [--only NAME,NAME]
+
+A capture holds KIND-NAME.txt (stdout and stderr of one headless run) and KIND-NAME.rc. A pair is
+STRICT when the bytes are equal and the exit codes match. Otherwise the scenario's exact rewrites in
+the normalizers (a list of [old, new] per scenario name, applied new -> old on the new output, each
+required to match at least once) may make it equal: NORMALIZED, with the count of each rewrite.
+Anything else is DIFF, with the first differing line. Prints one line per pair and a summary;
+exit code 1 when any pair is DIFF or missing.
+"""
+import json
+import sys
+from pathlib import Path
+
+args = [a for a in sys.argv[1:] if not a.startswith("--")]
+only = None
+if "--only" in sys.argv:
+    only = set(sys.argv[sys.argv.index("--only") + 1].split(","))
+    args = [a for a in args if a not in sys.argv[sys.argv.index("--only") + 1:]]
+base, new = Path(args[0]), Path(args[1])
+rules = json.loads(Path(args[2]).read_text(encoding="utf-8")) if len(args) > 2 else {}
+
+bad = 0
+strict = normalized = 0
+for txt in sorted(base.glob("*.txt")):
+    kind, name = txt.stem.split("-", 1)
+    if only and name not in only:
+        continue
+    other = new / txt.name
+    if not other.exists():
+        print(f"MISSING {kind} {name}")
+        bad += 1
+        continue
+    rc_base = (base / f"{txt.stem}.rc").read_text().strip()
+    rc_new = (new / f"{txt.stem}.rc").read_text().strip()
+    a = txt.read_bytes()
+    b = other.read_bytes()
+    if a == b and rc_base == rc_new:
+        strict += 1
+        print(f"STRICT     {kind:5} {name:22} rc={rc_new}")
+        continue
+    text = b.decode("utf-8", errors="surrogateescape")
+    used = []
+    for old, newer in rules.get(name, []):
+        count = text.count(newer)
+        if count == 0:
+            used.append(f"UNUSED({newer[:40]!r})")
+            continue
+        text = text.replace(newer, old)
+        used.append(count)
+    if text.encode("utf-8", errors="surrogateescape") == a and rc_base == rc_new:
+        normalized += 1
+        print(f"NORMALIZED {kind:5} {name:22} rc={rc_new} rewrites={used}")
+        continue
+    bad += 1
+    la = a.decode("utf-8", errors="replace").split("\n")
+    lb = text.split("\n")
+    first = next((i for i in range(min(len(la), len(lb))) if la[i] != lb[i]), min(len(la), len(lb)))
+    print(f"DIFF       {kind:5} {name:22} rc {rc_base}->{rc_new}, lines {len(la)}->{len(lb)}, first difference at line {first + 1}")
+    print(f"    base: {la[first][:230] if first < len(la) else '<end>'}")
+    print(f"    new : {lb[first][:230] if first < len(lb) else '<end>'}")
+print(f"-- {strict} strict, {normalized} normalized, {bad} bad of {strict + normalized + bad} compared")
+sys.exit(1 if bad else 0)

@@ -1,0 +1,100 @@
+{
+ "ammo_buildings": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2041)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2073)"
+  ]
+ ],
+ "badly_damaged": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2041)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2073)"
+  ],
+  [
+   "spawn (res://src/gameplay/units/unit.gd:680)",
+   "spawn (res://src/gameplay/units/unit.gd:700)"
+  ]
+ ],
+ "explosions": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2041)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2073)"
+  ],
+  [
+   "destroy (res://src/gameplay/units/unit.gd:617)",
+   "destroy (res://src/gameplay/units/unit.gd:637)"
+  ]
+ ],
+ "flag_walls": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2041)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2073)"
+  ]
+ ],
+ "fuel_building": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2041)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2073)"
+  ],
+  [
+   "of 78 scripts under res://src",
+   "of 80 scripts under res://src"
+  ]
+ ],
+ "pads_data": [
+  [
+   "_run (res://tools/evidence/split_screen_harness.gd:976)",
+   "_run (res://tools/evidence/split_screen_harness.gd:996)"
+  ],
+  [
+   "confirm_choices (res://tools/evidence/split_screen_harness.gd:1965)",
+   "confirm_choices (res://tools/evidence/split_screen_harness.gd:1997)"
+  ]
+ ],
+ "rotors": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2041)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2073)"
+  ]
+ ],
+ "token_ui": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2041)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2073)"
+  ]
+ ],
+ "tokens_data": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2041)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2073)"
+  ],
+  [
+   "destroy (res://src/gameplay/units/unit.gd:617)",
+   "destroy (res://src/gameplay/units/unit.gd:637)"
+  ]
+ ],
+ "turret_looks": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2041)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2073)"
+  ]
+ ],
+ "turrets": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2041)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2073)"
+  ]
+ ],
+ "tyre_tracks": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2041)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2073)"
+  ]
+ ],
+ "unit_swap": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2041)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:2073)"
+  ]
+ ]
+}

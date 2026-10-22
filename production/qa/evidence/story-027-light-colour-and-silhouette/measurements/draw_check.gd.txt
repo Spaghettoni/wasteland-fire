@@ -1,0 +1,24 @@
+extends SceneTree
+# Windowed: prints how many frames were drawn per second for 12 seconds, so a covered or throttled window shows.
+var _t: float = 0.0
+var _last_drawn: int = 0
+var _next: float = 1.0
+
+func _initialize() -> void:
+	var cam: Camera3D = Camera3D.new()
+	root.add_child(cam)
+	var box: MeshInstance3D = MeshInstance3D.new()
+	box.mesh = BoxMesh.new()
+	root.add_child(box)
+	cam.position = Vector3(0, 0, 3)
+
+func _process(delta: float) -> bool:
+	_t += delta
+	if _t >= _next:
+		var drawn: int = Engine.get_frames_drawn()
+		print("t=%.1f drawn=%d (+%d) fps=%d focus=%s" % [_t, drawn, drawn - _last_drawn, Engine.get_frames_per_second(), DisplayServer.window_is_focused()])
+		_last_drawn = drawn
+		_next += 1.0
+	if _t > 12.0:
+		quit()
+	return false

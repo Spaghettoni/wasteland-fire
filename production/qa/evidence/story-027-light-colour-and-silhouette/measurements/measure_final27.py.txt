@@ -1,0 +1,75 @@
+"""The frame measurements of story 027 on the retained recording (finalA): the salt flat's clipped share and contrast under each look, the brightest lit values read from the frames taken with
+Linear at a quarter of the exposure, the HUD bars across the looks, the Team colours' hue in the close-ups, and the glow on and off. Every number is read from a PNG the recording wrote;
+the moment-to-frame table is the recording's own SPLIT lines. usage: measure_final27.py REC_DIR OUT.txt"""
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+S = Path("/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad")
+REPO = "/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire"
+rec = Path(sys.argv[1])
+out_path = Path(sys.argv[2])
+frames = {}
+for line in (rec.parent / (rec.name + ".out")).read_text(encoding="utf-8", errors="replace").splitlines():
+    m = re.match(r"SPLIT light_showcase t=\S+ frame=(\d+) moment=(\S+) ", line)
+    if m:
+        frames[m.group(2)] = int(m.group(1))
+lines = []
+
+
+def png(moment):
+    return str(rec / ("f%08d.png" % frames[moment]))
+
+
+def tool(*args):
+    p = subprocess.run(["godot", "--headless", "--path", REPO, "-s", str(S / "lib" / "measure.gd"), "--"] + [str(a) for a in args], capture_output=True, text=True)
+    return [l for l in p.stdout.splitlines() if l.split(" ")[0] in ("CLIP", "HUE", "HDRMAX", "SAME", "RING", "PROFILE", "MEAN")]
+
+
+def say(text):
+    lines.append(text)
+    print(text, flush=True)
+
+
+LEFT_FLAT = (330, 160, 230, 260)
+RIGHT_FLAT = (700, 160, 230, 260)
+LOOKS = ["linear", "agx", "agx_no_grade", "filmic", "aces"]
+say("## clipped share and contrast of the salt flat from above (moment light_flat_*; crops %s left, %s right)" % (LEFT_FLAT, RIGHT_FLAT))
+for look in LOOKS:
+    for side, crop in (("left", LEFT_FLAT), ("right", RIGHT_FLAT)):
+        for l in tool("clip", png("light_flat_%s" % look), *crop):
+            say("%-13s %-5s %s" % (look, side, l.split(" ", 2)[2]))
+say("## the brightest lit value of the Map (Linear at a quarter of the exposure: the largest channel, linear, over 0.25)")
+for side, crop in (("left", LEFT_FLAT), ("right", RIGHT_FLAT)):
+    for l in tool("hdrmax", png("light_flat_dark_a"), *crop, 0.25):
+        say("flat %-5s %s" % (side, l.split(" ", 2)[2]))
+for name in ("a", "b", "c", "d"):
+    for side, crop in (("left", (0, 130, 640, 590)), ("right", (640, 130, 640, 590))):
+        for l in tool("hdrmax", png("light_ford_dark_%s" % name), *crop, 0.25):
+            say("ford dark_%s %-5s %s" % (name, side, l.split(" ", 2)[2]))
+say("## the HUD's HP and Fuel bars (rectangles of the four bars) against the Linear frame, pixels that differ")
+for look in ("agx", "agx_no_grade", "filmic", "aces"):
+    total = 0
+    cells = []
+    for rect in ((20, 22, 280, 14), (340, 22, 280, 14), (660, 22, 280, 14), (980, 22, 280, 14)):
+        for l in tool("same", png("light_flat_linear"), png("light_flat_%s" % look), *rect):
+            cells.append(re.search(r"differing=(\d+) of (\d+)", l).groups())
+    say("linear vs %-13s differing %s" % (look, " + ".join("%s of %s" % c for c in cells)))
+say("## the Team colours' mean hue on the Trucks (orange: hue 10 to 45, saturation 0.55 up, value 0.35 up; teal: 165 to 200, 0.40, 0.25)")
+for spot in ("sun_close", "shade_close"):
+    for look in LOOKS:
+        o = tool("hue", png("light_%s_%s" % (spot, look)), 112, 200, 340, 320, 10, 45, 0.55, 0.35)[0].split(" ", 2)[2]
+        t = tool("hue", png("light_%s_%s" % (spot, look)), 752, 200, 340, 320, 165, 200, 0.40, 0.25)[0].split(" ", 2)[2]
+        say("%-11s %-13s orange %s | teal %s" % (spot, look, o, t))
+say("## the glow: no probe, glow on (glow_none_on) against off (glow_none_off), whole frame; probes on against off")
+for l in tool("same", png("glow_none_on"), png("glow_none_off"), 0, 0, 1280, 720):
+    say(l)
+for l in tool("profile", png("glow_probes_on"), png("glow_probes_off"), 272, 140, 500, 12):
+    say("P1 view " + l)
+for l in tool("profile", png("glow_probes_on"), png("glow_probes_off"), 272, 780, 1140, 12):
+    say("P2 view " + l)
+for l in tool("same", png("glow_probes_on"), png("glow_probes_off"), 0, 520, 1280, 200):
+    say("bottom third " + l)
+out_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+print("wrote", out_path)

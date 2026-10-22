@@ -1,0 +1,13 @@
+#!/bin/bash
+# /story-done 027: are the retained frames 34 to 37 byte copies of the composites the 10-22 morning sitting left in meas/diff?
+DEV=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+E=production/qa/evidence/story-027-light-colour-and-silhouette
+while read -r name src; do
+  if cmp -s "$E/$name" "$DEV/meas/diff/$src"; then echo "SAME   $name = meas/diff/$src"; else echo "DIFFER $name vs meas/diff/$src"; fi
+done <<'LIST'
+34-difference-mask-turret-chase-view.png sil_turret_chase.png
+35-difference-mask-both-behind-the-depot-tank.png sil_leak_chase.png
+36-difference-mask-cliff-chase-view.png sil_cliff_chase.png
+37-difference-mask-over-the-other-players-truck.png sil_unit_in_front_chase.png
+LIST

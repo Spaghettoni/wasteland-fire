@@ -1,0 +1,27 @@
+     952
+import rc=0
+0
+      20
+parse rc=0
+20
+wrote /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad/rg27/normalizers27.json: ['ammo_buildings', 'badly_damaged', 'explosions', 'flag_walls', 'fuel_building', 'rotors', 'token_ui', 'tokens_data', 'turret_looks', 'turrets', 'tyre_tracks', 'unit_swap']
+lint: fuel_building prints 'of 67 scripts under res://src' -> 'of 69 scripts under res://src'
+scripts under src: 67 -> 69
+NORMALIZED split tokens_data            rc=0 rewrites=[18, 1]
+NORMALIZED split turret_looks           rc=0 rewrites=[5]
+NORMALIZED split turrets                rc=0 rewrites=[1]
+NORMALIZED split tyre_tracks            rc=0 rewrites=[1]
+NORMALIZED split unit_swap              rc=0 rewrites=[1]
+-- 69 strict, 12 normalized, 0 bad of 81 compared
+20
+RESULT see_through ok checks=20 failed=0 t=10.917 strength=0.55 tonemap=4 exposure=1.29999995231628 white=10.0 contrast=1.5 glow_threshold=2.0 grade_hue_moves=0.33/2.55 apart=150.5 lut_layers=32 refusals=41 camera_reads=4 copies=60 passes=90/95/100 turning_copies=16 smoke_puffs=15 silhouette_nodes_p
+BYTE-IDENTICAL
+showcase rc=0
+RESULT light_showcase ok checks=0 failed=0 t=25.867 moments=45
+gdunit rc=0
+[38;2;30;144;255mOverall Summary:[0m[38;2;255;255;255m 1 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans |[0m
+main scene rc=0
+0
+     952
+TREE UNCHANGED BY THE CHAIN
+FINAL_DONE

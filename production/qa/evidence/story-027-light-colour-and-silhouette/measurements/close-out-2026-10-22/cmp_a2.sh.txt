@@ -1,0 +1,21 @@
+#!/bin/bash
+# Compares the repeat recording finalA2 with finalA frame for frame (byte for byte), and the two .out files' moment lines.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad
+A=$S/rec/finalA; B=$S/rec/finalA2
+na=$(find $A -name 'f*.png' | wc -l | tr -d ' '); nb=$(find $B -name 'f*.png' | wc -l | tr -d ' ')
+echo "finalA frames: $na  finalA2 frames: $nb"
+same=0; diff=0; missing=0; difflist=""
+for f in $(cd $A && /bin/ls -1 f*.png); do
+  if [ ! -f "$B/$f" ]; then missing=$((missing+1)); continue; fi
+  if cmp -s "$A/$f" "$B/$f"; then same=$((same+1)); else diff=$((diff+1)); difflist="$difflist $f"; fi
+done
+echo "byte-identical: $same  differ: $diff  missing in A2: $missing"
+echo "differing frames:$difflist" | cut -c1-2000
+echo "--- moment lines (SPLIT/RESULT) of the two .out files:"
+grep -E "^SPLIT|^RESULT" $S/rec/finalA.out > /tmp/x_never_used 2>/dev/null
+diff <(grep -E "^SPLIT|^RESULT" $S/rec/finalA.out) <(grep -E "^SPLIT|^RESULT" $S/rec/finalA2.out) && echo "moment lines identical"
+echo "--- whole .out diff (line count):"
+diff $S/rec/finalA.out $S/rec/finalA2.out | head -20
+echo "--- launch:"
+find $S/rec/launch -name 'f*.png' | wc -l
+cat $S/rec/launch.out | grep -E "ERROR|WARN|SCRIPT" | head

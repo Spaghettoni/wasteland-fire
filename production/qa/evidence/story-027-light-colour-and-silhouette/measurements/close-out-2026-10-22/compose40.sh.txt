@@ -1,0 +1,11 @@
+#!/bin/sh
+# Frame 40: Player 1's view of the turret moment cropped at 4x, with the silhouette (finalA frame 1059, retained as frame 23) beside the same moment without it
+# (finalN frame 1059), by compose.gd (crop, then row at a height of 360).
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad
+C=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a9ae9e24-5b29-451c-b62f-a16425b4fa8f/scratchpad/c27
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+E=production/qa/evidence/story-027-light-colour-and-silhouette
+mkdir -p $C/crops
+godot --headless --path . -s $S/lib/compose.gd -- crop $C/crops/23-p1.png $E/23-silhouette-behind-a-turret-chase-view.png 270 330 100 90 4 > /dev/null 2>&1
+godot --headless --path . -s $S/lib/compose.gd -- crop $C/crops/23-p1-nosil.png $S/rec/finalN/f00001059.png 270 330 100 90 4 > /dev/null 2>&1
+godot --headless --path . -s $S/lib/compose.gd -- row "$1" 360 $C/crops/23-p1.png $C/crops/23-p1-nosil.png > /dev/null 2>&1

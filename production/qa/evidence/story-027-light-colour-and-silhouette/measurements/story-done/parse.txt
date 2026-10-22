@@ -1,0 +1,28 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ok: res://src/gameplay/camera/chase_camera.gd
+ok: res://src/gameplay/split_screen/split_screen.gd
+ok: res://src/gameplay/units/models/silhouette_settings.gd
+ok: res://src/gameplay/units/models/unit_model.gd
+ok: res://src/gameplay/units/models/unit_silhouette.gd
+ok: res://src/gameplay/units/unit.gd
+ok: res://tools/colour_grade/build_colour_grade_lut.gd
+ok: res://tools/evidence/split_screen/light_fps.gd
+ok: res://tools/evidence/split_screen/light_showcase.gd
+ok: res://tools/evidence/split_screen/light_showcase_light.gd
+ok: res://tools/evidence/split_screen/light_showcase_sil.gd
+ok: res://tools/evidence/split_screen/quick_fix_kit.gd
+ok: res://tools/evidence/split_screen/see_through.gd
+ok: res://tools/evidence/split_screen/see_through_cameras.gd
+ok: res://tools/evidence/split_screen/see_through_copies.gd
+ok: res://tools/evidence/split_screen/see_through_data.gd
+ok: res://tools/evidence/split_screen/see_through_kit.gd
+ok: res://tools/evidence/split_screen/see_through_life.gd
+ok: res://tools/evidence/split_screen/see_through_lint.gd
+ok: res://tools/evidence/split_screen_harness.gd
+WARNING: 38 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 21 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+ERROR: Pages in use exist at exit in PagedAllocator: N12VariantPools12BucketMediumE
+   at: ~PagedAllocator (./core/templates/paged_allocator.h:170)

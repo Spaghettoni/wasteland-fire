@@ -1,0 +1,18 @@
+extends SceneTree
+
+func _initialize() -> void:
+	var m: StandardMaterial3D = StandardMaterial3D.new()
+	m.stencil_mode = BaseMaterial3D.STENCIL_MODE_CUSTOM
+	m.stencil_flags = 3
+	print("set flags 3 -> ", m.stencil_flags, " mode ", m.stencil_mode)
+	m.stencil_flags = BaseMaterial3D.STENCIL_FLAG_READ | BaseMaterial3D.STENCIL_FLAG_WRITE
+	print("READ|WRITE=", BaseMaterial3D.STENCIL_FLAG_READ | BaseMaterial3D.STENCIL_FLAG_WRITE, " -> ", m.stencil_flags)
+	var loaded: StandardMaterial3D = load("res://src/gameplay/units/data/silhouette_material.tres")
+	print("loaded flags ", loaded.stencil_flags, " mode ", loaded.stencil_mode, " compare ", loaded.stencil_compare, " ref ", loaded.stencil_reference)
+	var d: StandardMaterial3D = loaded.duplicate()
+	print("dup flags ", d.stencil_flags)
+	for p: Dictionary in m.get_property_list():
+		if String(p["name"]).begins_with("stencil"):
+			print(p["name"], " hint ", p["hint"], " ", p["hint_string"], " usage ", p["usage"])
+	print("consts: READ ", BaseMaterial3D.STENCIL_FLAG_READ, " WRITE ", BaseMaterial3D.STENCIL_FLAG_WRITE, " WDF ", BaseMaterial3D.STENCIL_FLAG_WRITE_DEPTH_FAIL)
+	quit()

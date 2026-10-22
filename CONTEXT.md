@@ -216,7 +216,7 @@ What a Player's camera shows, one of two: the view from above (the Round's start
 _Avoid_: camera mode, zoom, perspective
 
 **Silhouette**:
-A Player's own Unit drawn through what hides it (decided 2026-10-15; story 027): where a Turret, a wall, a tower, a building, the cover or a cliff hides part of that Unit, the hidden part shows over it as a flat see-through shape in the Team colour, in its own Player's view only, from above and in the chase view. The other Player's Unit is never drawn through anything, so cover still hides a Unit from the other Player, as the Turrets' line of sight assumes. A picture only.
+A Player's own Unit drawn through what hides it (decided 2026-10-15; built in story 027): where a Turret, a wall, a tower, a building, the cover or a cliff hides part of that Unit, the hidden part shows over it as a flat see-through shape in the Team colour (at a strength of 0.55, data), in its own Player's view only, from above and in the chase view. It is flat because it is one fill that draws each pixel once, so where two hidden parts overlap it is no stronger, and it shows nowhere on a part in sight, not even where another part of the Unit hides the part behind it. The other Player's Unit is never drawn through anything, so cover still hides a Unit from the other Player, as the Turrets' line of sight assumes. A picture only.
 _Avoid_: x-ray, outline, ghost, wallhack
 
 **Red edge**:

@@ -1,0 +1,90 @@
+{
+ "ammo_buildings": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1671)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1703)"
+  ]
+ ],
+ "badly_damaged": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1671)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1703)"
+  ],
+  [
+   "spawn (res://src/gameplay/units/unit.gd:661)",
+   "spawn (res://src/gameplay/units/unit.gd:681)"
+  ]
+ ],
+ "explosions": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1671)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1703)"
+  ],
+  [
+   "destroy (res://src/gameplay/units/unit.gd:598)",
+   "destroy (res://src/gameplay/units/unit.gd:618)"
+  ]
+ ],
+ "flag_walls": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1671)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1703)"
+  ]
+ ],
+ "fuel_building": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1671)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1703)"
+  ],
+  [
+   "of 67 scripts under res://src",
+   "of 69 scripts under res://src"
+  ]
+ ],
+ "rotors": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1671)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1703)"
+  ]
+ ],
+ "token_ui": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1671)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1703)"
+  ]
+ ],
+ "tokens_data": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1671)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1703)"
+  ],
+  [
+   "destroy (res://src/gameplay/units/unit.gd:598)",
+   "destroy (res://src/gameplay/units/unit.gd:618)"
+  ]
+ ],
+ "turret_looks": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1671)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1703)"
+  ]
+ ],
+ "turrets": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1671)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1703)"
+  ]
+ ],
+ "tyre_tracks": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1671)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1703)"
+  ]
+ ],
+ "unit_swap": [
+  [
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1671)",
+   "advance_ticks (res://tools/evidence/split_screen_harness.gd:1703)"
+  ]
+ ]
+}

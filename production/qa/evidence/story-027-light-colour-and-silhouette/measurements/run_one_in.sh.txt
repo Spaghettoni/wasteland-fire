@@ -1,0 +1,7 @@
+#!/bin/sh
+# usage: run_one_in.sh ROOT OUTDIR KIND NAME   Runs one retained scenario headless in the project at ROOT.
+ROOT="$1"; OUT="$2"; KIND="$3"; NAME="$4"
+cd "$ROOT" || exit 9
+if [ "$KIND" = "drive" ]; then SCENE=res://tools/evidence/drive_harness.tscn; else SCENE=res://tools/evidence/split_screen_harness.tscn; fi
+godot --headless --fixed-fps 60 --path . "$SCENE" -- --scenario="$NAME" > "$OUT/$KIND-$NAME.txt" 2>&1
+echo $? > "$OUT/$KIND-$NAME.rc"

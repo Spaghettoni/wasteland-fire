@@ -1,0 +1,46 @@
+"""Retains the frames of story 027 from the final recording (finalA) under production/qa/evidence/story-027-light-colour-and-silhouette/: each frame is a byte copy of the PNG the
+recording wrote for the moment's frame= number, named NN-name.png; the copy is compared byte for byte with its source. Prints the table moment -> frame -> file."""
+import re
+import shutil
+import sys
+from pathlib import Path
+
+S = Path("/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad")
+DEST = Path("/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire/production/qa/evidence/story-027-light-colour-and-silhouette")
+REC = S / "rec" / "finalA"
+MAP = [
+    ("light_flat_linear", "01-flat-from-above-linear-before"), ("light_flat_agx", "02-flat-from-above-agx-as-shipped"), ("light_flat_filmic", "03-flat-from-above-filmic"),
+    ("light_flat_aces", "04-flat-from-above-aces"), ("light_flat_agx_no_grade", "05-flat-from-above-agx-without-the-grade"),
+    ("light_base_linear", "06-base-in-shade-linear-before"), ("light_base_agx", "07-base-in-shade-agx-as-shipped"), ("light_base_filmic", "08-base-in-shade-filmic"), ("light_base_aces", "09-base-in-shade-aces"),
+    ("light_sun_close_linear", "10-close-in-sun-linear-before"), ("light_sun_close_agx", "11-close-in-sun-agx-as-shipped"), ("light_sun_close_filmic", "12-close-in-sun-filmic"),
+    ("light_sun_close_aces", "13-close-in-sun-aces"), ("light_sun_close_agx_no_grade", "14-close-in-sun-agx-without-the-grade"),
+    ("light_shade_close_linear", "15-close-in-shade-linear-before"), ("light_shade_close_agx", "16-close-in-shade-agx-as-shipped"), ("light_shade_close_filmic", "17-close-in-shade-filmic"),
+    ("light_shade_close_aces", "18-close-in-shade-aces"),
+    ("light_ford_linear", "19-ford-from-above-linear-before"), ("light_ford_agx", "20-ford-from-above-agx-as-shipped"),
+    ("glow_probes_on", "21-glow-three-probes-glow-on"), ("glow_probes_off", "22-glow-three-probes-glow-off"),
+    ("sil_turret_chase", "23-silhouette-behind-a-turret-chase-view"), ("sil_tower_chase", "24-silhouette-behind-a-corner-tower-chase-view"), ("sil_leg_chase", "25-silhouette-behind-a-water-tower-leg-chase-view"),
+    ("sil_container_chase", "26-silhouette-behind-a-container-chase-view"), ("sil_cliff_chase", "27-silhouette-behind-a-cliff-chase-view"),
+    ("sil_leak_chase", "28-silhouette-both-behind-the-depot-tank-each-view-shows-only-its-own-chase-view"), ("sil_tank_chase", "29-silhouette-gyrocopters-under-the-tank-chase-view"),
+    ("sil_unit_in_front_chase", "30-silhouette-over-the-other-players-truck-chase-view"),
+    ("sil_tower_above", "31-silhouette-behind-a-corner-tower-from-above"), ("sil_cliff_above", "32-silhouette-behind-a-cliff-from-above"), ("sil_turret_above", "33-silhouette-behind-a-turret-from-above"),
+]
+frames = {}
+for line in (S / "rec" / "finalA.out").read_text(encoding="utf-8", errors="replace").splitlines():
+    m = re.match(r"SPLIT light_showcase t=\S+ frame=(\d+) moment=(\S+) ", line)
+    if m:
+        frames[m.group(2)] = int(m.group(1))
+DEST.mkdir(parents=True, exist_ok=True)
+bad = 0
+for moment, name in MAP:
+    if moment not in frames:
+        print("MISSING moment", moment)
+        bad += 1
+        continue
+    src = REC / ("f%08d.png" % frames[moment])
+    dst = DEST / (name + ".png")
+    shutil.copyfile(src, dst)
+    same = src.read_bytes() == dst.read_bytes()
+    bad += 0 if same else 1
+    print("%-30s frame %5d -> %s %s" % (moment, frames[moment], dst.name, "byte copy" if same else "DIFFERS"))
+print("retained %d frames, %d problems" % (len(MAP) - bad, bad))
+sys.exit(1 if bad else 0)

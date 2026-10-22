@@ -307,6 +307,18 @@ extends Node
 ## stats is read by nothing but that node. A scenario of Story 026 declares it, with the opt-ins of the pieces it needs; any other
 ## scenario, now and later, runs on a Map with no tracks.
 ##
+## The see-through silhouette (Story 027). The launch scene's Units now carry a SilhouetteSettings
+## (src/gameplay/units/data/silhouette_settings.tres): every model a Unit is given is dressed with two invisible copies of each mesh it
+## draws and one fill quad, on its Player's render layer; and SplitScreen gives each camera the layer it never draws
+## (ChaseCamera.never_drawn_layers, from those settings), so their culling masks are not what every older output printed (camera_views
+## and the scenarios that read cull_mask) and a model holds copies that drawn_box() merges. So the runner takes the silhouette away
+## from a freshly instanced launch scene unless the scenario script declares const SEE_THROUGH: bool = true
+## (_apply_see_through_off()): both Units' silhouette is null, so no model is dressed, no copy or quad is made, and SplitScreen has
+## no layer to hand the cameras, so each keeps today's mask. A scenario of Story 027 declares it, with the opt-ins of the pieces it
+## needs; any other scenario, now and later, runs with no silhouettes and today's camera masks. The tone mapper, the glow and the
+## colour grade of Map 01's Environment are no opt-in: no scenario reads the Environment (a grep of tools/evidence for
+## Environment, tonemap, glow_, fog_, sky and adjustment_ finds none) and a headless run draws nothing.
+##
 ## The slower Fuel and the resource bars (Story 036). The shipped data now burns Fuel three times slower, and each Player's HUD
 ## shows the Fuel and the ammo as two bars with icons and no text (the Fuel line and the Ammo line are gone). Every scenario
 ## written before it was measured with the old rates and the old HUD, so unless the scenario script declares
@@ -459,6 +471,9 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"tyre_tracks": preload("res://tools/evidence/split_screen/tyre_tracks.gd"),
 	&"tyre_tracks_showcase": preload("res://tools/evidence/split_screen/tyre_tracks_showcase.gd"),
 	&"tyre_tracks_fps": preload("res://tools/evidence/split_screen/tyre_tracks_fps.gd"),
+	&"see_through": preload("res://tools/evidence/split_screen/see_through.gd"),
+	&"light_showcase": preload("res://tools/evidence/split_screen/light_showcase.gd"),
+	&"light_fps": preload("res://tools/evidence/split_screen/light_fps.gd"),
 	&"pads": preload("res://tools/evidence/split_screen/pads.gd"),
 	&"pads_data": preload("res://tools/evidence/split_screen/pads_data.gd"),
 	&"pads_showcase": preload("res://tools/evidence/split_screen/pads_showcase.gd"),
@@ -734,6 +749,10 @@ const FROZEN_GYROCOPTER_MESH_FILE: PackedScene = preload("res://tools/evidence/f
 ## The constant a scenario script declares as true to keep the tyre tracks of Story 026: the Map's TyreTracks node stays, so the
 ## ground Units' tyres leave tracks, instead of the Map every older output was measured on, with none (_apply_tyre_tracks_off()).
 const TYRE_TRACKS_CONSTANT: StringName = &"TYRE_TRACKS"
+## The constant a scenario script declares as true to keep the see-through silhouette of Story 027: both Units dress their models
+## with it and both cameras never draw the other Player's silhouette layer, instead of the Units and cameras every older output
+## was measured with, which have none (_apply_see_through_off()).
+const SEE_THROUGH_CONSTANT: StringName = &"SEE_THROUGH"
 ## The Turret of Story 013 as it was measured, kept as a byte copy (tools/evidence/frozen/): a drum
 ## 1 m tall, a collider 1.8 m tall and no damaged look. Evidence-only: nothing under src/ uses it.
 const FROZEN_TURRET_SCENE: PackedScene = preload("res://tools/evidence/frozen/turret_story_013.tscn")
@@ -934,6 +953,7 @@ func _ready() -> void:
 	_apply_ammo_buildings_off(split, SCENARIOS[scenario])
 	_apply_fuel_building_off(split, SCENARIOS[scenario])
 	_apply_tyre_tracks_off(split, SCENARIOS[scenario])
+	_apply_see_through_off(split, SCENARIOS[scenario])
 	if PRE_009_MAP_SCENARIOS.has(scenario):
 		_apply_pre_009_map(split)
 	_apply_defences_off(split, SCENARIOS[scenario])
@@ -1420,6 +1440,18 @@ func _apply_tyre_tracks_off(root: SplitScreen, script: GDScript) -> void:
 	root.field.tyre_tracks = null
 	tracks.get_parent().remove_child(tracks)
 	tracks.free()
+
+
+## Takes the see-through silhouette of Story 027 off a freshly instanced launch scene, before it enters the tree, unless the
+## scenario script declares SEE_THROUGH (the class doc says why): both Units' silhouette is cleared, so no model they are given is
+## dressed and SplitScreen hands the cameras no layer, so each draws every layer its settings do not hide, as every older output
+## was measured. A scene whose Units are not assigned is left alone.
+func _apply_see_through_off(root: SplitScreen, script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(SEE_THROUGH_CONSTANT, false)):
+		return
+	for unit: Unit in [root.player_1_unit, root.player_2_unit]:
+		if unit != null:
+			unit.silhouette = null
 
 
 ## Takes the Fuel building of Story 023 off a freshly instanced launch scene, before it enters the tree, unless the scenario script

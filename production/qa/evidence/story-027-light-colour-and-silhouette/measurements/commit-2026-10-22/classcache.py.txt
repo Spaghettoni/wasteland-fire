@@ -1,0 +1,16 @@
+"""The merged class cache holds origin's classes and story 027's added ones, nothing else.
+usage: classcache.py REPO MERGED_CACHE   (REPO: the main checkout, whose working file is story 027's cache)"""
+import re, subprocess, sys
+R, merged_path = sys.argv[1], sys.argv[2]
+def entries(text):
+    return set(re.findall(r'\{\n(.*?)\n\}', text, re.S))
+def show(rev):
+    return subprocess.run(["git", "-C", R, "show", rev + ":.godot/global_script_class_cache.cfg"], capture_output=True, text=True, check=True).stdout
+base, theirs = entries(show("bf9e12e")), entries(show("origin/main"))
+ours = entries(open(R + "/.godot/global_script_class_cache.cfg").read())
+merged = entries(open(merged_path).read())
+expect = (theirs - (base - ours)) | (ours - base)
+name = lambda e: re.search(r'"class": &"(\w+)"', e).group(1)
+print("classes: base", len(base), "story 027", len(ours), "origin", len(theirs), "merged", len(merged))
+print("story 027 added:", sorted(name(e) for e in ours - base), "removed:", len(base - ours), "; origin removed:", len(base - theirs))
+print("merged == origin's plus story 027's:", merged == expect, "missing", sorted(name(e) for e in expect - merged), "extra", sorted(name(e) for e in merged - expect))

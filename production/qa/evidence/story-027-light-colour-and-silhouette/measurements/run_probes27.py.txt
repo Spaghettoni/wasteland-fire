@@ -1,0 +1,14 @@
+import subprocess, sys
+S = "/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad"
+PROBES = [
+    ("sil_kept", "\t\t\tunit.silhouette = null\n", "\t\t\tunit.silhouette = unit.silhouette\n"),
+    ("strip_off", "\tif bool(script.get_script_constant_map().get(SEE_THROUGH_CONSTANT, false)):\n\t\treturn\n", "\tif true or bool(script.get_script_constant_map().get(SEE_THROUGH_CONSTANT, false)):\n\t\treturn\n"),
+]
+only = sys.argv[1:]
+for name, old, new in PROBES:
+    if only and name not in only:
+        continue
+    open(S + "/rg27/probes.progress", "a").write("start %s\n" % name)
+    p = subprocess.run(["python3", "-I", S + "/rg27/probe27.py", name, old, new], capture_output=True, text=True)
+    open(S + "/rg27/probes.progress", "a").write("done %s rc=%d\n%s\n" % (name, p.returncode, (p.stdout + p.stderr)[-1500:]))
+open(S + "/rg27/probes.progress", "a").write("ALLDONE\n")

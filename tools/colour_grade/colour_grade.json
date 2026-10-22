@@ -1,0 +1,12 @@
+{
+	"output": "res://src/gameplay/maps/map_01/textures/colour_grade_lut.res",
+	"size": 32,
+	"texel_centre": 0.5,
+	"shadow_tint": {"r": 0.96, "g": 0.99, "b": 1.04},
+	"highlight_tint": {"r": 1.05, "g": 1.0, "b": 0.93},
+	"tint_pivot": 0.45,
+	"tint_width": 0.4,
+	"saturation": 0.94,
+	"haze": 0.05,
+	"haze_colour": {"r": 0.82, "g": 0.72, "b": 0.58}
+}

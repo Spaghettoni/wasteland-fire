@@ -1,0 +1,12 @@
+#!/bin/sh
+# The look's A/B: the build with no silhouettes and each part of the look in turn, interleaved with the picture of the story before.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad
+date +%H:%M:%S > $S/fps/batch2.progress
+for n in 1 2 3 4 5; do
+  sh $S/rg27/fps27.sh b0-$n LIGHT_FPS_NO_SIL=1 LIGHT_FPS_NO_LOOK=1
+  sh $S/rg27/fps27.sh b1-$n LIGHT_FPS_NO_SIL=1
+  sh $S/rg27/fps27.sh b2-$n LIGHT_FPS_NO_SIL=1 LIGHT_FPS_NO_GRADE=1
+  sh $S/rg27/fps27.sh b3-$n LIGHT_FPS_NO_SIL=1 LIGHT_FPS_NO_GLOW=1
+  echo "round $n done $(date +%H:%M:%S)" >> $S/fps/batch2.progress
+done
+echo ALLDONE >> $S/fps/batch2.progress

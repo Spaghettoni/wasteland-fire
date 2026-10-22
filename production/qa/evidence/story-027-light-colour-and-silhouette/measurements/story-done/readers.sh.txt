@@ -1,0 +1,15 @@
+#!/bin/bash
+# /story-done 027: after the README edit, the four scenarios that read README.md (ammo_buildings, mines, ammo, ammo_alone) run again (headless, --fixed-fps 60) and are compared byte for byte
+# with the outputs the same tree gave in the verification run (kit/live, filtered of the Jolt load warning on both sides).
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire
+MY=$S/a9ae9e24-5b29-451c-b62f-a16425b4fa8f/scratchpad/sd27
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+mkdir -p $MY/after-readme
+for sc in ammo_buildings mines ammo ammo_alone; do
+  godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=$sc > $MY/after-readme/split-$sc.txt 2>&1 &
+done
+wait
+sh $MY/kit/filter.sh $MY/after-readme $MY/after-readme-f
+for sc in ammo_buildings mines ammo ammo_alone; do
+  if cmp -s $MY/after-readme-f/split-$sc.txt $MY/kit/f-live/split-$sc.txt; then echo "SAME   $sc: after the README edit = the verification run's output ($(grep -c '^CHECK' $MY/after-readme-f/split-$sc.txt) checks, $(grep -E '^RESULT' $MY/after-readme-f/split-$sc.txt | cut -c1-60))"; else echo "DIFFER $sc"; diff $MY/after-readme-f/split-$sc.txt $MY/kit/f-live/split-$sc.txt | head -6; fi
+done

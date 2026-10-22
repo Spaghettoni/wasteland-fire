@@ -1,0 +1,24 @@
+"""Mean colour of rectangles in BMP frames. usage: sample.py BMP X Y W H [X Y W H ...]"""
+import struct, sys, colorsys
+data = open(sys.argv[1], "rb").read()
+off = struct.unpack_from("<I", data, 10)[0]
+w, h = struct.unpack_from("<ii", data, 18)
+bpp = struct.unpack_from("<H", data, 28)[0] // 8
+row = (w * bpp + 3) // 4 * 4
+def px(x, y):
+    yy = (h - 1 - y) if h > 0 else y
+    i = off + yy * row + x * bpp
+    b, g, r = data[i], data[i + 1], data[i + 2]
+    return r, g, b
+a = [int(v) for v in sys.argv[2:]]
+for k in range(0, len(a), 4):
+    x0, y0, ww, hh = a[k:k + 4]
+    s = [0, 0, 0]
+    for y in range(y0, y0 + hh):
+        for x in range(x0, x0 + ww):
+            p = px(x, y)
+            for c in range(3): s[c] += p[c]
+    n = ww * hh
+    m = tuple(round(v / n) for v in s)
+    hh_, ss_, vv_ = colorsys.rgb_to_hsv(*(v / 255 for v in m))
+    print(f"  rect {x0},{y0} {ww}x{hh}: rgb {m} #{m[0]:02x}{m[1]:02x}{m[2]:02x} hue {hh_*360:.0f} sat {ss_:.2f} val {vv_:.2f}")

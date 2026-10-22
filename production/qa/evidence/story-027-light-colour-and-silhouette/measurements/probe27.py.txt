@@ -1,0 +1,27 @@
+"""Strip probe of story 027: patch the runner in a scratch copy of the repo with ONE same-line-count replacement, capture the 81 older outputs there, and
+compare them with the baseline through the story's exact rewrites. Every older output that differs is a regress detector of that strip piece.
+usage: probe27.py NAME OLD NEW   (OLD must occur exactly once in the runner)"""
+import os
+import subprocess
+import sys
+
+S = "/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad"
+REPO = "/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire"
+W = S + "/rg27"
+name, old, new = sys.argv[1], sys.argv[2], sys.argv[3]
+copy = S + "/probes/copy-" + name
+os.makedirs(copy, exist_ok=True)
+subprocess.run(["rsync", "-a", "--delete", "--exclude", ".git", "--exclude", "production", "--exclude", "design", "--exclude", "docs", "--exclude", "tests",
+                "--exclude", "assets/art/svaty_jur", REPO + "/", copy + "/"], check=True)
+runner = copy + "/tools/evidence/split_screen_harness.gd"
+text = open(runner).read()
+assert text.count(old) == 1, "the text occurs %d times" % text.count(old)
+assert old.count("\n") == new.count("\n"), "the replacement changes the line count"
+open(runner, "w").write(text.replace(old, new))
+out = W + "/probe-" + name
+os.makedirs(out, exist_ok=True)
+subprocess.run(["sh", W + "/capture_in.sh", copy, out, W + "/jobs.txt", "3"], check=True)
+subprocess.run(["sh", W + "/filter.sh", out, W + "/f-probe-" + name], check=True)
+p = subprocess.run(["python3", "-I", W + "/compare.py", W + "/f-base", W + "/f-probe-" + name, W + "/normalizers27.json"], capture_output=True, text=True)
+open(W + "/probe-" + name + ".txt", "w").write(p.stdout)
+print("".join(l for l in p.stdout.splitlines(True) if not l.startswith("STRICT") and not l.startswith("NORMALIZED")))

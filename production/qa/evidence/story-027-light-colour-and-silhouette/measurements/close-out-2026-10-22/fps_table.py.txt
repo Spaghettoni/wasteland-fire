@@ -1,0 +1,31 @@
+"""One row per windowed light_fps run: the steady seconds (the first sample and the staging seconds left out), how many held a frame over 16.6 ms, the lowest steady
+second, the longest steady frame, the most draw calls, the seconds the display did not pace (over 125 fps on the 120 Hz screen: the window covered or out of focus), and the
+draw calls and primitives of the sample at t = 8.083 s (the Units at the same places in every run), which tell a run with the silhouettes from one without.
+usage: fps_table.py DIR [DIR ...]"""
+import glob, os, re, sys
+print("%-22s %6s %9s %8s %10s %6s %8s %13s %7s" % ("run", "steady", "long>16.6", "min fps", "longest ms", "draws", "unpaced", "t=8 draws/prim", "no_sil"))
+for d in sys.argv[1:]:
+    for f in sorted(glob.glob(os.path.join(d, "*.out"))):
+        tag = os.path.basename(f)[:-4]
+        steady, unpaced, first, at8, nosil = [], 0, True, "-", "?"
+        for line in open(f, encoding="utf-8", errors="replace"):
+            m = re.match(r"SPLIT light_fps t=([\d.]+) phase=(\S+) staging=(\d) fps=([\d.]+) frame_ms_max=([\d.]+) draw_calls=(\d+) primitives=(\d+)", line)
+            if m:
+                if float(m.group(4)) > 125:
+                    unpaced += 1
+                if m.group(1) == "8.083":
+                    at8 = "%s/%s" % (m.group(6), m.group(7))
+                if first:
+                    first = False
+                    continue
+                if m.group(3) == "0":
+                    steady.append((float(m.group(4)), float(m.group(5)), int(m.group(6))))
+            m = re.search(r"^RESULT light_fps .* no_sil=(\d)", line)
+            if m:
+                nosil = m.group(1)
+        if not steady:
+            print("%-22s no samples" % tag)
+            continue
+        long = sum(1 for s in steady if s[1] > 16.6)
+        print("%-22s %6d %9d %8.0f %10.2f %6d %8d %13s %7s" % (os.path.basename(d) + "/" + tag, len(steady), long, min(s[0] for s in steady), max(s[1] for s in steady),
+                                                      max(s[2] for s in steady), unpaced, at8, nosil))

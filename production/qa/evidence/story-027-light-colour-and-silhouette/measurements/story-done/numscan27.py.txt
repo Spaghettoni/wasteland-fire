@@ -1,0 +1,73 @@
+#!/usr/bin/env python3
+"""Numeric literals other than 0 and 1 (and 0.0 and 1.0) in the code Story 027 added, that are not on a const / @export declaration line: the three new scripts whole and the lines
+the story ADDED to the four changed gameplay scripts (git diff against HEAD). An independent tokenizer (strings and comments taken out first), not the see_through lint. Before it is
+trusted it is run on synthetic lines that must be flagged and on lines that must not be (--selftest). Prints what it finds."""
+import re, subprocess, sys
+
+ALLOWED = {0.0, 1.0}
+NUM = re.compile(r"(?<![A-Za-z_0-9.])(\d+\.\d+|\d+|\.\d+)(?![A-Za-z_0-9])")
+STR = re.compile(r'&?"(?:[^"\\]|\\.)*"')
+
+
+def code_part(line):
+    line = STR.sub('""', line)
+    if "#" in line:
+        line = line.split("#", 1)[0]
+    return line
+
+
+def literals(lines):
+    found = []
+    for n, raw in lines:
+        s = raw.strip()
+        if not s or s.startswith("#"):
+            continue
+        if re.match(r"(const|@export|@export_range|@export_group|@export_flags|@export_flags_3d_render)\b", s):
+            continue
+        for m in NUM.finditer(code_part(raw)):
+            try:
+                v = float(m.group(1))
+            except ValueError:
+                continue
+            if v not in ALLOWED:
+                found.append((n, m.group(1), s[:130]))
+    return found
+
+
+def selftest():
+    must_flag = ["\tvar strength := 0.55", "\tx = foo(3)", "\treturn size / 2.0", "\tfor i in range(32):", "\tvar a: float = .5"]
+    must_pass = ["\tvar zero := 0", "\treturn 1.0", "\tvar s := \"a 55 b\"  # 77", "const LAYER: int = 4", "@export var strength: float = 0.55", "\tvar v3: Vector3 = Vector3.ZERO", "\tprint(\"x\", 1)"]
+    flagged = [bool(literals([(1, l)])) for l in must_flag]
+    passed = [not literals([(1, l)]) for l in must_pass]
+    print("selftest: flags %d of %d lines that must be flagged, passes %d of %d lines that must pass" % (sum(flagged), len(must_flag), sum(passed), len(must_pass)))
+    return all(flagged) and all(passed)
+
+
+def report(label, lines):
+    found = literals(lines)
+    print("%-66s %4d lines scanned, %d literal(s) other than 0 and 1" % (label, len(lines), len(found)))
+    for n, tok, s in found:
+        print("    %s:%d  %s   | %s" % (label, n, tok, s))
+    return len(found)
+
+
+if not selftest():
+    print("SELFTEST FAILED: the scan is not trustworthy")
+    sys.exit(2)
+total = 0
+for f in ["src/gameplay/units/models/unit_silhouette.gd", "src/gameplay/units/models/silhouette_settings.gd", "tools/colour_grade/build_colour_grade_lut.gd"]:
+    lines = list(enumerate(open(f, encoding="utf-8").read().split("\n"), 1))
+    total += report(f, lines)
+for f in ["src/gameplay/units/unit.gd", "src/gameplay/units/models/unit_model.gd", "src/gameplay/camera/chase_camera.gd", "src/gameplay/split_screen/split_screen.gd"]:
+    diff = subprocess.run(["git", "diff", "-U0", "HEAD", "--", f], capture_output=True, text=True).stdout
+    added, n = [], 0
+    for line in diff.split("\n"):
+        m = re.match(r"@@ -\d+(?:,\d+)? \+(\d+)", line)
+        if m:
+            n = int(m.group(1))
+            continue
+        if line.startswith("+") and not line.startswith("+++"):
+            added.append((n, line[1:]))
+            n += 1
+    total += report(f + " (added lines)", added)
+print("TOTAL literals other than 0 and 1:", total)

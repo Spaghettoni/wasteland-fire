@@ -1,0 +1,9 @@
+variant     runs  steady long>16.6  min fps longest steady frame of each run (ms)    draw calls
+b0             5     175    2 ( 1.1%)      119 12.7, 18.4, 12.6, 21.8, 12.8             287  (3 of 5 runs with none)
+b1             5     175    4 ( 2.3%)      117 17.9, 12.8, 18.5, 21.9, 12.8             301  (2 of 5 runs with none)
+b2             5     199   12 ( 6.0%)       27 24.6, 12.8, 1112.9, 22.4, 26.2           288  (1 of 5 runs with none)
+b3             5     175    6 ( 3.4%)      113 19.4, 12.8, 36.5, 13.7, 12.9             287  (3 of 5 runs with none)
+before         5     175   11 ( 6.3%)      118 16.0, 12.5, 14.3, 12.9, 26.8             287  (4 of 5 runs with none)
+nolook         3     105    1 ( 1.0%)      117 13.1, 12.7, 29.4                         301  (2 of 3 runs with none)
+nosil          3     105    9 ( 8.6%)      117 24.5, 16.7, 31.2                         287  (0 of 3 runs with none)
+shipped        5     175    8 ( 4.6%)      117 29.4, 12.6, 13.0, 19.4, 27.2             301  (2 of 5 runs with none)

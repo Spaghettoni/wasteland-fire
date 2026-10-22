@@ -1,0 +1,27 @@
+#!/bin/sh
+# usage: final27.sh TAG   The final chain of Story 027: import, parse every .gd the story added or changed, regenerate the exact rewrites from the source, regress the 81 older
+# outputs, run see_through twice (byte compare), light_showcase and light_fps are windowed and so not here, gdUnit, and the main scene for 600 frames; a SHA manifest before and
+# after shows the chain changed nothing in the tree.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad
+TAG="$1"
+F=$S/final27/$TAG
+mkdir -p $F
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+date +%H:%M:%S > $F/progress.txt
+sh $S/rg27/manifest.sh $F/manifest-before-chain.txt
+godot --headless --path . --import > $F/import.txt 2>&1; echo "import rc=$?"; grep -c -E "ERROR|WARNING" $F/import.txt
+{ for f in src/gameplay/units/models/silhouette_settings.gd src/gameplay/units/models/unit_silhouette.gd src/gameplay/units/unit.gd src/gameplay/units/models/unit_model.gd src/gameplay/camera/chase_camera.gd src/gameplay/split_screen/split_screen.gd tools/evidence/split_screen_harness.gd tools/evidence/split_screen/quick_fix_kit.gd tools/colour_grade/build_colour_grade_lut.gd; do echo $f; done; find tools/evidence/split_screen -maxdepth 1 -name 'see_through*.gd' -o -maxdepth 1 -name 'light_*.gd'; } | LC_ALL=C sort -u > $F/gd-list.txt
+wc -l < $F/gd-list.txt
+sed 's#^#res://#' $F/gd-list.txt | xargs godot --headless --path . -s res://.claude/scripts/godot-parse-check.gd -- > $F/parse.txt 2>&1; echo "parse rc=$?"; grep -c "^ok:" $F/parse.txt; grep "PARSE FAIL" $F/parse.txt
+sh $S/rg27/mknorm27.sh | tail -3
+sh $S/rg27/regress27.sh $TAG $S/rg27/normalizers27.json 2>&1 | tail -6
+for run in a b; do godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=see_through > $F/see_through-$run.txt 2>&1 & done; wait
+grep -c "^CHECK" $F/see_through-a.txt; grep -E "^RESULT|FAIL" $F/see_through-a.txt | cut -c1-300
+cmp $F/see_through-a.txt $F/see_through-b.txt && echo "BYTE-IDENTICAL"
+godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=light_showcase > $F/showcase-headless.txt 2>&1; echo "showcase rc=$?"; grep -E "^RESULT|FAIL" $F/showcase-headless.txt | cut -c1-200
+godot --headless -s -d --remote-debug tcp://127.0.0.1:0 res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a res://tests --ignoreHeadlessMode > $F/gdunit.txt 2>&1; echo "gdunit rc=$?"; grep -a "Overall Summary" $F/gdunit.txt | cut -c1-200
+godot --path . --windowed --resolution 1280x720 --quit-after 600 > $F/main-scene-600-frames.txt 2>&1; echo "main scene rc=$?"; grep -c -E "ERROR|WARNING|SCRIPT" $F/main-scene-600-frames.txt
+sh $S/rg27/manifest.sh $F/manifest-after-chain.txt
+cmp $F/manifest-before-chain.txt $F/manifest-after-chain.txt && echo "TREE UNCHANGED BY THE CHAIN"
+echo FINAL_DONE
+echo "done $(date +%H:%M:%S) FINAL_DONE" >> $F/progress.txt

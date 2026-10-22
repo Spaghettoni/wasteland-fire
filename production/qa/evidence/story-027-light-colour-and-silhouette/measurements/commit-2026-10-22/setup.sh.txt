@@ -1,0 +1,17 @@
+#!/bin/bash
+set -u
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/6f3e7f98-225a-456d-8879-b16d0d81d355/scratchpad
+R=/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire
+P=$S/setup.progress
+echo "start $(date +%H:%M:%S)" > $P
+cd $R || exit 9
+git worktree add --detach $S/wt origin/main >> $P 2>&1 || { echo "FAIL worktree" >> $P; exit 1; }
+mkdir -p $S/wt/.godot
+rsync -a $R/.godot/imported $S/wt/.godot/
+cd $S/wt || exit 9
+godot --headless --path . --import > $S/import-origin.txt 2>&1
+echo "import rc=$? $(date +%H:%M:%S)" >> $P
+git -C $S/wt status --porcelain >> $P
+rsync -a --exclude .git $S/wt/ $S/ref-origin/
+echo "ref copied $(date +%H:%M:%S)" >> $P
+echo DONE >> $P

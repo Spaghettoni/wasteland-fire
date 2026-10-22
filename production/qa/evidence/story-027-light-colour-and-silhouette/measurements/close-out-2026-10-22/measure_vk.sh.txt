@@ -1,0 +1,36 @@
+#!/bin/bash
+# The Vulkan check of the silhouette passes (engine review F1, TD-019) and the AgX ladder on the final tree, measured from the frames:
+# (1) per silhouette moment, the difference mask of the build against the same moment without the silhouettes, on Metal (finalA vs finalN, the retained recording) and on
+#     Vulkan through MoltenVK (vk-sil vs vk-nosil, this session); the overlap of the two masks and the pixels of each mask farther than 2 pixels from the other's;
+# (2) the view-from-above moments, which fall on the same frame numbers in both recordings: the Vulkan frame against the Metal frame, with and without the silhouettes;
+# (3) the AgX ladder (explore2): the flat's clipped share and contrast in the crops of measure_final27.py.
+C=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a9ae9e24-5b29-451c-b62f-a16425b4fa8f/scratchpad/c27
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+G="godot --headless --path . -s"
+mkdir -p $C/meas/masks
+frame() { grep -E "^SPLIT light_showcase .* moment=$2 " "$1" | head -1 | sed -E 's/.* frame=([0-9]+) .*/\1/'; }
+png() { printf '%s/f%08d.png' "$1" "$2"; }
+echo "## (1) difference masks: the build against the same moment without the silhouettes (white where they differ)"
+for m in sil_tower_above sil_leg_above sil_container_above sil_cliff_above sil_tank_above sil_turret_chase sil_tower_chase sil_leg_chase sil_container_chase sil_cliff_chase sil_leak_chase sil_tank_chase sil_unit_in_front_chase; do
+  fa=$(frame $S/rec/finalA.out $m); fn=$(frame $S/rec/finalN.out $m); va=$(frame $C/rec/vk-sil.out $m); vn=$(frame $C/rec/vk-nosil.out $m)
+  echo "-- $m: Metal frames A $fa N $fn, Vulkan frames sil $va nosil $vn"
+  $G $C/lib/masks.gd -- diff $(png $S/rec/finalA $fa) $(png $S/rec/finalN $fn) $C/meas/masks/metal-$m.png | grep '^DIFF' | sed 's/^/metal  /'
+  $G $C/lib/masks.gd -- diff $(png $C/rec/vk-sil $va) $(png $C/rec/vk-nosil $vn) $C/meas/masks/vulkan-$m.png | grep '^DIFF' | sed 's/^/vulkan /'
+  $G $C/lib/masks.gd -- overlap $C/meas/masks/metal-$m.png $C/meas/masks/vulkan-$m.png | grep '^OVERLAP'
+  $G $C/lib/masks.gd -- near $C/meas/masks/metal-$m.png $C/meas/masks/vulkan-$m.png 2 | grep '^NEAR'
+done
+echo "## (2) the view from above, same frame numbers: Vulkan against Metal"
+for m in sil_tower_above sil_leg_above sil_container_above sil_cliff_above sil_tank_above; do
+  fa=$(frame $S/rec/finalA.out $m); va=$(frame $C/rec/vk-sil.out $m); fn=$(frame $S/rec/finalN.out $m); vn=$(frame $C/rec/vk-nosil.out $m)
+  $G $C/lib/masks.gd -- diff $(png $S/rec/finalA $fa) $(png $C/rec/vk-sil $va) $C/meas/masks/drivers-sil-$m.png | grep '^DIFF' | sed "s/^/$m with    /"
+  $G $C/lib/masks.gd -- diff $(png $S/rec/finalN $fn) $(png $C/rec/vk-nosil $vn) $C/meas/masks/drivers-nosil-$m.png | grep '^DIFF' | sed "s/^/$m without /"
+done
+echo "## (3) the AgX ladder on the final tree (explore2; crops (330,160,230,260) left and (700,160,230,260) right)"
+for m in explore_e1.3_c1.5_w10.0 explore_e1.3_c1.8_w10.0 explore_e1.3_c2.1_w10.0 explore_e1.3_c2.4_w10.0 explore_e1.2_c2.1_w10.0 explore_e1.4_c2.1_w10.0 explore_e1.3_c2.1_w6.0 explore_e1.3_c2.1_w16.29; do
+  f=$(frame $C/rec/explore2.out $m)
+  l=$($G $S/lib/measure.gd -- clip $(png $C/rec/explore2 $f) 330 160 230 260 | grep '^CLIP' | cut -d' ' -f3-)
+  r=$($G $S/lib/measure.gd -- clip $(png $C/rec/explore2 $f) 700 160 230 260 | grep '^CLIP' | cut -d' ' -f3-)
+  echo "$m (frame $f) left: $l | right: $r"
+done
+echo MEASURE_DONE

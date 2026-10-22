@@ -1,0 +1,4 @@
+SAME   ammo_buildings: after the README edit = the verification run's output (56 checks)
+SAME   mines: after the README edit = the verification run's output (45 checks)
+SAME   ammo: after the README edit = the verification run's output (41 checks)
+SAME   ammo_alone: after the README edit = the verification run's output (2 checks)

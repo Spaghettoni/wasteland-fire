@@ -1,0 +1,13 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+transparency = 1
+shading_mode = 0
+disable_fog = true
+no_depth_test = true
+billboard_mode = 1
+render_priority = 100
+stencil_mode = 3
+stencil_flags = 1
+stencil_compare = 2
+stencil_reference = 1

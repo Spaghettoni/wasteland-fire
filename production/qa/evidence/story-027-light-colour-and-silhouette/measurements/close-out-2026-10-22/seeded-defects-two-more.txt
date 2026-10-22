@@ -1,0 +1,4 @@
+KILLED  copies_left_in_the_world                                 see_through[life] rc=1 fails=life,retype,respawn_cost
+KILLED  team_material_writes_the_stencil                         see_through[copies] rc=1 fails=passes
+-- 2 mutants: 2 killed or equivalent, 0 survived, 0 broken or not applied
+-- the 3 scratch copies equal the repo (apart from .godot, production, design, docs, tests, svaty_jur)

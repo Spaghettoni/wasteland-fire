@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="SilhouetteSettings" format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/units/models/silhouette_settings.gd" id="1_settings"]
+[ext_resource type="Material" path="res://src/gameplay/units/data/silhouette_mask_material.tres" id="2_mask"]
+[ext_resource type="Material" path="res://src/gameplay/units/data/silhouette_sight_material.tres" id="3_sight"]
+[ext_resource type="Material" path="res://src/gameplay/units/data/silhouette_fill_material.tres" id="4_fill"]
+
+[resource]
+script = ExtResource("1_settings")
+mask_material = ExtResource("2_mask")
+sight_material = ExtResource("3_sight")
+fill_material = ExtResource("4_fill")
+strength = 0.55
+fill_extent = 150.0
+player_1_layer = 4
+player_2_layer = 8

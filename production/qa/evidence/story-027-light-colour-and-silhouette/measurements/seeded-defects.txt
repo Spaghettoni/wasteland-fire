@@ -1,0 +1,87 @@
+KILLED  cameras_draw_both_layers                                 see_through[cameras] rc=1 fails=cameras
+KILLED  cameras_get_no_layer_from_split_screen                   see_through[cameras] rc=1 fails=cameras
+KILLED  cameras_hide_nothing_of_the_other                        see_through[cameras] rc=1 fails=cameras
+KILLED  cameras_hide_their_own_layer                             see_through[cameras] rc=1 fails=cameras
+KILLED  cameras_given_the_first_players_layer                    see_through[cameras] rc=1 fails=cameras
+KILLED  copy_on_one_layer_for_both_players                       see_through[copies] rc=1 fails=copies
+KILLED  fill_on_one_layer_for_both_players                       see_through[copies] rc=1 fails=copies
+KILLED  copy_casts_a_shadow                                      see_through[copies] rc=1 fails=copies
+KILLED  fill_casts_a_shadow                                      see_through[copies] rc=1 fails=copies
+KILLED  copy_can_be_culled_by_occlusion                          see_through[copies] rc=1 fails=copies
+KILLED  fill_can_be_culled_by_occlusion                          see_through[copies] rc=1 fails=copies
+KILLED  copy_not_in_its_group                                    see_through[copies] rc=1 fails=copies,turning_parts,small_things
+KILLED  copy_transform_not_copied                                see_through[copies] rc=1 fails=copies,turning_parts
+KILLED  copy_not_beside_its_mesh                                 see_through[copies] rc=1 fails=copies,turning_parts,small_things
+KILLED  copy_has_its_own_mesh                                    see_through[copies] rc=1 fails=copies,turning_parts
+KILLED  no_sight_copy                                            see_through[copies] rc=1 fails=copies,turning_parts,small_things
+KILLED  no_mask_copy                                             see_through[copies] rc=1 fails=copies,turning_parts,small_things
+KILLED  mask_and_sight_materials_swapped                         see_through[copies] rc=1 fails=copies
+KILLED  no_fill_quad                                             see_through[copies] rc=1 fails=copies,small_things
+KILLED  fill_quad_one_metre                                      see_through[copies] rc=1 fails=copies
+KILLED  fill_cull_margin_forgotten                               see_through[copies] rc=1 fails=copies
+KILLED  fill_at_full_strength                                    see_through[copies] rc=1 fails=copies
+KILLED  fill_material_is_the_template                            see_through[copies] rc=1 fails=copies
+KILLED  silhouette_never_reused                                  see_through[life] rc=1 fails=respawn_cost
+KILLED  silhouette_reused_after_a_colour_change                  see_through[life] rc=1 fails=respawn_cost
+KILLED  model_not_dressed                                        see_through[copies] rc=1 fails=copies,turning_parts,small_things
+KILLED  dressed_without_a_player                                 see_through[life] rc=1 fails=undressed
+KILLED  unusable_settings_not_reported                           see_through[data] rc=1 fails=settings_refused,no_engine_noise
+KILLED  unusable_settings_still_dress                            see_through[data] rc=1 fails=settings_refused
+KILLED  mesh_not_in_the_silhouette_group                         see_through[copies] rc=1 fails=copies,turning_parts,small_things
+KILLED  unit_without_the_settings                                see_through[data] rc=1 fails=settings_data
+KILLED  camera_forgets_what_the_settings_hide                    see_through[cameras] rc=1 fails=cameras
+KILLED  layers_equal_in_the_data                                 see_through[data] rc=1 fails=settings_data,project_layers,settings_refused,no_engine_noise
+KILLED  layer_of_player_2_unnamed                                see_through[data] rc=1 fails=project_layers
+KILLED  fill_reads_not_equal                                     see_through[data] rc=1 fails=settings_data,settings_refused,no_engine_noise
+KILLED  fill_reads_the_sight_value                               see_through[data] rc=1 fails=settings_data,settings_refused,no_engine_noise
+KILLED  fill_depth_tested                                        see_through[data] rc=1 fails=settings_data,settings_refused,no_engine_noise
+KILLED  fill_not_a_billboard                                     see_through[data] rc=1 fails=settings_data,settings_refused,no_engine_noise
+KILLED  fill_shaded                                              see_through[data] rc=1 fails=settings_data,settings_refused,no_engine_noise
+KILLED  mask_depth_tested                                        see_through[data] rc=1 fails=settings_data,settings_refused,no_engine_noise
+KILLED  sight_ignores_depth                                      see_through[data] rc=1 fails=settings_data,settings_refused,no_engine_noise
+KILLED  sight_value_is_the_mask_value                            see_through[data] rc=1 fails=settings_data,settings_refused,no_engine_noise
+KILLED  sight_also_writes_on_a_depth_fail                        see_through[data] rc=1 fails=settings_data,settings_refused,no_engine_noise
+KILLED  mask_visible                                             see_through[data] rc=1 fails=settings_data,settings_refused,no_engine_noise
+KILLED  mask_reads_not_writes                                    see_through[data] rc=1 fails=settings_data,settings_refused,no_engine_noise
+KILLED  sight_drawn_with_the_mask                                see_through[data] rc=1 fails=settings_data,settings_refused,no_engine_noise
+KILLED  fill_drawn_before_the_sight_pass                         see_through[data] rc=1 fails=settings_data,settings_refused,no_engine_noise
+KILLED  strength_zero                                            see_through[data] rc=1 fails=settings_data
+KILLED  fill_extent_one_metre                                    see_through[data] rc=1 fails=settings_data
+KILLED  refuses_a_depth_tested_mask_no_longer                    see_through[data] rc=1 fails=settings_refused
+KILLED  refuses_a_visible_writer_no_longer                       see_through[data] rc=1 fails=settings_refused
+KILLED  refuses_equal_stencil_values_no_longer                   see_through[data] rc=1 fails=settings_refused
+KILLED  refuses_unordered_passes_no_longer                       see_through[data] rc=1 fails=settings_refused
+KILLED  refuses_a_strength_over_one_no_longer                    see_through[data] rc=1 fails=settings_refused,no_engine_noise
+KILLED  refuses_one_layer_for_both_no_longer                     see_through[data] rc=1 fails=settings_refused
+KILLED  refuses_a_fill_with_no_size_no_longer                    see_through[data] rc=1 fails=settings_refused
+KILLED  refuses_a_scissored_pass_no_longer                       see_through[data] rc=1 fails=settings_refused
+KILLED  refuses_a_next_pass_no_longer                            see_through[data] rc=1 fails=settings_refused
+KILLED  refuses_a_grown_pass_no_longer                           see_through[data] rc=1 fails=settings_refused
+KILLED  refuses_a_depth_writing_pass_no_longer                   see_through[data] rc=1 fails=settings_refused
+KILLED  refuses_an_additive_fill_no_longer                       see_through[data] rc=1 fails=settings_refused
+KILLED  refuses_a_writing_fill_no_longer                         see_through[data] rc=1 fails=settings_refused
+KILLED  tone_mapper_back_to_linear                               see_through[data] rc=1 fails=environment_data
+KILLED  exposure_zero                                            see_through[data] rc=1 fails=environment_data
+KILLED  glow_threshold_under_the_brightest_lit_value             see_through[data] rc=1 fails=environment_data
+KILLED  glow_off                                                 see_through[data] rc=1 fails=environment_data
+KILLED  grade_off                                                see_through[data] rc=1 fails=environment_data
+KILLED  lookup_texture_not_assigned                              see_through[data] rc=1 fails=environment_data
+KILLED  grade_parameters_changed_lookup_stale                    see_through[data] rc=1 fails=grade_data,lut_file
+KILLED  grade_that_makes_the_teams_alike                         see_through[data] rc=1 fails=grade_data,lut_file
+KILLED  greybox_given_the_new_look                               see_through[data] rc=1 fails=greybox_untouched
+KILLED  a_number_in_the_silhouette                               see_through[lint] rc=1 fails=no_number_in_code
+KILLED  a_type_named_in_the_dressing                             see_through[lint] rc=1 fails=no_number_in_code
+KILLED  the_silhouette_searches_the_tree                         see_through[lint] rc=1 fails=no_number_in_code
+KILLED  the_hand_off_searches_the_tree                           see_through[lint] rc=1 fails=no_number_in_code
+KILLED  a_number_in_the_hand_off                                 see_through[lint] rc=1 fails=no_number_in_code
+KILLED  a_number_in_the_camera_mask                              see_through[lint] rc=1 fails=no_number_in_code
+KILLED  runner_sil_kept_badly_damaged                            badly_damaged rc=0 output differs from the baseline
+KILLED  runner_sil_kept_camera_views                             camera_views rc=1 output differs from the baseline
+KILLED  runner_sil_kept_gyro_cover                               gyro_cover rc=1 output differs from the baseline
+KILLED  runner_sil_kept_rotors                                   rotors rc=1 output differs from the baseline
+KILLED  runner_strip_off_badly_damaged                           badly_damaged rc=0 output differs from the baseline
+KILLED  runner_strip_off_camera_views                            camera_views rc=1 output differs from the baseline
+KILLED  runner_strip_off_gyro_cover                              gyro_cover rc=1 output differs from the baseline
+KILLED  runner_strip_off_rotors                                  rotors rc=1 output differs from the baseline
+-- 85 mutants: 85 killed or equivalent, 0 survived, 0 broken or not applied
+-- the 3 scratch copies equal the repo (apart from .godot, production, design, docs, tests, svaty_jur)

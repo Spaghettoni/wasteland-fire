@@ -1,0 +1,273 @@
+#!/usr/bin/env python3
+"""Seeded defects for Story 027 (the light, the colour and the silhouette of your own Unit through cover): each one exact text replacement in a scratch copy of the
+repo, run against the scenario that guards it (the see_through scenario, whole or one module). KILLED when the scenario fails (rc != 0 or a FAIL CHECK) or, for the
+regression kind, when an older scenario's output differs from its baseline (through the story's exact rewrites). A mutant whose run prints no RESULT line for its
+scenario is BROKEN (the replacement made the script unusable, not a verdict) and is counted apart. One worker per scratch copy, so no two mutants ever share a file
+(story 011's lesson). Template: story 026's seeded-defects26.py.
+
+usage: seeded-defects27.py BASELINE_DIR WORK_DIR [--dry] [--only name,name]
+  BASELINE_DIR holds the baselines of the older scenarios as split-NAME.txt (the regression kind)
+  WORK_DIR gets copy0..copy2 (scratch copies of the repo; they are diffed against the repo at the end)
+  NORMALIZERS (environment) names the story's exact rewrites (normalizers27.json), applied to the regression kind
+  PROBES (environment) names the probe result files (probe-NAME.txt of PROBE_DIR): every older scenario a probe found to differ gets a regression mutant for that
+  probe's strip rule
+  --dry only checks that every replacement text occurs exactly once in its file
+"""
+import json
+import os
+import re
+import subprocess
+import sys
+from concurrent.futures import ThreadPoolExecutor
+
+REPO = "/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire"
+BASE = sys.argv[1]
+WORK = sys.argv[2]
+DRY = "--dry" in sys.argv
+WORKERS = 3
+RULES = json.load(open(os.environ["NORMALIZERS"])) if os.environ.get("NORMALIZERS") else {}
+COPIES = [os.path.join(WORK, "copy%d" % i) for i in range(WORKERS)]
+
+SETTINGS = "src/gameplay/units/models/silhouette_settings.gd"
+US = "src/gameplay/units/models/unit_silhouette.gd"
+UNIT = "src/gameplay/units/unit.gd"
+MODEL = "src/gameplay/units/models/unit_model.gd"
+CAM = "src/gameplay/camera/chase_camera.gd"
+SPLIT = "src/gameplay/split_screen/split_screen.tscn"
+SS = "src/gameplay/split_screen/split_screen.gd"
+MAP = "src/gameplay/maps/map_01/map_01.tscn"
+GREYBOX = "src/gameplay/maps/greybox_field.tscn"
+PROJECT = "project.godot"
+GRADE = "tools/colour_grade/colour_grade.json"
+SDATA = "src/gameplay/units/data/silhouette_settings.tres"
+MASK = "src/gameplay/units/data/silhouette_mask_material.tres"
+SIGHT = "src/gameplay/units/data/silhouette_sight_material.tres"
+FILL = "src/gameplay/units/data/silhouette_fill_material.tres"
+RUNNER = "tools/evidence/split_screen_harness.gd"
+SCN = "see_through"
+
+M = [
+ # name, file, old, new, scenario, kind, module ("" for the whole scenario); old and new may be lists of equal length
+ # --- the story's seeded defects (Implementation Notes)
+ ("cameras_draw_both_layers", CAM, "\tvar hidden: int = never_drawn_layers if settings == null else never_drawn_layers | settings.hidden_layers\n", "\tvar hidden: int = 0 if settings == null else settings.hidden_layers\n", SCN, "check", "cameras"),
+ ("cameras_get_no_layer_from_split_screen", SS, "\t_hand_silhouette_layers(units, cameras)\n", "", SCN, "check", "cameras"),
+ ("cameras_hide_nothing_of_the_other", SS, "\t\t\tcameras[player].never_drawn_layers = other.layer_of(1 - player)\n", "\t\t\tcameras[player].never_drawn_layers = 0\n", SCN, "check", "cameras"),
+ ("cameras_hide_their_own_layer", SS, "\t\t\tcameras[player].never_drawn_layers = other.layer_of(1 - player)\n", "\t\t\tcameras[player].never_drawn_layers = other.layer_of(player)\n", SCN, "check", "cameras"),
+ ("cameras_given_the_first_players_layer", SS, "\t\t\tcameras[player].never_drawn_layers = other.layer_of(1 - player)\n", "\t\t\tcameras[player].never_drawn_layers = other.layer_of(0)\n", SCN, "check", "cameras"),
+ ("copy_on_one_layer_for_both_players", US, "\tcopy.layers = _settings.layer_of(_player)\n", "\tcopy.layers = _settings.player_1_layer\n", SCN, "check", "copies"),
+ ("fill_on_one_layer_for_both_players", US, "\tfill.layers = _settings.layer_of(_player)\n", "\tfill.layers = _settings.player_1_layer\n", SCN, "check", "copies"),
+ ("copy_casts_a_shadow", US, "\tcopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF\n", "", SCN, "check", "copies"),
+ ("fill_casts_a_shadow", US, "\tfill.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF\n", "", SCN, "check", "copies"),
+ ("copy_can_be_culled_by_occlusion", US, "\tcopy.ignore_occlusion_culling = true\n", "", SCN, "check", "copies"),
+ ("fill_can_be_culled_by_occlusion", US, "\tfill.ignore_occlusion_culling = true\n", "", SCN, "check", "copies"),
+ ("copy_not_in_its_group", US, "\tcopy.add_to_group(COPY_GROUP)\n", "", SCN, "check", "copies"),
+ ("copy_transform_not_copied", US, "\tcopy.transform = mesh.transform\n", "", SCN, "check", "copies"),
+ ("copy_not_beside_its_mesh", US, "\tmesh.get_parent().add_child(copy)\n", "\tmesh.get_parent().get_parent().add_child(copy)\n", SCN, "check", "copies"),
+ ("copy_has_its_own_mesh", US, "\tcopy.mesh = mesh.mesh\n", "\tcopy.mesh = mesh.mesh.duplicate()\n", SCN, "check", "copies"),
+ ("no_sight_copy", US, "\t\tcopies.append(_add_copy(mesh, SIGHT_SUFFIX, _settings.sight_material))\n", "", SCN, "check", "copies"),
+ ("no_mask_copy", US, "\t\tcopies.append(_add_copy(mesh, MASK_SUFFIX, _settings.mask_material))\n", "", SCN, "check", "copies"),
+ ("mask_and_sight_materials_swapped", US, "\t\tcopies.append(_add_copy(mesh, MASK_SUFFIX, _settings.mask_material))\n\t\tcopies.append(_add_copy(mesh, SIGHT_SUFFIX, _settings.sight_material))\n", "\t\tcopies.append(_add_copy(mesh, MASK_SUFFIX, _settings.sight_material))\n\t\tcopies.append(_add_copy(mesh, SIGHT_SUFFIX, _settings.mask_material))\n", SCN, "check", "copies"),
+ ("no_fill_quad", US, "\tif not copies.is_empty():\n\t\t_add_fill(model)\n", "\tpass\n", SCN, "check", "copies"),
+ ("fill_quad_one_metre", US, "\t_fill_mesh.size = Vector2(settings.fill_extent, settings.fill_extent)\n", "\t_fill_mesh.size = Vector2.ONE\n", SCN, "check", "copies"),
+ ("fill_cull_margin_forgotten", US, "\tfill.extra_cull_margin = _settings.fill_extent\n", "", SCN, "check", "copies"),
+ ("fill_at_full_strength", US, "\t_fill_material.albedo_color = Color(team_colour, settings.strength)\n", "\t_fill_material.albedo_color = team_colour\n", SCN, "check", "copies"),
+ ("fill_material_is_the_template", US, "\t_fill_material = settings.fill_material.duplicate() as StandardMaterial3D\n", "\t_fill_material = settings.fill_material\n", SCN, "check", "copies"),
+ ("silhouette_never_reused", US, "\treturn _settings == settings and _player == player and _team_colour == team_colour\n", "\treturn false\n", SCN, "check", "life"),
+ ("silhouette_reused_after_a_colour_change", US, "\treturn _settings == settings and _player == player and _team_colour == team_colour\n", "\treturn _settings == settings and _player == player\n", SCN, "check", "life"),
+ # --- the Unit and the model
+ ("model_not_dressed", UNIT, "\t_paint_team_colour(_model)\n\t_dress_silhouette()\n", "\t_paint_team_colour(_model)\n", SCN, "check", "copies"),
+ ("dressed_without_a_player", UNIT, "\tif silhouette == null or team == null or player_index < 0:\n", "\tif silhouette == null or team == null:\n", SCN, "check", "life"),
+ ("unusable_settings_not_reported", UNIT, "\t\tpush_error(\"Unit '%s': silhouette is unusable (%s), so the Unit has none.\" % [name, problem])\n", "", SCN, "check", "data"),
+ ("unusable_settings_still_dress", UNIT, "\t\tpush_error(\"Unit '%s': silhouette is unusable (%s), so the Unit has none.\" % [name, problem])\n\t\treturn\n", "\t\tpush_error(\"Unit '%s': silhouette is unusable (%s), so the Unit has none.\" % [name, problem])\n", SCN, "check", "data"),
+ ("mesh_not_in_the_silhouette_group", MODEL, "\tinstance.add_to_group(Unit.SILHOUETTE_GROUP, true)\n", "", SCN, "check", "copies"),
+ ("unit_without_the_settings", SPLIT, "[node name=\"Player1Unit\" parent=\"World\" unique_id=1111111111 instance=ExtResource(\"3_bike\")]\nunique_name_in_owner = true\nteam_material = ExtResource(\"22_team_orange\")\nsilhouette = ExtResource(\"37_silhouette\")\n", "[node name=\"Player1Unit\" parent=\"World\" unique_id=1111111111 instance=ExtResource(\"3_bike\")]\nunique_name_in_owner = true\nteam_material = ExtResource(\"22_team_orange\")\n", SCN, "check", "data"),
+ # --- the camera's layers
+ ("camera_forgets_what_the_settings_hide", CAM, "\tvar hidden: int = never_drawn_layers if settings == null else never_drawn_layers | settings.hidden_layers\n", "\tvar hidden: int = never_drawn_layers\n", SCN, "check", "cameras"),
+ ("layers_equal_in_the_data", SDATA, "player_2_layer = 8\n", "player_2_layer = 4\n", SCN, "check", "data"),
+ ("layer_of_player_2_unnamed", PROJECT, "3d_render/layer_4=\"silhouette_p2\"\n", "3d_render/layer_4=\"silhouette_p3\"\n", SCN, "check", "data"),
+ # --- the passes' data
+ ("fill_reads_not_equal", FILL, "stencil_compare = 2\n", "stencil_compare = 5\n", SCN, "check", "data"),
+ ("fill_reads_the_sight_value", FILL, "stencil_reference = 1\n", "stencil_reference = 2\n", SCN, "check", "data"),
+ ("fill_depth_tested", FILL, "no_depth_test = true\n", "", SCN, "check", "data"),
+ ("fill_not_a_billboard", FILL, "billboard_mode = 1\n", "", SCN, "check", "data"),
+ ("fill_shaded", FILL, "shading_mode = 0\n", "shading_mode = 1\n", SCN, "check", "data"),
+ ("mask_depth_tested", MASK, "no_depth_test = true\n", "", SCN, "check", "data"),
+ ("sight_ignores_depth", SIGHT, "disable_fog = true\n", "disable_fog = true\nno_depth_test = true\n", SCN, "check", "data"),
+ ("sight_value_is_the_mask_value", SIGHT, "stencil_reference = 2\n", "stencil_reference = 1\n", SCN, "check", "data"),
+ ("sight_also_writes_on_a_depth_fail", SIGHT, "stencil_flags = 2\n", "stencil_flags = 6\n", SCN, "check", "data"),
+ ("mask_visible", MASK, "albedo_color = Color(0, 0, 0, 0)\n", "albedo_color = Color(0, 0, 0, 0.5)\n", SCN, "check", "data"),
+ ("mask_reads_not_writes", MASK, "stencil_flags = 2\n", "stencil_flags = 1\n", SCN, "check", "data"),
+ ("sight_drawn_with_the_mask", SIGHT, "render_priority = 95\n", "render_priority = 90\n", SCN, "check", "data"),
+ ("fill_drawn_before_the_sight_pass", FILL, "render_priority = 100\n", "render_priority = 93\n", SCN, "check", "data"),
+ ("strength_zero", SDATA, "strength = 0.55\n", "strength = 0.0\n", SCN, "check", "data"),
+ ("fill_extent_one_metre", SDATA, "fill_extent = 150.0\n", "fill_extent = 1.0\n", SCN, "check", "data"),
+ ("refuses_a_depth_tested_mask_no_longer", SETTINGS, "\tif writer.no_depth_test != ignores_depth:\n", "\tif false:\n", SCN, "check", "data"),
+ ("refuses_a_visible_writer_no_longer", SETTINGS, "\tif writer.albedo_color.a != 0.0:\n", "\tif false:\n", SCN, "check", "data"),
+ ("refuses_equal_stencil_values_no_longer", SETTINGS, "\tif mask_material.stencil_reference == sight_material.stencil_reference:\n", "\tif false:\n", SCN, "check", "data"),
+ ("refuses_unordered_passes_no_longer", SETTINGS, "\tif not (mask_material.render_priority < sight_material.render_priority \\\n\t\t\tand sight_material.render_priority < fill_material.render_priority):\n", "\tif false:\n", SCN, "check", "data"),
+ ("refuses_a_strength_over_one_no_longer", SETTINGS, "\tif not (strength >= 0.0 and strength <= 1.0):\n", "\tif not (strength >= 0.0):\n", SCN, "check", "data"),
+ ("refuses_one_layer_for_both_no_longer", SETTINGS, "\tif player_1_layer == player_2_layer:\n", "\tif false:\n", SCN, "check", "data"),
+ ("refuses_a_fill_with_no_size_no_longer", SETTINGS, "\tif not (fill_extent > 0.0 and is_finite(fill_extent)):\n", "\tif false:\n", SCN, "check", "data"),
+ ("refuses_a_scissored_pass_no_longer", SETTINGS, "\tif material.transparency != BaseMaterial3D.TRANSPARENCY_ALPHA:\n", "\tif material.transparency == BaseMaterial3D.TRANSPARENCY_DISABLED:\n", SCN, "check", "data"),
+ ("refuses_a_next_pass_no_longer", SETTINGS, "\tif material.next_pass != null:\n", "\tif false:\n", SCN, "check", "data"),
+ ("refuses_a_grown_pass_no_longer", SETTINGS, "\tif material.grow:\n", "\tif false:\n", SCN, "check", "data"),
+ ("refuses_a_depth_writing_pass_no_longer", SETTINGS, "\tif material.depth_draw_mode == BaseMaterial3D.DEPTH_DRAW_ALWAYS:\n", "\tif false:\n", SCN, "check", "data"),
+ ("refuses_an_additive_fill_no_longer", SETTINGS, "\tif fill_material.blend_mode != BaseMaterial3D.BLEND_MODE_MIX or fill_material.albedo_texture != null:\n", "\tif false:\n", SCN, "check", "data"),
+ ("refuses_a_writing_fill_no_longer", SETTINGS, "\t\t\tor fill_material.stencil_flags != BaseMaterial3D.STENCIL_FLAG_READ \\\n", "\t\t\tor false \\\n", SCN, "check", "data"),
+ # --- the light and the colour
+ ("tone_mapper_back_to_linear", MAP, "tonemap_mode = 4\n", "tonemap_mode = 0\n", SCN, "check", "data"),
+ ("exposure_zero", MAP, "tonemap_exposure = 1.3\n", "tonemap_exposure = 0.0\n", SCN, "check", "data"),
+ ("glow_threshold_under_the_brightest_lit_value", MAP, "glow_hdr_threshold = 2.0\n", "glow_hdr_threshold = 1.0\n", SCN, "check", "data"),
+ ("glow_off", MAP, "glow_enabled = true\n", "glow_enabled = false\n", SCN, "check", "data"),
+ ("grade_off", MAP, "adjustment_enabled = true\n", "adjustment_enabled = false\n", SCN, "check", "data"),
+ ("lookup_texture_not_assigned", MAP, "adjustment_color_correction = ExtResource(\"18_colour_grade_lut\")\n", "", SCN, "check", "data"),
+ ("grade_parameters_changed_lookup_stale", GRADE, "\"haze\": 0.05,", "\"haze\": 0.2,", SCN, "check", "data"),
+ ("grade_that_makes_the_teams_alike", GRADE, "\"saturation\": 0.94,", "\"saturation\": 0.0,", SCN, "check", "data"),
+ ("greybox_given_the_new_look", GREYBOX, "ambient_light_energy = 0.7\n", "ambient_light_energy = 0.7\ntonemap_mode = 4\n", SCN, "check", "data"),
+ # --- the lint
+ ("a_number_in_the_silhouette", US, "\tfill.extra_cull_margin = _settings.fill_extent\n", "\tfill.extra_cull_margin = _settings.fill_extent * 2.0\n", SCN, "check", "lint"),
+ ("a_type_named_in_the_dressing", UNIT, "\tvar problem: String = silhouette.first_problem()\n", "\tvar problem: String = silhouette.first_problem()\n\tif stats.type_id == &\"truck\":\n\t\treturn\n", SCN, "check", "lint"),
+ ("the_silhouette_searches_the_tree", US, "func _body_meshes(node: Node) -> Array[MeshInstance3D]:\n\tvar found: Array[MeshInstance3D] = []\n", "func _body_meshes(node: Node) -> Array[MeshInstance3D]:\n\tvar found: Array[MeshInstance3D] = []\n\tnode.get_tree()\n", SCN, "check", "lint"),
+ ("the_hand_off_searches_the_tree", SS, "\t\tvar other: SilhouetteSettings = units[1 - player].silhouette\n", "\t\tvar other: SilhouetteSettings = units[1 - player].silhouette\n\t\tget_tree()\n", SCN, "check", "lint"),
+ ("a_number_in_the_hand_off", SS, "\t\t\tcameras[player].never_drawn_layers = other.layer_of(1 - player)\n", "\t\t\tcameras[player].never_drawn_layers = other.layer_of(2 - player - 1)\n", SCN, "check", "lint"),
+ ("a_number_in_the_camera_mask", CAM, "\tcull_mask = ALL_VISUAL_LAYERS & ~hidden\n", "\tcull_mask = ALL_VISUAL_LAYERS & ~hidden & 1048575\n", SCN, "check", "lint"),
+]
+# --- the runner's strip: the older scenarios keep their outputs (one regression mutant per older output a probe found to change)
+_RULE = {
+    "sil_kept": [("\t\t\tunit.silhouette = null\n", "\t\t\tunit.silhouette = unit.silhouette\n")],
+    "strip_off": [("\tif bool(script.get_script_constant_map().get(SEE_THROUGH_CONSTANT, false)):\n\t\treturn\n", "\tif true or bool(script.get_script_constant_map().get(SEE_THROUGH_CONSTANT, false)):\n\t\treturn\n")],
+}
+# --- two more of the story's list, added at the close-out (2026-10-22 evening): a copy left drawn after a destruction, the stencil written by the shared Team material
+TEAM = "src/gameplay/split_screen/data/team_orange_material.tres"
+M.append(("copies_left_in_the_world", US, "\tmesh.get_parent().add_child(copy)\n", "\tmesh.get_tree().root.add_child(copy)\n", SCN, "check", "life"))
+M.append(("team_material_writes_the_stencil", TEAM, "roughness = 0.7\n", "roughness = 0.7\nstencil_mode = 3\nstencil_flags = 2\nstencil_compare = 0\nstencil_reference = 2\n", SCN, "check", "copies"))
+
+for _probe in [a for a in os.environ.get("PROBES", "").split(",") if a]:
+    _text = open(os.path.join(os.environ["PROBE_DIR"], "probe-%s.txt" % _probe)).read()
+    for _scn in re.findall(r"^DIFF\s+split\s+(\S+)", _text, re.M):
+        _pairs = _RULE[_probe]
+        M.append(("runner_%s_%s" % (_probe, _scn), [RUNNER] * len(_pairs), [o for o, _ in _pairs], [n for _, n in _pairs], _scn, "regress", ""))
+
+# Mutants no output can tell from the build: reported apart, with the reason, when they survive.
+EQUIVALENT = {}
+# Mutants only a windowed run can tell from the build: killed by the windowed showcase's retained frames, never by a headless run.
+WINDOWED = {}
+
+
+def prepare(i):
+    d = COPIES[i]
+    os.makedirs(WORK, exist_ok=True)
+    if os.path.exists(d):
+        subprocess.run(["find", d, "-delete"], check=True)
+    subprocess.run(["rsync", "-a", "--exclude", ".git", "--exclude", "production", "--exclude", "design", "--exclude", "docs",
+                    "--exclude", "tests", "--exclude", "assets/art/svaty_jur", REPO + "/", d + "/"], check=True)
+    return d
+
+
+def run(copy, scn, module):
+    env = dict(os.environ)
+    env["SEE_ONLY"] = module
+    p = subprocess.run(["godot", "--headless", "--fixed-fps", "60", "--path", copy, "res://tools/evidence/split_screen_harness.tscn", "--", "--scenario=" + scn],
+                       capture_output=True, text=True, timeout=2400, env=env)
+    return p.returncode, p.stdout + p.stderr
+
+
+def pairs_of(rel, old, new):
+    """The (file, old text, new text) replacements of a mutant: one, or several when the three are lists of equal length."""
+    if isinstance(old, list):
+        assert len(old) == len(new)
+        rels = rel if isinstance(rel, list) else [rel] * len(old)
+        return list(zip(rels, old, new))
+    return [(rel, old, new)]
+
+
+def one(copy, mutant):
+    name, rel, old, new, scn, kind, module = mutant
+    pairs = pairs_of(rel, old, new)
+    origs = {}
+    for file, _, _ in pairs:
+        origs[file] = open(os.path.join(copy, file)).read()   # this worker is the only one that touches this copy
+    work = dict(origs)
+    for file, before, after in pairs:
+        if work[file].count(before) != 1:
+            return name, None, "NOT APPLIED (text found %d times in %s)" % (work[file].count(before), file)
+        work[file] = work[file].replace(before, after)
+    for file, text in work.items():
+        open(os.path.join(copy, file), "w").write(text)
+    try:
+        rc, out = run(copy, scn, module)
+    finally:
+        for file, text in origs.items():
+            open(os.path.join(copy, file), "w").write(text)
+    if not re.search(r"^RESULT %s " % scn, out, re.M):
+        return name, None, "BROKEN: no RESULT line (rc=%d) %s" % (rc, " | ".join(l for l in out.splitlines() if "ERROR" in l)[:300])
+    if kind == "check":
+        fails = re.findall(r"^CHECK \S+ (\S+) FAIL", out, re.M)
+        dead = rc != 0 or bool(fails)
+        detail = "%s%s rc=%d fails=%s" % (scn, "[" + module + "]" if module else "", rc, ",".join(fails) or "-")
+    else:
+        if not os.path.exists(os.path.join(BASE, "split-%s.txt" % scn)):
+            return name, None, "BROKEN: no baseline split-%s.txt (the regression kind needs a retained scenario)" % scn
+        base = open(os.path.join(BASE, "split-%s.txt" % scn)).read()
+        for before, after in RULES.get(scn, []):
+            out = out.replace(after, before)
+        keep = lambda t: [l for l in t.splitlines() if l.startswith(("SPLIT ", "CHECK ", "RESULT ", "SCRIPT ERROR", "ERROR:", "WARNING:"))]
+        dead = keep(out) != keep(base) or rc != 0
+        detail = "%s rc=%d output %s the baseline" % (scn, rc, "differs from" if dead else "equals")
+    return name, dead, detail
+
+
+def worker(i, jobs):
+    return [one(COPIES[i], m) for m in jobs[i::WORKERS]]
+
+
+def main():
+    if DRY:
+        bad = 0
+        for name, rel, old, new, scn, kind, module in M:
+            for file, before, after in pairs_of(rel, old, new):
+                n = open(os.path.join(REPO, file)).read().count(before)
+                if n != 1 or before == after:
+                    bad += 1
+                    print("DRY  %-52s text found %d times in %s (or no change)" % (name, n, file))
+        print("DRY: %d mutants, %d with a replacement text that is not found exactly once" % (len(M), bad))
+        return 1 if bad else 0
+    jobs = M
+    if "--only" in sys.argv:
+        wanted = sys.argv[sys.argv.index("--only") + 1].split(",")
+        jobs = [m for m in M if m[0] in wanted]
+    for i in range(WORKERS):
+        prepare(i)
+    with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+        results = [r for part in pool.map(lambda i: worker(i, jobs), range(WORKERS)) for r in part]
+    order = {m[0]: k for k, m in enumerate(M)}
+    results.sort(key=lambda r: order[r[0]])
+    killed = survived = broken = 0
+    for name, dead, detail in results:
+        if dead is False and name in WINDOWED:
+            print("WINDOWED   %-52s %s | %s" % (name, detail, WINDOWED[name]))
+            killed += 1
+            continue
+        if dead is False and EQUIVALENT.get(name):
+            print("EQUIVALENT %-52s %s | %s" % (name, detail, EQUIVALENT[name]))
+            killed += 1
+            continue
+        status = "BROKEN " if dead is None else ("KILLED " if dead else "SURVIVED")
+        killed += dead is True
+        survived += dead is False
+        broken += dead is None
+        print("%s %-56s %s" % (status, name, detail))
+    print("-- %d mutants: %d killed or equivalent, %d survived, %d broken or not applied" % (len(jobs), killed, survived, broken))
+    clean = True
+    for i in range(WORKERS):
+        d = subprocess.run(["diff", "-rq", "--exclude=.godot", "--exclude=production", "--exclude=.git", "--exclude=design", "--exclude=docs",
+                            "--exclude=tests", "--exclude=svaty_jur", REPO, COPIES[i]], capture_output=True, text=True)
+        if d.stdout.strip():
+            clean = False
+            print("COPY %d DIFFERS FROM THE REPO:\n%s" % (i, d.stdout[:600]))
+    print("-- the %d scratch copies %s the repo (apart from .godot, production, design, docs, tests, svaty_jur)" % (WORKERS, "equal" if clean else "DIFFER FROM"))
+    return 0 if survived == 0 and broken == 0 and clean else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

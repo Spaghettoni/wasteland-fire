@@ -1,0 +1,33 @@
+extends SceneTree
+
+func _initialize() -> void:
+	print("fresh material per value, mode custom first:")
+	for v: int in 8:
+		var m: StandardMaterial3D = StandardMaterial3D.new()
+		m.stencil_mode = BaseMaterial3D.STENCIL_MODE_CUSTOM
+		m.stencil_flags = v
+		print("  set ", v, " -> ", m.stencil_flags)
+	print("fresh material, flags set BEFORE mode:")
+	for v: int in 8:
+		var m: StandardMaterial3D = StandardMaterial3D.new()
+		m.stencil_flags = v
+		var before: int = m.stencil_flags
+		m.stencil_mode = BaseMaterial3D.STENCIL_MODE_CUSTOM
+		print("  set ", v, " -> ", before, " after custom mode ", m.stencil_flags)
+	print("one material, set same value twice:")
+	var one: StandardMaterial3D = StandardMaterial3D.new()
+	one.stencil_mode = BaseMaterial3D.STENCIL_MODE_CUSTOM
+	for v: int in [3, 3, 3, 2, 2, 1, 1, 5, 5, 7, 7, 0]:
+		one.stencil_flags = v
+		print("  set ", v, " -> ", one.stencil_flags)
+	print("via set():")
+	var two: StandardMaterial3D = StandardMaterial3D.new()
+	two.stencil_mode = BaseMaterial3D.STENCIL_MODE_CUSTOM
+	two.set("stencil_flags", 3)
+	print("  set(3) -> ", two.get("stencil_flags"))
+	print("presets: outline / xray flags:")
+	for mode: int in [1, 2]:
+		var m: StandardMaterial3D = StandardMaterial3D.new()
+		m.stencil_mode = mode
+		print("  mode ", mode, " flags ", m.stencil_flags, " compare ", m.stencil_compare, " ref ", m.stencil_reference)
+	quit()

@@ -1,0 +1,54 @@
+"""Exact rewrites between two trees, derived from the SOURCE, never from the outputs.
+
+usage: mk_norm.py REF_ROOT NEW_ROOT BASE_DIR OUT.json
+
+The outputs print script lines in backtraces (`func (res://path.gd:N)`). For every citation in a
+reference output, the cited line's text is read from REF_ROOT's file, the same text (the same
+occurrence among identical lines) is found in NEW_ROOT's file, and where the numbers differ an
+exact rewrite is written for that scenario. The count of scripts under res://src that one older
+scenario prints is taken from both trees' files the same way.
+"""
+import json
+import re
+import sys
+from pathlib import Path
+
+ref, new, base, out = (Path(a) for a in sys.argv[1:5])
+pattern = re.compile(r"(\w+) \((res://[\w/]+\.gd):(\d+)\)")
+rules, moved = {}, {}
+cache = {}
+
+
+def lines(root, rel):
+    key = (root, rel)
+    if key not in cache:
+        cache[key] = (root / rel).read_text(encoding="utf-8").split("\n")
+    return cache[key]
+
+
+for txt in sorted(base.glob("*.txt")):
+    name = txt.stem.split("-", 1)[1]
+    body = txt.read_text(encoding="utf-8", errors="replace")
+    for func, res, line in sorted(set(pattern.findall(body))):
+        rel = res[len("res://"):]
+        old_lines = lines(ref, rel)
+        number = int(line)
+        text = old_lines[number - 1]
+        rank = sum(1 for l in old_lines[:number - 1] if l == text)
+        hits = [i + 1 for i, l in enumerate(lines(new, rel)) if l == text]
+        if len(hits) <= rank:
+            raise SystemExit(f"{rel}:{number} {text!r} has no counterpart in {new}")
+        new_number = hits[rank]
+        moved[(rel, number)] = new_number
+        if new_number != number:
+            rules.setdefault(name, []).append([f"{func} ({res}:{number})", f"{func} ({res}:{new_number})"])
+    count_ref = sum(1 for _ in (ref / "src").rglob("*.gd"))
+    count_new = sum(1 for _ in (new / "src").rglob("*.gd"))
+    phrase = f"of {count_ref} scripts under res://src"
+    if phrase in body and count_new != count_ref:
+        rules.setdefault(name, []).append([phrase, f"of {count_new} scripts under res://src"])
+out.write_text(json.dumps(rules, indent=1) + "\n", encoding="utf-8")
+for (rel, number), new_number in sorted(moved.items()):
+    print(f"{rel}:{number} -> {new_number}{'' if new_number != number else ' (unchanged)'}")
+print(f"scripts under src: {sum(1 for _ in (ref / 'src').rglob('*.gd'))} -> {sum(1 for _ in (new / 'src').rglob('*.gd'))}")
+print(f"wrote {out}: {len(rules)} scenarios with rewrites")

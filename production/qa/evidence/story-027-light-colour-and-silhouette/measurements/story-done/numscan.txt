@@ -1,0 +1,9 @@
+selftest: flags 5 of 5 lines that must be flagged, passes 7 of 7 lines that must pass
+src/gameplay/units/models/unit_silhouette.gd                        123 lines scanned, 0 literal(s) other than 0 and 1
+src/gameplay/units/models/silhouette_settings.gd                    193 lines scanned, 0 literal(s) other than 0 and 1
+tools/colour_grade/build_colour_grade_lut.gd                        105 lines scanned, 0 literal(s) other than 0 and 1
+src/gameplay/units/unit.gd (added lines)                             42 lines scanned, 0 literal(s) other than 0 and 1
+src/gameplay/units/models/unit_model.gd (added lines)                 5 lines scanned, 0 literal(s) other than 0 and 1
+src/gameplay/camera/chase_camera.gd (added lines)                    14 lines scanned, 0 literal(s) other than 0 and 1
+src/gameplay/split_screen/split_screen.gd (added lines)              12 lines scanned, 0 literal(s) other than 0 and 1
+TOTAL literals other than 0 and 1: 0

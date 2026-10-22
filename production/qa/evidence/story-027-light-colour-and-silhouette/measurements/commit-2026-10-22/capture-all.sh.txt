@@ -1,0 +1,15 @@
+#!/bin/sh
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/6f3e7f98-225a-456d-8879-b16d0d81d355/scratchpad
+R=/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire
+P=$S/rg/capture.progress
+echo "start $(date +%H:%M:%S)" > $P
+sh $S/rg/manifest.sh $S/wt > $S/rg/manifest-wt-before.txt
+sh $S/rg/capture.sh $S/ref-origin $S/rg/ref-origin $S/rg/jobs-origin.txt 3
+echo "ref-origin done $(date +%H:%M:%S)" >> $P
+sh $S/rg/capture.sh $S/wt $S/rg/merged $S/rg/jobs-merged.txt 3
+echo "merged done $(date +%H:%M:%S)" >> $P
+sh $S/rg/capture.sh $R $S/rg/tree027 $S/rg/jobs-027.txt 2
+echo "tree027 done $(date +%H:%M:%S)" >> $P
+sh $S/rg/manifest.sh $S/wt > $S/rg/manifest-wt-after.txt
+cmp -s $S/rg/manifest-wt-before.txt $S/rg/manifest-wt-after.txt && echo "wt unchanged by the runs" >> $P || echo "WT CHANGED during the runs" >> $P
+echo ALLDONE >> $P

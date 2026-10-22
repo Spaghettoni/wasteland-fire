@@ -103,11 +103,12 @@ static func ground(node: Node3D) -> Vector2:
 
 
 ## The meshes that draw a Unit's body: every MeshInstance3D under its Model but the puffs of the smoke a badly damaged
-## Unit gives off (Story 017), a picture of their own that is no part of the body.
+## Unit gives off (Story 017), a picture of their own that is no part of the body, and the copies and the fill quad of the
+## see-through silhouette (Story 027, which only a scenario that declares SEE_THROUGH has): invisible and as big as the screen.
 static func body_meshes(model: Node) -> Array[MeshInstance3D]:
 	var found: Array[MeshInstance3D] = []
 	for node: Node in model.find_children("*", "MeshInstance3D", true, false):
-		if not (node.get_parent() is BadlyDamagedSmoke):
+		if not (node.get_parent() is BadlyDamagedSmoke) and not node.is_in_group(UnitSilhouette.COPY_GROUP) and not node.is_in_group(UnitSilhouette.FILL_GROUP):
 			found.append(node as MeshInstance3D)
 	return found
 

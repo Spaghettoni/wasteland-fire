@@ -1,0 +1,57 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+Movie Maker mode enabled, recording movie in 1280×720 @ 60 FPS...
+SPLIT light_showcase t=0.100 frame=5 moment=garage_spawn_above both Motorbikes spawned in their Garages by the choice keys
+SPLIT light_showcase t=1.250 frame=74 moment=sil_tower_above both Units behind TowerGateLeft, 4 and 4 of 9 points of the boxes hidden from the own cameras, views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT light_showcase t=2.350 frame=140 moment=sil_leg_above both Units behind LegGateLeft, 1 and 1 of 9 points of the boxes hidden from the own cameras, views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT light_showcase t=3.450 frame=206 moment=sil_container_above both Units behind ContainerWest, 2 and 2 of 9 points of the boxes hidden from the own cameras, views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT light_showcase t=4.550 frame=272 moment=sil_cliff_above both Units behind RockCanyonSouth, 5 and 5 of 9 points of the boxes hidden from the own cameras, views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT light_showcase t=5.650 frame=338 moment=sil_tank_above both Gyrocopters between their water tower's legs, under the tank, 4 and 4 of 9 points of the boxes hidden from the own cameras, views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT light_showcase t=6.817 frame=408 moment=light_flat_linear both Trucks from above under the linear look (mode 0, exposure 1.0, glow false, grade false)
+SPLIT light_showcase t=6.983 frame=418 moment=light_flat_agx both Trucks from above under the agx look (mode 4, exposure 1.29999995231628, glow true, grade true)
+SPLIT light_showcase t=7.150 frame=428 moment=light_flat_agx_no_grade both Trucks from above under the agx_no_grade look (mode 4, exposure 1.29999995231628, glow true, grade false)
+SPLIT light_showcase t=7.317 frame=438 moment=light_flat_filmic both Trucks from above under the filmic look (mode 2, exposure 1.0, glow true, grade true)
+SPLIT light_showcase t=7.483 frame=448 moment=light_flat_aces both Trucks from above under the aces look (mode 3, exposure 1.0, glow true, grade true)
+SPLIT light_showcase t=7.650 frame=458 moment=light_flat_dark_a both Trucks from above under the dark_a look (mode 0, exposure 0.25, glow false, grade false)
+SPLIT light_showcase t=8.417 frame=504 moment=light_base_linear both Trucks from above under the linear look (mode 0, exposure 1.0, glow false, grade false)
+SPLIT light_showcase t=8.583 frame=514 moment=light_base_agx both Trucks from above under the agx look (mode 4, exposure 1.29999995231628, glow true, grade true)
+SPLIT light_showcase t=8.750 frame=524 moment=light_base_agx_no_grade both Trucks from above under the agx_no_grade look (mode 4, exposure 1.29999995231628, glow true, grade false)
+SPLIT light_showcase t=8.917 frame=534 moment=light_base_filmic both Trucks from above under the filmic look (mode 2, exposure 1.0, glow true, grade true)
+SPLIT light_showcase t=9.083 frame=544 moment=light_base_aces both Trucks from above under the aces look (mode 3, exposure 1.0, glow true, grade true)
+SPLIT light_showcase t=9.850 frame=590 moment=light_sun_close_linear both Trucks close up under the linear look (mode 0, exposure 1.0, glow false, grade false)
+SPLIT light_showcase t=10.017 frame=600 moment=light_sun_close_agx both Trucks close up under the agx look (mode 4, exposure 1.29999995231628, glow true, grade true)
+SPLIT light_showcase t=10.183 frame=610 moment=light_sun_close_agx_no_grade both Trucks close up under the agx_no_grade look (mode 4, exposure 1.29999995231628, glow true, grade false)
+SPLIT light_showcase t=10.350 frame=620 moment=light_sun_close_filmic both Trucks close up under the filmic look (mode 2, exposure 1.0, glow true, grade true)
+SPLIT light_showcase t=10.517 frame=630 moment=light_sun_close_aces both Trucks close up under the aces look (mode 3, exposure 1.0, glow true, grade true)
+SPLIT light_showcase t=11.783 frame=706 moment=light_shade_close_linear both Trucks close up under the linear look (mode 0, exposure 1.0, glow false, grade false)
+SPLIT light_showcase t=11.950 frame=716 moment=light_shade_close_agx both Trucks close up under the agx look (mode 4, exposure 1.29999995231628, glow true, grade true)
+SPLIT light_showcase t=12.117 frame=726 moment=light_shade_close_agx_no_grade both Trucks close up under the agx_no_grade look (mode 4, exposure 1.29999995231628, glow true, grade false)
+SPLIT light_showcase t=12.283 frame=736 moment=light_shade_close_filmic both Trucks close up under the filmic look (mode 2, exposure 1.0, glow true, grade true)
+SPLIT light_showcase t=12.450 frame=746 moment=light_shade_close_aces both Trucks close up under the aces look (mode 3, exposure 1.0, glow true, grade true)
+SPLIT light_showcase t=13.717 frame=822 moment=light_ford_linear both Trucks from above under the linear look (mode 0, exposure 1.0, glow false, grade false)
+SPLIT light_showcase t=13.883 frame=832 moment=light_ford_agx both Trucks from above under the agx look (mode 4, exposure 1.29999995231628, glow true, grade true)
+SPLIT light_showcase t=14.050 frame=842 moment=light_ford_dark_a both Trucks from above under the dark_a look (mode 0, exposure 0.25, glow false, grade false)
+SPLIT light_showcase t=14.217 frame=852 moment=light_ford_dark_b both Trucks from above under the dark_b look (mode 0, exposure 0.25, glow false, grade false)
+SPLIT light_showcase t=14.383 frame=862 moment=light_ford_dark_c both Trucks from above under the dark_c look (mode 0, exposure 0.25, glow false, grade false)
+SPLIT light_showcase t=14.550 frame=872 moment=light_ford_dark_d both Trucks from above under the dark_d look (mode 0, exposure 0.25, glow false, grade false)
+SPLIT light_showcase t=15.317 frame=918 moment=glow_none_on both Units from above on the flat, no probe, the glow on as shipped (threshold 2.0)
+SPLIT light_showcase t=15.483 frame=928 moment=glow_none_off the same moment with the glow off: nothing blooms, so this frame is the one before it, pixel for pixel
+SPLIT light_showcase t=15.650 frame=938 moment=glow_probes_on three probes of emission [1.2, 4.0, 8.0] in front of each Unit, the glow on as shipped (threshold 2.0) p1=(267.3,272.5),(320.0,272.5),(372.7,272.5) view=(640.0, 720.0) p2=(267.3,272.5),(320.0,272.5),(372.7,272.5) view=(640.0, 720.0)
+SPLIT light_showcase t=15.817 frame=948 moment=glow_probes_off the same probes, the glow off
+SPLIT light_showcase t=17.667 frame=1059 moment=sil_turret_chase both Units behind TurretLeft, 7 and 7 of 9 points of the boxes hidden from the own cameras, views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT light_showcase t=18.767 frame=1125 moment=sil_tower_chase both Units behind TowerGateLeft, 7 and 7 of 9 points of the boxes hidden from the own cameras, views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT light_showcase t=19.867 frame=1191 moment=sil_leg_chase both Units behind LegGateLeft, 6 and 6 of 9 points of the boxes hidden from the own cameras, views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT light_showcase t=20.967 frame=1257 moment=sil_container_chase both Units behind ContainerWest, 2 and 2 of 9 points of the boxes hidden from the own cameras, views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT light_showcase t=22.067 frame=1323 moment=sil_cliff_chase both Units behind RockCanyonSouth, 5 and 5 of 9 points of the boxes hidden from the own cameras, views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT light_showcase t=23.167 frame=1389 moment=sil_leak_chase both Units behind Collider, 5 and 5 of 9 points of the boxes hidden from the own cameras, views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT light_showcase t=24.267 frame=1455 moment=sil_tank_chase both Gyrocopters between their water tower's legs, under the tank, 4 and 4 of 9 points of the boxes hidden from the own cameras, views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT light_showcase t=25.367 frame=1521 moment=sil_unit_in_front_chase Player 2's Truck between Player 1's camera and Player 1's Motorbike, 9 of 9 points of its box behind a mesh box of the Truck seen from the camera (the boxes are generous: the frame shows what is hidden), views=chase_camera_settings.tres, chase_camera_settings.tres
+RESULT light_showcase ok checks=0 failed=0 t=25.867 moments=45
+--------------------------------------------------------------------------------
+Done recording movie at path: /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad/rec/finalA/f.png
+1553 frames at 60 FPS (movie length: 00:00:25:53), recorded in 00:04:52 (8% of real-time speed).
+CPU render time: 0.03 seconds (average: 0.02 ms/frame)
+GPU render time: 0.00 seconds (average: 0.00 ms/frame)
+Encoding time: 273.84 seconds (average: 176.33 ms/frame)
+--------------------------------------------------------------------------------

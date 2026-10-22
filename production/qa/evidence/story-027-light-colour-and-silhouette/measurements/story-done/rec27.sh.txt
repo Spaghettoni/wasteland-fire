@@ -1,0 +1,12 @@
+#!/bin/sh
+# /story-done 027: windowed Movie Maker recordings on the live tree, one after the other after the headless chain: the main scene's launch (90 frames, for retained frame 00) and
+# the whole light_showcase as shipped (1,553 frames, the same command as the dev recordings finalA and finalA2), into sd27/rec.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a9ae9e24-5b29-451c-b62f-a16425b4fa8f/scratchpad/sd27
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+P=$S/rec/progress.txt
+mkdir -p $S/rec/launch $S/rec/finalA3
+date +%H:%M:%S > $P
+godot --path . --windowed --resolution 1280x720 --write-movie $S/rec/launch/f.png --quit-after 90 > $S/rec/launch.out 2>&1
+echo "launch rc=$? $(date +%H:%M:%S)" >> $P
+env X=1 godot --path . --windowed --resolution 1280x720 --write-movie $S/rec/finalA3/f.png res://tools/evidence/split_screen_harness.tscn -- --scenario=light_showcase > $S/rec/finalA3.out 2>&1
+echo "finalA3 rc=$? $(date +%H:%M:%S) REC_DONE" >> $P

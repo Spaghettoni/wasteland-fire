@@ -1,0 +1,12 @@
+#!/bin/bash
+# /story-done 027: the ford's water in frames 19 (Linear, before) and 20 (AgX, as shipped): the mean colour of a crop inside the water of each view, by compose.gd's sample mode
+# (SAMPLE rgb, hue, saturation, value). The crops lie inside the water: (200, 200, 400, 100) in the left view and (700, 200, 400, 100) in the right.
+DEV=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+E=production/qa/evidence/story-027-light-colour-and-silhouette
+for f in 19-ford-from-above-linear-before 20-ford-from-above-agx-as-shipped; do
+  for crop in "200 200 400 100" "700 200 400 100"; do
+    set -- $crop
+    godot --headless --path . -s $DEV/lib/compose.gd -- sample $E/$f.png $1 $2 $3 $4 2>&1 | grep '^SAMPLE' | sed "s/^SAMPLE [^ ]* /$f ($crop) /"
+  done
+done

@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+"""Cross-check: every identifier the evidence document's acceptance table cites in backticks, against the re-run's see_through output. A `CHECK see_through <name> PASS ...` line has the
+scenario first, then the check name. Prints the cited names that are a PASS line, what else the table cites (read each by hand) and the CHECK names no row cites. Reads only."""
+import re, sys
+doc = open("production/qa/evidence/story-027-light-colour-and-silhouette-evidence.md", encoding="utf-8").read()
+out = open(sys.argv[1], encoding="utf-8").read()
+checks = {}
+for m in re.finditer(r"^CHECK (\S+) (\S+) (PASS|FAIL)\b", out, re.M):
+    checks[(m.group(1), m.group(2))] = m.group(3)
+names = {n for (s, n) in checks}
+print("CHECK lines in the re-run:", len(checks), " all PASS:", all(v == "PASS" for v in checks.values()))
+rows = [l for l in doc.split("\n") if l.startswith("| AC-")]
+print("acceptance rows:", len(rows))
+cited_pass, cited_other = [], []
+for row in rows:
+    ac = row.split("|")[1].strip()[:4]
+    where = row.split("|")[-2]
+    for tok in re.findall(r"`([^`]+)`", where):
+        base = tok.split("(")[0].strip()
+        if re.fullmatch(r"[a-z0-9_]+", base):
+            if checks.get(("see_through", base)) == "PASS":
+                cited_pass.append((ac, base))
+            else:
+                cited_other.append((ac, base))
+by = {}
+for ac, n in cited_pass:
+    by.setdefault(ac, []).append(n)
+print("cited and a PASS line of the re-run (%d):" % len(cited_pass))
+for ac in sorted(by):
+    print("  %s: %s" % (ac, ", ".join(by[ac])))
+print("cited but not a CHECK line of see_through (%d) -- read each by hand:" % len(cited_other))
+for ac, n in cited_other:
+    print("  %s: %s" % (ac, n))
+cited = {n for _, n in cited_pass}
+print("CHECK names in the re-run no acceptance row cites: " + ", ".join(sorted(names - cited)))

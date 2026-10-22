@@ -1,0 +1,87 @@
+## (1) difference masks: the build against the same moment without the silhouettes (white where they differ)
+-- sil_tower_above: Metal frames A 74 N 74, Vulkan frames sil 74 nosil 74
+metal  DIFF f00000074.png vs f00000074.png differing=208 p1=104 p2=104 largest_delta=101 p1_box=[P: (303, 454), S: (34, 6)] p2_box=[P: (943, 454), S: (34, 6)]
+vulkan DIFF f00000074.png vs f00000074.png differing=208 p1=104 p2=104 largest_delta=101 p1_box=[P: (303, 454), S: (34, 6)] p2_box=[P: (943, 454), S: (34, 6)]
+OVERLAP metal-sil_tower_above.png vs vulkan-sil_tower_above.png both=208 (p1 104, p2 104) only_first=0 (p1 0, p2 0) only_second=0 (p1 0, p2 0)
+NEAR metal-sil_tower_above.png vs vulkan-sil_tower_above.png r=2 first_not_near_second=0 second_not_near_first=0
+-- sil_leg_above: Metal frames A 140 N 140, Vulkan frames sil 140 nosil 140
+metal  DIFF f00000140.png vs f00000140.png differing=212 p1=106 p2=106 largest_delta=145 p1_box=[P: (312, 471), S: (25, 7)] p2_box=[P: (952, 471), S: (25, 7)]
+vulkan DIFF f00000140.png vs f00000140.png differing=212 p1=106 p2=106 largest_delta=145 p1_box=[P: (312, 471), S: (25, 7)] p2_box=[P: (952, 471), S: (25, 7)]
+OVERLAP metal-sil_leg_above.png vs vulkan-sil_leg_above.png both=212 (p1 106, p2 106) only_first=0 (p1 0, p2 0) only_second=0 (p1 0, p2 0)
+NEAR metal-sil_leg_above.png vs vulkan-sil_leg_above.png r=2 first_not_near_second=0 second_not_near_first=0
+-- sil_container_above: Metal frames A 206 N 206, Vulkan frames sil 206 nosil 206
+metal  DIFF f00000206.png vs f00000206.png differing=83 p1=41 p2=42 largest_delta=141 p1_box=[P: (303, 475), S: (34, 3)] p2_box=[P: (943, 475), S: (34, 3)]
+vulkan DIFF f00000206.png vs f00000206.png differing=83 p1=41 p2=42 largest_delta=141 p1_box=[P: (303, 475), S: (34, 3)] p2_box=[P: (943, 475), S: (34, 3)]
+OVERLAP metal-sil_container_above.png vs vulkan-sil_container_above.png both=83 (p1 41, p2 42) only_first=0 (p1 0, p2 0) only_second=0 (p1 0, p2 0)
+NEAR metal-sil_container_above.png vs vulkan-sil_container_above.png r=2 first_not_near_second=0 second_not_near_first=0
+-- sil_cliff_above: Metal frames A 272 N 272, Vulkan frames sil 272 nosil 272
+metal  DIFF f00000272.png vs f00000272.png differing=2126 p1=1057 p2=1069 largest_delta=106 p1_box=[P: (302, 406), S: (35, 48)] p2_box=[P: (943, 406), S: (35, 48)]
+vulkan DIFF f00000272.png vs f00000272.png differing=2126 p1=1057 p2=1069 largest_delta=106 p1_box=[P: (302, 406), S: (35, 48)] p2_box=[P: (943, 406), S: (35, 48)]
+OVERLAP metal-sil_cliff_above.png vs vulkan-sil_cliff_above.png both=2126 (p1 1057, p2 1069) only_first=0 (p1 0, p2 0) only_second=0 (p1 0, p2 0)
+NEAR metal-sil_cliff_above.png vs vulkan-sil_cliff_above.png r=2 first_not_near_second=0 second_not_near_first=0
+-- sil_tank_above: Metal frames A 338 N 338, Vulkan frames sil 338 nosil 338
+metal  DIFF f00000338.png vs f00000338.png differing=76 p1=38 p2=38 largest_delta=144 p1_box=[P: (305, 380), S: (31, 91)] p2_box=[P: (945, 380), S: (31, 91)]
+vulkan DIFF f00000338.png vs f00000338.png differing=76 p1=38 p2=38 largest_delta=144 p1_box=[P: (305, 380), S: (31, 91)] p2_box=[P: (945, 380), S: (31, 91)]
+OVERLAP metal-sil_tank_above.png vs vulkan-sil_tank_above.png both=76 (p1 38, p2 38) only_first=0 (p1 0, p2 0) only_second=0 (p1 0, p2 0)
+NEAR metal-sil_tank_above.png vs vulkan-sil_tank_above.png r=2 first_not_near_second=0 second_not_near_first=0
+-- sil_turret_chase: Metal frames A 1059 N 1059, Vulkan frames sil 469 nosil 469
+metal  DIFF f00001059.png vs f00001059.png differing=1310 p1=655 p2=655 largest_delta=150 p1_box=[P: (309, 354), S: (21, 49)] p2_box=[P: (949, 354), S: (21, 49)]
+vulkan DIFF f00000469.png vs f00000469.png differing=1310 p1=655 p2=655 largest_delta=150 p1_box=[P: (309, 354), S: (21, 49)] p2_box=[P: (949, 354), S: (21, 49)]
+OVERLAP metal-sil_turret_chase.png vs vulkan-sil_turret_chase.png both=1310 (p1 655, p2 655) only_first=0 (p1 0, p2 0) only_second=0 (p1 0, p2 0)
+NEAR metal-sil_turret_chase.png vs vulkan-sil_turret_chase.png r=2 first_not_near_second=0 second_not_near_first=0
+-- sil_tower_chase: Metal frames A 1125 N 1125, Vulkan frames sil 535 nosil 535
+metal  DIFF f00001125.png vs f00001125.png differing=6012 p1=3006 p2=3006 largest_delta=158 p1_box=[P: (288, 342), S: (64, 64)] p2_box=[P: (928, 342), S: (64, 64)]
+vulkan DIFF f00000535.png vs f00000535.png differing=6012 p1=3006 p2=3006 largest_delta=158 p1_box=[P: (288, 342), S: (64, 64)] p2_box=[P: (928, 342), S: (64, 64)]
+OVERLAP metal-sil_tower_chase.png vs vulkan-sil_tower_chase.png both=6012 (p1 3006, p2 3006) only_first=0 (p1 0, p2 0) only_second=0 (p1 0, p2 0)
+NEAR metal-sil_tower_chase.png vs vulkan-sil_tower_chase.png r=2 first_not_near_second=0 second_not_near_first=0
+-- sil_leg_chase: Metal frames A 1191 N 1191, Vulkan frames sil 601 nosil 601
+metal  DIFF f00001191.png vs f00001191.png differing=11146 p1=5573 p2=5573 largest_delta=155 p1_box=[P: (285, 311), S: (72, 102)] p2_box=[P: (925, 311), S: (72, 102)]
+vulkan DIFF f00000601.png vs f00000601.png differing=11146 p1=5573 p2=5573 largest_delta=155 p1_box=[P: (285, 311), S: (72, 102)] p2_box=[P: (925, 311), S: (72, 102)]
+OVERLAP metal-sil_leg_chase.png vs vulkan-sil_leg_chase.png both=11146 (p1 5573, p2 5573) only_first=0 (p1 0, p2 0) only_second=0 (p1 0, p2 0)
+NEAR metal-sil_leg_chase.png vs vulkan-sil_leg_chase.png r=2 first_not_near_second=0 second_not_near_first=0
+-- sil_container_chase: Metal frames A 1257 N 1257, Vulkan frames sil 667 nosil 667
+metal  DIFF f00001257.png vs f00001257.png differing=4698 p1=2349 p2=2349 largest_delta=142 p1_box=[P: (280, 381), S: (80, 32)] p2_box=[P: (920, 381), S: (80, 32)]
+vulkan DIFF f00000667.png vs f00000667.png differing=4698 p1=2349 p2=2349 largest_delta=142 p1_box=[P: (280, 381), S: (80, 32)] p2_box=[P: (920, 381), S: (80, 32)]
+OVERLAP metal-sil_container_chase.png vs vulkan-sil_container_chase.png both=4698 (p1 2349, p2 2349) only_first=0 (p1 0, p2 0) only_second=0 (p1 0, p2 0)
+NEAR metal-sil_container_chase.png vs vulkan-sil_container_chase.png r=2 first_not_near_second=0 second_not_near_first=0
+-- sil_cliff_chase: Metal frames A 1323 N 1323, Vulkan frames sil 733 nosil 733
+metal  DIFF f00001323.png vs f00001323.png differing=2926 p1=1463 p2=1463 largest_delta=155 p1_box=[P: (288, 343), S: (61, 63)] p2_box=[P: (931, 343), S: (61, 63)]
+vulkan DIFF f00000733.png vs f00000733.png differing=2926 p1=1463 p2=1463 largest_delta=155 p1_box=[P: (288, 343), S: (61, 63)] p2_box=[P: (931, 343), S: (61, 63)]
+OVERLAP metal-sil_cliff_chase.png vs vulkan-sil_cliff_chase.png both=2926 (p1 1463, p2 1463) only_first=0 (p1 0, p2 0) only_second=0 (p1 0, p2 0)
+NEAR metal-sil_cliff_chase.png vs vulkan-sil_cliff_chase.png r=2 first_not_near_second=0 second_not_near_first=0
+-- sil_leak_chase: Metal frames A 1389 N 1389, Vulkan frames sil 799 nosil 799
+metal  DIFF f00001389.png vs f00001389.png differing=912 p1=455 p2=457 largest_delta=87 p1_box=[P: (309, 367), S: (21, 36)] p2_box=[P: (949, 348), S: (23, 55)]
+vulkan DIFF f00000799.png vs f00000799.png differing=912 p1=455 p2=457 largest_delta=87 p1_box=[P: (309, 367), S: (21, 36)] p2_box=[P: (949, 348), S: (23, 55)]
+OVERLAP metal-sil_leak_chase.png vs vulkan-sil_leak_chase.png both=912 (p1 455, p2 457) only_first=0 (p1 0, p2 0) only_second=0 (p1 0, p2 0)
+NEAR metal-sil_leak_chase.png vs vulkan-sil_leak_chase.png r=2 first_not_near_second=0 second_not_near_first=0
+-- sil_tank_chase: Metal frames A 1455 N 1455, Vulkan frames sil 865 nosil 865
+metal  DIFF f00001455.png vs f00001455.png differing=98 p1=49 p2=49 largest_delta=155 p1_box=[P: (324, 233), S: (20, 21)] p2_box=[P: (964, 233), S: (20, 21)]
+vulkan DIFF f00000865.png vs f00000865.png differing=98 p1=49 p2=49 largest_delta=155 p1_box=[P: (324, 233), S: (20, 21)] p2_box=[P: (964, 233), S: (20, 21)]
+OVERLAP metal-sil_tank_chase.png vs vulkan-sil_tank_chase.png both=98 (p1 49, p2 49) only_first=0 (p1 0, p2 0) only_second=0 (p1 0, p2 0)
+NEAR metal-sil_tank_chase.png vs vulkan-sil_tank_chase.png r=2 first_not_near_second=0 second_not_near_first=0
+-- sil_unit_in_front_chase: Metal frames A 1521 N 1521, Vulkan frames sil 931 nosil 931
+metal  DIFF f00001521.png vs f00001521.png differing=150 p1=150 p2=0 largest_delta=165 p1_box=[P: (315, 388), S: (15, 15)] p2_box=[P: (0, 0), S: (0, 0)]
+vulkan DIFF f00000931.png vs f00000931.png differing=150 p1=150 p2=0 largest_delta=165 p1_box=[P: (315, 388), S: (15, 15)] p2_box=[P: (0, 0), S: (0, 0)]
+OVERLAP metal-sil_unit_in_front_chase.png vs vulkan-sil_unit_in_front_chase.png both=150 (p1 150, p2 0) only_first=0 (p1 0, p2 0) only_second=0 (p1 0, p2 0)
+NEAR metal-sil_unit_in_front_chase.png vs vulkan-sil_unit_in_front_chase.png r=2 first_not_near_second=0 second_not_near_first=0
+## (2) the view from above, same frame numbers: Vulkan against Metal
+sil_tower_above with    DIFF f00000074.png vs f00000074.png differing=0 p1=0 p2=0 largest_delta=0 p1_box=[P: (0, 0), S: (0, 0)] p2_box=[P: (0, 0), S: (0, 0)]
+sil_tower_above without DIFF f00000074.png vs f00000074.png differing=0 p1=0 p2=0 largest_delta=0 p1_box=[P: (0, 0), S: (0, 0)] p2_box=[P: (0, 0), S: (0, 0)]
+sil_leg_above with    DIFF f00000140.png vs f00000140.png differing=0 p1=0 p2=0 largest_delta=0 p1_box=[P: (0, 0), S: (0, 0)] p2_box=[P: (0, 0), S: (0, 0)]
+sil_leg_above without DIFF f00000140.png vs f00000140.png differing=0 p1=0 p2=0 largest_delta=0 p1_box=[P: (0, 0), S: (0, 0)] p2_box=[P: (0, 0), S: (0, 0)]
+sil_container_above with    DIFF f00000206.png vs f00000206.png differing=0 p1=0 p2=0 largest_delta=0 p1_box=[P: (0, 0), S: (0, 0)] p2_box=[P: (0, 0), S: (0, 0)]
+sil_container_above without DIFF f00000206.png vs f00000206.png differing=0 p1=0 p2=0 largest_delta=0 p1_box=[P: (0, 0), S: (0, 0)] p2_box=[P: (0, 0), S: (0, 0)]
+sil_cliff_above with    DIFF f00000272.png vs f00000272.png differing=0 p1=0 p2=0 largest_delta=0 p1_box=[P: (0, 0), S: (0, 0)] p2_box=[P: (0, 0), S: (0, 0)]
+sil_cliff_above without DIFF f00000272.png vs f00000272.png differing=0 p1=0 p2=0 largest_delta=0 p1_box=[P: (0, 0), S: (0, 0)] p2_box=[P: (0, 0), S: (0, 0)]
+sil_tank_above with    DIFF f00000338.png vs f00000338.png differing=0 p1=0 p2=0 largest_delta=0 p1_box=[P: (0, 0), S: (0, 0)] p2_box=[P: (0, 0), S: (0, 0)]
+sil_tank_above without DIFF f00000338.png vs f00000338.png differing=0 p1=0 p2=0 largest_delta=0 p1_box=[P: (0, 0), S: (0, 0)] p2_box=[P: (0, 0), S: (0, 0)]
+## (3) the AgX ladder on the final tree (explore2; crops (330,160,230,260) left and (700,160,230,260) right)
+explore_e1.3_c1.5_w10.0 (frame 78) left: clipped=0.00000 (0 of 59800) luma_mean=0.7937 luma_sd=0.0309 | right: clipped=0.00000 (0 of 59800) luma_mean=0.7903 luma_sd=0.0517
+explore_e1.3_c1.8_w10.0 (frame 88) left: clipped=0.00000 (0 of 59800) luma_mean=0.8164 luma_sd=0.0313 | right: clipped=0.00000 (0 of 59800) luma_mean=0.8128 luma_sd=0.0540
+explore_e1.3_c2.1_w10.0 (frame 98) left: clipped=0.00000 (0 of 59800) luma_mean=0.8350 luma_sd=0.0316 | right: clipped=0.00000 (0 of 59800) luma_mean=0.8313 luma_sd=0.0559
+explore_e1.3_c2.4_w10.0 (frame 108) left: clipped=0.00000 (0 of 59800) luma_mean=0.8506 luma_sd=0.0319 | right: clipped=0.00000 (0 of 59800) luma_mean=0.8466 luma_sd=0.0574
+explore_e1.2_c2.1_w10.0 (frame 118) left: clipped=0.00000 (0 of 59800) luma_mean=0.8221 luma_sd=0.0330 | right: clipped=0.00000 (0 of 59800) luma_mean=0.8182 luma_sd=0.0569
+explore_e1.4_c2.1_w10.0 (frame 128) left: clipped=0.00000 (0 of 59800) luma_mean=0.8464 luma_sd=0.0304 | right: clipped=0.00000 (0 of 59800) luma_mean=0.8427 luma_sd=0.0550
+explore_e1.3_c2.1_w6.0 (frame 138) left: clipped=0.00000 (0 of 59800) luma_mean=0.8366 luma_sd=0.0319 | right: clipped=0.00000 (0 of 59800) luma_mean=0.8328 luma_sd=0.0562
+explore_e1.3_c2.1_w16.29 (frame 148) left: clipped=0.00000 (0 of 59800) luma_mean=0.8345 luma_sd=0.0315 | right: clipped=0.00000 (0 of 59800) luma_mean=0.8307 luma_sd=0.0558
+MEASURE_DONE

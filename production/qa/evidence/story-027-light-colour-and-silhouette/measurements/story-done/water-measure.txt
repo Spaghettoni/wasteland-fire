@@ -1,0 +1,4 @@
+19-ford-from-above-linear-before (200 200 400 100) rgb=150,200,206 hue=186.8 sat=0.27 val=0.81
+19-ford-from-above-linear-before (700 200 400 100) rgb=148,199,205 hue=186.9 sat=0.28 val=0.81
+20-ford-from-above-agx-as-shipped (200 200 400 100) rgb=183,199,189 hue=140.3 sat=0.08 val=0.78
+20-ford-from-above-agx-as-shipped (700 200 400 100) rgb=182,198,188 hue=143.2 sat=0.08 val=0.78

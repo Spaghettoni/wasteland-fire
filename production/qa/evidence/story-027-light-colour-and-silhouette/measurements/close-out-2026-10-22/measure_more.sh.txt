@@ -1,0 +1,38 @@
+#!/bin/bash
+# (4) the windowed seeded defects against the build: wm-no-sight (no sight copy) and wm-glow-low (the glow's threshold at 1.0);
+# (5) the light moments on Vulkan (vk-light) against Metal (finalA): the flat's mean colour with and without the grade on each driver, and the frames compared.
+C=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a9ae9e24-5b29-451c-b62f-a16425b4fa8f/scratchpad/c27
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+G="godot --headless --path . -s"
+mkdir -p $C/meas/masks
+frame() { grep -E "^SPLIT light_showcase .* moment=$2 " "$1" | head -1 | sed -E 's/.* frame=([0-9]+) .*/\1/'; }
+png() { printf '%s/f%08d.png' "$1" "$2"; }
+echo "## (4a) no sight copy (wm-no-sight) against the same moment without the silhouettes (finalN), beside the build's mask (finalA against finalN)"
+for m in sil_turret_chase sil_tower_chase sil_leg_chase sil_container_chase sil_cliff_chase sil_leak_chase sil_tank_chase sil_unit_in_front_chase; do
+  fw=$(frame $C/rec/wm-no-sight.out $m); fn=$(frame $S/rec/finalN.out $m)
+  $G $C/lib/masks.gd -- diff $(png $C/rec/wm-no-sight $fw) $(png $S/rec/finalN $fn) $C/meas/masks/defect-no-sight-$m.png | grep '^DIFF' | sed "s/^/$m defect /"
+  [ -f $C/meas/masks/metal-$m.png ] && $G $C/lib/masks.gd -- overlap $C/meas/masks/metal-$m.png $C/meas/masks/defect-no-sight-$m.png | grep '^OVERLAP' | sed "s/^/$m build-vs-defect /"
+done
+echo "## (4b) the glow's threshold at 1.0 (wm-glow-low): the flat with the glow on against off, whole frame (the build: 0 of 921,600 differ)"
+on=$(frame $C/rec/wm-glow-low.out glow_none_on); off=$(frame $C/rec/wm-glow-low.out glow_none_off)
+$G $S/lib/measure.gd -- same $(png $C/rec/wm-glow-low $on) $(png $C/rec/wm-glow-low $off) 0 0 1280 720 | grep '^SAME'
+$G $S/lib/measure.gd -- same $(png $C/rec/wm-glow-low $on) $(png $C/rec/wm-glow-low $off) 0 520 1280 200 | grep '^SAME' | sed 's/^/bottom third /'
+$G $C/lib/masks.gd -- diff $(png $C/rec/wm-glow-low $on) $(png $C/rec/wm-glow-low $off) $C/meas/masks/defect-glow-low-flat.png | grep '^DIFF'
+for side in "330 160 230 260" "700 160 230 260"; do
+  $G $S/lib/measure.gd -- mean $(png $C/rec/wm-glow-low $on) $side | grep '^MEAN' | sed "s/^/glow on  ($side) /"
+  $G $S/lib/measure.gd -- mean $(png $C/rec/wm-glow-low $off) $side | grep '^MEAN' | sed "s/^/glow off ($side) /"
+done
+echo "## (5) the light moments on Vulkan (vk-light) against Metal (finalA)"
+for m in light_flat_linear light_flat_agx light_flat_agx_no_grade light_sun_close_agx light_sun_close_agx_no_grade glow_none_on; do
+  fm=$(frame $S/rec/finalA.out $m); fv=$(frame $C/rec/vk-light.out $m)
+  $G $S/lib/measure.gd -- same $(png $S/rec/finalA $fm) $(png $C/rec/vk-light $fv) 0 0 1280 720 | grep '^SAME' | sed "s/^/$m metal-vs-vulkan /"
+  for side in "330 160 230 260" "700 160 230 260"; do
+    a=$($G $S/lib/measure.gd -- mean $(png $S/rec/finalA $fm) $side | grep '^MEAN' | cut -d' ' -f3)
+    b=$($G $S/lib/measure.gd -- mean $(png $C/rec/vk-light $fv) $side | grep '^MEAN' | cut -d' ' -f3)
+    echo "$m crop ($side) metal $a vulkan $b"
+  done
+done
+on=$(frame $C/rec/vk-light.out glow_none_on); off=$(frame $C/rec/vk-light.out glow_none_off)
+$G $S/lib/measure.gd -- same $(png $C/rec/vk-light $on) $(png $C/rec/vk-light $off) 0 0 1280 720 | grep '^SAME' | sed 's/^/vulkan glow on vs off /'
+echo MEASURE_MORE_DONE

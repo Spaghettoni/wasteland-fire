@@ -1,0 +1,11 @@
+#!/bin/sh
+# usage: run_one.sh ROOT OUTDIR KIND NAME   One retained check headless in the project at ROOT (drive, split or the map choice's own runner).
+ROOT="$1"; OUT="$2"; KIND="$3"; NAME="$4"
+cd "$ROOT" || exit 9
+case "$KIND" in
+  drive) godot --headless --fixed-fps 60 --path . res://tools/evidence/drive_harness.tscn -- --scenario="$NAME" > "$OUT/$KIND-$NAME.txt" 2>&1 ;;
+  split) godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario="$NAME" > "$OUT/$KIND-$NAME.txt" 2>&1 ;;
+  choice) godot --headless --fixed-fps 60 --path . -s res://tools/evidence/map_choice/map_choice_check.gd > "$OUT/$KIND-$NAME.txt" 2>&1 ;;
+  *) echo "unknown kind $KIND" > "$OUT/$KIND-$NAME.txt"; false ;;
+esac
+echo $? > "$OUT/$KIND-$NAME.rc"

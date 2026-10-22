@@ -1,0 +1,39 @@
+extends SceneTree
+## Compares two composed frames (960 wide: the frame scaled above, the mask scaled below, 8 pixels between) half by half: the pixels that differ in the top half and in the bottom
+## half, and in the bottom half the pixels that are non-black (a threshold of 8 levels) in each and in both. usage: halves.gd -- A B
+func _initialize() -> void:
+	var args: PackedStringArray = OS.get_cmdline_user_args()
+	var a: Image = Image.load_from_file(args[0])
+	var b: Image = Image.load_from_file(args[1])
+	a.convert(Image.FORMAT_RGB8)
+	b.convert(Image.FORMAT_RGB8)
+	if a.get_size() != b.get_size():
+		print("HALVES sizes differ: %s vs %s" % [a.get_size(), b.get_size()])
+		quit()
+		return
+	var top_diff: int = 0
+	var bottom_diff: int = 0
+	var bright_a: int = 0
+	var bright_b: int = 0
+	var bright_both: int = 0
+	var top_largest: int = 0
+	var half: int = a.get_height() / 2
+	for y: int in a.get_height():
+		for x: int in a.get_width():
+			var ca: Color = a.get_pixel(x, y)
+			var cb: Color = b.get_pixel(x, y)
+			var d: int = maxi(absi(ca.r8 - cb.r8), maxi(absi(ca.g8 - cb.g8), absi(ca.b8 - cb.b8)))
+			if y < half:
+				if d > 0:
+					top_diff += 1
+					top_largest = maxi(top_largest, d)
+			else:
+				if d > 0:
+					bottom_diff += 1
+				var la: bool = maxi(ca.r8, maxi(ca.g8, ca.b8)) > 8
+				var lb: bool = maxi(cb.r8, maxi(cb.g8, cb.b8)) > 8
+				bright_a += 1 if la else 0
+				bright_b += 1 if lb else 0
+				bright_both += 1 if (la and lb) else 0
+	print("HALVES %s vs %s size=%s top_differing=%d (largest %d) bottom_differing=%d bottom_non_black: first=%d second=%d both=%d" % [args[0].get_file(), args[1].get_file(), a.get_size(), top_diff, top_largest, bottom_diff, bright_a, bright_b, bright_both])
+	quit()

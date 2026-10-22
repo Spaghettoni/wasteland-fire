@@ -1,0 +1,179 @@
+#!/usr/bin/env python3
+"""/story-done 027: the closing edits of five documents in one guarded run. Every edit is an exact anchor that must match exactly once, every new text is computed before any file is
+written, each file's mtime is checked again just before the writes, and a backup of each file goes to sd27/backup first. Nothing is written when anything fails.
+usage: close27.py [--dry]"""
+import os
+import shutil
+import subprocess
+import sys
+
+R = "/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire"
+MY = "/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a9ae9e24-5b29-451c-b62f-a16425b4fa8f/scratchpad/sd27"
+STORY = "production/epics/wasteland-fire/story-027-light-colour-and-silhouette.md"
+EVID = "production/qa/evidence/story-027-light-colour-and-silhouette-evidence.md"
+EPIC = "production/epics/wasteland-fire/EPIC.md"
+README = "README.md"
+RULES = "design/rules.md"
+FILES = [STORY, EVID, EPIC, README, RULES]
+DRY = "--dry" in sys.argv
+
+
+def read(rel):
+    with open(os.path.join(R, rel), encoding="utf-8", newline="") as f:
+        return f.read()
+
+
+def edit(text, old, new, label):
+    n = text.count(old)
+    if n != 1:
+        raise SystemExit("ANCHOR FAILED (%d matches): %s" % (n, label))
+    return text.replace(old, new)
+
+
+original = {f: read(f) for f in FILES}
+mtimes = {f: os.stat(os.path.join(R, f)).st_mtime_ns for f in FILES}
+new = dict(original)
+
+# ---------------------------------------------------------------- the story
+story = original[STORY]
+story = edit(story, "> **Status**: In Progress\n", "> **Status**: Complete\n", "story status")
+lines = story.split("\n")
+
+
+def line_index(prefix):
+    found = [i for i, l in enumerate(lines) if l.startswith(prefix)]
+    if len(found) != 1:
+        raise SystemExit("LINE ANCHOR FAILED (%d matches): %s" % (len(found), prefix))
+    return found[0]
+
+
+AC_NOTES = {
+    1: " *(Accepted by the developer on 2026-10-22: the salt flat's clipped share fell from 0.062% to 0.000% in the fixed crops and the Team hues are recorded under every look; the cracks' contrast fell too (the luma's standard deviation 0.054 and 0.071 to 0.031 and 0.052: a paler, creamier flat) and the developer kept AgX as built, question 1; see the Completion Notes.)*",
+    3: " *(Kept by the developer on 2026-10-22 with the side effects the frames show: the chase view's sky is neutral grey where Linear's was blue, and the fords' water is pale grey-green where Linear's was light cyan; question 2.)*",
+    4: " *(Kept by the developer on 2026-10-22: your silhouette also shows over the other Player's Unit when it stands in front of yours, question 6; from above cover hides little of a Unit, so the shape is mostly a chase-view effect, question 4.)*",
+    5: " *(Checked at /story-done by an independent tokenizing scan: no number but 0 and 1 outside declarations in the new scripts and the lines the story added; the declarations hold the bounds of two `@export_range`s, 0.0 to 1.0 in steps of 0.01 and 0.0 to 16384.0, and the defaults 0 and 0.0.)*",
+    6: " *(Accepted by the developer on 2026-10-22: the lowest one-second rate (117 to 120 fps against 60) and the draw calls (301 against 1,000; the silhouettes add 14) hold; the clause 'a frame at most 16.6 ms' is exceeded by single frames in steady seconds with the story (17.57 and 34.54 ms in 2 of 3 runs on the final tree) and without it (24.56 ms in 1 of 3), the pattern TD-016 holds with these numbers; no new debt row, see the Completion Notes.)*",
+}
+for n in range(1, 8):
+    i = line_index("- [ ] AC-%d:" % n)
+    lines[i] = "- [x] AC-%d:" % n + lines[i][len("- [ ] AC-%d:" % n):] + AC_NOTES.get(n, "")
+
+ANSWERS = {
+    "1. Map 01 now goes through the AgX": " **Answered 2026-10-22:** keep (AgX at an exposure of 1.3, a contrast of 1.5 and a white of 10).",
+    "2. The colour grade makes the scene warmer": " **Answered 2026-10-22:** keep (the grade as built, with the neutral grey sky and, as the form named, the pale grey-green water of the fords: light cyan (150, 200, 206) under Linear, (183, 199, 189) as shipped).",
+    "3. Glow only touches what is brighter than white": " **Answered 2026-10-22:** keep (the glow's threshold of 2.0, and the Units' lamps as they are).",
+    "4. Your own Unit shows through cover as a see-through": " **Answered 2026-10-22:** keep (the filled silhouette in both views, in your own view only).",
+    "5. Should the Flags": " **Answered 2026-10-22:** no (only your own Unit shows through cover; the Flags stay hidden behind it).",
+    "6. Your own Unit's silhouette also shows over": " **Answered 2026-10-22:** keep (your silhouette also shows over the other Player's Unit when it stands in front of yours).",
+    "7. The silhouette, the 3D colour lookup and the AgX look": " **Answered 2026-10-22:** keep TD-019 open (a Windows build is to be looked at before any release).",
+}
+for prefix, answer in ANSWERS.items():
+    i = line_index(prefix)
+    lines[i] = lines[i] + answer
+story = "\n".join(lines)
+story = edit(story, "; the human checks, the seven questions and the lead's sign-off wait for `/story-done`\n",
+             "; the two play checks were answered Yes, the seven questions kept as built and the evidence signed off (`[x] Approved`) by the developer at `/story-done` on 2026-10-22\n",
+             "story test evidence status")
+COMPLETION = """
+
+## Completion Notes
+
+**Completed**: 2026-10-22
+**Criteria**: 7/7 passing, none deferred; AC-1 and AC-6 each with the clause the evidence admits (Deviations 1 and 2), and AC-6's budget resting on the windowed `light_fps` runs of `/dev-story` (36 in the morning and six on the final tree in the evening, three as shipped and three of the picture before the story), which were not repeated at `/story-done`. AC-1 to AC-7 are measured by `see_through` (20 checks, headless, every Player's act a real key event, 10.917 simulated s): run twice byte-identical at `/dev-story` (and twice in its final chain) and twice again at `/story-done` (2026-10-22, 20:20, on the live tree, whose `src`, `tools`, `project.godot` and `assets` hash to the 952 files of the final chain's manifest and of the morning's of 12:51), both outputs byte-identical to each other and to the retained one; `light_showcase` headless (45 moments) is byte-identical to its retained output. Each of the 17 check names the evidence document's acceptance table cites in `see_through` (24 citations) is a PASS line of the re-run (AC-1 and AC-2 `environment_data`; AC-3 `grade_data`, `lut_file`, `environment_data`; AC-4 `settings_data`, `project_layers`, `cameras`, `copies`, `passes`, `turning_parts`, `small_things`, `benched_at_start`, `life`, `retype`, `respawn_cost`, `undressed`; AC-5 `settings_data`, `environment_data`, `grade_data`, `lut_file`, `project_layers`, `no_number_in_code`, `settings_refused`; the two other names it cites are a mutant, `no_sight_copy`, and a function, `first_problem`) and the regression of the 81 older outputs (AC-7) reads 69 strict, 12 normalized, 0 bad. The two play checks (the look in play, the silhouette) were answered Yes by the developer; all 40 frames were opened and read.
+**Deviations**: None blocking. Advisory: (1) AC-6's clause "a frame at most 16.6 ms": the lowest one-second rate (117 to 120 fps against 60) and the draw calls (301 against 1,000; the silhouettes add 14) hold and the silhouettes cost no GPU time the Vulkan measurement can see, but single frames over 16.6 ms appear in steady seconds with the story (17.57 and 34.54 ms in 2 of 3 runs on the final tree) and without it (24.56 ms in 1 of 3), and in the morning's 36 runs alike: the pattern TD-016 holds with these numbers, so the story is not its cause; the developer approved the close with no new debt row (the sign-off question named it); (2) AC-1's "falls": the salt flat's clipped share fell from 0.062% to 0.000% in the fixed crops, but it was almost nothing before (37 of 59,800 pixels), and what moved is the cracks' contrast (the luma's standard deviation 0.054 and 0.071 to 0.031 and 0.052: a paler, creamier flat), which the developer kept (question 1); (3) AC-5 says "no number in code but 0 and 1": the new code holds none outside declarations, and the declarations hold the bounds of two `@export_range`s (0.0 to 1.0 in steps of 0.01, and 0.0 to 16384.0) and the defaults 0 and 0.0, as story 026's close accepted; (4) where the build differs from the story's Implementation Notes (pointers, not decisions): the lookup is written by a GDScript tool, `tools/colour_grade/build_colour_grade_lut.gd`, run windowed, and not by a script under `tools/blender/` run by Blender's Python (a hand-written importer was rewritten by `--import` and the system Python has no numpy; AC-3 asks only for a script of the repository); the silhouette is three stencil passes (two invisible copies of each mesh and one fill quad) and not coloured copies that read the stencil, because the engine lets a material read the stencil or write it and never both (measured on 4.7.2); the group that marks a mesh for the silhouette is set in `unit_model.gd`'s `_add_mesh()`, not in `mesh_unit_model.gd`; `ChaseCamera.never_drawn_layers`, `SilhouetteSettings` and `UnitSilhouette` are beyond the Notes' list, as is `quick_fix_kit.gd`'s `body_meshes()`, which leaves the copies and the quad out of a model's drawn box so that the older evidence measures the same boxes; (5) the evidence did not name, until `/story-done` measured it, that the fords' water changes colour under the shipped look (light cyan (150, 200, 206), hue 187 degrees, saturation 0.27, under Linear; pale grey-green (183, 199, 189), hue 140 to 143 degrees, saturation 0.08, as shipped): it is now in the evidence and was in the developer's question 2, which they kept as built; story 028 (the water) is judged under it.
+**Test Evidence**: Visual/Feel: `production/qa/evidence/story-027-light-colour-and-silhouette-evidence.md` (sign-off `[x]`, 2026-10-22) with 40 frames in `production/qa/evidence/story-027-light-colour-and-silhouette/` (00 to 32 and 34 to 40; there is no 33), `scenario-outputs/` and `measurements/` (the close-out's files in `measurements/close-out-2026-10-22/`, the closing run's in `measurements/story-done/`); its Run result is OBSERVED (the main scene launched windowed on 4.7.2 and the showcase recorded windowed three times, 1,553 frames each); all 40 frames were opened and read at `/dev-story` and again at `/story-done`, where fresh windowed recordings of the launch and of the whole showcase on the live tree equal the dev recordings byte for byte in all 1,643 frames and the 32 retained frames 01 to 32 and frame 00 are byte copies of them (frames 34 to 37 are copies of the morning's composites, checked as the evidence says). The automated test is waived at `qa.level: minimal`; none written. Checked again at `/story-done`: the 20 `.gd` files parse, gdUnit 1 test and 0 failures.
+**Code Review**: Skipped, Solo mode (LP-CODE-REVIEW); QL-TEST-COVERAGE skipped, `qa.level` minimal. `/dev-story` ran one read-only `godot-gdscript-specialist` pass over the silhouette's scripts and data, the camera's mask, the Unit's dressing, the Environment and the grade's tool (eight findings, no blocker: F2, F3, F5 and F6 fixed, F1 open as TD-019 and checked on Vulkan, F4, F7 and F8 checked with no change). The new scripts, the grade's tool and the data files were read at `/story-done`: an independent tokenizing scan (`measurements/story-done/numscan27.py.txt`, checked first on synthetic lines: it flags 5 of 5 that must be flagged and passes 7 of 7 that must pass) finds no number other than 0 and 1 outside declarations in the three new scripts (421 lines) and the 73 lines added to four changed ones, there is no player-facing string, and no branch names a Unit type.
+**Tech debt logged**: None new (the developer chose the no-debt-row option). TD-016 (the frame pattern, with this story's numbers) and TD-019 (the Windows renderers, narrowed by the Vulkan check) already carry the findings (added at `/dev-story`); TD-019 stays open (question 7).
+**For the author** (not blocking): the two play checks were answered Yes and the seven questions are recorded above, all kept as built; nothing in the build changed with the answers. The look's values are data: Map 01's Environment in `src/gameplay/maps/map_01/map_01.tscn` (AgX exposure 1.3, contrast 1.5, white 10; glow threshold 2.0, intensity 0.8, levels 3 to 5; adjustments contrast 1.04, saturation 0.97 and the lookup), the grade in `tools/colour_grade/colour_grade.json` (rewrite the lookup with `godot --path . --resolution 64x64 -s res://tools/colour_grade/build_colour_grade_lut.gd`; `see_through`'s `lut_file` check then proves the `.res` equals the parameters), and the silhouette in `src/gameplay/units/data/silhouette_settings.tres` (strength 0.55, the quad's side 150 m, the two render layers). The chase view's sky and the fords' water are visibly less blue under the shipped look: AgX and the grade's warm highlights together (no ford frame without the grade exists, so their shares are not measured). The build you play carries stories 025 and 026 (closed, committed in bf9e12e).
+**Hand-off**: Nothing is committed. Story 027 is the only story in the uncommitted tree (025 and 026 are bf9e12e), so it can be committed alone: stage everything except the five Svaty Jur paths (`assets/art/svaty_jur`, `production/qa/evidence/svaty-jur-experiment-2026-10-11`, `src/gameplay/maps/svaty_jur`, `tools/blender/build_svaty_jur.py`, `tools/blender/data`), which stay untracked and out of every commit. The new files are the silhouette's two scripts with their `.uid` files and its four materials and settings (`src/gameplay/units/`), `colour_grade_lut.res`, `tools/colour_grade/`, the `see_through*.gd` and `light_*.gd` scenarios with their `.uid` files and the evidence folder; the changed files are `project.godot`, `map_01.tscn`, `split_screen.gd` and `.tscn`, `unit.gd`, `unit_model.gd`, `chase_camera.gd`, the runner, `quick_fix_kit.gd`, the class cache and the docs. Timeline of this close: the verification (20:19 to 20:33) ran on the live tree before any question; the forms went out after 20:33 and the answers were in before 20:36 (about a minute: the answers do not tell which build the developer played); at 20:36 no file in the repo was newer than the verification script, `git status` read 55 entries as at the start, no Godot process was running, and `ListAgents` showed one other interactive session of the developer's idle and the rest offline.
+"""
+story = story.rstrip("\n") + "\n" + COMPLETION
+new[STORY] = story
+
+# ---------------------------------------------------------------- the evidence document
+ev = original[EVID]
+ev = edit(ev, "| The new look (AgX, the grade, the glow) reads right in play, in both views (frames 01 to 22) | [ ] |",
+          "| The new look (AgX, the grade, the glow) reads right in play, in both views (frames 01 to 22) | [x] Yes (the developer, 2026-10-22) |", "sign-off 1")
+ev = edit(ev, "and the other Player's view shows nothing (frames 23 to 40) | [ ] |",
+          "and the other Player's view shows nothing (frames 23 to 40) | [x] Yes (the developer, 2026-10-22) |", "sign-off 2")
+ev = edit(ev, "| The seven questions | [ ] |", "| The seven questions | [x] All seven kept as built (the developer, 2026-10-22) |", "sign-off 3")
+ev = edit(ev, "| Lead sign-off (Visual/Feel evidence) | [ ] |", "| Lead sign-off (Visual/Feel evidence) | [x] Approved, close, no debt row (the developer, 2026-10-22) |", "sign-off 4")
+ev = edit(ev, "| `20-ford-from-above-agx-as-shipped.png` | `light_ford_agx` (832): the same as shipped. |",
+          "| `20-ford-from-above-agx-as-shipped.png` | `light_ford_agx` (832): the same as shipped. The water is a pale grey-green (183, 199, 189; hue 140 to 143 degrees, saturation 0.08) where frame 19's was a light cyan (150, 200, 206; hue 187 degrees, saturation 0.27): measured at `/story-done`, see the findings. |", "frame 20 row")
+ev = edit(ev, "The composing command was not kept; its pixel counts were measured again in the close-out (measured fact 11).",
+          "The composing command was not kept; its pixel counts were measured again in the close-out (measured fact 11). At `/story-done` they were found to be byte copies of the composites the morning sitting left (see Checks at `/story-done`).", "frames 34-37 source")
+ev = edit(ev, "so it is the grade's warm highlights that take the blue out (measured fact 7). **Question 2.**\n",
+          "so it is the grade's warm highlights that take the blue out (measured fact 7). **Question 2.**\n"
+          "- **The fords' water changes colour under the shipped look** (measured at `/story-done` in crops inside the water of each view, frames 19 and 20): a light cyan under Linear, (150, 200, 206) and (148, 199, 205), hue 187 degrees, saturation 0.27 and 0.28, and a pale grey-green as shipped, (183, 199, 189) and (182, 198, 188), hue 140 and 143 degrees, saturation 0.08. No frame of the ford without the grade exists, so how much of it is AgX and how much the grade is not measured; the sky's frames say the grade takes the blue out. The dev evidence did not name it; it was in the developer's question 2, kept as built, and story 028 (the water) is judged under it. **Question 2.**\n",
+          "findings: the water")
+CHECKS = """## Checks at `/story-done`
+
+Run on 2026-10-22, 20:19 to 20:36, before any question was asked: scripts in the closing session's scratchpad (`verify27.sh`, `rec27.sh`, `cmp27.sh`, `xcheck27.py`, `numscan27.py`, `regress.sh`, `cmp34_37.sh`, `compose34_37b.sh`, `halves.gd`, `water.sh`, copied to `measurements/story-done/` with their outputs), with a copy of the dev session's baseline `rg27/base-a` (the 81 outputs) used read-only; nothing was written under the repo but gdUnit's gitignored `reports/` and the files of `measurements/story-done/` written at the close.
+
+- **The tree.** `src/`, `tools/`, `project.godot` and `assets/` (the Svaty Jur art left out) hash to the 952 files of the final chain's manifest (`close-out-2026-10-22/final-chain-manifest-after-chain.txt`) and of the morning's manifest of 12:51 (taken before the 85 seeded defects and the final recordings), sorted by path (`story-done/manifest-live.txt`, before and after the check: equal), so the live tree is the one the evidence ran on. At 20:36, when the answers were in, no file in the repo was newer than the verification script, `git status` read 55 entries as at the start, no Godot process was running and `ListAgents` showed one other interactive session of the developer's idle and the rest offline.
+- **Re-run.** Parse of the 20 `.gd` files of `final-chain-gd-list.txt`: 20 `ok`, 0 `PARSE FAIL` (`story-done/parse.txt`). `see_through` twice in parallel: 20 checks, 0 failed, 10.917 simulated seconds, the two outputs byte-identical and equal to `scenario-outputs/split-see_through.txt`; `light_showcase` headless (45 moments) equal to `scenario-outputs/split-light_showcase.txt` (`story-done/verify27.out.txt`). The 81 older outputs against the baseline through `normalizers.json`: 69 strict, 12 normalized, 0 bad, row for row the table of `regress-81-final.txt` (`story-done/regress-81-live.txt`). gdUnit: 1 test, 0 failures. Each of the 17 check names the acceptance table cites in `see_through` (24 citations) is a PASS line of the re-run (`story-done/xcheck.txt`; the two names it cites that are not CHECK lines are a mutant, `no_sight_copy`, and a function, `first_problem`; the three CHECK names it does not cite are `greybox_untouched`, `modules_leave_a_fresh_round` and `no_engine_noise`).
+- **The recordings.** Fresh windowed `--write-movie` recordings on the live tree (rc 0, no ERROR, WARNING or SCRIPT line): the main scene's 90 launch frames and the whole `light_showcase` as shipped (1,553 frames, recorded in 4 min 40 s). All 1,643 equal the dev recordings' same-numbered frames byte for byte (the launch against the morning's, the showcase against finalA), the windowed `SPLIT` and `RESULT` lines are identical to finalA's, and the 32 retained frames 01 to 32 are byte copies of the same-numbered frames of finalA, of the repeat finalA2 and of this fresh recording, and frame 00 is the launch's frame 89 in both (`story-done/cmp-frames.txt`). Frames 34 to 37 are byte copies of the composites the morning sitting left (`story-done/cmp34_37.txt`); rebuilt from the retained frames and the close-out's difference masks by `compose.gd`'s pair mode, their top halves are identical pixel for pixel and every white pixel of the retained mask halves lies inside the rebuilt masks (4,594 of 4,670, 4,364 of 4,419, 5,484 of 5,795 and 3,927 of 3,944), the morning's tool having used another threshold at the mask's edges (`story-done/halves-34-37.txt`). The frame-rate runs were not recorded again: the tree is unchanged since the six paced runs of 19:46 to 19:51, and they need an idle machine.
+- **Frames.** All 40 opened and read again at their retained paths: the descriptions in the table above hold. One observation is new: in frame 20 the ford's water is a pale grey-green where frame 19's was a light cyan, measured in crops inside the water of each view (`story-done/water-measure.txt`: (150, 200, 206) and (148, 199, 205) against (183, 199, 189) and (182, 198, 188); hue 187 degrees against 140 and 143; saturation 0.27 and 0.28 against 0.08), a change the evidence did not name before; it is in the findings, in the developer's question 2 and in the story's, and story 028 (the water) is judged under it.
+- **Code.** The new scripts, the grade's tool and the data files read. An independent tokenizing scan (checked first on synthetic lines: it flags 5 of 5 that must be flagged and passes 7 of 7 that must pass; `story-done/numscan.txt`) finds no number other than 0 and 1 outside declarations in the three new scripts (`unit_silhouette.gd`, `silhouette_settings.gd`, `build_colour_grade_lut.gd`: 421 lines) and in the 73 lines the story added to `unit.gd`, `unit_model.gd`, `chase_camera.gd` and `split_screen.gd`; on declaration lines the only numbers are the bounds of two `@export_range`s (0.0 to 1.0 in steps of 0.01 for the strength, 0.0 to 16384.0 for the quad's side) and the defaults 0 and 0.0. There is no player-facing string (the strings are `push_error` and `first_problem()` sentences and node and group names), and no branch names a Unit type (`see_through`'s lint says the same).
+- **Not repeated.** The windowed frame-rate runs (AC-6's budget and TD-016's numbers) and the seeded defects (87 headless at `/dev-story`, the tree unchanged since). A recording is Movie Maker's fixed 60 fps, so it does not test pacing.
+- **Timeline.** The verification ended at 20:33; the forms went out after that, in three at once (the two play checks and the sign-off, the questions 1 to 4, the questions 5 to 7), and the answers were in before 20:36: about a minute, so they do not tell which build, if any, the developer played. Nothing in the repo changed meanwhile.
+
+"""
+ev = edit(ev, "## Human checks at `/story-done`\n", CHECKS + "## Human checks at `/story-done`\n", "checks section")
+ev = edit(ev, "\n## Sign-off\n",
+          "\nAnswered by the developer on 2026-10-22 at `/story-done` (a still cannot show the feel): the look in play (both views, as smooth as before), Yes; the silhouette (your own half only, nothing of your Unit through cover in the other), Yes; the seven questions, all kept as built (AgX at an exposure of 1.3, a contrast of 1.5 and a white of 10; the grade as built, with the neutral grey sky and the pale grey-green water of the fords; the glow's threshold of 2.0 with the Units' lamps as they are; the filled silhouette in both views; no silhouette for the Flags; your silhouette also over the other Player's Unit; TD-019 open until a Windows build is looked at); the evidence, Approved, closed with no debt row. The answers came about a minute after the forms and do not tell which build, if any, was played.\n\n## Sign-off\n",
+          "human checks answered")
+new[EVID] = ev
+
+# ---------------------------------------------------------------- the epic row
+EPIC_OLD = "| 027 | The light and the colour, and your own Unit through cover: a tone mapper instead of Linear, glow for what is brighter than white, a colour grade, and a Team-coloured silhouette of your own Unit where cover hides it, in your view only | Visual/Feel | Ready | N/A (minimal) |"
+new[EPIC] = edit(original[EPIC], EPIC_OLD, EPIC_OLD.replace("| Ready |", "| Complete |"), "epic row")
+
+# ---------------------------------------------------------------- the readme row
+rd = original[README]
+rd_lines = rd.split("\n")
+idx = [i for i, l in enumerate(rd_lines) if l.startswith("| 026 | Ground Units leave tyre tracks:")]
+if len(idx) != 1 or not rd_lines[idx[0]].endswith("| Done |"):
+    raise SystemExit("README row 026 anchor failed")
+ROW = ("| 027 | The light and the colour, and your own Unit through cover: Map 01 is drawn through the AgX tone mapper (exposure 1.3, contrast 1.5, white 10) instead of none, with a mild colour grade "
+       "(warmer highlights, a little cooler shadows, a little dust: a 32-texel 3D lookup written by `tools/colour_grade/build_colour_grade_lut.gd` from `colour_grade.json`) and a glow that only takes light "
+       "brighter than 2.0, above anything the sun lights (1.08 on the salt flat, 1.18 at the ford), so nothing glows today and the fire and tracers of later stories will; the salt flat's clipped share falls "
+       "from 0.062% to 0.000% and its cracks soften (the luma's spread 0.054 and 0.071 to 0.031 and 0.052: a paler, creamier flat), Orange and Teal stay 159 to 167 degrees apart in hue, the chase view's sky "
+       "turns from blue to neutral grey and the fords' water from light cyan to pale grey-green, and the HUD is not graded; where cover hides a Player's own Unit the hidden part shows over it as a flat "
+       "see-through shape in the Team colour (strength 0.55), in that Player's two views only, from above and in the chase view, drawn by three stencil passes (an invisible copy of each mesh that marks what "
+       "the Unit covers, a second that marks what is in sight, and one fill quad for the rest), so overlapping hidden parts are no stronger and the parts in sight look as they always did; the other Player's "
+       "Unit is never drawn through anything, though your own silhouette also shows over the other Player's Unit when it stands in front of yours (a Unit out of play, the rotor's smear, the smoke and the "
+       "explosion have none); every value is data; observed on Metal and, through MoltenVK, on Godot's Vulkan driver (pixel-identical), with D3D12 and Windows GPUs unobserved (TD-019) | Done |")
+rd_lines.insert(idx[0] + 1, ROW)
+new[README] = "\n".join(rd_lines)
+
+# ---------------------------------------------------------------- rules.md: the kept readings
+RULES_OLD = "(docs/tech-debt-register.md, TD-019)."
+RULES_NEW = (RULES_OLD + " The developer kept all of this on 2026-10-22 (story 027's questions 1 to 7: AgX at an exposure of 1.3, a contrast of 1.5 and a white of 10; the grade as built, with the chase view's "
+             "neutral grey sky and the fords' pale grey-green water; the glow's threshold of 2.0 with the Units' lamps as they are; the filled silhouette in both views; no silhouette for the Flags; your "
+             "silhouette also over the other Player's Unit; and TD-019 open until a Windows build is looked at).")
+new[RULES] = edit(original[RULES], RULES_OLD, RULES_NEW, "rules kept readings")
+
+# ---------------------------------------------------------------- guards, backups, writes
+for f in FILES:
+    if new[f] == original[f]:
+        raise SystemExit("NO CHANGE computed for " + f)
+status = subprocess.run(["git", "status", "--porcelain"], cwd=R, capture_output=True, text=True).stdout.strip().split("\n")
+print("git status entries:", len(status))
+if len(status) != 55:
+    raise SystemExit("git status count moved (55 expected): another session may be in the tree")
+for f in FILES:
+    now = os.stat(os.path.join(R, f)).st_mtime_ns
+    if now != mtimes[f]:
+        raise SystemExit("MTIME GUARD: %s changed since it was read" % f)
+if DRY:
+    for f in FILES:
+        print("DRY ok  %-70s %d -> %d characters" % (f, len(original[f]), len(new[f])))
+    sys.exit(0)
+os.makedirs(os.path.join(MY, "backup"), exist_ok=True)
+for f in FILES:
+    shutil.copyfile(os.path.join(R, f), os.path.join(MY, "backup", os.path.basename(f) + ".before-close"))
+for f in FILES:
+    with open(os.path.join(R, f), "w", encoding="utf-8", newline="") as fh:
+        fh.write(new[f])
+    print("written %-70s %d -> %d characters" % (f, len(original[f]), len(new[f])))

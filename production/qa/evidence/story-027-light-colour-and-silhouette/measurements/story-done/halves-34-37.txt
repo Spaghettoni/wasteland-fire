@@ -1,0 +1,4 @@
+HALVES 34-difference-mask-turret-chase-view.png vs 34-difference-mask-turret-chase-view.png size=(960, 1088) top_differing=0 (largest 0) bottom_differing=480 bottom_non_black: first=4594 second=4670 both=4594
+HALVES 35-difference-mask-both-behind-the-depot-tank.png vs 35-difference-mask-both-behind-the-depot-tank.png size=(960, 1088) top_differing=0 (largest 0) bottom_differing=364 bottom_non_black: first=4364 second=4419 both=4364
+HALVES 36-difference-mask-cliff-chase-view.png vs 36-difference-mask-cliff-chase-view.png size=(960, 1088) top_differing=0 (largest 0) bottom_differing=1156 bottom_non_black: first=5484 second=5795 both=5484
+HALVES 37-difference-mask-over-the-other-players-truck.png vs 37-difference-mask-over-the-other-players-truck.png size=(960, 1088) top_differing=0 (largest 0) bottom_differing=94 bottom_non_black: first=3927 second=3944 both=3927

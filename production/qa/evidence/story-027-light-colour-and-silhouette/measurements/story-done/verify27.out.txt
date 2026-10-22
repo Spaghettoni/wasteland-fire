@@ -1,0 +1,43 @@
+     952
+TREE = THE FINAL CHAIN'S MANIFEST (     952 files)
+TREE = THE MORNING'S MANIFEST OF 12:51 (     952 files)
+parse rc=0
+20
+20
+RESULT see_through ok checks=20 failed=0 t=10.917 strength=0.55 tonemap=4 exposure=1.29999995231628 white=10.0 contrast=1.5 glow_threshold=2.0 grade_hue_moves=0.33/2.55 apart=150.5 lut_layers=32 refusals=41 camera_reads=4 copies=60 passes=90/95/100 turning_copies=16 smoke_puffs=15 silhouette_nodes_p
+see_through a/b BYTE-IDENTICAL
+see_through = the retained output
+showcase rc=0
+RESULT light_showcase ok checks=0 failed=0 t=25.867 moments=45
+showcase headless = the retained output
+CHECK lines in the re-run: 20  all PASS: True
+acceptance rows: 7
+cited and a PASS line of the re-run (24):
+  AC-1: environment_data
+  AC-2: environment_data
+  AC-3: grade_data, lut_file, environment_data
+  AC-4: settings_data, project_layers, cameras, copies, passes, turning_parts, small_things, benched_at_start, life, retype, respawn_cost, undressed
+  AC-5: settings_data, environment_data, grade_data, lut_file, project_layers, no_number_in_code, settings_refused
+cited but not a CHECK line of see_through (2) -- read each by hand:
+  AC-4: no_sight_copy
+  AC-5: first_problem
+CHECK names in the re-run no acceptance row cites: greybox_untouched, modules_leave_a_fresh_round, no_engine_noise
+compare exit 0
+NORMALIZED split ammo_buildings         rc=0 rewrites=[3]
+NORMALIZED split badly_damaged          rc=0 rewrites=[2, 1]
+NORMALIZED split explosions             rc=0 rewrites=[3, 1]
+NORMALIZED split flag_walls             rc=0 rewrites=[4]
+NORMALIZED split fuel_building          rc=0 rewrites=[3, 1]
+NORMALIZED split rotors                 rc=0 rewrites=[2]
+NORMALIZED split token_ui               rc=0 rewrites=[2]
+NORMALIZED split tokens_data            rc=0 rewrites=[18, 1]
+NORMALIZED split turret_looks           rc=0 rewrites=[5]
+NORMALIZED split turrets                rc=0 rewrites=[1]
+NORMALIZED split tyre_tracks            rc=0 rewrites=[1]
+NORMALIZED split unit_swap              rc=0 rewrites=[1]
+-- 69 strict, 12 normalized, 0 bad of 81 compared
+gdunit rc=0
+[38;2;30;144;255mOverall Summary:[0m[38;2;255;255;255m 1 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans |[0m
+     952
+TREE UNCHANGED BY THE CHECK
+VERIFY_DONE

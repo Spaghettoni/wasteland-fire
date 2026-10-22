@@ -1,0 +1,141 @@
+extends SceneTree
+## Frame measurements for Story 027's evidence, run headless with arguments after "--":
+##   clip FRAME x y w h                 share of pixels with a channel at 255, mean and sd of the luma (0 to 1)
+##   hue FRAME x y w h lo hi smin vmin  mean hue (degrees) of the pixels whose hue is within lo..hi, saturation over smin and value over vmin, with their count, mean saturation and value
+##   hdrmax FRAME x y w h exposure      the largest linear value in the region divided by the exposure (and the 99.9th percentile), for a frame taken with Linear at that exposure
+##   same A B x y w h                   the number of pixels that differ between two frames in the region, and the largest channel difference (0 to 255)
+##   ring A B cx cy r0 r1               the largest channel difference between two frames in the ring around (cx, cy) from r0 to r1 pixels
+##   mean FRAME x y w h                 the mean colour of the region
+
+func _initialize() -> void:
+	var args: PackedStringArray = OS.get_cmdline_user_args()
+	match args[0]:
+		"clip":
+			var image: Image = _load(args[1])
+			var r: Rect2i = _rect(args, 2)
+			var clipped: int = 0
+			var sum: float = 0.0
+			var sum_sq: float = 0.0
+			for y: int in range(r.position.y, r.end.y):
+				for x: int in range(r.position.x, r.end.x):
+					var c: Color = image.get_pixel(x, y)
+					if c.r8 == 255 or c.g8 == 255 or c.b8 == 255:
+						clipped += 1
+					var luma: float = c.get_luminance()
+					sum += luma
+					sum_sq += luma * luma
+			var n: float = r.get_area()
+			var mean: float = sum / n
+			print("CLIP %s clipped=%.5f (%d of %d) luma_mean=%.4f luma_sd=%.4f" % [args[1].get_file(), float(clipped) / n, clipped, int(n), mean, sqrt(maxf(sum_sq / n - mean * mean, 0.0))])
+		"hue":
+			var image: Image = _load(args[1])
+			var r: Rect2i = _rect(args, 2)
+			var lo: float = float(args[6])
+			var hi: float = float(args[7])
+			var smin: float = float(args[8])
+			var vmin: float = float(args[9])
+			var count: int = 0
+			var x_sum: float = 0.0
+			var y_sum: float = 0.0
+			var s_sum: float = 0.0
+			var v_sum: float = 0.0
+			for y: int in range(r.position.y, r.end.y):
+				for x: int in range(r.position.x, r.end.x):
+					var c: Color = image.get_pixel(x, y)
+					var hue: float = c.h * 360.0
+					if hue >= lo and hue <= hi and c.s >= smin and c.v >= vmin:
+						count += 1
+						x_sum += cos(deg_to_rad(hue))
+						y_sum += sin(deg_to_rad(hue))
+						s_sum += c.s
+						v_sum += c.v
+			var mean_hue: float = fposmod(rad_to_deg(atan2(y_sum, x_sum)), 360.0) if count > 0 else -1.0
+			print("HUE %s n=%d hue=%.2f sat=%.3f val=%.3f" % [args[1].get_file(), count, mean_hue, s_sum / maxf(count, 1.0), v_sum / maxf(count, 1.0)])
+		"hdrmax":
+			var image: Image = _load(args[1])
+			var r: Rect2i = _rect(args, 2)
+			var exposure: float = float(args[6])
+			var values: PackedFloat32Array = []
+			for y: int in range(r.position.y, r.end.y):
+				for x: int in range(r.position.x, r.end.x):
+					var c: Color = image.get_pixel(x, y).srgb_to_linear()
+					values.append(maxf(c.r, maxf(c.g, c.b)))
+			values.sort()
+			var top: float = values[values.size() - 1]
+			var p999: float = values[int(float(values.size()) * 0.999)]
+			print("HDRMAX %s max=%.4f p99.9=%.4f (the largest channel, linear, over the exposure %s)" % [args[1].get_file(), top / exposure, p999 / exposure, exposure])
+		"same":
+			var a: Image = _load(args[1])
+			var b: Image = _load(args[2])
+			var r: Rect2i = _rect(args, 3)
+			var differing: int = 0
+			var largest: int = 0
+			for y: int in range(r.position.y, r.end.y):
+				for x: int in range(r.position.x, r.end.x):
+					var ca: Color = a.get_pixel(x, y)
+					var cb: Color = b.get_pixel(x, y)
+					var d: int = maxi(absi(ca.r8 - cb.r8), maxi(absi(ca.g8 - cb.g8), absi(ca.b8 - cb.b8)))
+					if d > 0:
+						differing += 1
+					largest = maxi(largest, d)
+			print("SAME %s vs %s region=%s differing=%d of %d largest_delta=%d" % [args[1].get_file(), args[2].get_file(), r, differing, r.get_area(), largest])
+		"ring":
+			var a: Image = _load(args[1])
+			var b: Image = _load(args[2])
+			var cx: float = float(args[3])
+			var cy: float = float(args[4])
+			var r0: float = float(args[5])
+			var r1: float = float(args[6])
+			var largest: int = 0
+			var differing: int = 0
+			var total: int = 0
+			for y: int in range(int(cy - r1) - 1, int(cy + r1) + 2):
+				for x: int in range(int(cx - r1) - 1, int(cx + r1) + 2):
+					if x < 0 or y < 0 or x >= a.get_width() or y >= a.get_height():
+						continue
+					var dist: float = Vector2(x, y).distance_to(Vector2(cx, cy))
+					if dist < r0 or dist > r1:
+						continue
+					var ca: Color = a.get_pixel(x, y)
+					var cb: Color = b.get_pixel(x, y)
+					var d: int = maxi(absi(ca.r8 - cb.r8), maxi(absi(ca.g8 - cb.g8), absi(ca.b8 - cb.b8)))
+					total += 1
+					differing += 1 if d > 0 else 0
+					largest = maxi(largest, d)
+			print("RING %s vs %s centre=(%.0f,%.0f) r=%.0f..%.0f differing=%d of %d largest_delta=%d" % [args[1].get_file(), args[2].get_file(), cx, cy, r0, r1, differing, total, largest])
+		"profile":
+			# profile A B y x0 x1 step   the largest channel difference between two frames in the columns of a horizontal band (y +- 3), every `step` pixels
+			var a: Image = _load(args[1])
+			var b: Image = _load(args[2])
+			var y0: int = int(args[3])
+			var parts: PackedStringArray = []
+			for x: int in range(int(args[4]), int(args[5]), int(args[6])):
+				var largest: int = 0
+				for yy: int in range(y0 - 3, y0 + 4):
+					for xx: int in range(x, x + int(args[6])):
+						var ca: Color = a.get_pixel(xx, yy)
+						var cb: Color = b.get_pixel(xx, yy)
+						largest = maxi(largest, maxi(absi(ca.r8 - cb.r8), maxi(absi(ca.g8 - cb.g8), absi(ca.b8 - cb.b8))))
+				parts.append("%d:%d" % [x, largest])
+			print("PROFILE %s vs %s y=%d %s" % [args[1].get_file(), args[2].get_file(), y0, " ".join(parts)])
+		"mean":
+			var image: Image = _load(args[1])
+			var r: Rect2i = _rect(args, 2)
+			var sum: Color = Color(0, 0, 0)
+			for y: int in range(r.position.y, r.end.y):
+				for x: int in range(r.position.x, r.end.x):
+					sum += image.get_pixel(x, y)
+			var n: float = r.get_area()
+			var c: Color = Color(sum.r / n, sum.g / n, sum.b / n)
+			print("MEAN %s rgb=%d,%d,%d" % [args[1].get_file(), c.r8, c.g8, c.b8])
+	quit()
+
+
+func _rect(args: PackedStringArray, at: int) -> Rect2i:
+	return Rect2i(int(args[at]), int(args[at + 1]), int(args[at + 2]), int(args[at + 3]))
+
+
+func _load(path: String) -> Image:
+	var image: Image = Image.load_from_file(path)
+	image.convert(Image.FORMAT_RGB8)
+	return image

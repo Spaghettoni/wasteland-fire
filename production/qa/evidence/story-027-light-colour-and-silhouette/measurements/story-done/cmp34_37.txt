@@ -1,0 +1,4 @@
+SAME   34-difference-mask-turret-chase-view.png = meas/diff/sil_turret_chase.png
+SAME   35-difference-mask-both-behind-the-depot-tank.png = meas/diff/sil_leak_chase.png
+SAME   36-difference-mask-cliff-chase-view.png = meas/diff/sil_cliff_chase.png
+SAME   37-difference-mask-over-the-other-players-truck.png = meas/diff/sil_unit_in_front_chase.png

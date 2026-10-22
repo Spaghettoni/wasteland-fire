@@ -1,0 +1,46 @@
+## (4a) no sight copy (wm-no-sight) against the same moment without the silhouettes (finalN), beside the build's mask (finalA against finalN)
+sil_turret_chase defect DIFF f00000136.png vs f00001059.png differing=1538 p1=769 p2=769 largest_delta=164 p1_box=[P: (307, 344), S: (26, 59)] p2_box=[P: (947, 344), S: (26, 59)]
+sil_turret_chase build-vs-defect OVERLAP metal-sil_turret_chase.png vs defect-no-sight-sil_turret_chase.png both=1310 (p1 655, p2 655) only_first=0 (p1 0, p2 0) only_second=228 (p1 114, p2 114)
+sil_tower_chase defect DIFF f00000202.png vs f00001125.png differing=6012 p1=3006 p2=3006 largest_delta=158 p1_box=[P: (288, 342), S: (64, 64)] p2_box=[P: (928, 342), S: (64, 64)]
+sil_tower_chase build-vs-defect OVERLAP metal-sil_tower_chase.png vs defect-no-sight-sil_tower_chase.png both=6012 (p1 3006, p2 3006) only_first=0 (p1 0, p2 0) only_second=0 (p1 0, p2 0)
+sil_leg_chase defect DIFF f00000268.png vs f00001191.png differing=12767 p1=5967 p2=6800 largest_delta=178 p1_box=[P: (280, 311), S: (80, 102)] p2_box=[P: (920, 311), S: (201, 240)]
+sil_leg_chase build-vs-defect OVERLAP metal-sil_leg_chase.png vs defect-no-sight-sil_leg_chase.png both=11146 (p1 5573, p2 5573) only_first=0 (p1 0, p2 0) only_second=1621 (p1 394, p2 1227)
+sil_container_chase defect DIFF f00000334.png vs f00001257.png differing=11933 p1=5966 p2=5967 largest_delta=178 p1_box=[P: (280, 311), S: (80, 102)] p2_box=[P: (920, 311), S: (80, 102)]
+sil_container_chase build-vs-defect OVERLAP metal-sil_container_chase.png vs defect-no-sight-sil_container_chase.png both=4698 (p1 2349, p2 2349) only_first=0 (p1 0, p2 0) only_second=7235 (p1 3617, p2 3618)
+sil_cliff_chase defect DIFF f00000400.png vs f00001323.png differing=6012 p1=3006 p2=3006 largest_delta=178 p1_box=[P: (288, 342), S: (64, 64)] p2_box=[P: (928, 342), S: (64, 64)]
+sil_cliff_chase build-vs-defect OVERLAP metal-sil_cliff_chase.png vs defect-no-sight-sil_cliff_chase.png both=2926 (p1 1463, p2 1463) only_first=0 (p1 0, p2 0) only_second=3086 (p1 1543, p2 1543)
+sil_leak_chase defect DIFF f00000466.png vs f00001389.png differing=1536 p1=769 p2=767 largest_delta=163 p1_box=[P: (307, 344), S: (26, 59)] p2_box=[P: (947, 344), S: (26, 59)]
+sil_leak_chase build-vs-defect OVERLAP metal-sil_leak_chase.png vs defect-no-sight-sil_leak_chase.png both=912 (p1 455, p2 457) only_first=0 (p1 0, p2 0) only_second=624 (p1 314, p2 310)
+sil_tank_chase defect DIFF f00000532.png vs f00001455.png differing=2836 p1=1418 p2=1418 largest_delta=178 p1_box=[P: (288, 233), S: (57, 83)] p2_box=[P: (928, 233), S: (57, 83)]
+sil_tank_chase build-vs-defect OVERLAP metal-sil_tank_chase.png vs defect-no-sight-sil_tank_chase.png both=98 (p1 49, p2 49) only_first=0 (p1 0, p2 0) only_second=2738 (p1 1369, p2 1369)
+sil_unit_in_front_chase defect DIFF f00000598.png vs f00001521.png differing=6730 p1=769 p2=5961 largest_delta=178 p1_box=[P: (307, 344), S: (26, 59)] p2_box=[P: (920, 311), S: (80, 102)]
+sil_unit_in_front_chase build-vs-defect OVERLAP metal-sil_unit_in_front_chase.png vs defect-no-sight-sil_unit_in_front_chase.png both=150 (p1 150, p2 0) only_first=0 (p1 0, p2 0) only_second=6580 (p1 619, p2 5961)
+## (4b) the glow's threshold at 1.0 (wm-glow-low): the flat with the glow on against off, whole frame (the build: 0 of 921,600 differ)
+SAME f00000588.png vs f00000598.png region=[P: (0, 0), S: (1280, 720)] differing=2406 of 921600 largest_delta=1
+bottom third SAME f00000588.png vs f00000598.png region=[P: (0, 520), S: (1280, 200)] differing=392 of 256000 largest_delta=1
+DIFF f00000588.png vs f00000598.png differing=2406 p1=1002 p2=1404 largest_delta=1 p1_box=[P: (276, 4), S: (362, 708)] p2_box=[P: (642, 89), S: (436, 507)]
+glow on  (330 160 230 260) MEAN f00000588.png rgb=215,201,180
+glow off (330 160 230 260) MEAN f00000598.png rgb=215,201,180
+glow on  (700 160 230 260) MEAN f00000588.png rgb=214,200,180
+glow off (700 160 230 260) MEAN f00000598.png rgb=214,200,180
+## (5) the light moments on Vulkan (vk-light) against Metal (finalA)
+light_flat_linear metal-vs-vulkan SAME f00000408.png vs f00000078.png region=[P: (0, 0), S: (1280, 720)] differing=0 of 921600 largest_delta=0
+light_flat_linear crop (330 160 230 260) metal rgb=216,205,187 vulkan rgb=216,205,187
+light_flat_linear crop (700 160 230 260) metal rgb=215,204,186 vulkan rgb=215,204,186
+light_flat_agx metal-vs-vulkan SAME f00000418.png vs f00000088.png region=[P: (0, 0), S: (1280, 720)] differing=0 of 921600 largest_delta=0
+light_flat_agx crop (330 160 230 260) metal rgb=215,201,180 vulkan rgb=215,201,180
+light_flat_agx crop (700 160 230 260) metal rgb=214,200,180 vulkan rgb=214,200,180
+light_flat_agx_no_grade metal-vs-vulkan SAME f00000428.png vs f00000098.png region=[P: (0, 0), S: (1280, 720)] differing=0 of 921600 largest_delta=0
+light_flat_agx_no_grade crop (330 160 230 260) metal rgb=204,199,190 vulkan rgb=204,199,190
+light_flat_agx_no_grade crop (700 160 230 260) metal rgb=203,198,190 vulkan rgb=203,198,190
+light_sun_close_agx metal-vs-vulkan SAME f00000600.png vs f00000270.png region=[P: (0, 0), S: (1280, 720)] differing=0 of 921600 largest_delta=0
+light_sun_close_agx crop (330 160 230 260) metal rgb=179,166,152 vulkan rgb=179,166,152
+light_sun_close_agx crop (700 160 230 260) metal rgb=139,147,143 vulkan rgb=139,147,143
+light_sun_close_agx_no_grade metal-vs-vulkan SAME f00000610.png vs f00000280.png region=[P: (0, 0), S: (1280, 720)] differing=0 of 921600 largest_delta=0
+light_sun_close_agx_no_grade crop (330 160 230 260) metal rgb=171,164,159 vulkan rgb=171,164,159
+light_sun_close_agx_no_grade crop (700 160 230 260) metal rgb=130,146,150 vulkan rgb=130,146,150
+glow_none_on metal-vs-vulkan SAME f00000918.png vs f00000588.png region=[P: (0, 0), S: (1280, 720)] differing=0 of 921600 largest_delta=0
+glow_none_on crop (330 160 230 260) metal rgb=215,201,180 vulkan rgb=215,201,180
+glow_none_on crop (700 160 230 260) metal rgb=214,200,180 vulkan rgb=214,200,180
+vulkan glow on vs off SAME f00000588.png vs f00000598.png region=[P: (0, 0), S: (1280, 720)] differing=0 of 921600 largest_delta=0
+MEASURE_MORE_DONE

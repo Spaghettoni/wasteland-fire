@@ -1,0 +1,14 @@
+#!/bin/sh
+# The A/B batch of light_fps: runs alternate between the build as it ships and the variants, so a drift of the machine shows in both.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad
+date +%H:%M:%S > $S/fps/batch.progress
+for n in 1 2 3 4 5; do
+  sh $S/rg27/fps27.sh shipped-$n X=1
+  sh $S/rg27/fps27.sh before-$n LIGHT_FPS_NO_SIL=1 LIGHT_FPS_NO_LOOK=1
+  if [ $n -le 3 ]; then
+    sh $S/rg27/fps27.sh nosil-$n LIGHT_FPS_NO_SIL=1
+    sh $S/rg27/fps27.sh nolook-$n LIGHT_FPS_NO_LOOK=1
+  fi
+  echo "pair $n done $(date +%H:%M:%S)" >> $S/fps/batch.progress
+done
+echo ALLDONE >> $S/fps/batch.progress

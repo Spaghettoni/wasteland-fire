@@ -1,0 +1,18 @@
+finalA frames: 1553  finalA2 frames: 1553
+byte-identical: 1553  differ: 0  missing in A2: 0
+differing frames:
+--- moment lines (SPLIT/RESULT) of the two .out files:
+moment lines identical
+--- whole .out diff (line count):
+52,53c52,53
+< Done recording movie at path: /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad/rec/finalA/f.png
+< 1553 frames at 60 FPS (movie length: 00:00:25:53), recorded in 00:04:52 (8% of real-time speed).
+---
+> Done recording movie at path: /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad/rec/finalA2/f.png
+> 1553 frames at 60 FPS (movie length: 00:00:25:53), recorded in 00:04:45 (8% of real-time speed).
+56c56
+< Encoding time: 273.84 seconds (average: 176.33 ms/frame)
+---
+> Encoding time: 266.86 seconds (average: 171.84 ms/frame)
+--- launch:
+      90

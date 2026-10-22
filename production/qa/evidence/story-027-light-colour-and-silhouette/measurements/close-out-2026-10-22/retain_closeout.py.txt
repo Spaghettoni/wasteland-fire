@@ -1,0 +1,50 @@
+"""Retains the close-out of Story 027's build (2026-10-22 evening) in the evidence folder: two more frames (byte copies, compared), the story's own scenario outputs
+from the final chain, and this session's scripts (as .txt) and outputs under measurements/close-out-2026-10-22/, plus the files of the 10-22 morning session that were
+still only in its scratchpad (the launch and A2 recording outputs, the engine review's report). Prints one line per file."""
+import shutil
+from pathlib import Path
+
+C = Path("/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a9ae9e24-5b29-451c-b62f-a16425b4fa8f/scratchpad/c27")
+S = Path("/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad")
+E = Path("/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire/production/qa/evidence/story-027-light-colour-and-silhouette")
+M = E / "measurements" / "close-out-2026-10-22"
+F = C / "final" / "final1"
+bad = 0
+
+
+def put(src, dst):
+    global bad
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(src, dst)
+    same = Path(src).read_bytes() == Path(dst).read_bytes()
+    bad += 0 if same else 1
+    print("%-6s %s <- %s" % ("ok" if same else "DIFFER", dst.relative_to(E), src))
+
+
+put(C / "rec/vk-sil/f00000469.png", E / "38-vulkan-silhouette-behind-a-turret-chase-view.png")
+put(C / "rec/wm-no-sight/f00000400.png", E / "39-seeded-defect-no-sight-copy-behind-a-cliff-chase-view.png")
+put(F / "see_through-a.txt", E / "scenario-outputs/split-see_through.txt")
+put(F / "see_through-b.txt", E / "scenario-outputs/split-see_through-second-run.txt")
+put(F / "showcase-headless.txt", E / "scenario-outputs/split-light_showcase.txt")
+for name in ["rec.sh", "fps.sh", "windowed.sh", "windowed2.sh", "windowed_mutants.sh", "measure_vk.sh", "measure_more.sh", "lib/masks.gd", "fps_table.py",
+             "cmp_a2.sh", "final27.sh", "seeded-defects27b.py", "manifest.sh", "sky.sh", "retain_closeout.py"]:
+    put(C / name, M / (Path(name).name + ".txt"))
+for name in ["vulkan-check-and-ladder.txt", "defects-windowed-and-vulkan-light.txt", "fps-table-final-tree.txt", "fps-table-earlier-36.txt", "seeded-defects-two-more.txt",
+             "cmp-finalA2-vs-finalA.txt", "sky.txt"]:
+    put(C / "meas" / name, M / name)
+put(C / "bl/base-a-vs-base-b.txt", M / "baselines-base-a-vs-base-b.txt")
+put(C / "final-chain-final1.txt", M / "final-chain.txt")
+for name in ["import.txt", "parse.txt", "gd-list.txt", "gdunit.txt", "main-scene-600-frames.txt", "manifest-before-chain.txt", "manifest-after-chain.txt"]:
+    put(F / name, M / ("final-chain-" + name))
+put(S / "rg27/final1.txt", M / "regress-81-final-chain.txt")
+put(S / "rg27/normalizers27.json", M / "normalizers-final-chain.json")
+for tag in ["explore2", "vk-sil", "vk-nosil", "wm-no-sight", "wm-glow-low", "vk-light"]:
+    put(C / "rec" / (tag + ".out"), M / ("recording-" + tag + ".out"))
+for f in sorted((C / "fps").glob("*.out")):
+    put(f, M / "fps" / f.name)
+for name in ["windowed.progress", "windowed2.progress", "wm.progress", "manifest-before-windowed.txt", "manifest-after-windowed2.txt"]:
+    put(C / name, M / name)
+put(S / "rec/launch.out", M / "recording-launch.out")
+put(S / "rec/finalA2.out", M / "recording-finalA2.out")
+put(C / "engine-review-report.txt", E / "measurements" / "engine-review.txt")
+print("problems: %d" % bad)

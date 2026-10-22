@@ -1,0 +1,12 @@
+CHECK lines in the re-run: 20  all PASS: True
+acceptance rows: 7
+cited and a PASS line of the re-run (24):
+  AC-1: environment_data
+  AC-2: environment_data
+  AC-3: grade_data, lut_file, environment_data
+  AC-4: settings_data, project_layers, cameras, copies, passes, turning_parts, small_things, benched_at_start, life, retype, respawn_cost, undressed
+  AC-5: settings_data, environment_data, grade_data, lut_file, project_layers, no_number_in_code, settings_refused
+cited but not a CHECK line of see_through (2) -- read each by hand:
+  AC-4: no_sight_copy
+  AC-5: first_problem
+CHECK names in the re-run no acceptance row cites: greybox_untouched, modules_leave_a_fresh_round, no_engine_noise

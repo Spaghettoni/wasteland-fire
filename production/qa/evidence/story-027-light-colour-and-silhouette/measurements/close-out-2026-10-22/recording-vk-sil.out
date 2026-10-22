@@ -1,0 +1,26 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Vulkan 1.2.334 - Forward+ - Using Device #0: Apple - Apple M4 Pro
+
+Movie Maker mode enabled, recording movie in 1280×720 @ 60 FPS...
+SPLIT light_showcase t=0.100 frame=5 moment=garage_spawn_above both Motorbikes spawned in their Garages by the choice keys
+SPLIT light_showcase t=1.250 frame=74 moment=sil_tower_above both Units behind TowerGateLeft, 4 and 4 of 9 points of the boxes hidden from the own cameras, views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT light_showcase t=2.350 frame=140 moment=sil_leg_above both Units behind LegGateLeft, 1 and 1 of 9 points of the boxes hidden from the own cameras, views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT light_showcase t=3.450 frame=206 moment=sil_container_above both Units behind ContainerWest, 2 and 2 of 9 points of the boxes hidden from the own cameras, views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT light_showcase t=4.550 frame=272 moment=sil_cliff_above both Units behind RockCanyonSouth, 5 and 5 of 9 points of the boxes hidden from the own cameras, views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT light_showcase t=5.650 frame=338 moment=sil_tank_above both Gyrocopters between their water tower's legs, under the tank, 4 and 4 of 9 points of the boxes hidden from the own cameras, views=above_camera_settings.tres, above_camera_settings.tres
+SPLIT light_showcase t=7.833 frame=469 moment=sil_turret_chase both Units behind TurretLeft, 7 and 7 of 9 points of the boxes hidden from the own cameras, views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT light_showcase t=8.933 frame=535 moment=sil_tower_chase both Units behind TowerGateLeft, 7 and 7 of 9 points of the boxes hidden from the own cameras, views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT light_showcase t=10.033 frame=601 moment=sil_leg_chase both Units behind LegGateLeft, 6 and 6 of 9 points of the boxes hidden from the own cameras, views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT light_showcase t=11.133 frame=667 moment=sil_container_chase both Units behind ContainerWest, 2 and 2 of 9 points of the boxes hidden from the own cameras, views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT light_showcase t=12.233 frame=733 moment=sil_cliff_chase both Units behind RockCanyonSouth, 5 and 5 of 9 points of the boxes hidden from the own cameras, views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT light_showcase t=13.333 frame=799 moment=sil_leak_chase both Units behind Collider, 5 and 5 of 9 points of the boxes hidden from the own cameras, views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT light_showcase t=14.433 frame=865 moment=sil_tank_chase both Gyrocopters between their water tower's legs, under the tank, 4 and 4 of 9 points of the boxes hidden from the own cameras, views=chase_camera_settings.tres, chase_camera_settings.tres
+SPLIT light_showcase t=15.533 frame=931 moment=sil_unit_in_front_chase Player 2's Truck between Player 1's camera and Player 1's Motorbike, 9 of 9 points of its box behind a mesh box of the Truck seen from the camera (the boxes are generous: the frame shows what is hidden), views=chase_camera_settings.tres, chase_camera_settings.tres
+RESULT light_showcase ok checks=0 failed=0 t=16.033 moments=14
+--------------------------------------------------------------------------------
+Done recording movie at path: /private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a9ae9e24-5b29-451c-b62f-a16425b4fa8f/scratchpad/c27/rec/vk-sil/f.png
+963 frames at 60 FPS (movie length: 00:00:16:03), recorded in 00:02:46 (9% of real-time speed).
+CPU render time: 0.05 seconds (average: 0.05 ms/frame)
+GPU render time: 0.11 seconds (average: 0.11 ms/frame)
+Encoding time: 151.86 seconds (average: 157.69 ms/frame)
+--------------------------------------------------------------------------------

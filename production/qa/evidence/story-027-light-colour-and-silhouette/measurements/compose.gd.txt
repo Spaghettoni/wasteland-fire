@@ -1,0 +1,95 @@
+extends SceneTree
+## Image helper for the graphics comparisons, run headless with arguments after "--":
+##   pair OUT A B [LABEL_A LABEL_B]     A above B (each scaled to 960 wide), for a before/after
+##   crop OUT IN X Y W H SCALE          a region of IN, scaled by SCALE (nearest-free bilinear)
+##   row OUT H IN...                    the inputs side by side, each scaled to height H
+
+func _initialize() -> void:
+	var args: PackedStringArray = OS.get_cmdline_user_args()
+	match args[0]:
+		"pair":
+			var a: Image = _load(args[2])
+			var b: Image = _load(args[3])
+			a.resize(960, int(a.get_height() * 960.0 / a.get_width()), Image.INTERPOLATE_LANCZOS)
+			b.resize(960, int(b.get_height() * 960.0 / b.get_width()), Image.INTERPOLATE_LANCZOS)
+			var out: Image = Image.create_empty(960, a.get_height() + b.get_height() + 8, false, Image.FORMAT_RGB8)
+			out.fill(Color(0.1, 0.1, 0.1))
+			out.blit_rect(a, Rect2i(Vector2i.ZERO, a.get_size()), Vector2i(0, 0))
+			out.blit_rect(b, Rect2i(Vector2i.ZERO, b.get_size()), Vector2i(0, a.get_height() + 8))
+			out.save_png(args[1])
+		"crop":
+			var src: Image = _load(args[2])
+			var region: Image = src.get_region(Rect2i(int(args[3]), int(args[4]), int(args[5]), int(args[6])))
+			var s: float = float(args[7])
+			region.resize(int(region.get_width() * s), int(region.get_height() * s), Image.INTERPOLATE_LANCZOS)
+			region.save_png(args[1])
+		"sample":
+			var img: Image = _load(args[1])
+			var r: Rect2i = Rect2i(int(args[2]), int(args[3]), int(args[4]), int(args[5]))
+			var sum: Color = Color(0, 0, 0)
+			for y: int in range(r.position.y, r.end.y):
+				for x: int in range(r.position.x, r.end.x):
+					sum += img.get_pixel(x, y)
+			var n: float = r.get_area()
+			var c: Color = Color(sum.r / n, sum.g / n, sum.b / n)
+			print("SAMPLE %s rgb=%d,%d,%d hue=%.1f sat=%.2f val=%.2f" % [args[1].get_file(), c.r8, c.g8, c.b8, c.h * 360.0, c.s, c.v])
+		"grid":
+			# grid OUT COLS WIDTH IN...   the inputs in rows of COLS, each scaled to WIDTH wide
+			var cols: int = int(args[2])
+			var w: int = int(args[3])
+			var images: Array[Image] = []
+			for i: int in range(4, args.size()):
+				var img: Image = _load(args[i])
+				img.resize(w, int(img.get_height() * float(w) / img.get_width()), Image.INTERPOLATE_LANCZOS)
+				images.append(img)
+			var h: int = images[0].get_height()
+			var rows: int = int(ceil(float(images.size()) / cols))
+			var sheet: Image = Image.create_empty(cols * w + (cols - 1) * 6, rows * h + (rows - 1) * 6, false, Image.FORMAT_RGB8)
+			sheet.fill(Color(0.1, 0.1, 0.1))
+			for i: int in images.size():
+				sheet.blit_rect(images[i], Rect2i(Vector2i.ZERO, images[i].get_size()), Vector2i((i % cols) * (w + 6), (i / cols) * (h + 6)))
+			sheet.save_png(args[1])
+		"diff2":
+			# diff2 OUT WITH WITHOUT   the frame with the silhouettes above, and below it a mask of every pixel that differs from the frame without them (white), both 960 wide
+			var with_sil: Image = _load(args[2])
+			var without: Image = _load(args[3])
+			var mask: Image = Image.create_empty(with_sil.get_width(), with_sil.get_height(), false, Image.FORMAT_RGB8)
+			var differing: int = 0
+			for y: int in with_sil.get_height():
+				for x: int in with_sil.get_width():
+					var ca: Color = with_sil.get_pixel(x, y)
+					var cb: Color = without.get_pixel(x, y)
+					var d: bool = ca.r8 != cb.r8 or ca.g8 != cb.g8 or ca.b8 != cb.b8
+					differing += 1 if d else 0
+					mask.set_pixel(x, y, Color.WHITE if d else Color.BLACK)
+			print("DIFF2 %s differing=%d of %d" % [args[1].get_file(), differing, with_sil.get_width() * with_sil.get_height()])
+			with_sil.resize(960, int(with_sil.get_height() * 960.0 / with_sil.get_width()), Image.INTERPOLATE_LANCZOS)
+			mask.resize(960, with_sil.get_height(), Image.INTERPOLATE_NEAREST)
+			var stacked: Image = Image.create_empty(960, with_sil.get_height() * 2 + 8, false, Image.FORMAT_RGB8)
+			stacked.fill(Color(0.1, 0.1, 0.1))
+			stacked.blit_rect(with_sil, Rect2i(Vector2i.ZERO, with_sil.get_size()), Vector2i(0, 0))
+			stacked.blit_rect(mask, Rect2i(Vector2i.ZERO, mask.get_size()), Vector2i(0, with_sil.get_height() + 8))
+			stacked.save_png(args[1])
+		"row":
+			var h: int = int(args[2])
+			var images: Array[Image] = []
+			var width: int = 0
+			for i: int in range(3, args.size()):
+				var img: Image = _load(args[i])
+				img.resize(int(img.get_width() * float(h) / img.get_height()), h, Image.INTERPOLATE_LANCZOS)
+				images.append(img)
+				width += img.get_width() + 8
+			var row: Image = Image.create_empty(width - 8, h, false, Image.FORMAT_RGB8)
+			row.fill(Color(0.1, 0.1, 0.1))
+			var x: int = 0
+			for img: Image in images:
+				row.blit_rect(img, Rect2i(Vector2i.ZERO, img.get_size()), Vector2i(x, 0))
+				x += img.get_width() + 8
+			row.save_png(args[1])
+	quit()
+
+
+func _load(path: String) -> Image:
+	var img: Image = Image.load_from_file(path)
+	img.convert(Image.FORMAT_RGB8)
+	return img

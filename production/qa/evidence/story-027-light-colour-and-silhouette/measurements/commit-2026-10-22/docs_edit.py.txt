@@ -1,0 +1,42 @@
+"""Story 027's evidence doc and story file after the merge onto origin/main (worktree only). Every anchor must occur once."""
+from pathlib import Path
+
+W = Path("/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/6f3e7f98-225a-456d-8879-b16d0d81d355/scratchpad/wt")
+EV = W / "production/qa/evidence/story-027-light-colour-and-silhouette-evidence.md"
+ST = W / "production/epics/wasteland-fire/story-027-light-colour-and-silhouette.md"
+
+SECTION = """## On top of origin/main (the commit, 2026-10-22)
+
+While this story was built on bf9e12e, 21 commits reached `origin/main` from other sessions (6e7289a: stories 032 and 036 to 047, Martin's requests of 2026-10-18 to 2026-10-22, built in cloud sessions). The developer asked for this story to be committed on top of them. Its diff was put on a scratch worktree of 6e7289a, and everything below ran there, or on a copy of 6e7289a beside it, before the commit. The scripts and outputs are in `measurements/commit-2026-10-22/`; `compare.py` and `filter.sh` are the ones already retained in `measurements/`.
+
+- **The merge.** Twelve files changed on both sides. Eight merged with no conflict, and each differs from origin's file by exactly this story's hunks (`CONTEXT.md`, `README.md`, `design/rules.md`, `EPIC.md`, `project.godot`, `map_01.tscn`, `split_screen.gd`, `unit.gd`). Four were joined by hand (`resolve.py.txt`). `split_screen.tscn`: origin removed the AmmoCount resource (id 36) where this story added the silhouette's settings as id 37, now `47_silhouette` after origin's 37 to 46. The runner: both sides added a class-doc paragraph and scenario names at the same place, kept in story order with this story's first. `tests/smoke/critical-paths.md`: origin's items 23 to 34 stay, this story's item is now 35, and the Data Integrity and Performance items follow as 36 to 39. The class cache, rebuilt by the import: origin's 280 classes and this story's `SilhouetteSettings` and `UnitSilhouette`, nothing else (`class-cache-check.txt`). The five files only this story changed and its 301 new files went in as they were. None of the new paths exists on origin, and origin's scenes use no render layer but 1 and 2, so the silhouette's layers 3 and 4 are free.
+- **The older outputs.** All 103 checks of origin's tree that run headless were run on 6e7289a and on the merged tree: this story's list of 81, origin's 21 new split scenarios and the map choice's own runner, with the 12 windowed frame-rate scenarios left out as before. Result: 90 strict, 13 normalized, 0 bad (`cmp-origin.txt`). The rewrites are written from the source (`mk_norm.py.txt`): two lines of `unit.gd` and three of the runner that moved in backtraces, and the count of scripts under `res://src` (78 to 80: this story's two). Seven of origin's windowed showcases end with their watchdog when run headless, on 6e7289a as on the merged tree, so for them only that output is compared.
+- **This story's outputs.** `light_showcase` (45 moments) on the merged tree is byte-identical to its output on the tree this story closed on. `see_through` (20 checks, 0 failed) is equal through five moved backtrace lines and one count in a PASS line: "none of the Map's 2260 meshes (48 of them drawn with a Team material)" reads 2264 (54). Origin's story 043 Flag has seven meshes, four of them in the Team colour (the stand, the pole, the finial and four cloth panels), where the old one had five with one, and Map 01 has two Flags: the rewrite is taken from `flag.tscn` and `flag.gd`, not from the output (`cmp-027.txt`).
+- **Parse and tests.** The 370 `.gd` files under `src/`, `tools/` and `tests/` parse (`parse-all.txt`); gdUnit 1 test, 0 failures.
+- **Windowed, on Metal.** `light_showcase`'s silhouette half in the chase pass was recorded on the merged tree and on this story's tree: 630 frames each, the same `SPLIT` lines, no error. No frame is byte-identical, the HUD band is the same at all eight moments, and the moments differ in 496 to 94,954 pixels (`sil-frame-diffs.txt`). The two largest were opened. The silhouettes are the same; the differences are origin's new Flag in the Flag Wall box (frame 43: this story's tree above, the merged tree below) and the Garage floor near the camera, lit on the merged tree where this story's tree drew a broken-off shadow (story 047 turned the Sun's shadow pancaking off). The map choice's runner, windowed on the merged tree (6 checks, ok), starts Map 02 (frame 44).
+- **Map 02 keeps the Linear look.** Story 038's builder copies Map 01's light and air "so both Maps look alike" (`tools/maps/build_map_02.py`), from before this story, so Map 02 has no tone mapper, glow or grade. The developer chose Map 01 only for this commit (2026-10-22). Story 046's colour proposal for Martin (ambient 0.55, the fog from 120 m at 0.12, saturation 1.2, contrast 1.06) changes the same Environment and is still open.
+- **Story 045's zones no longer match their bars on Map 01.** Story 045 draws the supply zones unshaded in the bars' colours, and on 6e7289a they match exactly. On the merged tree the tone mapper and the grade reach the zones and not the HUD (`recharge_showcase` frame 06 on both trees, `zone-colours.txt`; frames 41 and 42). The ammunition zone (61, 139, 255) becomes (113, 172, 212): hue 216 to 204 degrees, saturation 0.76 to 0.47. The Fuel zone (245, 178, 46) becomes (229, 186, 99): saturation 0.81 to 0.57. The bars stay (61, 139, 255) and (245, 178, 46). Found at this commit and not changed in it: for the developer and Martin.
+
+"""
+
+
+def edit(path, pairs):
+    text = path.read_text(encoding="utf-8")
+    for old, new in pairs:
+        assert text.count(old) == 1, (path.name, old[:60], text.count(old))
+        text = text.replace(old, new)
+    path.write_text(text, encoding="utf-8")
+    print("edited", path.name)
+
+
+edit(EV, [
+    ("`tests/smoke/critical-paths.md` (item 23)", "`tests/smoke/critical-paths.md` (item 23 when written, 35 after the merge onto origin)"),
+    ("- 2026-10-22, 19:34 to 20:30: this close-out.", "- 2026-10-22, 19:34 to 20:30: this close-out."),
+    ("\n## Files\n", "\n" + SECTION + "## Files\n"),
+])
+text = EV.read_text(encoding="utf-8")
+anchor_line = next(l for l in text.split("\n") if l.startswith("- 2026-10-22, 19:34 to 20:30: this close-out."))
+edit(EV, [(anchor_line + "\n", anchor_line + "\n- 2026-10-22, 20:56 to 22:10: the commit, on top of `origin/main` (see \"On top of origin/main\").\n")])
+
+hand_off = next(l for l in ST.read_text(encoding="utf-8").split("\n") if l.startswith("**Hand-off**: "))
+edit(ST, [(hand_off + "\n", hand_off + "\n**Committed**: 2026-10-22, on top of `origin/main` at 6e7289a (stories 032 and 036 to 047, built in other sessions while this one was), at the developer's word; the merge and its checks are in the evidence (\"On top of origin/main\"). Map 02 (story 038) keeps the Linear look: its builder copied Map 01's Environment from before this story, and the developer chose Map 01 only for now. Under this story's look Map 01's supply zones no longer match their HUD bars (story 045): the ammunition zone renders (113, 172, 212) against the bar's (61, 139, 255), the Fuel zone (229, 186, 99) against (245, 178, 46). Not changed here.\n")])

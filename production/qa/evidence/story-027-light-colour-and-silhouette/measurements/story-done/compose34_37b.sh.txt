@@ -1,0 +1,20 @@
+#!/bin/bash
+# /story-done 027: rebuilds frames 34 to 37 by compose.gd's `pair` mode from the retained frames 23, 28, 27 and 30 and the difference masks the close-out measured from finalA against
+# finalN (c27/meas/masks/metal-*.png, white where the two recordings differ), and compares each with the retained file byte for byte; where it differs, compares the lower half's
+# white pixels (the mask) with a Godot script.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire
+DEV=$S/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad
+MY=$S/a9ae9e24-5b29-451c-b62f-a16425b4fa8f/scratchpad/sd27
+CO=$S/a9ae9e24-5b29-451c-b62f-a16425b4fa8f/scratchpad/c27
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+E=production/qa/evidence/story-027-light-colour-and-silhouette
+mkdir -p $MY/composed
+while read -r out frame mask; do
+  godot --headless --path . -s $DEV/lib/compose.gd -- pair $MY/composed/$out $E/$frame $CO/meas/masks/$mask > /dev/null 2>&1
+  if cmp -s $MY/composed/$out $E/$out; then echo "SAME   $out = pair($frame, masks/$mask)"; else echo "DIFFER $out = pair($frame, masks/$mask)"; fi
+done <<'LIST'
+34-difference-mask-turret-chase-view.png 23-silhouette-behind-a-turret-chase-view.png metal-sil_turret_chase.png
+35-difference-mask-both-behind-the-depot-tank.png 28-silhouette-both-behind-the-depot-tank-each-view-shows-only-its-own-chase-view.png metal-sil_leak_chase.png
+36-difference-mask-cliff-chase-view.png 27-silhouette-behind-a-cliff-chase-view.png metal-sil_cliff_chase.png
+37-difference-mask-over-the-other-players-truck.png 30-silhouette-over-the-other-players-truck-chase-view.png metal-sil_unit_in_front_chase.png
+LIST

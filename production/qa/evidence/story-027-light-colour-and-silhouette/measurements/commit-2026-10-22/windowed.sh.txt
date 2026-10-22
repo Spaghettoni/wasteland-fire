@@ -1,0 +1,22 @@
+#!/bin/bash
+# Windowed checks of the merged build, one after the other (no headless run beside them).
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/6f3e7f98-225a-456d-8879-b16d0d81d355/scratchpad
+R=/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire
+W=$S/win
+P=$W/windowed.progress
+date +%H:%M:%S > $P
+run_recharge() { # TAG ROOT
+  mkdir -p $W/recharge-$1
+  (cd $2 && SHOTS=$W/recharge-$1 godot --path . --windowed --resolution 1280x720 res://tools/evidence/split_screen_harness.tscn -- --scenario=recharge_showcase > $W/recharge-$1.out 2>&1); echo "recharge-$1 rc=$? $(date +%H:%M:%S)" >> $P
+}
+run_sil() { # TAG ROOT
+  mkdir -p $W/sil-$1
+  (cd $2 && LIGHT_MOMENTS=sil LIGHT_PASS=chase godot --path . --windowed --resolution 1280x720 --write-movie $W/sil-$1/f.png res://tools/evidence/split_screen_harness.tscn -- --scenario=light_showcase > $W/sil-$1.out 2>&1); echo "sil-$1 rc=$? $(date +%H:%M:%S)" >> $P
+}
+run_recharge merged $S/wt
+run_recharge origin $S/ref-origin
+mkdir -p $W/choice-merged
+(cd $S/wt && godot --path . --windowed --resolution 1280x720 -s res://tools/evidence/map_choice/map_choice_check.gd -- --frames=$W/choice-merged > $W/choice-merged.out 2>&1); echo "choice-merged rc=$? $(date +%H:%M:%S)" >> $P
+run_sil merged $S/wt
+run_sil tree027 $R
+echo ALLDONE >> $P

@@ -1,0 +1,21 @@
+#!/bin/sh
+# The windowed steps of the close-out of Story 027's build, one after another: the AgX ladder on the final tree (Metal), the silhouette moments on Vulkan with and without the
+# silhouettes (engine review F1, TD-019), then the frame-rate confirm (three runs as shipped, three of the picture before the story, interleaved). Progress in windowed.progress.
+C=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a9ae9e24-5b29-451c-b62f-a16425b4fa8f/scratchpad/c27
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+sh $C/manifest.sh $C/manifest-before-windowed.txt > /dev/null
+date +%H:%M:%S > $C/windowed.progress
+sh $C/rec.sh explore2 metal LIGHT_MOMENTS=explore LIGHT_PASS=above
+echo "explore2 $(tail -1 $C/rec/explore2.progress)" >> $C/windowed.progress
+sh $C/rec.sh vk-sil vulkan LIGHT_MOMENTS=sil
+echo "vk-sil $(tail -1 $C/rec/vk-sil.progress)" >> $C/windowed.progress
+sh $C/rec.sh vk-nosil vulkan LIGHT_MOMENTS=sil LIGHT_NO_SIL=1
+echo "vk-nosil $(tail -1 $C/rec/vk-nosil.progress)" >> $C/windowed.progress
+for n in 1 2 3; do
+  sh $C/fps.sh shipped-f$n X=1
+  sh $C/fps.sh before-f$n LIGHT_FPS_NO_SIL=1 LIGHT_FPS_NO_LOOK=1
+  echo "fps pair $n $(date +%H:%M:%S)" >> $C/windowed.progress
+done
+sh $C/manifest.sh $C/manifest-after-windowed.txt > /dev/null
+cmp -s $C/manifest-before-windowed.txt $C/manifest-after-windowed.txt && echo "tree unchanged during the windowed steps" >> $C/windowed.progress
+echo ALLDONE >> $C/windowed.progress

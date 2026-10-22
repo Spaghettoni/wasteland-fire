@@ -1,0 +1,34 @@
+"""Summarises the windowed light_fps runs by variant: the steady seconds (the first sample and the staging seconds left out), how many of them held a frame over 16.6 ms,
+the longest steady frame of each run, the lowest steady second and the draw calls."""
+import glob, os, re, sys
+d = sys.argv[1]
+groups = {}
+for f in sorted(glob.glob(d + "/*.out")):
+    tag = os.path.basename(f)[:-4]
+    if tag.startswith("test"):
+        continue
+    name = re.sub(r"-\d+$", "", tag)
+    steady = []
+    result = None
+    first = True
+    for line in open(f, encoding="utf-8", errors="replace"):
+        m = re.match(r"SPLIT light_fps t=([\d.]+) phase=(\S+) staging=(\d) fps=([\d.]+) frame_ms_max=([\d.]+) draw_calls=(\d+)", line)
+        if m:
+            if first:
+                first = False
+                continue
+            if m.group(3) == "0":
+                steady.append((float(m.group(4)), float(m.group(5)), int(m.group(6))))
+        m = re.match(r"RESULT light_fps (\S+) .*", line)
+        if m:
+            result = line
+    groups.setdefault(name, []).append((tag, steady, result))
+print("%-10s %5s %7s %9s %8s %-40s %s" % ("variant", "runs", "steady", "long>16.6", "min fps", "longest steady frame of each run (ms)", "draw calls"))
+for name, runs in groups.items():
+    n = sum(len(s) for _, s, _ in runs)
+    long = sum(1 for _, s, _ in runs for x in s if x[1] > 16.6)
+    minfps = min(x[0] for _, s, _ in runs for x in s)
+    peaks = ", ".join("%.1f" % max(x[1] for x in s) for _, s, _ in runs)
+    draws = max(x[2] for _, s, _ in runs for x in s)
+    nolong = sum(1 for _, s, _ in runs if max(x[1] for x in s) <= 16.6)
+    print("%-10s %5d %7d %4d (%4.1f%%) %8.0f %-40s %d  (%d of %d runs with none)" % (name, len(runs), n, long, 100.0 * long / n, minfps, peaks, draws, nolong, len(runs)))

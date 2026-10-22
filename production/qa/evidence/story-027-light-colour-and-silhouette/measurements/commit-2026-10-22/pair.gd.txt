@@ -1,0 +1,14 @@
+extends SceneTree
+## pair OUT A B: A above B, each scaled to 960 wide (a copy of the retained compose.gd's "pair").
+func _initialize() -> void:
+	var args: PackedStringArray = OS.get_cmdline_user_args()
+	var a: Image = Image.load_from_file(args[1])
+	var b: Image = Image.load_from_file(args[2])
+	a.resize(960, int(a.get_height() * 960.0 / a.get_width()), Image.INTERPOLATE_LANCZOS)
+	b.resize(960, int(b.get_height() * 960.0 / b.get_width()), Image.INTERPOLATE_LANCZOS)
+	var out: Image = Image.create_empty(960, a.get_height() + b.get_height() + 8, false, Image.FORMAT_RGB8)
+	out.fill(Color(0.1, 0.1, 0.1))
+	out.blit_rect(a, Rect2i(Vector2i.ZERO, a.get_size()), Vector2i(0, 0))
+	out.blit_rect(b, Rect2i(Vector2i.ZERO, b.get_size()), Vector2i(0, a.get_height() + 8))
+	out.save_png(args[0])
+	quit()

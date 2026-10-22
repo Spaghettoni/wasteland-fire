@@ -1,0 +1,12 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0, 0, 0, 0)
+disable_fog = true
+render_priority = 95
+stencil_mode = 3
+stencil_flags = 2
+stencil_compare = 0
+stencil_reference = 2

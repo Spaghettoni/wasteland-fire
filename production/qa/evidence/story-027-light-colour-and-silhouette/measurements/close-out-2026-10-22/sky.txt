@@ -1,0 +1,7 @@
+10-close-in-sun-linear-before sky (60,130,160,60) P1 rgb=155,170,194 | (1100,130,160,60) P2 rgb=155,170,194
+14-close-in-sun-agx-without-the-grade sky (60,130,160,60) P1 rgb=171,182,195 | (1100,130,160,60) P2 rgb=171,182,195
+11-close-in-sun-agx-as-shipped sky (60,130,160,60) P1 rgb=180,183,183 | (1100,130,160,60) P2 rgb=181,184,183
+12-close-in-sun-filmic sky (60,130,160,60) P1 rgb=202,205,208 | (1100,130,160,60) P2 rgb=202,206,208
+13-close-in-sun-aces sky (60,130,160,60) P1 rgb=212,213,213 | (1100,130,160,60) P2 rgb=212,213,213
+15-close-in-shade-linear-before sky (60,130,160,60) P1 rgb=170,136,124 | (1100,130,160,60) P2 rgb=155,170,194
+16-close-in-shade-agx-as-shipped sky (60,130,160,60) P1 rgb=180,153,129 | (1100,130,160,60) P2 rgb=181,184,183

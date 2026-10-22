@@ -1,0 +1,19 @@
+"""Pixel difference of two BMP frames: count of pixels differing, by more than 8 levels, and the bounding box of those."""
+import struct, sys
+def load(p):
+    d = open(p, "rb").read(); off = struct.unpack_from("<I", d, 10)[0]; w, h = struct.unpack_from("<ii", d, 18); bpp = struct.unpack_from("<H", d, 28)[0] // 8
+    return d, off, w, h, bpp, (w * bpp + 3) // 4 * 4  # h < 0: rows stored top-down
+a, b = load(sys.argv[1]), load(sys.argv[2])
+d1, o1, w, h, bp1, r1 = a; d2, o2, _, _, bp2, r2 = b
+n = big = 0; box = [w, abs(h), -1, -1]
+H = abs(h)
+row = (lambda y: y) if h < 0 else (lambda y: H - 1 - y)
+for y in range(H):
+    i1 = o1 + row(y) * r1; i2 = o2 + row(y) * r2
+    for x in range(w):
+        p = d1[i1 + x * bp1:i1 + x * bp1 + 3]; q = d2[i2 + x * bp2:i2 + x * bp2 + 3]
+        if p != q:
+            n += 1
+            if max(abs(p[0] - q[0]), abs(p[1] - q[1]), abs(p[2] - q[2])) > 8:
+                big += 1; box = [min(box[0], x), min(box[1], y), max(box[2], x), max(box[3], y)]
+print(f"{sys.argv[3]}: {n} of {w*H} pixels differ, {big} by more than 8 levels, box {box}")

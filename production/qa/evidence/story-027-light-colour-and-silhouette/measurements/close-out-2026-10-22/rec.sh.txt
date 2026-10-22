@@ -1,0 +1,9 @@
+#!/bin/sh
+# usage: rec.sh TAG DRIVER [VAR=value ...]   A windowed Movie Maker recording of light_showcase into rec/TAG/ (DRIVER metal or vulkan), progress in rec/TAG.progress.
+C=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/a9ae9e24-5b29-451c-b62f-a16425b4fa8f/scratchpad/c27
+TAG="$1"; DRIVER="$2"; shift 2
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+mkdir -p $C/rec/$TAG
+date +%H:%M:%S > $C/rec/$TAG.progress
+env "$@" godot --path . --windowed --resolution 1280x720 --rendering-driver $DRIVER --write-movie $C/rec/$TAG/f.png res://tools/evidence/split_screen_harness.tscn -- --scenario=light_showcase > $C/rec/$TAG.out 2>&1
+echo "rc=$? $(date +%H:%M:%S) DONE" >> $C/rec/$TAG.progress

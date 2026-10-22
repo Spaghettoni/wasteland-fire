@@ -1,0 +1,14 @@
+compare exit 0
+NORMALIZED split ammo_buildings         rc=0 rewrites=[3]
+NORMALIZED split badly_damaged          rc=0 rewrites=[2, 1]
+NORMALIZED split explosions             rc=0 rewrites=[3, 1]
+NORMALIZED split flag_walls             rc=0 rewrites=[4]
+NORMALIZED split fuel_building          rc=0 rewrites=[3, 1]
+NORMALIZED split rotors                 rc=0 rewrites=[2]
+NORMALIZED split token_ui               rc=0 rewrites=[2]
+NORMALIZED split tokens_data            rc=0 rewrites=[18, 1]
+NORMALIZED split turret_looks           rc=0 rewrites=[5]
+NORMALIZED split turrets                rc=0 rewrites=[1]
+NORMALIZED split tyre_tracks            rc=0 rewrites=[1]
+NORMALIZED split unit_swap              rc=0 rewrites=[1]
+-- 69 strict, 12 normalized, 0 bad of 81 compared

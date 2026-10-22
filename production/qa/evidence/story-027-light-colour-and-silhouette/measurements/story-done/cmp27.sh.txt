@@ -1,0 +1,40 @@
+#!/bin/bash
+# /story-done 027: which recorded frame each retained full-size frame is a byte copy of, against the dev session's recordings (finalA in the scratchpad of the 10-22 sitting, and the
+# close-out's finalA2) and against the fresh recording of the live tree (sd27/rec/finalA3); then every frame of the fresh recordings against the dev's same-numbered frame.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire
+DEV=$S/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad/rec
+MY=$S/a9ae9e24-5b29-451c-b62f-a16425b4fa8f/scratchpad/sd27/rec
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+E=production/qa/evidence/story-027-light-colour-and-silhouette
+# retained file | frame, from the retain script's own output (measurements/retain-output.txt) and the launch's frame 89
+echo "--- retained frames 01 to 32 against finalA (dev), finalA2 (dev's repeat) and finalA3 (fresh):"
+n=0; ok=0
+while read -r moment word frame arrow name rest; do
+  case "$word" in frame) ;; *) continue ;; esac
+  f=$(printf 'f%08d.png' "$frame")
+  a=DIFF; a2=DIFF; a3=DIFF
+  cmp -s "$E/$name" "$DEV/finalA/$f" && a=SAME
+  cmp -s "$E/$name" "$DEV/finalA2/$f" && a2=SAME
+  cmp -s "$E/$name" "$MY/finalA3/$f" && a3=SAME
+  n=$((n+1)); [ "$a$a2$a3" = "SAMESAMESAME" ] && ok=$((ok+1))
+  echo "finalA:$a  finalA2:$a2  finalA3:$a3  $name = $f"
+done < $E/measurements/retain-output.txt
+echo "retained frames equal to all three recordings: $ok of $n"
+echo "--- launch: retained frame 00 against the fresh recording's frame 89 and the morning's:"
+cmp -s $E/00-launch-both-players-choosing.png $MY/launch/f00000089.png && echo "00 = fresh launch frame 89: SAME" || echo "00 = fresh launch frame 89: DIFF"
+cmp -s $E/00-launch-both-players-choosing.png $DEV/launch/f00000089.png && echo "00 = the morning's launch frame 89: SAME" || echo "00 = the morning's launch frame 89: DIFF"
+echo "--- every frame of each fresh recording against the dev's same-numbered frame:"
+for pair in "launch launch" "finalA3 finalA"; do
+  set -- $pair
+  n=0; d=0; m=0
+  for f in $MY/$1/f*.png; do
+    b=$(basename $f); n=$((n+1))
+    if [ ! -f "$DEV/$2/$b" ]; then m=$((m+1)); continue; fi
+    cmp -s $f "$DEV/$2/$b" || { d=$((d+1)); echo "differs: $1 $b"; }
+  done
+  echo "$1: frames compared $n, differing $d, missing in the dev's $m"
+done
+echo "--- the windowed .out premise lines (SPLIT and RESULT) of finalA3 against finalA's:"
+diff <(grep -E "^SPLIT|^RESULT" $MY/finalA3.out) <(grep -E "^SPLIT|^RESULT" $DEV/finalA.out) && echo "SPLIT and RESULT lines identical"
+grep -E "ERROR|WARNING|SCRIPT" $MY/finalA3.out $MY/launch.out | head -3
+echo CMP_DONE

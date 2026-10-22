@@ -1,0 +1,4 @@
+#!/bin/sh
+# usage: manifest.sh ROOT   Sorted SHA-1 of every file under src, tools, tests, assets and project.godot.
+cd "$1" || exit 9
+find src tools tests assets project.godot -type f -print0 | LC_ALL=C sort -z | xargs -0 shasum

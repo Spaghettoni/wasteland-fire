@@ -1,0 +1,8 @@
+frame 136 (merged against the story 027 tree): 94954 of 921600 pixels differ, 93130 by more than 8 levels, box [0, 157, 1250, 719]
+frame 202 (merged against the story 027 tree): 1117 of 921600 pixels differ, 554 by more than 8 levels, box [92, 157, 1215, 352]
+frame 268 (merged against the story 027 tree): 36805 of 921600 pixels differ, 11865 by more than 8 levels, box [96, 156, 1259, 719]
+frame 334 (merged against the story 027 tree): 4972 of 921600 pixels differ, 1350 by more than 8 levels, box [0, 161, 1279, 703]
+frame 400 (merged against the story 027 tree): 496 of 921600 pixels differ, 121 by more than 8 levels, box [215, 327, 1169, 432]
+frame 466 (merged against the story 027 tree): 10043 of 921600 pixels differ, 5690 by more than 8 levels, box [0, 201, 1279, 719]
+frame 532 (merged against the story 027 tree): 8344 of 921600 pixels differ, 2040 by more than 8 levels, box [20, 94, 1174, 578]
+frame 598 (merged against the story 027 tree): 1281 of 921600 pixels differ, 332 by more than 8 levels, box [123, 181, 1279, 563]

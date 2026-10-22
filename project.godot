@@ -165,6 +165,8 @@ p2_lay_mine={
 3d_physics/layer_8="sight"
 3d_physics/layer_9="smoke"
 3d_render/layer_2="tower_top"
+3d_render/layer_3="silhouette_p1"
+3d_render/layer_4="silhouette_p2"
 
 [physics]
 

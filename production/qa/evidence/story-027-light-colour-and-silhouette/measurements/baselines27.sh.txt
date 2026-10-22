@@ -1,0 +1,10 @@
+#!/bin/sh
+# Captures the 81 older outputs twice from the clean pre-edit export (pre27), 3 at a time.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad
+W=$S/rg27
+date +%H:%M:%S > $W/baselines.progress
+sh $W/capture_in.sh $S/pre27 $W/base-a $W/jobs.txt 3
+echo "base-a done $(date +%H:%M:%S)" >> $W/baselines.progress
+sh $W/capture_in.sh $S/pre27 $W/base-b $W/jobs.txt 3
+echo "base-b done $(date +%H:%M:%S)" >> $W/baselines.progress
+echo ALLDONE >> $W/baselines.progress

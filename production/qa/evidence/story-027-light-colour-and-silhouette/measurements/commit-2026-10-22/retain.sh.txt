@@ -1,0 +1,19 @@
+#!/bin/bash
+# Copies the commit's checks into the worktree's evidence folder (scripts as .txt, as the folder keeps them) and the four frames 41 to 44.
+set -u
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/6f3e7f98-225a-456d-8879-b16d0d81d355/scratchpad
+E=$S/wt/production/qa/evidence/story-027-light-colour-and-silhouette
+D=$E/measurements/commit-2026-10-22
+mkdir -p $D
+for f in setup.sh apply.sh retain.sh docs_edit.py merge/resolve.py rg/run_one.sh rg/capture.sh rg/capture-all.sh rg/manifest.sh rg/mk_norm.py rg/classcache.py win/windowed.sh win/sample.py win/fdiff.py win/pair.gd; do cp $S/$f $D/$(basename $f).txt; done
+for f in rg/jobs-origin.txt rg/jobs-027.txt rg/norm-origin.json rg/norm-027.json rg/cmp-origin.txt rg/cmp-027.txt rg/class-cache-check.txt rg/parse-all.txt; do cp $S/$f $D/; done
+grep -a -E 'Overall Summary|Executed test' $S/rg/gdunit.txt | sed 's/\x1b\[[0-9;]*m//g' > $D/gdunit-summary.txt
+cp $S/rg/merged/split-see_through.txt $D/see_through-merged.txt
+cp $S/rg/merged/split-light_showcase.txt $D/light_showcase-merged.txt
+for f in recharge-merged.out recharge-origin.out choice-merged.out sil-merged.out sil-tree027.out; do cp $S/win/$f $D/windowed-$f; done
+cp $S/win/zone-colours.txt $S/win/sil-frame-diffs.txt $D/
+cp $S/win/recharge-merged/06-ammo-zone-blue-fuel-zone-amber.png "$E/41-on-origin-ammo-zone-and-fuel-zone-under-the-new-look.png"
+cp $S/win/recharge-origin/06-ammo-zone-blue-fuel-zone-amber.png "$E/42-on-origin-ammo-zone-and-fuel-zone-before-this-story.png"
+cp $S/win/view/pair-268.png "$E/43-on-origin-silhouette-behind-a-water-tower-leg-before-above-and-merged-below-chase-view.png"
+cp $S/win/choice-merged/choice-03-match-on-map-02.png "$E/44-on-origin-map-02-from-the-map-choice-linear.png"
+find $D -type f | wc -l

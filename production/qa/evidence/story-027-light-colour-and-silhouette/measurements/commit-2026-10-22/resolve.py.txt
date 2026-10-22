@@ -1,0 +1,74 @@
+"""Resolve the four conflicted merges of story 027 onto origin/main (scratchpad only)."""
+import re
+from pathlib import Path
+
+M = Path(__file__).resolve().parent
+out = M / "out"
+
+
+def blocks(text):
+    """Split merge-file output into (ours, theirs) conflict blocks with their spans."""
+    pat = re.compile(r"^<<<<<<< ours\n(.*?)^=======\n(.*?)^>>>>>>> origin\n", re.S | re.M)
+    return pat
+
+
+def resolve(name, fn, expect):
+    p = out / name
+    text = p.read_text(encoding="utf-8")
+    pat = blocks(text)
+    found = pat.findall(text)
+    assert len(found) == expect, (name, len(found))
+    i = iter(range(expect))
+    text = pat.sub(lambda m: fn(next(i), m.group(1), m.group(2)), text)
+    assert "<<<<<<<" not in text and ">>>>>>>" not in text and "\n=======\n" not in text, name
+    p.write_text(text, encoding="utf-8")
+    print("resolved", name)
+
+
+# 1. split_screen.tscn: origin dropped the AmmoCount resource (36_acount) and added 37..46; ours added the silhouette
+#    settings as 37_silhouette. Keep origin's block, then ours under the next free id, 47_silhouette.
+def tscn(k, ours, theirs):
+    ol = ours.splitlines(keepends=True)
+    assert ol[0].startswith('[ext_resource type="PackedScene" path="res://src/ui/hud/ammo_count.tscn" id="36_acount"]'), ol[0]
+    assert len(ol) == 2 and 'id="37_silhouette"' in ol[1]
+    return theirs + ol[1].replace('id="37_silhouette"', 'id="47_silhouette"')
+
+
+resolve("src_gameplay_split_screen_split_screen.tscn", tscn, 1)
+p = out / "src_gameplay_split_screen_split_screen.tscn"
+t = p.read_text(encoding="utf-8")
+assert t.count('ExtResource("37_silhouette")') == 2 and 'ExtResource("47_silhouette")' not in t
+t = t.replace('ExtResource("37_silhouette")', 'ExtResource("47_silhouette")')
+assert "37_silhouette" not in t and t.count("47_silhouette") == 3
+p.write_text(t, encoding="utf-8")
+
+
+# 2. critical-paths.md: origin's items 23 to 34 stay; ours (story 027) follows as 35.
+def smoke(k, ours, theirs):
+    ol = ours.splitlines(keepends=True)
+    assert len(ol) == 1 and ol[0].startswith("23. [Story 027"), ol
+    assert theirs.rstrip("\n").splitlines()[-1].startswith("34. [Story 046")
+    return theirs + "\n" + "35." + ol[0][3:]
+
+
+resolve("tests_smoke_critical-paths.md", smoke, 1)
+# Data Integrity and Performance follow on: ours renumbered them 24 to 27, they become 36 to 39.
+p = out / "tests_smoke_critical-paths.md"
+t = p.read_text(encoding="utf-8")
+for old, new in (("\n27. No memory growth", "\n39. No memory growth"), ("\n26. No visible frame rate", "\n38. No visible frame rate"),
+                 ("\n25. Unit tuning values", "\n37. Unit tuning values"), ("\n24. Restarting a Round", "\n36. Restarting a Round")):
+    assert t.count(old) == 1, old
+    t = t.replace(old, new)
+p.write_text(t, encoding="utf-8")
+
+
+# 3. the harness: both sides added a class-doc paragraph and scenario names at the same spot. Story order: 027 first.
+def harness(k, ours, theirs):
+    if k == 0:
+        assert ours.startswith("## The see-through silhouette (Story 027)") and theirs.startswith("## The slower Fuel and the resource bars (Story 036)")
+        return ours + "##\n" + theirs
+    assert ours.splitlines()[0].strip().startswith('&"see_through"') and theirs.splitlines()[0].strip().startswith('&"pads"')
+    return ours + theirs
+
+
+resolve("tools_evidence_split_screen_harness.gd", harness, 2)

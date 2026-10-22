@@ -1,0 +1,10 @@
+origin: P1's ammo zone, P2's Fuel zone, P1's ammo bar, P1's Fuel bar (frame 06 of recharge_showcase, windowed, Metal)
+  rect 295,262 50x45: rgb (61, 139, 255) #3d8bff hue 216 sat 0.76 val 1.00
+  rect 925,225 70x55: rgb (245, 178, 46) #f5b22e hue 40 sat 0.81 val 0.96
+  rect 530,22 80x12: rgb (61, 139, 255) #3d8bff hue 216 sat 0.76 val 1.00
+  rect 380,22 80x12: rgb (245, 178, 46) #f5b22e hue 40 sat 0.81 val 0.96
+merged: P1's ammo zone, P2's Fuel zone, P1's ammo bar, P1's Fuel bar (frame 06 of recharge_showcase, windowed, Metal)
+  rect 295,262 50x45: rgb (113, 172, 212) #71acd4 hue 204 sat 0.47 val 0.83
+  rect 925,225 70x55: rgb (229, 186, 99) #e5ba63 hue 40 sat 0.57 val 0.90
+  rect 530,22 80x12: rgb (61, 139, 255) #3d8bff hue 216 sat 0.76 val 1.00
+  rect 380,22 80x12: rgb (245, 178, 46) #f5b22e hue 40 sat 0.81 val 0.96

@@ -49,6 +49,16 @@ const ALL_VISUAL_LAYERS: int = 0xFFFFF
 ## The node to chase, normally a Unit. Assign it before this node enters the tree.
 @export var target: Node3D
 
+## The visual layers (VisualInstance3D.layers) this camera never draws, as a bitmask, whichever
+## settings it is on (Story 027): the render layer of the other Player's silhouettes, so a Player's
+## view shows its own Unit through cover and never the other Player's. It is the camera's own data
+## and not the settings', which every camera of both Players shares and nobody writes at runtime.
+## Zero, the default, hides nothing: the camera draws what it always drew.
+@export_flags_3d_render var never_drawn_layers: int = 0:
+	set(value):
+		never_drawn_layers = value
+		_apply_hidden_layers()
+
 ## Where the camera sits and how it follows (a ChaseCameraSettings .tres, for example
 ## chase_camera_settings.tres, or above_camera_settings.tres for the view from above). Required:
 ## the camera neither follows nor snaps without it, or with follow_sharpness not above zero
@@ -104,9 +114,11 @@ func snap_to_target() -> void:
 	_skip_next_follow = true
 
 
-## Draws every visual layer except those the settings hide (settings.hidden_layers).
+## Draws every visual layer except those the settings hide (settings.hidden_layers) and those this
+## camera never draws (never_drawn_layers).
 func _apply_hidden_layers() -> void:
-	cull_mask = ALL_VISUAL_LAYERS if settings == null else ALL_VISUAL_LAYERS & ~settings.hidden_layers
+	var hidden: int = never_drawn_layers if settings == null else never_drawn_layers | settings.hidden_layers
+	cull_mask = ALL_VISUAL_LAYERS & ~hidden
 
 
 ## True while there are settings with a follow_sharpness above zero and a target in the tree.

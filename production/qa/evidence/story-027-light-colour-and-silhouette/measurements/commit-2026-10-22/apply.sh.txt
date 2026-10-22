@@ -1,0 +1,24 @@
+#!/bin/bash
+# Puts story 027 onto the origin/main worktree: the 11 merged files, the 5 files only 027 changed, its 301 new files.
+set -u
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/6f3e7f98-225a-456d-8879-b16d0d81d355/scratchpad
+R=/Users/tomas.kunzo/projects/ronin-ya/wasteland-fire
+W=$S/wt
+bad=0
+while read -r f; do
+  [ "$f" = ".godot/global_script_class_cache.cfg" ] && continue
+  k=$(echo "$f" | tr '/' '_')
+  cp "$S/merge/out/$k" "$W/$f" && cmp -s "$S/merge/out/$k" "$W/$f" || { echo "BAD merged $f"; bad=1; }
+done < $S/merge/files.txt
+for f in docs/tech-debt-register.md production/epics/wasteland-fire/story-027-light-colour-and-silhouette.md src/gameplay/camera/chase_camera.gd src/gameplay/units/models/unit_model.gd tools/evidence/split_screen/quick_fix_kit.gd; do
+  git -C $R show "bf9e12e:$f" | cmp -s - "$W/$f" || { echo "BAD origin changed $f"; bad=1; }
+  cp "$R/$f" "$W/$f" && cmp -s "$R/$f" "$W/$f" || { echo "BAD ours $f"; bad=1; }
+done
+n=0
+while read -r f; do
+  [ -e "$W/$f" ] && { echo "BAD exists $f"; bad=1; continue; }
+  mkdir -p "$W/$(dirname "$f")"
+  cp -p "$R/$f" "$W/$f" && cmp -s "$R/$f" "$W/$f" || { echo "BAD new $f"; bad=1; }
+  n=$((n+1))
+done < $S/new027.txt
+echo "copied new: $n bad=$bad"

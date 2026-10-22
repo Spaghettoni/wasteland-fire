@@ -1,0 +1,13 @@
+#!/bin/sh
+# The GPU's render time of every viewport per frame on Vulkan (MoltenVK), light_fps with and without the silhouettes and the look: 2 runs of each variant, interleaved.
+S=/private/tmp/claude-501/-Users-tomas-kunzo-projects-ronin-ya-wasteland-fire/288bd9fe-bc1c-407a-9d36-c535300a0eef/scratchpad
+cd /Users/tomas.kunzo/projects/ronin-ya/wasteland-fire || exit 9
+date +%H:%M:%S > $S/gpu/progress.txt
+for n in 1 2; do
+  env LIGHT_FPS_NO_SIL=1 LIGHT_FPS_NO_LOOK=1 godot --path . --windowed --resolution 1280x720 --rendering-driver vulkan --always-on-top -s $S/lib/gpu_time.gd -- --scenario=light_fps > $S/gpu/before-$n.txt 2>&1
+  env LIGHT_FPS_NO_SIL=1 godot --path . --windowed --resolution 1280x720 --rendering-driver vulkan --always-on-top -s $S/lib/gpu_time.gd -- --scenario=light_fps > $S/gpu/look-$n.txt 2>&1
+  env LIGHT_FPS_NO_LOOK=1 godot --path . --windowed --resolution 1280x720 --rendering-driver vulkan --always-on-top -s $S/lib/gpu_time.gd -- --scenario=light_fps > $S/gpu/sil-$n.txt 2>&1
+  env X=1 godot --path . --windowed --resolution 1280x720 --rendering-driver vulkan --always-on-top -s $S/lib/gpu_time.gd -- --scenario=light_fps > $S/gpu/shipped-$n.txt 2>&1
+  echo "round $n done $(date +%H:%M:%S)" >> $S/gpu/progress.txt
+done
+echo ALLDONE >> $S/gpu/progress.txt

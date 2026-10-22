@@ -1,0 +1,19 @@
+"""Adds the lint rewrites of story 027 to the normalizers, computed from the SOURCE TREES (never from the outputs): fuel_building's lint prints how many scripts there are
+under res://src, and the story adds two (silhouette_settings.gd and unit_silhouette.gd). The old count is read from the pre-edit tree and the new one from the repo.
+usage: mklint27.py REPO PRE_ROOT BASELINE_DIR NORMALIZERS.json"""
+import json
+import sys
+from pathlib import Path
+
+repo, pre, base, norm = (Path(a) for a in sys.argv[1:5])
+old = sum(1 for _ in (pre / "src").rglob("*.gd"))
+new = sum(1 for _ in (repo / "src").rglob("*.gd"))
+rules = json.loads(norm.read_text(encoding="utf-8"))
+sentence = "of %d scripts under res://src"
+for txt in sorted(base.glob("*.txt")):
+    name = txt.stem.split("-", 1)[1]
+    if sentence % old in txt.read_text(encoding="utf-8", errors="replace") and old != new:
+        rules.setdefault(name, []).append([sentence % old, sentence % new])
+        print("lint: %s prints '%s' -> '%s'" % (name, sentence % old, sentence % new))
+norm.write_text(json.dumps(rules, indent=1) + "\n", encoding="utf-8")
+print("scripts under src: %d -> %d" % (old, new))

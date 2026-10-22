@@ -1,0 +1,90 @@
+STRICT     drive coast                  rc=0
+STRICT     drive showcase               rc=0
+STRICT     drive soak                   rc=0
+STRICT     drive walls                  rc=0
+STRICT     split ammo                   rc=0
+STRICT     split ammo_alone             rc=0
+NORMALIZED split ammo_buildings         rc=0 rewrites=[3]
+STRICT     split ammo_buildings_showcase rc=0
+STRICT     split ammo_showcase          rc=0
+DIFF       split badly_damaged          rc 0->0, lines 57->57, first difference at line 17
+    base: CHECK badly_damaged smoke_in_both_views_on_both_units PASS a badly damaged Truck (Player 1) and Gyrocopter (Player 2) smoke together; both cameras show the one world, and their cull masks (view from above / chase view: 1048573/104
+    new : CHECK badly_damaged smoke_in_both_views_on_both_units PASS a badly damaged Truck (Player 1) and Gyrocopter (Player 2) smoke together; both cameras show the one world, and their cull masks (view from above / chase view: 1048565/104
+STRICT     split badly_damaged_off      rc=0
+STRICT     split badly_damaged_showcase rc=0
+STRICT     split base_walls             rc=0
+STRICT     split base_walls_showcase    rc=0
+STRICT     split bases                  rc=0
+STRICT     split camera_showcase        rc=0
+DIFF       split camera_views           rc 0->1, lines 13->13, first difference at line 7
+    base: CHECK camera_views T6_switch PASS q: p1 chase_camera_settings p2 above_camera_settings, two ticks later p1 had crossed 0.12 of a 21.7 m gap | settled 0.0001 m from the chase place | chase aim error 0.00000 degrees at the point 1.0
+    new : CHECK camera_views T6_switch FAIL q: p1 chase_camera_settings p2 above_camera_settings, two ticks later p1 had crossed 0.12 of a 21.7 m gap | settled 0.0001 m from the chase place | chase aim error 0.00000 degrees at the point 1.0
+STRICT     split choice                 rc=0
+STRICT     split countdown              rc=0
+STRICT     split crash                  rc=0
+STRICT     split crash_showcase         rc=0
+STRICT     split depot_tanks            rc=0
+STRICT     split destruction            rc=0
+NORMALIZED split explosions             rc=0 rewrites=[3, 1]
+STRICT     split explosions_off         rc=0
+STRICT     split explosions_showcase    rc=0
+STRICT     split flag_run               rc=0
+STRICT     split flag_showcase          rc=0
+NORMALIZED split flag_walls             rc=0 rewrites=[4]
+STRICT     split flag_walls_showcase    rc=0
+STRICT     split fuel                   rc=0
+NORMALIZED split fuel_building          rc=0 rewrites=[3, 1]
+STRICT     split fuel_building_showcase rc=0
+STRICT     split fuel_cans              rc=0
+STRICT     split fuel_hint              rc=0
+STRICT     split fuel_showcase          rc=0
+STRICT     split garage_scrap_walls     rc=0
+STRICT     split garage_scrap_walls_showcase rc=0
+STRICT     split gyro                   rc=0
+DIFF       split gyro_cover             rc 0->1, lines 29->29, first difference at line 4
+    base: SPLIT gyro_cover t=5.317 cross=WreckWestOuterSouth lane=1 slowest=16.40 model_over_top_min=0.250 over_ticks=20 past=6.15 settled=0.000 judged=true contacts=0
+    new : SPLIT gyro_cover t=5.317 cross=WreckWestOuterSouth lane=1 slowest=16.40 model_over_top_min=0.250 over_ticks=20 past=6.15 settled=0.000 judged=false contacts=0
+STRICT     split heights                rc=0
+STRICT     split heights_showcase       rc=0
+STRICT     split hud                    rc=0
+STRICT     split idle_burn              rc=0
+STRICT     split isolation              rc=0
+STRICT     split layout                 rc=0
+STRICT     split loss                   rc=0
+STRICT     split map_bases              rc=0
+STRICT     split map_cover              rc=0
+STRICT     split map_edges              rc=0
+STRICT     split map_ford               rc=0
+STRICT     split map_layout             rc=0
+STRICT     split map_legibility         rc=0
+STRICT     split map_showcase           rc=0
+STRICT     split mines                  rc=0
+STRICT     split mines_showcase         rc=0
+STRICT     split quick_fixes_showcase   rc=0
+STRICT     split respawn_showcase       rc=0
+DIFF       split rotors                 rc 0->1, lines 56->56, first difference at line 48
+    base: CHECK rotors no_shadow PASS all four smears (two a Gyrocopter) cast no shadow, stand on render layer 1 and share the one ShaderMaterial of the settings, and no model holds a collider or a zone; the six meshes of each model cast sh
+    new : CHECK rotors no_shadow FAIL all four smears (two a Gyrocopter) cast no shadow, stand on render layer 1 and share the one ShaderMaterial of the settings, and no model holds a collider or a zone; the six meshes of each model cast sh
+STRICT     split rotors_showcase        rc=0
+STRICT     split round_over             rc=0
+STRICT     split showcase               rc=0
+STRICT     split simultaneous           rc=0
+STRICT     split spot_turn              rc=0
+STRICT     split token_choice           rc=0
+STRICT     split token_layout           rc=0
+NORMALIZED split token_ui               rc=0 rewrites=[2]
+STRICT     split tokens                 rc=0
+NORMALIZED split tokens_data            rc=0 rewrites=[18, 1]
+STRICT     split tokens_showcase        rc=0
+NORMALIZED split turret_looks           rc=0 rewrites=[5]
+STRICT     split turret_looks_showcase  rc=0
+NORMALIZED split turrets                rc=0 rewrites=[1]
+STRICT     split turrets_showcase       rc=0
+NORMALIZED split tyre_tracks            rc=0 rewrites=[1]
+STRICT     split tyre_tracks_showcase   rc=0
+NORMALIZED split unit_swap              rc=0 rewrites=[1]
+STRICT     split unit_swap_showcase     rc=0
+STRICT     split units                  rc=0
+STRICT     split units_showcase         rc=0
+STRICT     split weapons                rc=0
+-- 67 strict, 10 normalized, 4 bad of 81 compared

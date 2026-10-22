@@ -1,0 +1,43 @@
+## clipped share and contrast of the salt flat from above (moment light_flat_*; crops (330, 160, 230, 260) left, (700, 160, 230, 260) right)
+linear        left  clipped=0.00062 (37 of 59800) luma_mean=0.8076 luma_sd=0.0540
+linear        right clipped=0.00062 (37 of 59800) luma_mean=0.8042 luma_sd=0.0707
+agx           left  clipped=0.00000 (0 of 59800) luma_mean=0.7937 luma_sd=0.0309
+agx           right clipped=0.00000 (0 of 59800) luma_mean=0.7903 luma_sd=0.0517
+agx_no_grade  left  clipped=0.00000 (0 of 59800) luma_mean=0.7804 luma_sd=0.0299
+agx_no_grade  right clipped=0.00000 (0 of 59800) luma_mean=0.7771 luma_sd=0.0506
+filmic        left  clipped=0.08413 (5031 of 59800) luma_mean=0.9154 luma_sd=0.0405
+filmic        right clipped=0.09935 (5941 of 59800) luma_mean=0.9117 luma_sd=0.0615
+aces          left  clipped=0.33224 (19868 of 59800) luma_mean=0.9392 luma_sd=0.0385
+aces          right clipped=0.34301 (20512 of 59800) luma_mean=0.9349 luma_sd=0.0647
+## the brightest lit value of the Map (Linear at a quarter of the exposure: the largest channel, linear, over 0.25)
+flat left  max=1.0820 p99.9=0.9848 (the largest channel, linear, over the exposure 0.25)
+flat right max=1.0490 p99.9=0.9848 (the largest channel, linear, over the exposure 0.25)
+ford dark_a left  max=1.1671 p99.9=0.9382 (the largest channel, linear, over the exposure 0.25)
+ford dark_a right max=1.0327 p99.9=0.9079 (the largest channel, linear, over the exposure 0.25)
+ford dark_b left  max=1.1846 p99.9=0.9382 (the largest channel, linear, over the exposure 0.25)
+ford dark_b right max=1.0327 p99.9=0.9079 (the largest channel, linear, over the exposure 0.25)
+ford dark_c left  max=1.1846 p99.9=0.9382 (the largest channel, linear, over the exposure 0.25)
+ford dark_c right max=1.0327 p99.9=0.9079 (the largest channel, linear, over the exposure 0.25)
+ford dark_d left  max=1.1846 p99.9=0.9382 (the largest channel, linear, over the exposure 0.25)
+ford dark_d right max=1.0327 p99.9=0.9079 (the largest channel, linear, over the exposure 0.25)
+## the HUD's HP and Fuel bars (rectangles of the four bars) against the Linear frame, pixels that differ
+linear vs agx           differing 0 of 3920 + 0 of 3920 + 0 of 3920 + 0 of 3920
+linear vs agx_no_grade  differing 0 of 3920 + 0 of 3920 + 0 of 3920 + 0 of 3920
+linear vs filmic        differing 0 of 3920 + 0 of 3920 + 0 of 3920 + 0 of 3920
+linear vs aces          differing 0 of 3920 + 0 of 3920 + 0 of 3920 + 0 of 3920
+## the Team colours' mean hue on the Trucks (orange: hue 10 to 45, saturation 0.55 up, value 0.35 up; teal: 165 to 200, 0.40, 0.25)
+sun_close   linear        orange n=25712 hue=21.37 sat=0.721 val=0.701 | teal n=15150 hue=185.17 sat=0.644 val=0.353
+sun_close   agx           orange n=25691 hue=26.26 sat=0.742 val=0.726 | teal n=14585 hue=185.51 sat=0.839 val=0.379
+sun_close   agx_no_grade  orange n=26675 hue=26.04 sat=0.766 val=0.719 | teal n=14553 hue=184.84 sat=0.932 val=0.385
+sun_close   filmic        orange n=26356 hue=24.53 sat=0.693 val=0.793 | teal n=17188 hue=185.86 sat=0.608 val=0.419
+sun_close   aces          orange n=26024 hue=23.03 sat=0.718 val=0.829 | teal n=14637 hue=185.32 sat=0.851 val=0.398
+shade_close linear        orange n=17890 hue=20.86 sat=0.732 val=0.556 | teal n=16584 hue=186.22 sat=0.664 val=0.347
+shade_close agx           orange n=17964 hue=24.66 sat=0.850 val=0.579 | teal n=16126 hue=186.53 sat=0.871 val=0.375
+shade_close agx_no_grade  orange n=18463 hue=24.48 sat=0.895 val=0.591 | teal n=15949 hue=185.71 sat=0.973 val=0.379
+shade_close filmic        orange n=20056 hue=21.68 sat=0.701 val=0.629 | teal n=19059 hue=186.87 sat=0.624 val=0.416
+shade_close aces          orange n=18376 hue=19.93 sat=0.755 val=0.628 | teal n=15980 hue=186.53 sat=0.883 val=0.392
+## the glow: no probe, glow on (glow_none_on) against off (glow_none_off), whole frame; probes on against off
+SAME f00000918.png vs f00000928.png region=[P: (0, 0), S: (1280, 720)] differing=0 of 921600 largest_delta=0
+P1 view PROFILE f00000938.png vs f00000948.png y=272 140:1 152:1 164:1 176:1 188:1 200:1 212:1 224:1 236:1 248:1 260:0 272:6 284:8 296:36 308:43 320:41 332:36 344:26 356:39 368:0 380:39 392:20 404:7 416:3 428:2 440:1 452:1 464:1 476:1 488:1
+P2 view PROFILE f00000938.png vs f00000948.png y=272 780:1 792:1 804:1 816:1 828:1 840:1 852:1 864:1 876:1 888:1 900:0 912:3 924:6 936:21 948:34 960:29 972:25 984:27 996:61 1008:0 1020:42 1032:34 1044:12 1056:9 1068:5 1080:12 1092:9 1104:3 1116:2 1128:1
+bottom third SAME f00000938.png vs f00000948.png region=[P: (0, 520), S: (1280, 200)] differing=4 of 256000 largest_delta=1
