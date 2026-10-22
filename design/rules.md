@@ -169,6 +169,10 @@ Martin, 2026-10-21: "to pravidlo ze treba znicit vezicky aby sa dala ukradnut vl
 - No Turret locks a Flag: a Motorbike that reaches the other Player's Flag takes it whatever stands, and "Destroy the turrets first" never shows (data: `TurretStats.locks_flag` false; the code stays).
 - The Motorbike's Shots damage the other Player's Wall Panels, Flag Walls and Turrets at the full multiplier, like every type's; a Player's own pieces still take no damage from that Player.
 
+## The left stick drives (2026-10-22)
+
+Martin, 2026-10-22: "chcem aby pohyb fungoval s lavou packou na controlleri, teda aj dopredu/dozadu. ukazovakom sa bude strielat". Built in story 040; it replaces story 032's triggers for the throttle and the reverse: on a pad the left stick drives (up throttle, down reverse, both analog past the 0.2 dead zone; left and right steer, the D-pad too) and either trigger or A fires; A still confirms the Unit choice.
+
 ## Technology and conventions
 
 The source's choices, and how the project already matches them:

@@ -27,7 +27,7 @@ extends Node
 ## (windowed); since Story 024, ammo_buildings, ammo_buildings_showcase and ammo_buildings_fps
 ## (windowed); since Story 032, pads, pads_data and pads_showcase
 ## (windowed); since Story 036, resource_bars and resource_bars_showcase (windowed);
-## since Story 037, turret_flying_sight and cliff_tops; since Story 038, map_02, bushes, cover_pieces and map_02_showcase (windowed); since Story 039, flag_open. Each is a script under tools/evidence/split_screen/,
+## since Story 037, turret_flying_sight and cliff_tops; since Story 038, map_02, bushes, cover_pieces and map_02_showcase (windowed); since Story 039, flag_open; since Story 040, pads_stick. Each is a script under tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
 ## line there. A scenario reaches this script, DriveStep, UnitTrack and check_kit.gd through preload
@@ -337,6 +337,11 @@ extends Node
 ## scenario script declares const FLAG_OPEN: bool = true the runner puts both back on the shared resources
 ## (_apply_flag_open_off()).
 ##
+## The left stick drives (Story 040). The shipped pad layout now drives on the left stick (up throttle, down reverse, left and
+## right steer) and fires on either trigger as well as A. Unless the scenario script declares const STICK_DRIVE: bool = true
+## the runner gives the cached layout the bindings of stories 032 to 039 (tools/evidence/frozen/pad_layout_story_032.tres;
+## _apply_stick_drive_off()).
+##
 ## Output: SPLIT <scenario> t=<seconds> key=value ... (progress), CHECK <scenario> <check name> PASS|FAIL
 ## <detail> and exactly one last RESULT <scenario> ok|fail checks=<n> failed=<n> key=value ...; then quit with
 ## exit code 0 when every check passed, 1 when one failed, 2 for a missing or unknown scenario. TD-003
@@ -451,6 +456,7 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"cover_pieces": preload("res://tools/evidence/split_screen/cover_pieces.gd"),
 	&"map_02_showcase": preload("res://tools/evidence/split_screen/map_02_showcase.gd"),
 	&"flag_open": preload("res://tools/evidence/split_screen/flag_open.gd"),
+	&"pads_stick": preload("res://tools/evidence/split_screen/pads_stick.gd"),
 }
 
 ## The shared step class (drive_step.gd): keys held for a time.
@@ -631,6 +637,12 @@ const FLAG_OPEN_CONSTANT: StringName = &"FLAG_OPEN"
 ## The damage matrix the Shots read, and its pair Story 039 took out.
 const DAMAGE_MATRIX_PATH_039: String = "res://src/gameplay/combat/data/damage_matrix.tres"
 const MOTORBIKE_WALL_PAIR: StringName = &"motorbike>flag_wall"
+## The constant a scenario script declares as true to keep the shipped pad layout of Story 040 (the left stick drives, the
+## triggers fire; _apply_stick_drive_off()).
+const STICK_DRIVE_CONSTANT: StringName = &"STICK_DRIVE"
+## The shipped pad layout, and the layout of stories 032 to 039 (triggers throttle and reverse), frozen.
+const PAD_LAYOUT_PATH: String = "res://src/gameplay/input/data/pad_layout.tres"
+const FROZEN_PAD_LAYOUT: PadLayout = preload("res://tools/evidence/frozen/pad_layout_story_032.tres")
 ## Each type's Fuel burn before Story 036, by type_id: [fuel_use, fuel_use_idle] per second.
 const LEGACY_036_FUEL_RATES: Dictionary = {
 	&"motorbike": [2.0, 0.5], &"buggy": [2.5, 0.625], &"truck": [3.0, 0.75], &"gyrocopter": [5.0, 1.25]}
@@ -844,6 +856,7 @@ func _ready() -> void:
 	_apply_bushes_off(SCENARIOS[scenario])
 	_apply_map_choice_off(SCENARIOS[scenario])
 	_apply_flag_open_off(SCENARIOS[scenario])
+	_apply_stick_drive_off(SCENARIOS[scenario])
 	_apply_flying_sight_off(SCENARIOS[scenario])
 	if LEGACY_SCENARIOS.has(scenario):
 		_apply_legacy_data()
@@ -1606,6 +1619,20 @@ func _apply_map_choice_nodes_off(root: SplitScreen, script: GDScript) -> void:
 		if node != null:
 			node.get_parent().remove_child(node)
 			node.free()
+
+
+## Gives the shared pad layout the bindings of stories 032 to 039, the right trigger throttle and the left reverse, unless the
+## scenario script declares STICK_DRIVE (Story 040): on the cached resource, before the launch scene is instanced, so its
+## PadAssignment and every scenario that loads the layout by path read the old bindings.
+func _apply_stick_drive_off(script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(STICK_DRIVE_CONSTANT, false)):
+		return
+	var shipped: PadLayout = load(PAD_LAYOUT_PATH) as PadLayout
+	if shipped == null:
+		push_error("split_screen_harness: %s did not load as PadLayout, so the old pad layout is not applied." % PAD_LAYOUT_PATH)
+		return
+	shipped.bindings = FROZEN_PAD_LAYOUT.bindings.duplicate()
+	shipped.deadzone = FROZEN_PAD_LAYOUT.deadzone
 
 
 ## Gives the shared data the Flag rules of stories 013 to 038, unless the scenario script declares FLAG_OPEN (Story 039): the
