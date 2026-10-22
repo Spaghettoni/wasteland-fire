@@ -27,7 +27,7 @@ extends Node
 ## (windowed); since Story 024, ammo_buildings, ammo_buildings_showcase and ammo_buildings_fps
 ## (windowed); since Story 032, pads, pads_data and pads_showcase
 ## (windowed); since Story 036, resource_bars and resource_bars_showcase (windowed);
-## since Story 037, turret_flying_sight and cliff_tops; since Story 038, map_02, bushes, cover_pieces and map_02_showcase (windowed); since Story 039, flag_open; since Story 040, pads_stick; since Story 041, fire_heights and fire_heights_showcase (windowed); since Story 042, secondary; since Story 043, real_flag; since Stories 042 and 043, secondary_flag_showcase (windowed); since Story 044, recharge_showcase (windowed). Each is a script under tools/evidence/split_screen/,
+## since Story 037, turret_flying_sight and cliff_tops; since Story 038, map_02, bushes, cover_pieces and map_02_showcase (windowed); since Story 039, flag_open; since Story 040, pads_stick; since Story 041, fire_heights and fire_heights_showcase (windowed); since Story 042, secondary; since Story 043, real_flag; since Stories 042 and 043, secondary_flag_showcase (windowed); since Story 044, recharge_showcase (windowed); since Story 047, pad_back and shadow_showcase (windowed). Each is a script under tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
 ## line there. A scenario reaches this script, DriveStep, UnitTrack and check_kit.gd through preload
@@ -478,6 +478,8 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"real_flag": preload("res://tools/evidence/split_screen/real_flag.gd"),
 	&"secondary_flag_showcase": preload("res://tools/evidence/split_screen/secondary_flag_showcase.gd"),
 	&"recharge_showcase": preload("res://tools/evidence/split_screen/recharge_showcase.gd"),
+	&"pad_back": preload("res://tools/evidence/split_screen/pad_back.gd"),
+	&"shadow_showcase": preload("res://tools/evidence/split_screen/shadow_showcase.gd"),
 }
 
 ## The shared step class (drive_step.gd): keys held for a time.

@@ -286,7 +286,10 @@ def build_map():
     scene.node("Map", "Node3D", paths=["player_1_base", "player_2_base", "neutral_structures", "supply_zones",
                                        "tyre_tracks", "player_1_outposts", "player_2_outposts", "bushes"], props=root_props)
     scene.node("Sun", "DirectionalLight3D", ".", {"transform": SUN, "light_color": color(1, 0.93, 0.82), "light_energy": 1.3,
-                                                   "shadow_enabled": "true", "directional_shadow_max_distance": 100.0})
+                                                   "shadow_enabled": "true", "directional_shadow_max_distance": 100.0,
+                                                   # Story 047: with the default pancake (20 m) a canyon wall's shadow broke off near the
+                                                   # camera in Forward+; 0 turns pancaking off.
+                                                   "directional_shadow_pancake_size": 0.0})
     scene.node("WorldEnvironment", "WorldEnvironment", ".", {"environment": 'SubResource("Environment_sky")'})
     scene.node("Floor", "StaticBody3D", ".")
     scene.node("CollisionShape3D", "CollisionShape3D", "Floor", {"transform": transform(0, -0.5, 0), "shape": 'SubResource("BoxShape3D_floor")'})
