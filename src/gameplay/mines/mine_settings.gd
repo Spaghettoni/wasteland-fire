@@ -82,6 +82,12 @@ extends Resource
 ## The reason these settings cannot run a Mine, or an empty String when they can: the trigger's
 ## radius and height, the blink period and the probe's height must each be above zero, the
 ## open-ground mask must name a layer and the supply margin must not be negative or a NaN.
+## Whether a Mine leaves its own Team's Units alone (Story 048; Martin, 2026-10-23: "nech ta moze
+## zranit super, aj jeho miny, vlastne veze ta nezrania"): true, a Mine goes off only under a Unit
+## of the other Team; false (every Round before Story 048), under any ground Unit, its layer's too.
+@export var spares_own_team: bool = false
+
+
 ## Mine._ready() and MineLayer._ready() apply it and push one named error when it is not empty.
 func first_problem() -> String:
 	if trigger_radius <= 0.0:

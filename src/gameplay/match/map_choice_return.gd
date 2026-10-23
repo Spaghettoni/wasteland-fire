@@ -60,6 +60,9 @@ func go_back() -> void:
 	var tree: SceneTree = get_tree()
 	tree.paused = false
 	var choice: Node = scene.instantiate()
+	var split: SplitScreen = launch_root as SplitScreen
+	if choice is MapChoice and split != null:
+		(choice as MapChoice).lineup = split.lineup
 	tree.root.add_child(choice)
 	tree.current_scene = choice
 	launch_root.queue_free()

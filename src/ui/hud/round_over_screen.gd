@@ -81,6 +81,12 @@ extends Control
 ## in this script.
 @export var winner_format: String = ""
 
+## The winner lines of a Round of Teams (Story 048), one per Team in Team order: "Orange wins!",
+## "Teal wins!". Used instead of winner_format while use_team_names is true, which the launch scene
+## sets when it plays a lineup (SplitScreen.apply_lineup()): the winner is then a Team.
+@export var team_winner_texts: Array[String] = []
+var use_team_names: bool = false
+
 ## The line for a Round nobody won, after the double loss (round_over carries NO_WINNER): "Nobody
 ## wins!" in round_over_screen.tscn (Story 008 AC-7). It has no placeholder. Looked up with tr(),
 ## so it is also the translation key. Required, with no default: the text is data in the scene and
@@ -157,7 +163,10 @@ func _show_result(winner_index: int) -> void:
 	if winner_index == MatchController.NO_WINNER:
 		_winner_label.text = tr(nobody_text)
 	else:
-		_winner_label.text = tr(winner_format) % (winner_index + 1)
+		if use_team_names and winner_index >= 0 and winner_index < team_winner_texts.size():
+			_winner_label.text = tr(team_winner_texts[winner_index])
+		else:
+			_winner_label.text = tr(winner_format) % (winner_index + 1)
 	_restart_label.text = _restart_text()
 	visible = true
 

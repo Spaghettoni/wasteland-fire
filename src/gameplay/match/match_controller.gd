@@ -248,6 +248,10 @@ const SPAWN_SETTLE_TICKS: int = GarageQueue.SPAWN_SETTLE_TICKS
 @export var rules: MatchRules
 
 var _units: Array[Unit] = []
+## One entry per Player: the Team that Player plays for (Story 048: up to four Players in two
+## Teams). Empty until set_teams(); begin() fills it with each Player's own index when it is empty or
+## of the wrong size, so a Round of two Players, one per Team, is what it always was.
+var _teams: Array[int] = []
 var _bases: Array[Base] = []
 var _cameras: Array[ChaseCamera] = []
 ## The per-Player state, the choice, the waits and the spawn path (class doc). Enlisted by
@@ -340,7 +344,11 @@ func begin(units: Array[Unit], bases: Array[Base], cameras: Array[ChaseCamera], 
 	_bases.assign(bases)
 	_cameras.assign(cameras)
 	_garage.enlist(self, _units, _bases, _cameras)
-	_flags = FlagRules.new(_units, _bases)
+	if _teams.size() != _units.size():
+		_teams.clear()
+		for player_index: int in _units.size():
+			_teams.append(player_index)
+	_flags = FlagRules.new(_units, _bases, _teams)
 	_round_state = RoundState.RUNNING
 	_winner = NO_WINNER
 	_start_ledger()
@@ -460,7 +468,7 @@ func tokens_left(player_index: int, type_index: int) -> int:
 	if not _is_player(player_index) or type_index < 0 or type_index >= types.size():
 		return 0
 	var stats: UnitStats = types[type_index]
-	return _ledger.count_of(player_index, stats.type_id) if stats != null else 0
+	return _ledger.count_of(team_of(player_index), stats.type_id) if stats != null else 0
 
 
 ## True when the Player has a Token left of the Unit type at type_index: tokens_left() is above 0,
@@ -539,7 +547,7 @@ func seconds_until_respawn(player_index: int) -> float:
 ## Rule (1) of the tick: each Flag that is not carried goes to the first Player who qualifies
 ## (FlagRules.taker_of(); class doc), and the pick-up is announced.
 func _apply_pick_ups(may_act: Array[bool]) -> void:
-	for flag_index: int in _bases.size():
+	for flag_index: int in team_count():
 		var taker: int = _flags.taker_of(flag_index, may_act)
 		if taker != FlagRules.NONE:
 			_flags.pick_up(taker, flag_index)
@@ -558,12 +566,12 @@ func _apply_deliveries(may_act: Array[bool]) -> void:
 			continue
 		if not _flags.is_in_own_zone(player_index):
 			continue
-		if flag_index == player_index:
+		if flag_index == _teams[player_index]:
 			_flags.reseat(player_index)
 			flag_seated.emit(flag_index)
 		else:
 			_round_state = RoundState.OVER
-			_winner = player_index
+			_winner = _teams[player_index]
 			return
 
 
@@ -593,21 +601,22 @@ func _apply_swaps() -> void:
 func _apply_losses() -> void:
 	var lost: int = 0
 	var survivor: int = NO_WINNER
-	for player_index: int in _units.size():
-		if _ledger.has_lost(player_index):
+	var teams: int = team_count()
+	for team: int in teams:
+		if _ledger.has_lost(team):
 			lost += 1
 		else:
-			survivor = player_index
+			survivor = team
 	if lost == 0:
 		return
 	_round_state = RoundState.OVER
-	_winner = survivor if lost == _units.size() - 1 else NO_WINNER
+	_winner = survivor if lost == teams - 1 else NO_WINNER
 
 
 ## Copies the Map's Token stock into the ledger for every Player and every type the rules hold now:
 ## begin() and restart(), before round_started in both.
 func _start_ledger() -> void:
-	_ledger.start(_token_stock, unit_types(), _units.size())
+	_ledger.start(_token_stock, unit_types(), team_count())
 
 
 ## True for an index of a Player in this Round.
@@ -729,7 +738,7 @@ func _on_unit_destroyed(player_index: int) -> void:
 		return
 	var dropped: int = _flags.drop(player_index)
 	var stats: UnitStats = _units[player_index].stats
-	_ledger.take(player_index, stats.type_id if stats != null else &"")
+	_ledger.take(team_of(player_index), stats.type_id if stats != null else &"")
 	if dropped != FlagRules.NONE:
 		flag_dropped.emit(dropped)
 	unit_destroyed.emit(player_index)
@@ -779,3 +788,35 @@ func _apply_flag_drops(may_act: Array[bool]) -> void:
 		var dropped: int = _flags.release(player_index, at, rules.flag_release_metres)
 		if dropped != FlagRules.NONE:
 			flag_dropped.emit(dropped)
+
+
+
+## Puts the Players in Teams before begin() (Story 048; Martin, 2026-10-23: up to four Players, 2 v 1,
+## 3 v 1 or 2 v 2, "jedna zakladna, spolocne tokeny"): one entry per Player, 0 for the Orange Team
+## and 1 for the Teal one. A Team's Players share its Base, its Flag and one Token stock: a Token is
+## taken from the Team, the Team loses with its last carrier Token, and winner_index() is then a Team
+## index. Call it once, before begin(), with as many entries as begin() gets Units; a call after
+## begin() is refused with a warning. Without a call every Player is a Team of their own.
+func set_teams(teams: Array[int]) -> void:
+	if _has_begun:
+		push_warning("MatchController '%s': set_teams() was called after begin(), so the Teams stay as they are." % name)
+		return
+	_teams = teams.duplicate()
+
+
+## The Team the Player plays for: the entry set_teams() gave, or the Player's own index. -1 for an
+## index that is not in the Round.
+func team_of(player_index: int) -> int:
+	if not _is_player(player_index):
+		return -1
+	return _teams[player_index] if player_index < _teams.size() else player_index
+
+
+## The number of Teams in the Round (one Flag and one Token stock each).
+func team_count() -> int:
+	if _flags != null:
+		return _flags.team_count()
+	var count: int = 0
+	for player_index: int in _units.size():
+		count = maxi(count, team_of(player_index) + 1)
+	return count

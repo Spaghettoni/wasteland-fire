@@ -27,7 +27,7 @@ extends Node
 ## (windowed); since Story 024, ammo_buildings, ammo_buildings_showcase and ammo_buildings_fps
 ## (windowed); since Story 032, pads, pads_data and pads_showcase
 ## (windowed); since Story 036, resource_bars and resource_bars_showcase (windowed);
-## since Story 037, turret_flying_sight and cliff_tops; since Story 038, map_02, bushes, cover_pieces and map_02_showcase (windowed); since Story 039, flag_open; since Story 040, pads_stick; since Story 041, fire_heights and fire_heights_showcase (windowed); since Story 042, secondary; since Story 043, real_flag; since Stories 042 and 043, secondary_flag_showcase (windowed); since Story 044, recharge_showcase (windowed); since Story 047, pad_back and shadow_showcase (windowed). Each is a script under tools/evidence/split_screen/,
+## since Story 037, turret_flying_sight and cliff_tops; since Story 038, map_02, bushes, cover_pieces and map_02_showcase (windowed); since Story 039, flag_open; since Story 040, pads_stick; since Story 041, fire_heights and fire_heights_showcase (windowed); since Story 042, secondary; since Story 043, real_flag; since Stories 042 and 043, secondary_flag_showcase (windowed); since Story 044, recharge_showcase (windowed); since Story 047, pad_back and shadow_showcase (windowed); since Story 048, teams, teams_three and teams_showcase (windowed). Each is a script under tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
 ## line there. A scenario reaches this script, DriveStep, UnitTrack and check_kit.gd through preload
@@ -369,6 +369,12 @@ extends Node
 ## are lit, the ammunition zone's in the tracer's pale yellow (_restore_zone_look_044()); since Story 046 a Player's own Shots
 ## spare that Player's walls again (flag_wall_stats.tres spared_by_owner true).
 ##
+## Teams (Story 048). The shipped mine_settings.tres now lets a Mine spare its own Team (spares_own_team). Unless the scenario
+## script declares const TEAMS: bool = true the runner gives it back the rule of stories 014 to 047 (_apply_teams_off()). A
+## scenario that declares const LINEUP_DEVICES and LINEUP_TEAMS (int arrays) plays that lineup: the runner hands it to
+## SplitScreen.apply_lineup() before the scene enters the tree (_apply_lineup()); a lineup scenario declares the opt-ins of
+## the shipped game, because the node opt-outs look for the views of two Players.
+##
 ## Output: SPLIT <scenario> t=<seconds> key=value ... (progress), CHECK <scenario> <check name> PASS|FAIL
 ## <detail> and exactly one last RESULT <scenario> ok|fail checks=<n> failed=<n> key=value ...; then quit with
 ## exit code 0 when every check passed, 1 when one failed, 2 for a missing or unknown scenario. TD-003
@@ -495,6 +501,9 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"recharge_showcase": preload("res://tools/evidence/split_screen/recharge_showcase.gd"),
 	&"pad_back": preload("res://tools/evidence/split_screen/pad_back.gd"),
 	&"shadow_showcase": preload("res://tools/evidence/split_screen/shadow_showcase.gd"),
+	&"teams": preload("res://tools/evidence/split_screen/teams.gd"),
+	&"teams_three": preload("res://tools/evidence/split_screen/teams_three.gd"),
+	&"teams_showcase": preload("res://tools/evidence/split_screen/teams_showcase.gd"),
 }
 
 ## The shared step class (drive_step.gd): keys held for a time.
@@ -698,6 +707,11 @@ const SMOKE_LAYER_SETTING: String = "layer_names/3d_physics/layer_9"
 ## The Truck's data, whose Mines recharge since Story 044 (mine_cooldown_seconds), and the Bush scene's size before it.
 const TRUCK_STATS_PATH_044: String = "res://src/gameplay/units/data/truck_stats.tres"
 const LEGACY_043_BUSH_SIZE: float = 1.0
+## Story 048: the constants of a scenario's lineup and of its Team rules, and the Mines' data.
+const LINEUP_DEVICES_CONSTANT: StringName = &"LINEUP_DEVICES"
+const LINEUP_TEAMS_CONSTANT: StringName = &"LINEUP_TEAMS"
+const TEAMS_CONSTANT: StringName = &"TEAMS"
+const MINE_SETTINGS_PATH_048: String = "res://src/gameplay/mines/data/mine_settings.tres"
 ## Every wall's data, which since Story 046 no longer spares its owner's Shots (spared_by_owner false).
 const WALL_STATS_PATH_046: String = "res://src/gameplay/defences/data/flag_wall_stats.tres"
 ## The ammunition zone's marking before Story 045: the Shots' tracer colour (ammo_building.tscn's paint).
@@ -919,6 +933,7 @@ func _ready() -> void:
 	get_tree().create_timer(_watchdog_seconds).timeout.connect(_on_watchdog)
 	_apply_fuel_burn_off(SCENARIOS[scenario])
 	_apply_secondary_off(SCENARIOS[scenario])
+	_apply_teams_off(SCENARIOS[scenario])
 	_apply_bushes_off(SCENARIOS[scenario])
 	_apply_map_choice_off(SCENARIOS[scenario])
 	_apply_flag_open_off(SCENARIOS[scenario])
@@ -944,6 +959,7 @@ func _ready() -> void:
 	turret_scene = SHIPPED_TURRET_SCENE if _keeps_turret_looks(SCENARIOS[scenario]) else FROZEN_TURRET_SCENE
 	split = SPLIT_SCENE.instantiate() as SplitScreen
 	_apply_map_scene(split, SCENARIOS[scenario])
+	_apply_lineup(split, SCENARIOS[scenario])
 	_apply_map_choice_nodes_off(split, SCENARIOS[scenario])
 	_apply_secondary_nodes_off(split, SCENARIOS[scenario])
 	_apply_chase_camera(split, SCENARIOS[scenario])
@@ -1655,6 +1671,30 @@ func _apply_flying_sight_off(script: GDScript) -> void:
 ## Puts the Map the scenario script names in MAP_SCENE in place of Map 01 in a freshly instanced launch scene, before any other
 ## helper reads its field (Story 038): SplitScreen.use_map(). A script that names none keeps Map 01; a path that does not load
 ## as a scene is an error and keeps Map 01.
+## Plays the lineup a scenario declares (Story 048): const LINEUP_DEVICES and LINEUP_TEAMS, two arrays of ints, one entry
+## per Player (a pad id or Lineup.KEYBOARD_1 / KEYBOARD_2, and Lineup.ORANGE / TEAL), handed to SplitScreen.apply_lineup()
+## before the scene enters the tree. A scenario without them plays the scene's two Players as before.
+func _apply_lineup(root: SplitScreen, script: GDScript) -> void:
+	var constants: Dictionary = script.get_script_constant_map()
+	if not constants.has(LINEUP_DEVICES_CONSTANT):
+		return
+	var devices: Array[int] = []
+	devices.assign(constants[LINEUP_DEVICES_CONSTANT])
+	var teams: Array[int] = []
+	teams.assign(constants.get(LINEUP_TEAMS_CONSTANT, []))
+	root.apply_lineup(Lineup.of(devices, teams))
+
+
+## Gives Mines back the rule of stories 014 to 047, unless the scenario script declares const TEAMS: bool = true (Story 048):
+## a Mine goes off under any ground Unit, its own Team's too (MineSettings.spares_own_team false).
+func _apply_teams_off(script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(TEAMS_CONSTANT, false)):
+		return
+	var settings: MineSettings = load(MINE_SETTINGS_PATH_048) as MineSettings
+	if settings != null:
+		settings.spares_own_team = false
+
+
 func _apply_map_scene(root: SplitScreen, script: GDScript) -> void:
 	var path: String = String(script.get_script_constant_map().get(MAP_SCENE_CONSTANT, ""))
 	if path.is_empty():

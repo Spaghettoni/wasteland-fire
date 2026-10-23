@@ -1,0 +1,163 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/ui/lobby/pick_side.gd" id="1_pick"]
+[ext_resource type="PackedScene" path="res://src/ui/map_choice/map_choice.tscn" id="2_choice"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+bg_color = Color(0.1, 0.09, 0.08, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.45, 0.4, 0.34, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ready"]
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+bg_color = Color(0.2, 0.17, 0.13, 0.96)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.72, 0.32, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="PickSide" type="Control" node_paths=PackedStringArray("orange_list", "middle_list", "teal_list", "status_label")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_pick")
+map_choice_scene = ExtResource("2_choice")
+orange_list = NodePath("Layout/Sides/Orange/List")
+middle_list = NodePath("Layout/Sides/Middle/List")
+teal_list = NodePath("Layout/Sides/Teal/List")
+status_label = NodePath("Layout/Status")
+card_style = SubResource("StyleBoxFlat_card")
+ready_style = SubResource("StyleBoxFlat_ready")
+keyboard_1_text = "Keyboard  W A S D"
+keyboard_2_text = "Keyboard  Arrows"
+pad_format = "Controller %d"
+ready_suffix = "   ✓ Ready"
+join_text = "Move left or right (stick, D-pad, A / D or the arrows) to join a side"
+need_sides_text = "Both sides need a player"
+need_ready_text = "Press A, Space or Period when you are ready  ·  B, Tab or Enter to go back"
+starting_text = "Everyone is ready: choose the map…"
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.16, 0.12, 0.09, 1)
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 60.0
+offset_top = 40.0
+offset_right = -60.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 22
+
+[node name="Title" type="Label" parent="Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.72, 0.32, 1)
+theme_override_font_sizes/font_size = 44
+text = "WASTELAND FIRE"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Layout"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "Pick a side"
+horizontal_alignment = 1
+
+[node name="Sides" type="HBoxContainer" parent="Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_constants/separation = 28
+
+[node name="Orange" type="VBoxContainer" parent="Layout/Sides"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="Header" type="Label" parent="Layout/Sides/Orange"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.55, 0.18, 1)
+theme_override_font_sizes/font_size = 32
+text = "◄ ORANGE"
+horizontal_alignment = 1
+
+[node name="List" type="VBoxContainer" parent="Layout/Sides/Orange"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+
+[node name="Middle" type="VBoxContainer" parent="Layout/Sides"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="Header" type="Label" parent="Layout/Sides/Middle"]
+layout_mode = 2
+modulate = Color(1, 1, 1, 0.6)
+theme_override_font_sizes/font_size = 22
+text = "not playing"
+horizontal_alignment = 1
+
+[node name="List" type="VBoxContainer" parent="Layout/Sides/Middle"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+
+[node name="Teal" type="VBoxContainer" parent="Layout/Sides"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="Header" type="Label" parent="Layout/Sides/Teal"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.25, 0.83, 0.82, 1)
+theme_override_font_sizes/font_size = 32
+text = "TEAL ►"
+horizontal_alignment = 1
+
+[node name="List" type="VBoxContainer" parent="Layout/Sides/Teal"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+
+[node name="Status" type="Label" parent="Layout"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+autowrap_mode = 3

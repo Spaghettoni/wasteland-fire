@@ -16,3 +16,4 @@ probe_top = 20.0
 supply_margin = 3.0
 flash_seconds = 0.3
 flash_radius = 1.6
+spares_own_team = true

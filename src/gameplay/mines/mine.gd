@@ -189,7 +189,7 @@ func _touching_units() -> Array[Unit]:
 func _detonate(touching: Array[Unit]) -> void:
 	var victims: Array[Unit] = []
 	for unit: Unit in touching:
-		if unit.is_alive:
+		if unit.is_alive and not (settings.spares_own_team and unit.player_index == player_index):
 			victims.append(unit)
 	if victims.is_empty():
 		return

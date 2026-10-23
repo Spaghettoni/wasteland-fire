@@ -1,0 +1,6 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK teams_three E1_views PASS left ["Player1View", "Player2View"], right ["Player3View", "EmptyView"]
+CHECK teams_three E2_turrets PASS a Turret of Orange's Base armed with 1 Unit(s), one of Teal's with 2
+CHECK teams_three E3_team_loss PASS Teal's 5 Motorbikes destroyed one by one: the Round over true, winner Team 0 (Orange)
+RESULT teams_three ok checks=3 failed=0 t=16.083 players=3

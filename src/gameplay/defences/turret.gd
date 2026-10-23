@@ -135,6 +135,9 @@ var state: State:
 
 var _data: TurretStats
 var _target: Unit
+## Every Unit the Turret may fire at (Story 048: each Unit of the other Team); _target is the one it
+## deals with on this tick (_pick_target()).
+var _targets: Array[Unit] = []
 var _shots_parent: Node
 var _rules: MatchRules
 var _state: State = State.IDLE
@@ -165,6 +168,8 @@ func _physics_process(delta: float) -> void:
 	if not is_standing:
 		return
 	_ticks += 1
+	if _targets.size() > 1:
+		_target = _pick_target()
 	if _rules == null or not is_instance_valid(_target) or not _target.is_alive:
 		_idle()
 		return
@@ -190,15 +195,48 @@ func _physics_process(delta: float) -> void:
 ## node its Shots are added under (World) and the Round's MatchRules. Call it once, before the Round
 ## begins; a Turret never armed stays idle. The Turret's tick then runs one above the target's.
 func arm(target: Unit, shots_parent: Node, rules: MatchRules) -> void:
+	var one: Array[Unit] = [target]
+	arm_targets(one, shots_parent, rules)
+
+
+## arm() for several possible targets (Story 048: every Unit of the other Team). With more than one,
+## each tick the Turret deals with the nearest Unit in play that is within its reach and that it sees,
+## or, when none is, the nearest in play (it then idles as it would for one it cannot see).
+func arm_targets(targets: Array[Unit], shots_parent: Node, rules: MatchRules) -> void:
 	if rules == null or rules.damage_matrix == null:
 		push_error("Turret '%s': the rules or their damage matrix are not assigned, so it never aims or fires." % name)
 		set_physics_process(false)
 		return
+	_targets = targets.duplicate()
+	var target: Unit = _targets[0] if not _targets.is_empty() else null
 	_target = target
 	_shots_parent = shots_parent
 	_rules = rules
 	if target != null:
 		process_physics_priority = target.process_physics_priority + PRIORITY_OFFSET
+
+
+## The Unit of _targets to deal with on this tick (arm_targets()): the nearest in play that is within
+## reach of the muzzle and seen, else the nearest in play, else null. Ties go to the earlier entry.
+func _pick_target() -> Unit:
+	var nearest: Unit = null
+	var nearest_seen: Unit = null
+	var best: float = INF
+	var best_seen: float = INF
+	for candidate: Unit in _targets:
+		if not is_instance_valid(candidate) or not candidate.is_alive:
+			continue
+		var gap: float = global_position.distance_to(candidate.global_position)
+		if gap < best:
+			best = gap
+			nearest = candidate
+		if gap < best_seen and gap <= _data.weapon_range + _data.muzzle_forward:
+			_target = candidate
+			var aim: Vector3 = _aim_point()
+			if aim != Vector3.INF and _sees(_aimed_muzzle(aim)):
+				best_seen = gap
+				nearest_seen = candidate
+	return nearest_seen if nearest_seen != null else nearest
 
 
 ## Structure's destroy(), then the aim forgotten: a Turret that fell has none (aim_point and

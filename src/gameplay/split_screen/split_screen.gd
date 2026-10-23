@@ -212,6 +212,12 @@ const EXPLOSION_GROUP: StringName = &"explosions"
 ## The node group every smoke screen belongs to (Story 042); _free_smokes() frees it at every restart.
 const SMOKE_GROUP: StringName = &"smokes"
 
+## The gap between the views of one column, pixels, and the colour of a place no Player has (Story 048).
+const VIEW_GAP: int = 4
+const EMPTY_VIEW_COLOUR: Color = Color(0.06, 0.06, 0.07, 1.0)
+## The dead zone an action gets when project.godot gives it none.
+const DEFAULT_DEADZONE: float = 0.2
+
 ## The node group every Fuel Can belongs to; _restock_fuel_cans() brings the whole group back
 ## whenever a Round starts again. Empty on the shipped Map 01 since Story 023.
 const FUEL_CAN_GROUP: StringName = &"fuel_cans"
@@ -257,6 +263,12 @@ const FUEL_CAN_GROUP: StringName = &"fuel_cans"
 ## none nothing listens to the Round for it and no explosion is ever added.
 @export var explosion_scene: PackedScene
 
+## Players 3 and 4, made by apply_lineup() (Story 048), each a Dictionary of its "unit", "camera",
+## "weapon" and "mine_layer". Empty in a Round of two.
+var _extra_players: Array[Dictionary] = []
+## The lineup this scene plays (apply_lineup()), or null for the two Players of the scene as saved.
+var lineup: Lineup = null
+
 ## Puts `map_scene` in place of the Map this scene was saved with (Story 038), before the scene
 ## enters the tree: the map choice calls it on a freshly instanced launch scene. World's Map is
 ## freed at once (remove_child() and free(), so none of its nodes stays in a node group for a frame),
@@ -297,13 +309,16 @@ func _ready() -> void:
 		var reason: String = "The field (with both its Bases), both Units, both cameras and the MatchController must all be assigned."
 		push_error("SplitScreen '%s': %s is not assigned, so the Round does not begin and no Unit is placed. %s" % [name, missing, reason])
 		return
-	var units: Array[Unit] = [player_1_unit, player_2_unit]
-	var bases: Array[Base] = [field.player_1_base, field.player_2_base]
-	var cameras: Array[ChaseCamera] = [player_1_camera, player_2_camera]
-	_assign_players(units, bases)
+	var units: Array[Unit] = all_units()
+	var team_bases: Array[Base] = [field.player_1_base, field.player_2_base]
+	var bases: Array[Base] = []
+	for player: int in units.size():
+		bases.append(team_bases[team_of(player)])
+	var cameras: Array[ChaseCamera] = all_cameras()
+	_assign_players(units, team_bases)
 	_hand_silhouette_layers(units, cameras)
-	_arm_turrets(units, bases)
-	_hand_bases_to_mine_layers(bases)
+	_arm_turrets(units, team_bases)
+	_hand_bases_to_mine_layers(team_bases)
 	_hand_supply_zones()
 	_hand_tyre_tracks(units)
 	_warm_up_models()
@@ -355,10 +370,11 @@ func _first_unassigned() -> String:
 ## is Player 1, 1 is Player 2. An entry of a list that is not assigned is skipped (Base warns).
 func _assign_players(units: Array[Unit], bases: Array[Base]) -> void:
 	for player: int in units.size():
-		units[player].player_index = player
-		for structure: Structure in _pieces_of(player, bases):
+		units[player].player_index = team_of(player)
+	for team: int in bases.size():
+		for structure: Structure in _pieces_of(team, bases):
 			if structure != null:
-				structure.player_index = player
+				structure.player_index = team
 
 
 ## Gives each Player's camera the silhouette layer it never draws, the other Player's (Story 027 AC-4),
@@ -367,26 +383,35 @@ func _assign_players(units: Array[Unit], bases: Array[Base]) -> void:
 ## cameras drawing every layer, as before the story.
 func _hand_silhouette_layers(units: Array[Unit], cameras: Array[ChaseCamera]) -> void:
 	for player: int in cameras.size():
-		var other: SilhouetteSettings = units[1 - player].silhouette
-		if other != null:
-			cameras[player].never_drawn_layers = other.layer_of(1 - player)
+		# Story 048: a Unit's silhouette is on its Team's layer (player_index is the Team), so each view
+		# leaves out the other Team's and shows the Teammates' with its own.
+		var settings: SilhouetteSettings = units[player].silhouette
+		if settings != null:
+			cameras[player].never_drawn_layers = settings.layer_of(1 - team_of(player))
 
 
 ## Arms every Turret in each Base's structures list (Story 013): the target is the other Player's
 ## Unit, so a Turret of Player N's Base fires at Player N + 1's, wrapping round; the Shots go under
 ## the node the Units are under. A Structure that is not a Turret is left alone.
 func _arm_turrets(units: Array[Unit], bases: Array[Base]) -> void:
-	for player: int in bases.size():
-		for structure: Structure in _pieces_of(player, bases):
+	for team: int in bases.size():
+		var enemies: Array[Unit] = []
+		for player: int in units.size():
+			if team_of(player) != team:
+				enemies.append(units[player])
+		for structure: Structure in _pieces_of(team, bases):
 			var turret: Turret = structure as Turret
-			if turret != null:
-				turret.arm(units[(player + 1) % units.size()], units[player].get_parent(), match_controller.rules)
+			if turret != null and not enemies.is_empty():
+				if enemies.size() == 1:
+					turret.arm(enemies[0], units[0].get_parent(), match_controller.rules)
+				else:
+					turret.arm_targets(enemies, units[0].get_parent(), match_controller.rules)
 
 
 ## Hands both MineLayers the two Bases, in Player order, before the Round begins (Story 014): the
 ## MineLayer refuses a lay in or near either of them.
 func _hand_bases_to_mine_layers(bases: Array[Base]) -> void:
-	for layer: MineLayer in [player_1_mine_layer, player_2_mine_layer]:
+	for layer: MineLayer in all_mine_layers():
 		layer.bases = bases
 
 
@@ -395,11 +420,11 @@ func _hand_bases_to_mine_layers(bases: Array[Base]) -> void:
 ## get every zone, and refuse a lay in or near any of them. The list is the field's own
 ## (MapField.supply_zones), so a Map with none hands nothing.
 func _hand_supply_zones() -> void:
-	var weapons: Array[Weapon] = [player_1_weapon, player_2_weapon]
+	var weapons: Array[Weapon] = all_weapons()
 	for zone: SupplyZone in field.supply_zones:
 		if zone != null and zone.kind == SupplyZone.Kind.AMMO:
 			zone.weapons = weapons
-	for layer: MineLayer in [player_1_mine_layer, player_2_mine_layer]:
+	for layer: MineLayer in all_mine_layers():
 		layer.supply_zones = field.supply_zones
 
 
@@ -483,7 +508,7 @@ func _free_explosions() -> void:
 func _explode(player_index: int) -> void:
 	if explosion_scene == null:
 		return
-	var unit: Unit = player_1_unit if player_index == 0 else player_2_unit
+	var unit: Unit = all_units()[player_index]
 	var instance: Node = explosion_scene.instantiate()
 	var blast: Explosion = instance as Explosion
 	if blast == null:
@@ -533,3 +558,275 @@ func _restock_fuel_cans() -> void:
 		var fuel_can: FuelCan = node as FuelCan
 		if fuel_can != null:
 			fuel_can.restock()
+
+
+## Every Player's Unit, in Player order: Player 1's and Player 2's, then those apply_lineup() made.
+func all_units() -> Array[Unit]:
+	var list: Array[Unit] = [player_1_unit, player_2_unit]
+	for extra: Dictionary in _extra_players:
+		list.append(extra["unit"] as Unit)
+	return list
+
+
+## Every Player's camera, in Player order.
+func all_cameras() -> Array[ChaseCamera]:
+	var list: Array[ChaseCamera] = [player_1_camera, player_2_camera]
+	for extra: Dictionary in _extra_players:
+		list.append(extra["camera"] as ChaseCamera)
+	return list
+
+
+## Every Player's Weapon, in Player order.
+func all_weapons() -> Array[Weapon]:
+	var list: Array[Weapon] = [player_1_weapon, player_2_weapon]
+	for extra: Dictionary in _extra_players:
+		list.append(extra["weapon"] as Weapon)
+	return list
+
+
+## Every Player's MineLayer, in Player order.
+func all_mine_layers() -> Array[MineLayer]:
+	var list: Array[MineLayer] = [player_1_mine_layer, player_2_mine_layer]
+	for extra: Dictionary in _extra_players:
+		list.append(extra["mine_layer"] as MineLayer)
+	return list
+
+
+## The Team of the Player (Story 048): the lineup's entry, or the Player's own index without one.
+func team_of(player_index: int) -> int:
+	if lineup != null and player_index < lineup.teams.size():
+		return lineup.teams[player_index]
+	return player_index
+
+
+## Plays a lineup (Story 048; Martin, 2026-10-23): two to four Players in two Teams, each on a pad or a
+## keyboard half. Call it on a freshly instanced launch scene, after use_map() and before it enters the
+## tree, as the map choice does. Players 3 and 4 are made from Player 2's nodes (_duplicate_rig()); every
+## Unit, HUD band and choice panel takes its Team's colours; with more than two Players the views stand
+## in two columns, Orange on the left and Teal on the right, an empty place showing a dark panel; the
+## Players' actions get the keys of their keyboard half and no other (_apply_inputs()); PadAssignment
+## gives each listed pad to its Player only; the Round-over screens name the winning Team; and the
+## MatchController gets the Teams. Returns false, with an error and nothing changed, when the scene is
+## in the tree or the lineup cannot be played (Lineup.is_playable()).
+func apply_lineup(new_lineup: Lineup) -> bool:
+	if is_inside_tree():
+		push_error("SplitScreen '%s': apply_lineup() is called after the scene entered the tree, so the lineup is not played." % name)
+		return false
+	if new_lineup == null or not new_lineup.is_playable():
+		push_error("SplitScreen '%s': the lineup cannot be played (two to four Players, both sides taken, each device once), so the Round keeps its two Players." % name)
+		return false
+	lineup = new_lineup
+	var count: int = lineup.player_count()
+	var team_materials: Array[Material] = [player_1_unit.team_material, player_2_unit.team_material]
+	var body_materials: Array[Material] = [_body_material(player_1_unit), _body_material(player_2_unit)]
+	var views: Node = get_node("Views")
+	var edges: Array = [_edge_of(views.get_node("Player1View/SubViewport/Player1Hud")), _edge_of(views.get_node("Player2View/SubViewport/Player2Hud"))]
+	for number: int in range(3, count + 1):
+		_extra_players.append(_duplicate_rig(number))
+	var units: Array[Unit] = all_units()
+	for player: int in count:
+		var team: int = lineup.teams[player]
+		units[player].team_material = team_materials[team]
+		var body: MeshInstance3D = units[player].get_node_or_null("Body") as MeshInstance3D
+		if body != null:
+			body.material_override = body_materials[team]
+		var view: Node = views.get_node("Player%dView/SubViewport" % (player + 1))
+		for node: Node in view.get_children():
+			if &"edge_style" in node:
+				node.set(&"edge_style", edges[team])
+			if node is RoundOverScreen:
+				(node as RoundOverScreen).use_team_names = true
+	if count > 2:
+		_lay_out_views(count)
+	_apply_inputs()
+	var pads: PadAssignment = get_node_or_null("PadAssignment") as PadAssignment
+	if pads != null:
+		var prefixes: Array[StringName] = []
+		for player: int in count:
+			prefixes.append(StringName("p%d_" % (player + 1)))
+		pads.action_prefixes = prefixes
+		var reserved: Dictionary[int, int] = {}
+		for player: int in count:
+			if not Lineup.is_keyboard(lineup.devices[player]):
+				reserved[lineup.devices[player]] = player
+		pads.reserved = reserved
+	match_controller.set_teams(lineup.teams)
+	return true
+
+
+## The Body's material override of a Unit as the scene was saved (its Team look), or null.
+func _body_material(unit: Unit) -> Material:
+	var body: MeshInstance3D = unit.get_node_or_null("Body") as MeshInstance3D
+	return body.material_override if body != null else null
+
+
+## A node's edge_style, or null when it has none.
+func _edge_of(node: Node) -> Variant:
+	return node.get(&"edge_style") if node != null and &"edge_style" in node else null
+
+
+## Makes Player `number` (3 or 4) from Player 2's nodes (Story 048): every child of World whose name
+## starts with Player2 and Player 2's view are duplicated, renamed (Player2 -> Player<number> in every
+## node name), added beside the originals and owned by this scene; every Node reference among their
+## properties that pointed into Player 2's nodes points into the copies, every action_prefix p2_ becomes
+## p<number>_, and every exported player_index of 1 (Player 2's) becomes number - 1. Returns the new
+## Player's "unit", "camera", "weapon" and "mine_layer".
+func _duplicate_rig(number: int) -> Dictionary:
+	var world: Node = get_node("World")
+	var views: Node = get_node("Views")
+	var pairs: Array = []
+	var roots: Array[Node] = []
+	for child: Node in world.get_children():
+		if String(child.name).begins_with("Player2"):
+			roots.append(child)
+	roots.append(views.get_node("Player2View"))
+	var copies: Array[Node] = []
+	# A SubViewport under a stretching container refuses the size the duplicate copies into it (a
+	# warning per copy), so the view's stretch is off while it is duplicated and back on after.
+	var view: SubViewportContainer = views.get_node("Player2View") as SubViewportContainer
+	var stretch: bool = view.stretch
+	view.stretch = false
+	for original: Node in roots:
+		var copy: Node = original.duplicate()
+		_pair_up(original, copy, pairs)
+		copies.append(copy)
+	view.stretch = stretch
+	for copy: Node in copies:
+		if copy is SubViewportContainer:
+			(copy as SubViewportContainer).stretch = stretch
+	var mapping: Dictionary = {}
+	for pair: Array in pairs:
+		mapping[pair[0]] = pair[1]
+	var tag: String = "Player%d" % number
+	for pair: Array in pairs:
+		var copy: Node = pair[1]
+		if (pair[0] as Node).owner == self:
+			copy.unique_name_in_owner = false
+		copy.name = String(copy.name).replace("Player2", tag)
+	for index: int in roots.size():
+		roots[index].get_parent().add_child(copies[index])
+	for pair: Array in pairs:
+		var original: Node = pair[0]
+		var copy: Node = pair[1]
+		if original.owner == self:
+			copy.owner = self
+			copy.unique_name_in_owner = original.unique_name_in_owner
+		_repoint(copy, mapping, number)
+	var unit: Unit = world.get_node(tag + "Unit") as Unit
+	return {
+		"unit": unit,
+		"camera": views.get_node("%sView/SubViewport/%sCamera" % [tag, tag]) as ChaseCamera,
+		"weapon": world.get_node(tag + "Weapon") as Weapon,
+		"mine_layer": world.get_node(tag + "MineLayer") as MineLayer,
+	}
+
+
+## Pairs a node with its duplicate and their children with each other, depth first, into `pairs`.
+func _pair_up(original: Node, copy: Node, pairs: Array) -> void:
+	pairs.append([original, copy])
+	for index: int in original.get_child_count():
+		if index < copy.get_child_count():
+			_pair_up(original.get_child(index), copy.get_child(index), pairs)
+
+
+## Points a duplicated node's Node properties at the duplicates (`mapping`), and gives it Player
+## `number`'s action prefix and player index (_duplicate_rig()).
+func _repoint(copy: Node, mapping: Dictionary, number: int) -> void:
+	for property: Dictionary in copy.get_property_list():
+		if (property["usage"] & PROPERTY_USAGE_STORAGE) == 0:
+			continue
+		var key: StringName = property["name"]
+		if property["type"] == TYPE_OBJECT:
+			var value: Variant = copy.get(key)
+			if value is Node and mapping.has(value):
+				copy.set(key, mapping[value])
+		elif key == &"action_prefix" and copy.get(key) == &"p2_":
+			copy.set(key, StringName("p%d_" % number))
+		elif key == &"player_index" and not (copy is Unit) and property["type"] == TYPE_INT and copy.get(key) == 1:
+			copy.set(key, number - 1)
+
+
+## Stands the views in two columns (Story 048): Orange's Players on the left, Teal's on the right, in
+## Player order from the top, and a dark panel where a column has one view fewer than the other.
+func _lay_out_views(count: int) -> void:
+	var views: Node = get_node("Views")
+	var columns: Array[VBoxContainer] = []
+	for team: int in 2:
+		var column := VBoxContainer.new()
+		column.name = "OrangeColumn" if team == 0 else "TealColumn"
+		column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		column.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		column.add_theme_constant_override(&"separation", VIEW_GAP)
+		columns.append(column)
+		views.add_child(column)
+		column.owner = self
+	for player: int in count:
+		var view: Control = views.get_node("Player%dView" % (player + 1)) as Control
+		view.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		view.owner = null
+		views.remove_child(view)
+		columns[lineup.teams[player]].add_child(view)
+		view.owner = self
+	var tallest: int = maxi(columns[0].get_child_count(), columns[1].get_child_count())
+	for column: VBoxContainer in columns:
+		while column.get_child_count() < tallest:
+			var blank := ColorRect.new()
+			blank.name = "EmptyView"
+			blank.color = EMPTY_VIEW_COLOUR
+			blank.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			blank.size_flags_vertical = Control.SIZE_EXPAND_FILL
+			blank.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			column.add_child(blank)
+
+
+## Gives each Player's actions the keys of that Player's keyboard half and nothing else on the
+## keyboard (Story 048): the halves are the keys project.godot gives Player 1 and Player 2, read from
+## the project settings, so a change made here before is never read back; Players 3 and 4 get their
+## actions made (named as Player 1's, with Player 1's dead zones) the first time.
+func _apply_inputs() -> void:
+	var sets: Dictionary = {Lineup.KEYBOARD_1: _project_keys("p1_"), Lineup.KEYBOARD_2: _project_keys("p2_")}
+	var suffixes: Array[String] = []
+	for keys: Dictionary in sets.values():
+		for suffix: String in keys:
+			if not suffixes.has(suffix):
+				suffixes.append(suffix)
+	for number: int in range(1, Lineup.MAX_PLAYERS + 1):
+		for suffix: String in suffixes:
+			var action: StringName = StringName("p%d_%s" % [number, suffix])
+			if not InputMap.has_action(action):
+				InputMap.add_action(action, _project_deadzone("p1_" + suffix))
+			for event: InputEvent in InputMap.action_get_events(action):
+				if event is InputEventKey:
+					InputMap.action_erase_event(action, event)
+	for player: int in lineup.player_count():
+		var device: int = lineup.devices[player]
+		if not Lineup.is_keyboard(device):
+			continue
+		var keys: Dictionary = sets[device]
+		for suffix: String in keys:
+			for event: InputEvent in keys[suffix]:
+				InputMap.action_add_event(StringName("p%d_%s" % [player + 1, suffix]), event)
+
+
+## The key events project.godot gives the actions of a prefix, by action suffix.
+static func _project_keys(prefix: String) -> Dictionary:
+	var keys: Dictionary = {}
+	for property: Dictionary in ProjectSettings.get_property_list():
+		var setting: String = property["name"]
+		if not setting.begins_with("input/" + prefix):
+			continue
+		var entry: Variant = ProjectSettings.get_setting(setting)
+		if not (entry is Dictionary):
+			continue
+		var events: Array = []
+		for event: Variant in (entry as Dictionary).get("events", []):
+			if event is InputEventKey:
+				events.append(event)
+		keys[setting.trim_prefix("input/" + prefix)] = events
+	return keys
+
+
+## The dead zone project.godot gives an action, or 0.2.
+static func _project_deadzone(action: String) -> float:
+	var entry: Variant = ProjectSettings.get_setting("input/" + action)
+	return float((entry as Dictionary).get("deadzone", DEFAULT_DEADZONE)) if entry is Dictionary else DEFAULT_DEADZONE

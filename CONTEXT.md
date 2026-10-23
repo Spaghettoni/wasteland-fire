@@ -187,6 +187,18 @@ _Avoid_: decal, splat map, trail texture
 A static obstacle on the Map that stops every ground Unit and every shot and is never destroyed; the Gyrocopter flies over it (decided 2026-10-03, after the first playtest). On Map 01 the eight wrecks and the two long containers; the drawings' wrecks are cover, not destroyed Units. The two scrap walls were cover too until story 019 made them Wall Panels of no Player (decided 2026-10-10; built 2026-10-12); they are no longer Cover (reading, 2026-10-10). The depot's three Fuel tanks are not cover: they stop every Unit, the Gyrocopter included, as Tall pieces (decided 2026-10-10). Nor are the Wall Panels, the Flag Walls among them, although the Gyrocopter flies over them too: a Wall Panel can be destroyed (reading, 2026-10-10). Nor is an ammunition building, although it stops ground Units and every Shot like cover and the Gyrocopter flies over it: it is a building (reading, 2026-10-10; story 024). Nor are the Turrets (reading, 2026-10-07).
 _Avoid_: obstacle, barricade, prop, destructible
 
+**Team (tím)**:
+Orange or Teal (story 048, 2026-10-23): the Players on one side, one to three of them, who share a Base, its Flag and one Token stock. With two Players each is a Team of their own, as before. Teammates do not hurt each other; a Mine spares its own Team.
+_Avoid_: side (in code), faction, squad, clan
+
+**Lineup (zostava)**:
+Who plays and on which side: one entry per Player, a pad or a keyboard half and a Team, Orange first (story 048). Made on Pick a side, carried through the map choice into the Round and back.
+_Avoid_: roster, party, lobby
+
+**Pick a side (výber strany)**:
+The first screen (story 048): Players join by moving left or right with a pad or a keyboard half, and the direction picks the side.
+_Avoid_: lobby (in player-facing text), join screen
+
 **Secondary weapon (sekundárna zbraň)**:
 What a Unit does on the secondary key (E, Comma, a pad's LT; story 042, 2026-10-22): the Truck lays a Mine, the Buggy fires its nitro (the HUD's "Boost"), the Gyrocopter drops a smoke screen, the Motorbike drops the Flag it carries (story 044). Each has one charge that refills in 15 s (story 044), shown by a bar under the HUD. The Input Map action keeps its old name, `lay_mine`.
 _Avoid_: special, ability, alt fire

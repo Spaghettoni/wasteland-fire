@@ -53,7 +53,13 @@ extends RefCounted
 const NONE: int = -1
 
 var _units: Array[Unit] = []
+## One entry per Player: that Player's Base (a Team's Players share one, Story 048).
+var _player_bases: Array[Base] = []
+## One entry per Team, in Team order: the Base that holds that Team's Flag. Flag indices are Team
+## indices. With one Player per Team (every Round before Story 048) Team and Player are the same.
 var _bases: Array[Base] = []
+## One entry per Player: the Team that Player plays for.
+var _teams: Array[int] = []
 ## One entry per Player: the index of the Flag that Player's Unit carries, or NONE.
 var _carried: Array[int] = []
 ## One entry per Flag: the Player whose Unit dropped it on the secondary key (release()) and has not
@@ -67,9 +73,20 @@ var _release_metres: float = 0.0
 ## arrays begin() validated), by reference and not as copies: a Unit the controller replaces in its
 ## table (Story 005's Unit choice) is seen here with no second update path. Nobody carries anything
 ## yet.
-func _init(units: Array[Unit], bases: Array[Base]) -> void:
+func _init(units: Array[Unit], bases: Array[Base], teams: Array[int] = []) -> void:
 	_units = units
-	_bases = bases
+	_player_bases = bases
+	_teams = teams.duplicate() if teams.size() == units.size() else []
+	if _teams.is_empty():
+		for player_index: int in units.size():
+			_teams.append(player_index)
+	var team_count: int = 0
+	for team: int in _teams:
+		team_count = maxi(team_count, team + 1)
+	_bases.resize(team_count)
+	for player_index: int in units.size():
+		if _bases[_teams[player_index]] == null:
+			_bases[_teams[player_index]] = bases[player_index]
 	_carried.resize(_units.size())
 	_carried.fill(NONE)
 	_released_by.resize(_bases.size())
@@ -82,24 +99,34 @@ func flag(flag_index: int) -> Flag:
 
 
 ## The index of the Flag the Player's Unit carries, or NONE.
+## The Team the Player plays for (Story 048); the Player's own index when every Team has one Player.
+func team_of(player_index: int) -> int:
+	return _teams[player_index]
+
+
+## The number of Teams, one Flag each.
+func team_count() -> int:
+	return _bases.size()
+
+
 func carried_flag(player_index: int) -> int:
 	return _carried[player_index]
 
 
 ## True while the Player's Unit carries a Flag that is not its own.
 func is_carrying_enemy(player_index: int) -> bool:
-	return _carried[player_index] != NONE and _carried[player_index] != player_index
+	return _carried[player_index] != NONE and _carried[player_index] != _teams[player_index]
 
 
 ## True while the Player's own Flag stands on its Base's seat (Flag.State.AT_HOME).
 func is_own_at_home(player_index: int) -> bool:
-	return flag(player_index).state == Flag.State.AT_HOME
+	return flag(_teams[player_index]).state == Flag.State.AT_HOME
 
 
 ## True while the Player's own Base zone reports that Player's Unit inside it, as the physics
 ## server last reported it (about two ticks behind the Unit's movement; see Base).
 func is_in_own_zone(player_index: int) -> bool:
-	return _bases[player_index].zone.overlaps_body(_units[player_index])
+	return _player_bases[player_index].zone.overlaps_body(_units[player_index])
 
 
 ## The first Player, in index order, who may pick up the Flag of the given index on this tick
@@ -199,7 +226,7 @@ func _qualifies(player_index: int, target: Flag, flag_index: int, honour_lock: b
 	var unit: Unit = _units[player_index]
 	if not unit.is_alive or not unit.can_carry:
 		return false
-	if player_index == flag_index and target.state == Flag.State.AT_HOME:
+	if _teams[player_index] == flag_index and target.state == Flag.State.AT_HOME:
 		return false
 	if honour_lock and _is_locked_for(player_index, flag_index):
 		return false
@@ -211,7 +238,7 @@ func _qualifies(player_index: int, target: Flag, flag_index: int, honour_lock: b
 ## True when the Player is not the Flag's owner and a Structure of the Flag's Base stands whose data
 ## says locks_flag (class doc).
 func _is_locked_for(player_index: int, flag_index: int) -> bool:
-	if player_index == flag_index:
+	if _teams[player_index] == flag_index:
 		return false
 	for structure: Structure in _bases[flag_index].structures:
 		if structure != null and structure.is_standing and structure.locks_flag:

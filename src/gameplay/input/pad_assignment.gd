@@ -56,6 +56,11 @@ const NO_PAD: int = -1
 ## Each Player's pad device, NO_PAD for none, in Player order.
 var _pads: Array[int] = []
 
+## The pads a lineup gave places (Story 048), device id to Player index: set before the node enters
+## the tree (SplitScreen.apply_lineup()). While it holds any entry, a pad goes to its own Player only
+## and a pad that is not in it is left alone; while empty, pads take the first free Player in order.
+var reserved: Dictionary[int, int] = {}
+
 ## Each Player's added events, in Player order: Array of [action, event] pairs.
 var _added: Array[Array] = []
 
@@ -96,6 +101,10 @@ func connect_pad(device: int) -> int:
 	if not _usable or _pads.has(device):
 		return NO_PAD
 	var player_index: int = _pads.find(NO_PAD)
+	if not reserved.is_empty():
+		player_index = reserved.get(device, -1)
+		if player_index < 0 or player_index >= _pads.size() or _pads[player_index] != NO_PAD:
+			return NO_PAD
 	if player_index < 0:
 		return NO_PAD
 	_pads[player_index] = device

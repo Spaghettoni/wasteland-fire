@@ -1,0 +1,5 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK pad_back B1_round_over PASS Round over true; MapChoiceReturn in the tree true
+CHECK pad_back B2_pad_b_goes_back PASS after pad 0's B: the map choice is up true (current scene 'MapChoice', before 'SplitScreenHarness')
+RESULT pad_back ok checks=2 failed=0 t=0.433 pads=1

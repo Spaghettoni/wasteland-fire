@@ -1,0 +1,10 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK teams T1_lineup PASS Teams [0, 0, 1, 1]; all four in play after their choices [true, true, true, true], Teammates at least 8.00 m apart in their Garages; colours ["team_orange_material.tres", "team_orange_material.tres", "team_teal_material.tres", "team_teal_material.tres"]; views ["Player1View", "Player2View"] | ["Player3View", "Player4View"]; p1_throttle W true, p3_throttle Up true, p2 keys 0, p4 keys 0
+CHECK teams T2_driving PASS Up 40 ticks moved the Units [0.0, 0.0, 4.56, 0.0] m; pad 0's stick moved Player 2 4.56 m; pad 1's A fired 2 of Player 4's Shots
+CHECK teams T3_tokens PASS after Player 1's Motorbike was destroyed: Motorbike Tokens by Player [4, 4, 5, 5]
+CHECK teams T4_friendly_fire PASS Player 1 at 10000 HP: 10000 after Player 2's Shots (its Team), 9975 after Player 3's (the other Team)
+CHECK teams T5_mines PASS a live Orange Mine: the Orange Unit on it alive true, the Teal Unit on it alive false
+CHECK teams T6_turrets PASS Teal Base Turrets armed with [2, 2] Units each; a Turret armed with Players 1 and 2 (one far, one 15 m off) fired 6 Shots, Player 2 10000 -> 9940
+CHECK teams T7_team_delivery PASS Player 2 carried Teal's Flag true; Round over true, winner Team 0; the four Round-over screens read ["Orange wins!", "Orange wins!", "Orange wins!", "Orange wins!"]
+RESULT teams ok checks=7 failed=0 t=20.883 players=4

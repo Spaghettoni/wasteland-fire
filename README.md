@@ -20,6 +20,12 @@ friends at home.
 - A Flag can be taken whatever stands around it (story 039): no Turret locks
   it any more, and the Motorbike's Shots break the other Player's walls and
   Turrets like everyone else's.
+- Up to four Players (story 048): the game opens on Pick a side, where each
+  Player joins with a pad or a keyboard half by moving left (Orange) or right
+  (Teal), then presses A / Space / Period when ready. 1 v 1, 2 v 1, 3 v 1 and
+  2 v 2 all work; with three or four Players the screen is split in four.
+  A Team shares its Base, its Flag and its Tokens, and only the other Team
+  hurts you (your Teammates' Shots and Mines do not).
 - Two Players share one keyboard and one screen, split side by side. Each
   Player can also play with an Xbox controller (story 032): the first pad
   connected is Player 1's, the second Player 2's, and the keyboard keeps

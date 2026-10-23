@@ -1,0 +1,7 @@
+CHECK pick_side L1_screen PASS main scene res://src/ui/lobby/pick_side.tscn; lists [0, 0, 0]; line 'Move left or right (stick, D-pad, A / D or the arrows) to join a side'
+CHECK pick_side L2_join_by_moving PASS after A, pad 0 stick right, Right, pad 1 D-pad left, pad 2 D-pad left: lists [2, 0, 2] (Orange, middle, Teal)
+CHECK pick_side L3_move_and_leave PASS Left, Left, Right Right, pad 1 B, pad 1 D-pad left: [[2, 1, 1], [3, 0, 1], [2, 0, 2], [1, 0, 2], [2, 0, 2]]
+CHECK pick_side L4_ready_and_start PASS all four ready: the map choice is the scene true with the lineup devices [-2, 1, 0, -3], Teams [0, 0, 1, 1]
+CHECK pick_side L5_into_the_match PASS Space on the map choice: 4 Players, two columns true, Teams [0, 0, 1, 1]
+CHECK pick_side L6_one_against_one PASS the two keyboard halves: 2 Players, the two views of before true
+RESULT pick_side ok checks=6 failed=0

@@ -2,7 +2,7 @@ extends SceneTree
 ## The map choice's evidence (Story 038): the launch screen as the game opens on it, driven by real key and pad events.
 ## A runner of its own, because the split screen harness instances the match itself. CHECK lines and one RESULT line, in the
 ## harness's format:
-##  K1 the screen: the project opens on it; it shows a card for Map 01 and one for Map 02, each with its picture, the cursor
+##  K1 the screen: the project opens on Pick a side, which leads to it (Story 048; on it until then); it shows a card for Map 01 and one for Map 02, each with its picture, the cursor
 ##     on the first.
 ##  K2 choosing: D and Right move the cursor right, A and Left left, wrapping round; a pad's D-pad and stick move it too.
 ##  K3 starting on the release: Space down leaves the screen up; Space up starts the match on the Map under the cursor (Map 02)
@@ -19,6 +19,8 @@ extends SceneTree
 ## Run: godot --headless --path . -s res://tools/evidence/map_choice/map_choice_check.gd
 
 const CHOICE_SCENE: String = "res://src/ui/map_choice/map_choice.tscn"
+## The scene the project opens on since Story 048: Pick a side, which opens this map choice.
+const MAIN_SCENE: String = "res://src/ui/lobby/pick_side.tscn"
 const MAP_PATHS: Array[String] = ["res://src/gameplay/maps/map_01/map_01.tscn", "res://src/gameplay/maps/map_02/map_02.tscn"]
 const NAMES: Array[String] = ["Map 01", "Map 02"]
 const SETTLE_FRAMES: int = 10
@@ -40,7 +42,7 @@ func _run() -> void:
 	var main: String = str(ProjectSettings.get_setting("application/run/main_scene", ""))
 	var choice: MapChoice = await _open()
 	var problems: PackedStringArray = PackedStringArray()
-	_need(problems, main == CHOICE_SCENE, "the project opens on %s" % main)
+	_need(problems, main == MAIN_SCENE, "the project opens on %s" % main)
 	var cards: Array[Node] = choice.cards_row.get_children()
 	_need(problems, cards.size() == NAMES.size(), "%d cards" % cards.size())
 	for index: int in choice.maps.size():

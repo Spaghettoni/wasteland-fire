@@ -25,6 +25,7 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_ros")
 winner_format = "Player %d wins!"
+team_winner_texts = Array[String](["Orange wins!", "Teal wins!"])
 nobody_text = "Nobody wins!"
 restart_format = "Press %s to play again"
 either_format = "%s or %s"

@@ -224,6 +224,15 @@ Martin, 2026-10-22: "vlajka by mala byt mensia, prilis ju vidno v kricku", "truc
 - The Flag's pole is 1.9 m (from 3 m) and its cloth 1.32 by 0.7 m, so a Motorbike carrying it hides in a Bush.
 - Every secondary bar is white on grey, as the boost's.
 
+## Up to four Players in two Teams (2026-10-23)
+
+Martin, 2026-10-23: "mozeme skusit spravit ten 4 player split screen? ideal aby ludia mohli pouzivat aj 4 ovladace, alebo, dvaja klavesnicu a 2 ovladace. a nech je kludne moznost aj 2 v 1 alebo 3 v 1. nech tam je nieco v uvode ze pick a side. a ked pohnes packu/sipku rovno sa zaregistruje aj ovladac aj vyberie strana"; his answers the same day: one Base and one shared Token stock per Team; "nech ta moze zranit super, aj jeho miny, vlastne veze ta nezrania"; moving left or right joins and picks the side at once. Built in story 048.
+
+- The game opens on Pick a side. Each Player joins with a pad (left stick or D-pad) or a keyboard half (A / D, or the arrows) by moving left (Orange) or right (Teal); the same moves step a Player Orange, not playing, Teal. A, Space or Period makes a Player ready; B, Tab or Enter makes a ready Player not ready, or takes one who is not ready out. When both sides have a Player and everyone on a side is ready, the map choice opens.
+- Two to four Players: 1 v 1, 2 v 1, 3 v 1, 2 v 2. With three or four the screen is split in four: Orange's views on the left, Teal's on the right, a dark panel where a side has fewer Players.
+- A Team has one Base, one Flag and one Token stock: every Player of a Team spawns at its Garage, a destruction takes a Token from the Team, and the Team loses with its last Motorbike Token. Any Player can deliver the other Team's Flag to win; the Round-over screen names the winning Team.
+- Only the other Team hurts you: a Teammate's Shots and Mines leave you whole (a Mine goes off only under the other Team), your Team's Turrets never fire at you, and the other Team's Turrets fire at the nearest of your Team they can see. Walls still break under every Shot (story 046).
+
 ## A real flag (2026-10-22)
 
 Martin, 2026-10-22: "vlajka je teraz kanister, spravme z nej realnu vlajku". Built in story 043; it replaces the Flag's look of story 004 and 007 (a carryable tank about 1 m tall). The rules do not change.

@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Wasteland Fire"
-run/main_scene="res://src/ui/map_choice/map_choice.tscn"
+run/main_scene="res://src/ui/lobby/pick_side.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 
 [display]

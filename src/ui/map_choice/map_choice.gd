@@ -59,6 +59,11 @@ var _started: bool = false
 var _confirm_held: bool = false
 
 
+## The Players and their sides from the Pick a side screen (Story 048), handed to the launch scene;
+## null starts the two Players of the launch scene as saved.
+var lineup: Lineup = null
+
+
 func _ready() -> void:
 	var problem: String = _first_problem()
 	if not problem.is_empty():
@@ -107,6 +112,9 @@ func start() -> void:
 		instance.free()
 		return
 	if not split.use_map(maps[_cursor].scene):
+		split.free()
+		return
+	if lineup != null and not split.apply_lineup(lineup):
 		split.free()
 		return
 	_started = true
