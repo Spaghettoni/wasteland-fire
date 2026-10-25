@@ -28,9 +28,10 @@ const SHOTS_TO_FALL: Array[int] = [20, 9, 4, 7]
 const CANYON_CAN: Vector3 = Vector3(-88.0, 0.0, -26.0)
 ## Ticks a Unit may fire at a Turret before it must have brought it down.
 const FIRE_LIMIT_TICKS: int = 480
-## How far beyond a Turret's reach, metres from its aimed muzzle, the Truck stands that breaks one
-## unanswered (its Shots fly further than the Turret's reach).
-const OUTRANGE_BEYOND: float = 1.5
+## How far inside its own reach to the Turret's drum the Truck stands (Story 049: then the Turret
+## answers it, since no Unit outranges a Turret), metres, and the ticks it is watched for.
+const TRUCK_REACH_MARGIN: float = 0.5
+const TRUCK_WATCH_TICKS: int = 240
 ## Ticks a settled scene is watched for.
 const WATCH: int = 120
 ## Metres in front of a Turret, along its rest heading, a Unit is put at, and the bearing off that
@@ -124,29 +125,32 @@ func _damage() -> void:
 			counts.append("%d" % heard.size())
 		notes.append("%s %s (%d wanted, %.0f each)" % [stats.type_id, "/".join(counts), wanted, each])
 		result.append("%s:%s" % [stats.type_id, "/".join(counts)])
-	# a Truck's Shots reach further than a Turret does: breaking one from outside its reach, unanswered
+	# Story 049: no Unit outranges a Turret any more. A Truck standing where its Shots just reach the
+	# Turret's drum, straight ahead of it, hits the Turret and is fired on and hit back.
 	await _k.restore_all()
 	var far: Turret = _k.turret(0, Kit13.RIGHT)
 	var truck: UnitStats = q.units.stats(Quick.TRUCK)
 	var out: Vector3 = _k.w.way(0, Vector3.FORWARD)
-	var apart: float = far.stats.weapon_range + OUTRANGE_BEYOND
-	await _k.stage(1, Quick.TRUCK, _k.ahead(far, 0, apart + far.stats.muzzle_forward), -out)
-	await q.kit.advance(_k.w.longest_cadence())
+	var apart: float = truck.weapon_range + truck.muzzle_forward + Kit13.RADIUS - TRUCK_REACH_MARGIN
+	# The Turret may fire while the Truck settles in, so its Shots are counted from before the stage.
+	var before: int = _k.firing.size()
+	await _k.stage(1, Quick.TRUCK, _k.ahead(far, 0, apart), -out)
 	var seen: Array[float] = []
 	var count: Callable = func(hit_points: float, _most: float) -> void: seen.append(hit_points)
 	far.hit_points_changed.connect(count)
-	var before: int = _k.firing.size()
 	var truck_mark: int = _k.hp_mark()
 	q.harness.set_key(q.harness.fire_key(1), true)
 	var waited: int = 0
-	while far.is_standing and waited < FIRE_LIMIT_TICKS:
+	while waited < TRUCK_WATCH_TICKS and (seen.is_empty() or _k.hits_since(1, truck_mark).x == 0.0):
 		await q.kit.tick()
 		waited += 1
 	q.harness.set_key(q.harness.fire_key(1), false)
 	far.hit_points_changed.disconnect(count)
 	var sees: float = far.global_position.distance_to(q.units.units[1].global_position)
-	q.kit.need(problems, not far.is_standing and seen.size() == SHOTS_TO_FALL[Quick.TRUCK] and _k.firing.size() == before and _k.hits_since(1, truck_mark).x == 0.0, "a Truck %.1f m from the Turret (its reach is %.0f m, the Truck's Shots %.0f m): %d hits, standing %s, %d Turret Shots, %d hits on the Truck" % [sees, far.stats.weapon_range, truck.weapon_range, seen.size(), far.is_standing, _k.firing.size() - before, int(_k.hits_since(1, truck_mark).x)])
-	notes.append("a Truck %.0f m out, beyond the Turret's %.0f m reach and inside its own %.0f m, broke a Turret in %d Shots without drawing one" % [sees, far.stats.weapon_range, truck.weapon_range, seen.size()])
+	var answered: int = _k.fired_since(far, before)
+	var hits_on_truck: int = int(_k.hits_since(1, truck_mark).x)
+	q.kit.need(problems, seen.size() >= 1 and answered >= 1 and hits_on_truck >= 1, "a Truck %.1f m from the Turret's centre (the Turret reaches %.1f m to a target's centre, the Truck's Shots %.0f m from a muzzle %.1f m ahead): %d hits on the Turret, %d Turret Shots, %d hits on the Truck" % [sees, far.stats.weapon_range + far.stats.muzzle_forward, truck.weapon_range, truck.muzzle_forward, seen.size(), answered, hits_on_truck])
+	notes.append("a Truck %.1f m out, as far as its own %.0f m Shots reach the drum, hit the Turret %d times and drew %d Shots, %d hits, in %d ticks: the Turret's %.0f m outranges it" % [sees, truck.weapon_range, seen.size(), answered, hits_on_truck, waited, far.stats.weapon_range])
 	await _k.restore_all()
 	measured.append("damage=%s" % ",".join(result))
 	q.kit.verdict("damage", problems, "a Turret of 100 hit points fell to the Shots (Player 2 at Base A, Player 1 at Base B), none fired at the Unit behind the rock and none hurt it: %s" % ", ".join(notes))

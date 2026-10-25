@@ -6,7 +6,7 @@
 script = ExtResource("1_ts")
 damage = 12.0
 fire_interval_seconds = 0.8
-weapon_range = 35.0
+weapon_range = 45.0
 shot_speed = 60.0
 turn_rate = 1.5707963267949
 muzzle_forward = 1.6

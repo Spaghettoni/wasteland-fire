@@ -26,6 +26,8 @@ const Quick: GDScript = preload("res://tools/evidence/split_screen/quick_fix_kit
 
 ## This scenario makes the first choice itself: the runner presses no fire key before run().
 const OWN_CHOICE: bool = true
+## The drive and the numbers of Story 049 (the runner keeps them only for this opt-in).
+const FULL_THROTTLE: bool = true
 ## The pairs of types, Player 1's then Player 2's, as indices into the data.
 const PAIRS: Array[Array] = [[0, 1], [2, 3]]
 ## Ticks each steer key is held standing.

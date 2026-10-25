@@ -43,7 +43,9 @@ extends Resource
 ## how fast a Unit of this type turns on the spot (spot_turn_rate, beside turn_rate: also the least
 ## it turns at while it rolls) and what it burns per second while it stands (fuel_use_idle, beside
 ## fuel_use, which is now the moving rate). The four .tres hold starting values, to tune by
-## playing: half of each turn_rate, and a quarter of each fuel_use.
+## playing: a quarter of each fuel_use, and spot_turn_rate three quarters of each turn_rate since
+## Story 049 (Martin, 2026-10-25: "ked sa otacas na mieste malo by to byt rychlejsie ako teraz"; it
+## was half, 1.5 times as fast now). empty_turn_rate stays the old half.
 ##
 ## Story 014 (production/epics/wasteland-fire/story-014-truck-mines.md AC-1, AC-2 and AC-9;
 ## design/rules.md "Turrets, Flag Walls and Mines") adds the Mines group: how many Mines a Unit of

@@ -1,0 +1,8 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK pads_stick S4_data PASS throttle [[1, 1, -1]], reverse [[1, 1, 1]], fire [[0, 0, 0], [1, 5, 1], [1, 4, 1]]; first_problem empty for p1_ and p2_
+CHECK pads_stick S3_choice_hint PASS the layout names for the choice hint: 'Stick left / Stick right to choose, A to confirm'
+CHECK pads_stick S1_stick_drives PASS stick up 60 ticks: strength 1.000, 10.17 m forward; half up 0.167 (predicted 0.167); stick down 60 ticks: reverse 1.000, 4.08 m backward; released 0.000; Player 2 moved 0.000 m; stick left 30 ticks turned 1.050 rad
+CHECK pads_stick S2_triggers_fire PASS RT: 2 Shots, drive pressed false, moved 0.26 m; LT: 2 Shots, drive pressed false, moved 0.00 m; A: 2 Shots, drive pressed false, moved 0.00 m
+RESULT pads_stick ok checks=4 failed=0 t=4.683 pads=1
+exit=0

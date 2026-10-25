@@ -18,6 +18,8 @@ const Harness: GDScript = preload("res://tools/evidence/split_screen_harness.gd"
 const Kit: GDScript = preload("res://tools/evidence/split_screen/check_kit.gd")
 
 const STICK_DRIVE: bool = true
+## The drive and the numbers of Story 049 (the runner keeps them only for this opt-in).
+const FULL_THROTTLE: bool = true
 ## The shipped layout binds RB to the high fire (Story 041), whose actions the runner keeps only for this opt-in.
 const FIRE_HEIGHTS: bool = true
 const MINES: bool = true
@@ -73,7 +75,7 @@ func _check_drive() -> void:
 	_axis(JOY_AXIS_LEFT_Y, -HALF)
 	await _kit.advance(1)
 	var half: float = Input.get_action_strength(&"p1_throttle")
-	var predicted: float = inverse_lerp(_pads.layout.deadzone, 1.0, HALF)
+	var predicted: float = inverse_lerp(_pads.layout.deadzone_for(&"throttle"), 1.0, HALF)
 	_axis(JOY_AXIS_LEFT_Y, 0.0)
 	await _kit.advance(DRIVE_TICKS)
 	var mark: Transform3D = _units[0].global_transform

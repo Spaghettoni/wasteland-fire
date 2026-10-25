@@ -16,6 +16,12 @@ extends Node
 ##
 ## Sign convention, the same as Unit.set_drive_input(): throttle +1 is forward, steer +1 is left.
 ##
+## Full throttle (Story 049; Martin, 2026-10-25: "ked zatocis packou na ovladaci - tak sa znizi
+## rychlost. to nechceme"): the throttle is rounded to -1, 0 or +1, so a stick held half up or leaned
+## up and sideways drives as fast as one held straight up; the Unit's own acceleration still ramps
+## the speed. Where the stick starts to count is the pad's full_throttle_from dead zone
+## (pad_layout.tres). A key is 1 already, so the keyboard drives as before. Steering stays analog.
+##
 ## Ordering: the command has to reach the Unit before the Unit moves in the same physics tick,
 ## or the Unit reacts one tick late. Tree order cannot promise that, because a parent is
 ## processed before its children and this node may sit anywhere relative to the Unit. So _ready()
@@ -32,6 +38,11 @@ const _SUFFIX_STEER_RIGHT: String = "steer_right"
 
 ## The Unit this node drives. Assign it before this node enters the tree.
 @export var unit: Unit
+
+## Whether the throttle is rounded to full (Story 049, class doc). On in every shipped scene; the
+## evidence runner turns it off for the scenarios written before Story 049, which drive with a
+## partial throttle on purpose.
+@export var full_throttle: bool = true
 
 ## Prefix shared by this Player's Input Map actions, for example p1_. Required, with no default:
 ## the owning scene stores it. Read once, in _ready().
@@ -68,8 +79,9 @@ func _ready() -> void:
 func _physics_process(_delta: float) -> void:
 	if not is_instance_valid(unit):
 		return
+	var throttle: float = Input.get_axis(_reverse_action, _throttle_action)
 	unit.set_drive_input(
-		Input.get_axis(_reverse_action, _throttle_action),
+		signf(throttle) if full_throttle else throttle,
 		Input.get_axis(_steer_right_action, _steer_left_action))
 
 

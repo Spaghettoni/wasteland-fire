@@ -132,5 +132,6 @@ Martin asked on 2026-10-21 to put Map 02, the schematic of 2026-10-16, into the 
 | 046 | Every wall breakable by both Players; a smaller Flag (1.9 m); every secondary bar white on grey (Martin, 2026-10-22) | Integration | In Progress | N/A (minimal) |
 | 047 | Canyon wall shadows no longer break off near the camera (Forward+); a check that a pad's B leaves the Round-over screen (Martin, 2026-10-22) | Visual/Feel | In Progress | N/A (minimal) |
 | 048 | Up to four Players in two Teams: Pick a side (join by moving a pad or a keyboard half), 1 v 1 to 2 v 2 and 3 v 1, four-way split, shared Base, Flag and Tokens, no friendly fire, Mines spare their Team (Martin, 2026-10-23) | Integration | In Progress | N/A (minimal) |
+| 049 | Full throttle however far up a pad's stick is held (steering no longer slows the Unit), spot turns 1.5 times as fast, Turrets reach 45 m (Martin, 2026-10-25) | Integration | In Progress | N/A (minimal) |
 | 040 | On a pad the left stick drives (up forward, down reverse) and either trigger or A fires (Martin, 2026-10-22) | Integration | In Progress | N/A (minimal) |
 | 039 | No Turret locks a Flag, and the Motorbike breaks Wall Panels and Flag Walls (Martin, 2026-10-21) | Logic | In Progress | N/A (minimal) |

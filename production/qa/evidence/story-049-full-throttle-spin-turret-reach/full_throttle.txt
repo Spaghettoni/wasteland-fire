@@ -1,0 +1,7 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK full_throttle T3_data PASS motorbike_stats spot 2.10 / turn 2.80, reach 27.6; buggy_stats spot 1.73 / turn 2.29, reach 38.0; truck_stats spot 0.67 / turn 0.89, reach 43.8; gyrocopter_stats spot 1.16 / turn 1.53, reach 37.6; the Turret reaches 46.6 m (range 45 + muzzle 1.6), drum radius 1.0
+CHECK full_throttle T1_full_throttle PASS speed after 20 ticks from standing, m/s: straight up 6.667, half up 6.667, just past 0.40 6.667, up and left 6.667; just short of 0.40 0.000; W 6.667; top 24.0, acceleration 20.0
+CHECK full_throttle T2_spot_turn PASS stick left with 0.30 up, 30 ticks: 2.100 rad/s left (spot_turn_rate 2.100), rolled 0.000 m
+RESULT full_throttle ok checks=3 failed=0 t=4.500 pads=1
+exit=0

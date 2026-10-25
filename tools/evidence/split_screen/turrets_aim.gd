@@ -2,9 +2,8 @@ extends RefCounted
 ## Targets, reach and sight of the turrets scenario (Story 013 AC-2), on the shipped Turrets and Map
 ## 01. targets: a Base's Turrets aim at and fire on the other Player's Unit of every type and hit
 ## it, never take their own Player's Unit as a target, hold fire while that Unit stands between them
-## and the other Player's, and aim at no Unit that is benched or destroyed. reach: a Unit 34.5 m from
-## the aimed muzzle is fired on and hit, one at 35.5 m never, at a bearing where the resting muzzle
-## would read both over 35 m. sight: whatever stops a Shot hides a target (a Base wall, the cover, a
+## and the other Player's, and aim at no Unit that is benched or destroyed. reach: a Unit 0.15 m inside
+## the range (Story 049: 45 m) from the aimed muzzle is fired on and hit, one 0.15 m outside never, at a bearing where the resting muzzle would read both over the range. sight: whatever stops a Shot hides a target (a Base wall, the cover, a
 ## Gyrocopter over a wreck, a Flag Wall, the other Turret, a Unit) and so does a cliff, although
 ## the Unit's own Shots pass through the rock and hit the Turret. path: the second hold, the Shot's
 ## own path to the point ahead of the target: with a panel on that path and none on the line to the
@@ -26,15 +25,18 @@ const AHEAD: float = 15.0
 const WATCH: int = 60
 ## Ticks an idle Turret is watched for, two cadences.
 const IDLE_WATCH: int = 96
-## The bearing of the reach check from the rest heading toward the canyon, degrees (AC-2: at least
-## 50, where the resting muzzle and the aimed muzzle differ by enough), and the two distances from
-## the aimed muzzle, metres: one inside the data's range, one outside it.
-const REACH_DEGREES: float = 50.0
-const REACH_IN: float = 34.5
-const REACH_OUT: float = 35.5
+## The bearing of the reach check from the rest heading toward the canyon, degrees, where the resting
+## muzzle and the aimed muzzle differ by more than the offsets below (AC-2), and the two distances
+## from the aimed muzzle, as offsets from the data's range in metres: one inside it, one outside it.
+## Story 049 moved the range from 35 m to 45 m, where the canyon's south rock stands 37.6 m out at
+## the old 50 degrees, so the bearing is 30 (clear past 47 m) and the offsets 0.15 m (at 30 degrees
+## the two muzzles differ by 0.21 m).
+const REACH_DEGREES: float = 30.0
+const REACH_IN: float = -0.15
+const REACH_OUT: float = 0.15
 ## A control at the same bearing, well inside the range, so a Turret that holds fire at REACH_OUT
 ## does so for the range and not for what stands in the line.
-const REACH_CONTROL: float = 30.0
+const REACH_CONTROL: float = -5.0
 ## The line the path check drives along (world): south along x -72 from z 24, and for how long, ticks.
 const PATH_FROM: Vector3 = Vector3(-72.0, 0.0, 24.0)
 const PATH_TICKS: int = 150
@@ -143,8 +145,8 @@ func _targets() -> void:
 		", ".join(seen_types), ", ".join(own)])
 
 
-## reach (AC-2): 34.5 m from the aimed muzzle is fired on and hit, 35.5 m never, at a bearing where
-## the resting muzzle would read over 35 m for both.
+## reach (AC-2): REACH_IN inside the range from the aimed muzzle is fired on and hit, REACH_OUT
+## outside never, at a bearing where the resting muzzle would read over the range for both.
 func _reach() -> void:
 	var problems: PackedStringArray = []
 	var q: Quick = _k.w.s.q
@@ -156,20 +158,21 @@ func _reach() -> void:
 	var forward: float = who.stats.muzzle_forward
 	var rest_muzzle: Vector3 = who.global_position + _k.w.way(0, Vector3.FORWARD) * forward
 	var notes: PackedStringArray = []
-	for metres: float in [REACH_CONTROL, REACH_IN, REACH_OUT]:
+	var reach: float = who.stats.weapon_range
+	for metres: float in [reach + REACH_CONTROL, reach + REACH_IN, reach + REACH_OUT]:
 		var at: Vector3 = who.global_position + bearing * (metres + forward)
 		await _k.stage(1, Quick.MOTORBIKE, at, -bearing)
 		var mark: int = _k.hp_mark()
 		var seen: Dictionary = await _k.watch(2 * WATCH)
 		var resting: float = Vector2(rest_muzzle.x - at.x, rest_muzzle.z - at.z).length()
 		var hit: bool = _k.hits_since(1, mark).x >= 1.0
-		if metres <= REACH_IN:
+		if metres <= reach + REACH_IN:
 			q.kit.need(problems, bool(seen[who]["aimed"]) and int(seen[who]["shots"]) >= 1 and hit, "a Unit %.1f m from the aimed muzzle was not fired on and hit (%d Shots, hit %s)" % [metres, int(seen[who]["shots"]), hit])
 		else:
 			q.kit.need(problems, _quiet(seen, who) and not hit, "a Unit %.1f m from the aimed muzzle was aimed at or fired on" % metres)
-		if is_equal_approx(metres, REACH_IN):
+		if is_equal_approx(metres, reach + REACH_IN):
 			q.kit.need(problems, resting > who.stats.weapon_range, "the resting muzzle reads %.2f m, not over the range: the bearing does not tell the muzzles apart" % resting)
-		notes.append("%.1f m (resting muzzle %.2f): %d Shots, hit %s" % [metres, resting, int(seen[who]["shots"]), hit])
+		notes.append("%.2f m (resting muzzle %.2f): %d Shots, hit %s" % [metres, resting, int(seen[who]["shots"]), hit])
 	canyon_side.restore()
 	await q.kit.advance(Kit13.SETTLE)
 	measured.append("reach=%s" % "|".join(notes))

@@ -22,9 +22,26 @@ extends Resource
 ## whatever the dead zone, so the keyboard is untouched. Required, above zero and below one.
 @export_range(0.0, 1.0, 0.01) var deadzone: float = 0.0
 
+## The dead zone of the actions in full_throttle_suffixes instead of deadzone (Story 049; Martin,
+## 2026-10-25: "chcem bolo teda jedno ci drizis packu dopredu alebo hore do polky alebo uplne, nema
+## to mat vplyv na rychlost"): the share of the stick's travel up or down past which the Unit gets
+## its full throttle or reverse, since PlayerDriveInput rounds any throttle to full. A stick leaned
+## sideways with a little up stays below it, so the Unit still turns on the spot. Required, above
+## zero and below one.
+@export_range(0.0, 1.0, 0.01) var full_throttle_from: float = 0.0
+
+## The action suffixes that take full_throttle_from as their dead zone (throttle and reverse).
+@export var full_throttle_suffixes: PackedStringArray = PackedStringArray()
+
 ## Suffixes of actions under a Player's prefix that the pad deliberately leaves alone
 ## (debug_damage). Every other action under the prefix must take an input.
 @export var unbound_suffixes: PackedStringArray = PackedStringArray()
+
+
+## The dead zone an action with this suffix takes on a pad: full_throttle_from for the throttle and
+## the reverse, deadzone for every other action.
+func deadzone_for(action_suffix: StringName) -> float:
+	return full_throttle_from if full_throttle_suffixes.has(String(action_suffix)) else deadzone
 
 
 ## The display name of the first binding of the action suffix, or an empty string when none binds
@@ -42,6 +59,8 @@ func name_for(action_suffix: StringName) -> String:
 func first_problem(prefix: StringName) -> String:
 	if deadzone <= 0.0 or deadzone >= 1.0:
 		return "deadzone %s is not between 0 and 1" % deadzone
+	if full_throttle_from <= 0.0 or full_throttle_from >= 1.0:
+		return "full_throttle_from %s is not between 0 and 1" % full_throttle_from
 	if bindings.is_empty():
 		return "the layout has no bindings"
 	for index: int in bindings.size():

@@ -47,6 +47,8 @@ const OWN_BASE_SWAP: bool = true
 const SHIPPED_CAMERA: bool = true
 const BASE_DEFENCES: bool = true
 const TURRETS: bool = true
+## The drive and the numbers of Story 049 (the runner keeps them only for this opt-in).
+const FULL_THROTTLE: bool = true
 ## Tokens enough that the destructions and the restarts never end a Round by a loss.
 const STOCK_COUNTS: Dictionary = {&"motorbike": 30, &"buggy": 30, &"truck": 30, &"gyrocopter": 30}
 ## Simulated seconds: the clearance runs, the fights and the restarts.
@@ -55,6 +57,8 @@ const WATCHDOG_SECONDS: float = 2400.0
 ## degrees a second and its Shot leaves 1.6 m from its centre.
 const HIT_POINTS: float = 100.0
 const TURN_DEGREES: float = 90.0
+## The Turret's range since Story 049 (it was the Buggy's 35 m): a little more than any Unit's.
+const RANGE: float = 45.0
 const MUZZLE_FORWARD: float = 1.6
 const AIM_TOLERANCE: float = 0.25
 ## A Turret's drum is about this tall, metres (AC-1).
@@ -158,7 +162,7 @@ func _turrets_data() -> void:
 			q.kit.need(problems, data != null and data.resource_path == STATS_PATH and who.type_id == &"turret", "%s: stats %s, type %s" % [who.name, who.stats, who.type_id])
 			q.kit.need(problems, who.is_standing and is_equal_approx(who.hit_points, HIT_POINTS) and who.locks_flag and who.state == Turret.State.IDLE, "%s: standing %s, %.0f hit points, locks %s, state %s" % [who.name, who.is_standing, who.hit_points, who.locks_flag, who.state])
 			if data != null:
-				q.kit.need(problems, is_equal_approx(data.max_hit_points, HIT_POINTS) and is_equal_approx(data.damage, buggy.damage) and is_equal_approx(data.weapon_range, buggy.weapon_range) and is_equal_approx(data.shot_speed, buggy.shot_speed) and is_equal_approx(data.fire_interval_seconds, 2.0 * buggy.fire_interval_seconds), "%s's weapon is not the Buggy's with the interval doubled: %s" % [who.name, [data.damage, data.weapon_range, data.shot_speed, data.fire_interval_seconds]])
+				q.kit.need(problems, is_equal_approx(data.max_hit_points, HIT_POINTS) and is_equal_approx(data.damage, buggy.damage) and is_equal_approx(data.weapon_range, RANGE) and is_equal_approx(data.shot_speed, buggy.shot_speed) and is_equal_approx(data.fire_interval_seconds, 2.0 * buggy.fire_interval_seconds), "%s's weapon is not the Buggy's with the interval doubled and a 45 m range: %s" % [who.name, [data.damage, data.weapon_range, data.shot_speed, data.fire_interval_seconds]])
 				q.kit.need(problems, is_equal_approx(data.turn_rate, deg_to_rad(TURN_DEGREES)) and is_equal_approx(data.muzzle_forward, MUZZLE_FORWARD) and is_equal_approx(data.aim_tolerance, AIM_TOLERANCE) and data.sight_extra_mask == SIGHT_EXTRA, "%s: turn %.4f, muzzle %.2f, tolerance %.2f, sight %d" % [who.name, data.turn_rate, data.muzzle_forward, data.aim_tolerance, data.sight_extra_mask])
 			var band: MeshInstance3D = who.get_node("Look/Head/Band") as MeshInstance3D
 			q.kit.need(problems, base.color_meshes.has(band) and band.material_override == base.color_material, "%s's band is not painted with the Base's Team material" % who.name)
@@ -175,5 +179,5 @@ func _turrets_data() -> void:
 		var found: Array[Node] = q.units.cameras[player].get_viewport().find_children("*", "PlayerNotice", false, false)
 		q.kit.need(problems, found.size() == 1 and (found[0] as PlayerNotice).player_index == player and not (found[0] as PlayerNotice).visible and (found[0] as PlayerNotice).text == NOTICE_TEXT, "view %d holds %d notices" % [player, found.size()])
 		notices.append("%s" % [(found[0] as PlayerNotice).message if not found.is_empty() else "none"])
-	q.kit.verdict("turrets_data", problems, "4 Turrets at %s, mirrored (%s), on layer 1 with mask 0, %s, the Buggy's weapon with the interval doubled, 100 hit points, a drum of radius %.1f, the Team-colour band painted by each Base, no Turret row in the matrix, the Map's scripts within map_layout's list, one notice per view (%s)" % [
+	q.kit.verdict("turrets_data", problems, "4 Turrets at %s, mirrored (%s), on layer 1 with mask 0, %s, the Buggy's weapon with the interval doubled and a 45 m range, 100 hit points, a drum of radius %.1f, the Team-colour band painted by each Base, no Turret row in the matrix, the Map's scripts within map_layout's list, one notice per view (%s)" % [
 		", ".join(places), mirror, STATS_PATH.get_file(), Kit13.RADIUS, ", ".join(notices)])

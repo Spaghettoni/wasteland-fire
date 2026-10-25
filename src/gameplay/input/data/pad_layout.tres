@@ -98,4 +98,6 @@ display_name = "Menu"
 script = ExtResource("1_layout")
 bindings = Array[ExtResource("2_binding")]([SubResource("PadBinding_00"), SubResource("PadBinding_01"), SubResource("PadBinding_02"), SubResource("PadBinding_03"), SubResource("PadBinding_04"), SubResource("PadBinding_05"), SubResource("PadBinding_06"), SubResource("PadBinding_11"), SubResource("PadBinding_13"), SubResource("PadBinding_07"), SubResource("PadBinding_08"), SubResource("PadBinding_09"), SubResource("PadBinding_10")])
 deadzone = 0.2
+full_throttle_from = 0.4
+full_throttle_suffixes = PackedStringArray("throttle", "reverse")
 unbound_suffixes = PackedStringArray("debug_damage")

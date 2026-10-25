@@ -112,7 +112,7 @@ func connect_pad(device: int) -> int:
 		var action: StringName = binding.action_for(action_prefixes[player_index])
 		if not _deadzone_before.has(action):
 			_deadzone_before[action] = InputMap.action_get_deadzone(action)
-		InputMap.action_set_deadzone(action, layout.deadzone)
+		InputMap.action_set_deadzone(action, layout.deadzone_for(binding.action_suffix))
 		var event: InputEvent = binding.make_event(device)
 		InputMap.action_add_event(action, event)
 		_added[player_index].append([action, event])

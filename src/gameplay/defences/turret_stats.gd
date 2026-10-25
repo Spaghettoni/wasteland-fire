@@ -10,8 +10,12 @@ extends StructureStats
 ## hides a target) and AC-9 (every value and switch is data, never a literal in a script);
 ## design/rules.md "Turrets, Flag Walls and Mines". Vocabulary: CONTEXT.md (Turret).
 ##
-## The weapon's numbers are the Buggy's (damage, range, Shot speed) with the interval doubled, the
-## board's "half the Buggy's rate of fire"; the others are starting values to tune by playing
+## The weapon's numbers are the Buggy's (damage, Shot speed) with the interval doubled, the board's
+## "half the Buggy's rate of fire". The range was the Buggy's 35 m until Story 049 (Martin,
+## 2026-10-25: "vezicka ma o kusocek kratsi dostrel ako vozidla"): 45 m since, a little more than any
+## Unit's, so not even a Truck (40 m from a muzzle 2.8 m ahead of its centre, to the Turret's 1 m
+## drum) can hit a Turret from beyond its reach, which ends 1.6 m ahead of the Turret's centre at
+## the target's centre. The others are starting values to tune by playing
 ## (design/rules.md). Every default below is zero or empty on purpose, for the reason UnitStats and
 ## StructureStats give: a tuned number equal to the script's default would vanish from the .tres.
 ## Write every value into the .tres. A Turret refuses stats that leave any of the numbers below at

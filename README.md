@@ -26,6 +26,9 @@ friends at home.
   2 v 2 all work; with three or four Players the screen is split in four.
   A Team shares its Base, its Flag and its Tokens, and only the other Team
   hurts you (your Teammates' Shots and Mines do not).
+- On a pad the throttle is full however far up the stick is held (story 049),
+  so steering no longer slows the Unit; turning on the spot is 1.5 times as
+  fast; Turrets reach 45 m, a little more than any Unit.
 - Two Players share one keyboard and one screen, split side by side. Each
   Player can also play with an Xbox controller (story 032): the first pad
   connected is Player 1's, the second Player 2's, and the keyboard keeps
