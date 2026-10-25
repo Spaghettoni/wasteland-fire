@@ -1,0 +1,7 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK chase_view V1_tokens PASS motorbike 7 (was 5), buggy 4 (was 3), truck 3 (was 2), gyrocopter 3 (was 2); 17 in all (1.42 times 12); Team 0: 7/4/3/3; Team 1: 7/4/3/3
+CHECK chase_view V2_field_of_view PASS keep width at 68.6 degrees: P1 motorbike 640x358 61.8 px (half view 61.8), P2 buggy 640x358 79.5 px (half view 79.5), P3 truck 640x358 106.0 px (half view 106.0), P4 gyrocopter 640x358 70.6 px (half view 70.7)
+CHECK chase_view V3_unit_low PASS standing, each Unit drawn at this share of its view's height from the top: P1 0.90, P2 0.90, P3 0.90, P4 0.90 (offset (0.0, 6.5, 9.0), look_ahead 7.0 m)
+RESULT chase_view ok checks=3 failed=0 t=1.000 players=4
+exit=0

@@ -70,6 +70,12 @@ const ALL_VISUAL_LAYERS: int = 0xFFFFF
 	set(value):
 		settings = value
 		_apply_hidden_layers()
+		_apply_field_of_view()
+
+## The field of view and aspect the scene gave the camera, restored on settings without their own
+## (settings.width_fov_degrees zero). Read once, the first time settings are applied.
+var _own_fov: float = -1.0
+var _own_keep_aspect: Camera3D.KeepAspect = Camera3D.KEEP_HEIGHT
 
 ## True from a snap until the next _process(): the snap has already placed the camera for this
 ## frame, and in the frame of a teleport the interpolated transform can still show the old place.
@@ -119,6 +125,21 @@ func snap_to_target() -> void:
 func _apply_hidden_layers() -> void:
 	var hidden: int = never_drawn_layers if settings == null else never_drawn_layers | settings.hidden_layers
 	cull_mask = ALL_VISUAL_LAYERS & ~hidden
+
+
+## Sets the field of view the settings ask for, across the view's width (Story 050), or gives the
+## camera back its own when they ask for none. Applied at once on a settings change, so the view
+## jumps to the new angle while the smoothing still moves the camera.
+func _apply_field_of_view() -> void:
+	if _own_fov < 0.0:
+		_own_fov = fov
+		_own_keep_aspect = keep_aspect
+	if settings != null and settings.width_fov_degrees > 0.0:
+		keep_aspect = Camera3D.KEEP_WIDTH
+		fov = settings.width_fov_degrees
+	else:
+		keep_aspect = _own_keep_aspect
+		fov = _own_fov
 
 
 ## True while there are settings with a follow_sharpness above zero and a target in the tree.

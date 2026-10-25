@@ -56,6 +56,15 @@ extends Resource
 ## a hidden piece still casts its shadow, because that follows the light's own mask.
 @export_flags_3d_render var hidden_layers: int = 0
 
+## The camera's field of view on these settings, in degrees, measured across the view's width (the
+## camera keeps its width, Camera3D.KEEP_WIDTH). Zero leaves the camera's own field of view and
+## aspect as the scene set them (75 degrees across the height). Story 050 (Martin, 2026-10-25: "ked
+## sa pozeras zozadu, pri 4 hracov, vozidla su akesi male. asi fov nastavenie"): a field of view kept
+## across the height makes a Unit in a view half as tall (the four-way split) half as big and the
+## view twice as wide-angled; kept across the width, a Unit is as big in a quarter of the screen as
+## in a half, and the four-way view shows less above and below instead.
+@export_range(0.0, 170.0, 0.1, "suffix:°") var width_fov_degrees: float = 0.0
+
 ## Whether the camera turns with its target (true: the view keeps the Unit's heading, as in
 ## Stories 001 to 009) or keeps a fixed heading, the world's -Z up the screen (false), the other
 ## half of the source's camera test (design/rules.md, "Camera and controls"). The offset, the

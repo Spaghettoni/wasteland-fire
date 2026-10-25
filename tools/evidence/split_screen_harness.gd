@@ -27,7 +27,7 @@ extends Node
 ## (windowed); since Story 024, ammo_buildings, ammo_buildings_showcase and ammo_buildings_fps
 ## (windowed); since Story 032, pads, pads_data and pads_showcase
 ## (windowed); since Story 036, resource_bars and resource_bars_showcase (windowed);
-## since Story 037, turret_flying_sight and cliff_tops; since Story 038, map_02, bushes, cover_pieces and map_02_showcase (windowed); since Story 039, flag_open; since Story 040, pads_stick; since Story 041, fire_heights and fire_heights_showcase (windowed); since Story 042, secondary; since Story 043, real_flag; since Stories 042 and 043, secondary_flag_showcase (windowed); since Story 044, recharge_showcase (windowed); since Story 047, pad_back and shadow_showcase (windowed); since Story 048, teams, teams_three and teams_showcase (windowed); since Story 049, full_throttle and turret_reach_showcase (windowed). Each is a script under tools/evidence/split_screen/,
+## since Story 037, turret_flying_sight and cliff_tops; since Story 038, map_02, bushes, cover_pieces and map_02_showcase (windowed); since Story 039, flag_open; since Story 040, pads_stick; since Story 041, fire_heights and fire_heights_showcase (windowed); since Story 042, secondary; since Story 043, real_flag; since Stories 042 and 043, secondary_flag_showcase (windowed); since Story 044, recharge_showcase (windowed); since Story 047, pad_back and shadow_showcase (windowed); since Story 048, teams, teams_three and teams_showcase (windowed); since Story 049, full_throttle and turret_reach_showcase (windowed); since Story 050, chase_view, chase_showcase and chase_showcase_two (windowed). Each is a script under tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
 ## line there. A scenario reaches this script, DriveStep, UnitTrack and check_kit.gd through preload
@@ -382,6 +382,12 @@ extends Node
 ## every pad action, the old spot_turn_rate of each type and the Turret's 35 m (_apply_full_throttle_off(), first, so the
 ## older opt-outs still set what they set, and _apply_full_throttle_nodes_off()).
 ##
+## Chase view and Tokens (Story 050). The chase view sits closer (offset 0, 6.5, 9), looks 7 m ahead and keeps a 68.6 degree
+## field of view across its width, and each Map's stock is 7 Motorbikes, 4 Buggies, 3 Trucks and 3 Gyrocopters. Unless the
+## scenario script declares const CLOSE_CHASE: bool = true the runner gives the cached chase settings the view of stories 001
+## to 049 (offset 0, 7, 13, no look-ahead, the camera's own field of view), and unless it declares const MORE_TOKENS: bool =
+## true the shared token_stock.tres the counts 5, 3, 2, 2 (_apply_story_050_off(), first).
+##
 ## Output: SPLIT <scenario> t=<seconds> key=value ... (progress), CHECK <scenario> <check name> PASS|FAIL
 ## <detail> and exactly one last RESULT <scenario> ok|fail checks=<n> failed=<n> key=value ...; then quit with
 ## exit code 0 when every check passed, 1 when one failed, 2 for a missing or unknown scenario. TD-003
@@ -502,6 +508,9 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"pads_stick": preload("res://tools/evidence/split_screen/pads_stick.gd"),
 	&"full_throttle": preload("res://tools/evidence/split_screen/full_throttle.gd"),
 	&"turret_reach_showcase": preload("res://tools/evidence/split_screen/turret_reach_showcase.gd"),
+	&"chase_view": preload("res://tools/evidence/split_screen/chase_view.gd"),
+	&"chase_showcase": preload("res://tools/evidence/split_screen/chase_showcase.gd"),
+	&"chase_showcase_two": preload("res://tools/evidence/split_screen/chase_showcase_two.gd"),
 	&"fire_heights": preload("res://tools/evidence/split_screen/fire_heights.gd"),
 	&"fire_heights_showcase": preload("res://tools/evidence/split_screen/fire_heights_showcase.gd"),
 	&"secondary": preload("res://tools/evidence/split_screen/secondary.gd"),
@@ -720,6 +729,12 @@ const LEGACY_043_BUSH_SIZE: float = 1.0
 const LINEUP_DEVICES_CONSTANT: StringName = &"LINEUP_DEVICES"
 const LINEUP_TEAMS_CONSTANT: StringName = &"LINEUP_TEAMS"
 const TEAMS_CONSTANT: StringName = &"TEAMS"
+## The constants a scenario script declares as true to keep Story 050's chase view and Tokens (_apply_story_050_off()).
+const CLOSE_CHASE_CONSTANT: StringName = &"CLOSE_CHASE"
+const MORE_TOKENS_CONSTANT: StringName = &"MORE_TOKENS"
+const TOKEN_STOCK_PATH_050: String = "res://src/gameplay/maps/data/token_stock.tres"
+const TOKEN_COUNTS_049: Dictionary = {&"motorbike": 5, &"buggy": 3, &"truck": 2, &"gyrocopter": 2}
+const CHASE_OFFSET_049: Vector3 = Vector3(0.0, 7.0, 13.0)
 ## The constant a scenario script declares as true to keep the drive and the numbers of Story 049 (_apply_full_throttle_off()).
 const FULL_THROTTLE_CONSTANT: StringName = &"FULL_THROTTLE"
 ## Each type's spot_turn_rate before Story 049, by stats path, and the Turret's range.
@@ -950,6 +965,7 @@ func _ready() -> void:
 	Input.use_accumulated_input = false
 	_watchdog_seconds = _scenario_watchdog_seconds(SCENARIOS[scenario])
 	get_tree().create_timer(_watchdog_seconds).timeout.connect(_on_watchdog)
+	_apply_story_050_off(SCENARIOS[scenario])
 	_apply_full_throttle_off(SCENARIOS[scenario])
 	_apply_fuel_burn_off(SCENARIOS[scenario])
 	_apply_secondary_off(SCENARIOS[scenario])
@@ -1780,6 +1796,21 @@ func _apply_fire_heights_off(script: GDScript) -> void:
 	for action: StringName in FIRE_HIGH_ACTIONS:
 		if InputMap.has_action(action):
 			InputMap.erase_action(action)
+
+
+## Gives the cached chase settings the view of stories 001 to 049 unless the scenario declares CLOSE_CHASE, and the shared
+## Token stock the counts of stories 007 to 049 unless it declares MORE_TOKENS (Story 050). Before every other opt-out.
+func _apply_story_050_off(script: GDScript) -> void:
+	var constants: Dictionary = script.get_script_constant_map()
+	if not bool(constants.get(CLOSE_CHASE_CONSTANT, false)):
+		var chase: ChaseCameraSettings = CHASE_CAMERA_SETTINGS
+		chase.offset = CHASE_OFFSET_049
+		chase.look_ahead = 0.0
+		chase.width_fov_degrees = 0.0
+	if not bool(constants.get(MORE_TOKENS_CONSTANT, false)):
+		var stock: TokenStock = load(TOKEN_STOCK_PATH_050) as TokenStock
+		if stock != null:
+			stock.counts.assign(TOKEN_COUNTS_049)
 
 
 ## Gives the shared data the numbers of stories 009 to 048, unless the scenario script declares FULL_THROTTLE (Story 049): the

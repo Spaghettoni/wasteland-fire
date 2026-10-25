@@ -4,6 +4,8 @@
 
 [resource]
 script = ExtResource("1_ccset")
-offset = Vector3(0, 7, 13)
+offset = Vector3(0, 6.5, 9)
 follow_sharpness = 8.0
 look_height = 1.0
+look_ahead = 7.0
+width_fov_degrees = 68.6

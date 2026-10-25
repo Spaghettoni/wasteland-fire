@@ -224,7 +224,7 @@ A piece of the Map that reaches the high Height, so it stops every Unit, the Gyr
 _Avoid_: high obstacle, tall obstacle, solid piece, wall
 
 **View**:
-What a Player's camera shows, one of two: the view from above (the Round's start: high over the Unit, almost straight down with a slight forward tilt, turning with the Unit; the tops of the water towers are not drawn in it, so the Flag on its seat stays in sight) or the chase view (from behind and above). Each Player switches their own with one key, at any time; the other Player's view does not change (decided 2026-10-03, after the first playtest, as a trial the friends compare in one playtest).
+What a Player's camera shows, one of two: the view from above (the Round's start: high over the Unit, almost straight down with a slight forward tilt, turning with the Unit; the tops of the water towers are not drawn in it, so the Flag on its seat stays in sight) or the chase view (from behind and above; since story 050 closer, with the Unit low in the view and the way ahead in sight). Each Player switches their own with one key, at any time; the other Player's view does not change (decided 2026-10-03, after the first playtest, as a trial the friends compare in one playtest).
 _Avoid_: camera mode, zoom, perspective
 
 **Silhouette**:

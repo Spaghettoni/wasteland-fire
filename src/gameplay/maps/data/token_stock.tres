@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_token_stock")
 counts = Dictionary[StringName, int]({
-&"motorbike": 5,
-&"buggy": 3,
-&"truck": 2,
-&"gyrocopter": 2
+&"motorbike": 7,
+&"buggy": 4,
+&"truck": 3,
+&"gyrocopter": 3
 })

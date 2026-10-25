@@ -30,6 +30,8 @@ extends RefCounted
 ##        or panel.
 
 ## The runner this scenario is handed, loaded by path: nothing under tools/ declares a class_name.
+## Story 050's Token counts (the runner keeps them only for this opt-in): T02 compares the stock with the file on disk.
+const MORE_TOKENS: bool = true
 const Harness: GDScript = preload("res://tools/evidence/split_screen_harness.gd")
 ## The shared helpers (check_kit.gd).
 const Kit: GDScript = preload("res://tools/evidence/split_screen/check_kit.gd")

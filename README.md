@@ -26,6 +26,9 @@ friends at home.
   2 v 2 all work; with three or four Players the screen is split in four.
   A Team shares its Base, its Flag and its Tokens, and only the other Team
   hurts you (your Teammates' Shots and Mines do not).
+- More Tokens and a closer chase view (story 050): 7 / 4 / 3 / 3 per Team;
+  the view from behind keeps the Unit low in the view, looks ahead, and in
+  the four-way split draws Units as big as in a half.
 - On a pad the throttle is full however far up the stick is held (story 049),
   so steering no longer slows the Unit; turning on the spot is 1.5 times as
   fast; Turrets reach 45 m, a little more than any Unit.
@@ -297,7 +300,8 @@ in the view from above, so the Flag on its seat and the Unit that takes it
 stay in sight.
 
 Each Player has a stock of Tokens for every Unit type; Map 01 gives both of
-them Motorbike 5, Buggy 3, Truck 2 and Gyrocopter 2. A destroyed Unit costs one
+them Motorbike 7, Buggy 4, Truck 3 and Gyrocopter 3 (story 050; it was 5, 3,
+2 and 2). A destroyed Unit costs one
 Token of its type, taken when it is destroyed: enemy fire, a Self-destruct, a
 Gyrocopter's empty-tank crash and its crash into a Tall piece all count. The
 choice panel shows how many Tokens each type has left and dims a type with
