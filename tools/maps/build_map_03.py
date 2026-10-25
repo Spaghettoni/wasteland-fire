@@ -30,6 +30,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from tscn import Scene, color, node_paths, packed_vec2, transform, vec2, vec3  # noqa: E402
+from shapes import pool_outline  # noqa: E402
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 OUT = os.path.join(ROOT, "src", "gameplay", "maps", "map_03")
@@ -71,18 +72,26 @@ FORTRESS = ((-88.0, 82.0), -90.0)
 FUEL = [((-60.0, -98.0), 0.0), ((-26.0, 0.0), 0.0)]
 AMMO = [((-104.0, -62.0), 0.0), ((-110.0, 102.0), 0.0)]
 
-# Cover: rocks (drawn cliffs, only the Gyrocopter crosses), wrecks (centre, yaw), shacks, Bushes.
-ROCKS = [[(-14, -12), (-6, -20), (-2, -9), (-10, -4)], [(-14, 12), (-6, 9), (-2, 20), (-10, 24)],
-         [(-104, -96), (-95, -102), (-89, -93), (-98, -88)]]
-ROCK_TOP = 2.0
-ROCK_DEPTH = 2.5
+# Cover, all of it breakable or crossable: wrecks (centre, yaw), small buildings, Bushes.
 WRECKS = [((-20, -26), 30.0), ((-6, 0), 90.0), ((-78, -94), 10.0), ((-101, 10), 80.0), ((-44, 50), -45.0),
           ((-20, -100), 0.0), ((-26, 104), 0.0)]
-SHACKS = [("shack_long", (-30, 16)), ("shack_square", (-82, 106))]
+# Small buildings, all breakable (Martin, 2026-10-25: "v strede ostrova su nerozbitne budovy, tie tiez nechcem. ked tak,
+# tak rozbitne": the middle's and the Garage island's rocks became these): kind, centre, yaw.
+SHACKS = [("shack_long", (-30, 16), 0.0), ("shack_square", (-82, 106), 0.0), ("shack_long", (-8, -12), 60.0),
+          ("shack_square", (-8, 16), 20.0), ("shack_square", (-96, -96), 35.0)]
 BUSHES = [(-30, -14), (-8, -32), (-8, 34), (-62, -74), (-72, -56), (-108, -96), (-48, -82), (-70, 108),
           (-110, 64), (-64, -104), (-62, 80), (-34, -2)]
 
 # How far beyond each outline the sea's invisible wall is cut, so a Unit at the shore stands on sand.
+# The water's heights (Story 058): a ford's water top under the islands' sand top (0.002), so an island hides the part of a ford
+# that reaches onto it, over the ford's sand bed and the sea; a puddle's on the sand. Each pool is a thin slab. A puddle slows
+# Units in a box this share of its pool's size, so no corner of the box lies outside the pool.
+FORD_WATER_TOP = -0.03
+POOL_TOP = 0.02
+POOL_DEPTH = 0.02
+BED_TOP = -0.08
+POOL_BOX_SHARE = 0.75
+
 SEA_WALL_HEIGHT = 0.4  # below the shooting height (0.5 m): a Turret sees and Shots fly over the water
 
 # --- The scenes it uses ----------------------------------------------------------------------
@@ -100,7 +109,6 @@ BUSH = "res://src/gameplay/cover/bush.tscn"
 WRECK = "res://src/gameplay/cover/wreck.tscn"
 SHACK = "res://src/gameplay/cover/{}.tscn"
 SAND = "res://src/gameplay/maps/map_01/materials/sand.tres"
-RIDGE = "res://src/gameplay/maps/map_01/materials/ridge.tres"
 SEA = "res://src/gameplay/maps/map_01/materials/sea.tres"
 FORD_MATERIAL = "res://src/gameplay/maps/map_01/materials/ford.tres"
 TEAM_MATERIAL = "res://src/gameplay/split_screen/data/team_{}_material.tres"
@@ -127,7 +135,7 @@ def rounded(points, steps=SMOOTH_STEPS):
     return out
 
 
-def ford_rect(a, b, width=FORD_WIDTH, reach=4.0):
+def ford_rect(a, b, width=FORD_WIDTH, reach=2.0):
     """The ford from a to b as (centre, length, width, yaw): its local z runs from a to b."""
     dx, dz = b[0] - a[0], b[1] - a[1]
     length = math.hypot(dx, dz) + 2 * reach
@@ -245,10 +253,10 @@ def build_fortress(header, nodes):
     with open(os.path.join(OUT, "flag_fortress.tscn"), "w", encoding="utf-8") as handle:
         handle.write("\n\n".join(out).rstrip() + "\n")
     paths = [p for p, _, _ in nodes]
-    colored = [p for p in paths if re.fullmatch(r"Walls/Tower\w+/Mesh", p)] + ["WaterTower/Roof", "WaterTower/Tank"]
+    colored = [p + "/Mesh" for p in paths if re.fullmatch(r"Walls/Corners/\w+", p)] + ["WaterTower/Roof", "WaterTower/Tank"]
     colored += [p + "/Look/Head/Band" for p in paths if re.fullmatch(r"Turrets/Turret\w+", p)]
     structures = [p for p in paths if re.fullmatch(r"Defences/FlagWall\w+", p) or re.fullmatch(r"Turrets/Turret\w+", p)
-                  or re.fullmatch(r"Walls/\w+/Panel\d+", p)]
+                  or re.fullmatch(r"Walls/\w+/Panel\d+", p) or re.fullmatch(r"Walls/Corners/\w+", p)]
     return colored, structures
 
 
@@ -294,9 +302,8 @@ def build_map(garage_colored, garage_structures, fortress_colored, fortress_stru
     track_settings = scene.ext_resource("Resource", f"{RES}/map_03_tyre_track_settings.tres")
     bush = scene.ext_resource("PackedScene", BUSH)
     wreck = scene.ext_resource("PackedScene", WRECK)
-    shacks = {name: scene.ext_resource("PackedScene", SHACK.format(name)) for name, _ in SHACKS}
+    shacks = {name: scene.ext_resource("PackedScene", SHACK.format(name)) for name, _, _ in SHACKS}
     sand = scene.ext_resource("Material", SAND)
-    ridge = scene.ext_resource("Material", RIDGE)
     sea = scene.ext_resource("Material", SEA)
     ford_material = scene.ext_resource("Material", FORD_MATERIAL)
 
@@ -347,7 +354,7 @@ def build_map(garage_colored, garage_structures, fortress_colored, fortress_stru
     for name, centre, length, width, yaw in fords:
         if name.startswith("Puddle"):
             continue
-        scene.node(f"Bed{name}", "CSGPolygon3D", "Terrain", {"transform": FLAT.format(x=0, y=-0.2, z=0), "cast_shadow": 0,
+        scene.node(f"Bed{name}", "CSGPolygon3D", "Terrain", {"transform": FLAT.format(x=0, y=BED_TOP - 0.2, z=0), "cast_shadow": 0,
                                                              "polygon": packed_vec2(rect_outline(centre, length, width, yaw)),
                                                              "depth": 0.2, "material": sand})
     # The sea's wall: a low slab over the whole Map on the cliffs_water layer (32), the land cut out of it. Every ground Unit
@@ -367,24 +374,28 @@ def build_map(garage_colored, garage_structures, fortress_colored, fortress_stru
                                                                      "polygon": packed_vec2(rect_outline(centre, length, width, yaw)),
                                                                      "depth": 3.0})
 
-    # The fords and puddles: Map 01's ford, sized and turned (it slows ground Units).
-    for name, centre, length, width, yaw in fords:
-        shape = scene.sub_resource("BoxShape3D", f"BoxShape3D_{name}", {"size": vec3(width, 3, length)})
-        mesh = scene.sub_resource("PlaneMesh", f"PlaneMesh_{name}", {"material": ford_material, "size": vec2(width, length)})
+    # The fords and puddles: Map 01's ford, sized and turned (it slows ground Units), its own rectangular Water hidden and
+    # the water drawn as a pool (Story 058; Martin, 2026-10-25: "aby vodne mladky neboli hranate, bud maju byt orezane hranou
+    # ostrova, alebo ked su ako ojedinele, tak zaoblenych tvarov"). A ford between islands: its water lies a hair under the
+    # islands' sand, so the islands cut it at their shore. A puddle: a rounded pool on the sand, its slowing box a little
+    # inside the pool.
+    scene.node("Pools", "Node3D", ".")
+    for index, (name, centre, length, width, yaw) in enumerate(fords):
+        puddle = name.startswith("Puddle")
+        box = (width * POOL_BOX_SHARE, 3, length * POOL_BOX_SHARE) if puddle else (width, 3, length)
+        shape = scene.sub_resource("BoxShape3D", f"BoxShape3D_{name}", {"size": vec3(*box)})
         scene.node(name, None, ".", {"transform": transform(centre[0], 0, centre[1], yaw)}, instance=ford)
         scene.node("CollisionShape3D", None, name, {"shape": shape})
-        scene.node("Water", None, name, {"mesh": mesh})
+        scene.node("Water", None, name, {"visible": "false"})
         scene.editable(name)
-
-    # Rocks: drawn cliffs on the cliffs_water layer, as Map 02's ridges.
-    scene.node("Cliffs", "Node3D", ".")
-    for index, points in enumerate(ROCKS):
-        for side, pts in (("West", points), ("East", [mirror(p) for p in reversed(points)])):
-            if index < 2 and side == "East":
-                pts = [mirror(p) for p in reversed(points)]
-            scene.node(f"Rock{side}{index + 1}", "CSGPolygon3D", "Cliffs", {
-                "transform": FLAT.format(x=0, y=ROCK_TOP - ROCK_DEPTH, z=0), "use_collision": "true", "collision_layer": 32,
-                "collision_mask": 0, "polygon": packed_vec2(pts), "depth": ROCK_DEPTH, "material": ridge})
+        if puddle:
+            outline = pool_outline(centre, length, width, yaw, seed=index)
+            top = POOL_TOP
+        else:
+            outline = rect_outline(centre, length, width, yaw)
+            top = FORD_WATER_TOP
+        scene.node(f"Pool{name}", "CSGPolygon3D", "Pools", {"transform": FLAT.format(x=0, y=top - POOL_DEPTH, z=0), "cast_shadow": 0,
+                                                            "polygon": packed_vec2(outline), "depth": POOL_DEPTH, "material": ford_material})
 
     # The fortresses, then the Garages (each Garage is its Team's Base and lists its fortress).
     for team, sign in (("orange", 1), ("teal", -1)):
@@ -431,8 +442,8 @@ def build_map(garage_colored, garage_structures, fortress_colored, fortress_stru
             name = f"Wreck{side}{index + 1}"
             scene.node(name, None, "Cover", {"transform": transform(sx, 0, z, syaw)}, instance=wreck)
             neutral.append(f"Cover/{name}")
-    for index, (kind, (x, z)) in enumerate(SHACKS):
-        for side, sx, syaw in (("West", x, 0.0), ("East", -x, 180.0)):
+    for index, (kind, (x, z), yaw) in enumerate(SHACKS):
+        for side, sx, syaw in (("West", x, yaw), ("East", -x, 180.0 - yaw)):
             name = f"Shack{side}{index + 1}"
             scene.node(name, None, "Cover", {"transform": transform(sx, 0, z, syaw)}, instance=shacks[kind])
             neutral.append(f"Cover/{name}")

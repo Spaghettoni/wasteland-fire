@@ -18,6 +18,8 @@
 [ext_resource type="Resource" path="res://src/gameplay/maps/data/tyre_track_settings.tres" id="17_tyre_track_settings"]
 [ext_resource type="ImageTexture3D" path="res://src/gameplay/maps/map_01/textures/colour_grade_lut.res" id="18_colour_grade_lut"]
 
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/ford.tres" id="19_ford_pool"]
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(300, 1, 100)
 
@@ -70,7 +72,7 @@ unique_name_in_owner = true
 script = ExtResource("1_map_field")
 player_1_base = NodePath("Base1")
 player_2_base = NodePath("Base2")
-neutral_structures = [NodePath("FieldWalls/FieldWallWest/Panel1"), NodePath("FieldWalls/FieldWallWest/Panel2"), NodePath("FieldWalls/FieldWallWest/Panel3"), NodePath("FieldWalls/FieldWallWest/Panel4"), NodePath("FieldWalls/FieldWallEast/Panel1"), NodePath("FieldWalls/FieldWallEast/Panel2"), NodePath("FieldWalls/FieldWallEast/Panel3"), NodePath("FieldWalls/FieldWallEast/Panel4")]
+neutral_structures = [NodePath("FieldWalls/FieldWallWest/Panel1"), NodePath("FieldWalls/FieldWallWest/Panel2"), NodePath("FieldWalls/FieldWallWest/Panel3"), NodePath("FieldWalls/FieldWallWest/Panel4"), NodePath("FieldWalls/FieldWallEast/Panel1"), NodePath("FieldWalls/FieldWallEast/Panel2"), NodePath("FieldWalls/FieldWallEast/Panel3"), NodePath("FieldWalls/FieldWallEast/Panel4"), NodePath("Cover/Wrecks/WreckWestOuterSouth"), NodePath("Cover/Wrecks/WreckWestMiddleNorth"), NodePath("Cover/Wrecks/WreckWestInnerSouth"), NodePath("Cover/Wrecks/WreckWestInnerNorth"), NodePath("Cover/Wrecks/WreckEastOuterSouth"), NodePath("Cover/Wrecks/WreckEastMiddleNorth"), NodePath("Cover/Wrecks/WreckEastInnerSouth"), NodePath("Cover/Wrecks/WreckEastInnerNorth"), NodePath("Cover/Containers/ContainerWest"), NodePath("Cover/Containers/ContainerEast")]
 supply_zones = [NodePath("Depot/FuelZoneWest"), NodePath("Depot/FuelZoneEast"), NodePath("AmmoBuildingWest/AmmoZone"), NodePath("AmmoBuildingEast/AmmoZone")]
 tyre_tracks = NodePath("TyreTracks")
 token_stock = ExtResource("2_token_stock")
@@ -101,8 +103,28 @@ shape = SubResource("BoxShape3D_floor")
 [node name="FordWest" parent="." instance=ExtResource("6_ford")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 0, 0)
 
+[node name="Water" parent="FordWest" index="1"]
+visible = false
+
+[node name="PoolFordWest" type="CSGPolygon3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, 0)
+cast_shadow = 0
+polygon = PackedVector2Array(-32.174274, 0, -32.297557, 5.475, -32.642354, 9.089572, -33.128762, 11.998844, -33.695596, 14.463826, -34.331895, 16.626442, -35.069677, 18.490944, -35.950089, 19.955561, -36.996688, 20.917934, -38.233891, 21.378868, -40, 21.460296, -41.761073, 21.317904, -43.016909, 21.012635, -44.148569, 20.441686, -45.169618, 19.388409, -46.020952, 17.661459, -46.635568, 15.223595, -46.99354, 12.212412, -47.143502, 8.82502, -47.177191, 5.101644, -47.174274, 0, -47.155297, -5.086081, -47.074366, -8.73961, -46.854576, -11.969747, -46.439117, -14.77289, -45.821642, -17.076818, -45.036739, -18.890052, -44.121199, -20.306825, -43.074818, -21.415969, -41.83426, -22.203835, -40, -22.539704, -38.160704, -22.264799, -36.938779, -21.321269, -35.977458, -19.8207, -35.202556, -17.992587, -34.531204, -16.0418, -33.892047, -14.013121, -33.267726, -11.756178, -32.71149, -9.004162, -32.319451, -5.459438)
+depth = 0.02
+material = ExtResource("19_ford_pool")
+
 [node name="FordEast" parent="." instance=ExtResource("6_ford")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, 0)
+
+[node name="Water" parent="FordEast" index="1"]
+visible = false
+
+[node name="PoolFordEast" type="CSGPolygon3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, 0)
+cast_shadow = 0
+polygon = PackedVector2Array(47.478123, 0, 47.301108, 5.189726, 46.984233, 8.62826, 46.595467, 11.51728, 46.171555, 14.159038, 45.688886, 16.6874, 45.075444, 19.035211, 44.255275, 20.967472, 43.19005, 22.218551, 41.871676, 22.65676, 40, 22.367385, 38.21581, 21.597741, 37.041862, 20.603295, 36.042286, 19.501269, 35.139774, 18.228049, 34.334812, 16.617885, 33.665695, 14.532426, 33.163737, 11.937769, 32.823171, 8.866192, 32.606211, 5.255605, 32.478123, 0, 32.443369, -5.371355, 32.55222, -9.200922, 32.869653, -12.45131, 33.428034, -15.077678, 34.199139, -17.01586, 35.108381, -18.345784, 36.084165, -19.294914, 37.111919, -20.115352, 38.271307, -20.925942, 40, -21.632615, 41.816179, -21.984962, 43.119993, -21.730608, 44.213396, -20.761117, 45.106836, -19.152947, 45.82456, -17.085375, 46.409216, -14.70429, 46.88955, -12.030821, 47.255183, -8.96299, 47.463951, -5.305477)
+depth = 0.02
+material = ExtResource("19_ford_pool")
 
 [node name="Base1" parent="." instance=ExtResource("7_compound_base")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -120, 0, 0)
@@ -160,3 +182,6 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 64, 0, 14)
 
 [node name="TyreTracks" parent="." instance=ExtResource("16_tyre_tracks")]
 settings = ExtResource("17_tyre_track_settings")
+
+[editable path="FordWest"]
+[editable path="FordEast"]

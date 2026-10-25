@@ -426,6 +426,9 @@ var is_badly_damaged: bool:
 var _speed: float = 0.0
 var _throttle: float = 0.0
 var _steer: float = 0.0
+## The share of the spot rate the turn on the spot has reached (Story 056), and the steer's sign it ramped with.
+var _spot_share: float = 1.0
+var _spot_sign: float = 0.0
 ## True after a physics tick in which the Unit touched a wall and its real speed along its facing
 ## was under stats.blocked_speed; read by the next tick's _next_speed().
 var _blocked: bool = false
@@ -496,6 +499,7 @@ func _physics_process(delta: float) -> void:
 	if not _is_alive:
 		return
 	_speed = _next_speed(delta)
+	_ramp_spot_turn(delta)
 	rotate_y(_yaw_rate() * delta)
 	var facing: Vector3 = -global_transform.basis.z.normalized()
 	velocity.x = facing.x * _speed
@@ -558,6 +562,8 @@ func reset_motion() -> void:
 	_speed = 0.0
 	_throttle = 0.0
 	_steer = 0.0
+	_spot_share = 1.0
+	_spot_sign = 0.0
 	_blocked = false
 	_arrival_velocity = Vector3.ZERO
 	velocity = Vector3.ZERO
@@ -807,7 +813,24 @@ func _yaw_rate() -> float:
 	if stats.turn_rate * speed_fraction >= stats.spot_turn_rate:
 		return _steer * stats.turn_rate * speed_fraction * signf(_speed)
 	var direction: float = -1.0 if _speed < 0.0 else 1.0
-	return _steer * stats.spot_turn_rate * direction
+	return _steer * stats.spot_turn_rate * _spot_share * direction
+
+
+## Story 056: the share of the spot rate for this tick. With no ramp in the stats it is 1. Otherwise a
+## steer of a new sign (a press, or a turn the other way) starts it at spot_turn_start_share, and each
+## tick the steer is held raises it by delta over the ramp time, to 1; with no steer it waits at the
+## start share for the next press.
+func _ramp_spot_turn(delta: float) -> void:
+	if stats == null or stats.spot_turn_ramp_seconds <= 0.0:
+		_spot_share = 1.0
+		return
+	var sign_now: float = signf(_steer)
+	var start: float = clampf(stats.spot_turn_start_share, 0.0, 1.0)
+	if sign_now == 0.0 or sign_now != _spot_sign:
+		_spot_share = start
+	else:
+		_spot_share = minf(1.0, _spot_share + (1.0 - start) * delta / stats.spot_turn_ramp_seconds)
+	_spot_sign = sign_now
 
 
 ## Step 5 of the movement model (Story 006 AC-2, AC-4; Story 009 AC-4), first in the tick: a Unit

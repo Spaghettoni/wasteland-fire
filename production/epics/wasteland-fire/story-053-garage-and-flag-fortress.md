@@ -20,7 +20,7 @@
 
 ## Acceptance Criteria
 
-- [x] AC-1: A Base may name a flag zone (`Base.flag_zone`) apart from its zone: a carried enemy Flag wins in the flag zone, not in the Garage's zone; the own Flag goes home there.
+- [x] AC-1: A Base may name a flag zone (`Base.flag_zone`) apart from its zone: a carried enemy Flag wins in the flag zone, not in the Garage's zone; the own Flag goes home there. (Replaced the same evening by story 057: the Flag is delivered to the Garage; the flag zone keeps only the Mines away.)
 - [x] AC-2: The Swap stays in the Garage's zone.
 - [x] AC-3: No Mine is laid in or before either zone.
 - [x] AC-4: A Base without a flag zone (Map 01, Map 02) works as before.

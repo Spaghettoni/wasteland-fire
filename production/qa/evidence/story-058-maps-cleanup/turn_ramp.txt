@@ -1,0 +1,7 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK turn_ramp R1_ramp PASS rad/s on ticks 1, 15, 32, 45: 0.433, 1.038, 1.730, 1.730 (start 0.432 = 0.25 of 1.730, 0.50 s)
+CHECK turn_ramp R2_fresh_start PASS pressed again 0.432, the other way -0.432 rad/s on the first tick (start 0.432)
+CHECK turn_ramp R3_rolling_no_ramp PASS at 17.0 m/s the first two ticks of a steer turned at 2.036 rad/s (the rolling rate 1.986)
+RESULT turn_ramp ok checks=3 failed=0 t=2.467 ramp=0.50
+exit=0

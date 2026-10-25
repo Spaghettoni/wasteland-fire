@@ -1,0 +1,162 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/maps/map_field.gd" id="1_map_field"]
+[ext_resource type="Resource" path="res://src/gameplay/maps/data/token_stock.tres" id="2_token_stock"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/map_01/map_01_terrain.tscn" id="3_terrain"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/map_01/map_01_water.tscn" id="4_water"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/map_01/map_01_cliffs.tscn" id="5_cliffs"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/ford.tscn" id="6_ford"]
+[ext_resource type="PackedScene" path="res://tools/evidence/frozen/compound_base_story_054.tscn" id="7_compound_base"]
+[ext_resource type="Material" path="res://src/gameplay/split_screen/data/team_orange_material.tres" id="8_team_orange_material"]
+[ext_resource type="Material" path="res://src/gameplay/split_screen/data/team_teal_material.tres" id="9_team_teal_material"]
+[ext_resource type="PackedScene" path="res://tools/evidence/frozen/map_01_cover_story_054.tscn" id="10_cover"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/map_01/map_01_depot.tscn" id="11_depot"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/map_01/map_01_dressing.tscn" id="13_dressing"]
+[ext_resource type="PackedScene" path="res://src/gameplay/defences/wall_panel_scrap.tscn" id="14_wall_panel_scrap"]
+[ext_resource type="PackedScene" path="res://src/gameplay/supply/ammo_building.tscn" id="15_ammo_building"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/tyre_tracks.tscn" id="16_tyre_tracks"]
+[ext_resource type="Resource" path="res://src/gameplay/maps/data/tyre_track_settings.tres" id="17_tyre_track_settings"]
+[ext_resource type="ImageTexture3D" path="res://src/gameplay/maps/map_01/textures/colour_grade_lut.res" id="18_colour_grade_lut"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(300, 1, 100)
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_desert"]
+sky_top_color = Color(0.4, 0.56, 0.76, 1)
+sky_horizon_color = Color(0.7, 0.78, 0.86, 1)
+sky_curve = 0.09
+ground_bottom_color = Color(0.5, 0.4, 0.28, 1)
+ground_horizon_color = Color(0.76, 0.67, 0.53, 1)
+
+[sub_resource type="Sky" id="Sky_desert"]
+sky_material = SubResource("ProceduralSkyMaterial_desert")
+
+[sub_resource type="Environment" id="Environment_sky"]
+background_mode = 2
+sky = SubResource("Sky_desert")
+ambient_light_source = 3
+ambient_light_color = Color(0.8, 0.8, 0.82, 1)
+ambient_light_sky_contribution = 0.6
+ambient_light_energy = 0.9
+tonemap_mode = 4
+tonemap_exposure = 1.3
+tonemap_agx_white = 10.0
+tonemap_agx_contrast = 1.5
+ssao_enabled = true
+ssao_radius = 2.0
+ssao_intensity = 3.0
+ssao_light_affect = 0.4
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.84, 0.8, 0.72, 1)
+fog_density = 0.2
+fog_sky_affect = 0.3
+fog_depth_begin = 60.0
+fog_depth_end = 260.0
+glow_enabled = true
+glow_levels/3 = 0.5
+glow_levels/4 = 0.25
+glow_levels/5 = 0.1
+glow_intensity = 0.8
+glow_hdr_threshold = 2.0
+glow_hdr_scale = 1.0
+adjustment_enabled = true
+adjustment_contrast = 1.04
+adjustment_saturation = 0.97
+adjustment_color_correction = ExtResource("18_colour_grade_lut")
+
+[node name="Map" type="Node3D" node_paths=PackedStringArray("player_1_base", "player_2_base", "neutral_structures", "supply_zones", "tyre_tracks")]
+unique_name_in_owner = true
+script = ExtResource("1_map_field")
+player_1_base = NodePath("Base1")
+player_2_base = NodePath("Base2")
+neutral_structures = [NodePath("FieldWalls/FieldWallWest/Panel1"), NodePath("FieldWalls/FieldWallWest/Panel2"), NodePath("FieldWalls/FieldWallWest/Panel3"), NodePath("FieldWalls/FieldWallWest/Panel4"), NodePath("FieldWalls/FieldWallEast/Panel1"), NodePath("FieldWalls/FieldWallEast/Panel2"), NodePath("FieldWalls/FieldWallEast/Panel3"), NodePath("FieldWalls/FieldWallEast/Panel4")]
+supply_zones = [NodePath("Depot/FuelZoneWest"), NodePath("Depot/FuelZoneEast"), NodePath("AmmoBuildingWest/AmmoZone"), NodePath("AmmoBuildingEast/AmmoZone")]
+tyre_tracks = NodePath("TyreTracks")
+token_stock = ExtResource("2_token_stock")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.81915206, 0.40557979, -0.40557979, 0, 0.70710678, 0.70710678, 0.57357645, -0.57922797, 0.57922797, 0, 0, 0)
+light_color = Color(1, 0.93, 0.82, 1)
+light_energy = 1.3
+shadow_enabled = true
+directional_shadow_max_distance = 100.0
+directional_shadow_pancake_size = 0.0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_sky")
+
+[node name="Floor" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("BoxShape3D_floor")
+
+[node name="Terrain" parent="." instance=ExtResource("3_terrain")]
+
+[node name="Water" parent="." instance=ExtResource("4_water")]
+
+[node name="Cliffs" parent="." instance=ExtResource("5_cliffs")]
+
+[node name="FordWest" parent="." instance=ExtResource("6_ford")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 0, 0)
+
+[node name="FordEast" parent="." instance=ExtResource("6_ford")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, 0)
+
+[node name="Base1" parent="." instance=ExtResource("7_compound_base")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -120, 0, 0)
+color_material = ExtResource("8_team_orange_material")
+
+[node name="Base2" parent="." node_paths=PackedStringArray("spawn_point", "spare_spawn_points") instance=ExtResource("7_compound_base")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 120, 0, 0)
+color_material = ExtResource("9_team_teal_material")
+spawn_point = NodePath("SpareSpawnRight")
+spare_spawn_points = [NodePath("SpareSpawnLeft")]
+
+[node name="Cover" parent="." instance=ExtResource("10_cover")]
+
+[node name="FieldWalls" type="Node3D" parent="."]
+
+[node name="FieldWallWest" type="Node3D" parent="FieldWalls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 12)
+
+[node name="Panel1" parent="FieldWalls/FieldWallWest" instance=ExtResource("14_wall_panel_scrap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4.5)
+
+[node name="Panel2" parent="FieldWalls/FieldWallWest" instance=ExtResource("14_wall_panel_scrap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.5)
+
+[node name="Panel3" parent="FieldWalls/FieldWallWest" instance=ExtResource("14_wall_panel_scrap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.5)
+
+[node name="Panel4" parent="FieldWalls/FieldWallWest" instance=ExtResource("14_wall_panel_scrap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.5)
+
+[node name="FieldWallEast" type="Node3D" parent="FieldWalls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 12)
+
+[node name="Panel1" parent="FieldWalls/FieldWallEast" instance=ExtResource("14_wall_panel_scrap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4.5)
+
+[node name="Panel2" parent="FieldWalls/FieldWallEast" instance=ExtResource("14_wall_panel_scrap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.5)
+
+[node name="Panel3" parent="FieldWalls/FieldWallEast" instance=ExtResource("14_wall_panel_scrap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.5)
+
+[node name="Panel4" parent="FieldWalls/FieldWallEast" instance=ExtResource("14_wall_panel_scrap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.5)
+
+[node name="Depot" parent="." instance=ExtResource("11_depot")]
+
+[node name="AmmoBuildingWest" parent="." instance=ExtResource("15_ammo_building")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -64, 0, 14)
+
+[node name="AmmoBuildingEast" parent="." instance=ExtResource("15_ammo_building")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 64, 0, 14)
+
+[node name="Dressing" parent="." instance=ExtResource("13_dressing")]
+
+[node name="TyreTracks" parent="." instance=ExtResource("16_tyre_tracks")]
+settings = ExtResource("17_tyre_track_settings")

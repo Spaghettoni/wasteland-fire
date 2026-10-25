@@ -27,7 +27,7 @@ extends Node
 ## (windowed); since Story 024, ammo_buildings, ammo_buildings_showcase and ammo_buildings_fps
 ## (windowed); since Story 032, pads, pads_data and pads_showcase
 ## (windowed); since Story 036, resource_bars and resource_bars_showcase (windowed);
-## since Story 037, turret_flying_sight and cliff_tops; since Story 038, map_02, bushes, cover_pieces and map_02_showcase (windowed); since Story 039, flag_open; since Story 040, pads_stick; since Story 041, fire_heights and fire_heights_showcase (windowed); since Story 042, secondary; since Story 043, real_flag; since Stories 042 and 043, secondary_flag_showcase (windowed); since Story 044, recharge_showcase (windowed); since Story 047, pad_back and shadow_showcase (windowed); since Story 048, teams, teams_three and teams_showcase (windowed); since Story 049, full_throttle and turret_reach_showcase (windowed); since Story 050, chase_view, chase_showcase and chase_showcase_two (windowed); since Story 051, hud_showcase (windowed); since Story 052, teams_last_carrier; since Story 054, map_03 and map_03_showcase (windowed). Each is a script under tools/evidence/split_screen/,
+## since Story 037, turret_flying_sight and cliff_tops; since Story 038, map_02, bushes, cover_pieces and map_02_showcase (windowed); since Story 039, flag_open; since Story 040, pads_stick; since Story 041, fire_heights and fire_heights_showcase (windowed); since Story 042, secondary; since Story 043, real_flag; since Stories 042 and 043, secondary_flag_showcase (windowed); since Story 044, recharge_showcase (windowed); since Story 047, pad_back and shadow_showcase (windowed); since Story 048, teams, teams_three and teams_showcase (windowed); since Story 049, full_throttle and turret_reach_showcase (windowed); since Story 050, chase_view, chase_showcase and chase_showcase_two (windowed); since Story 051, hud_showcase (windowed); since Story 052, teams_last_carrier; since Story 054, map_03 and map_03_showcase (windowed); since Story 056, turn_ramp; since Story 058, open_bases. Each is a script under tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
 ## line there. A scenario reaches this script, DriveStep, UnitTrack and check_kit.gd through preload
@@ -388,6 +388,16 @@ extends Node
 ## to 049 (offset 0, 7, 13, no look-ahead, the camera's own field of view), and unless it declares const MORE_TOKENS: bool =
 ## true the shared token_stock.tres the counts 5, 3, 2, 2 (_apply_story_050_off(), first).
 ##
+## Turn ramp (Story 056). A turn on the spot starts at a quarter of the spot rate and reaches the whole of it in 0.5 s. Unless
+## the scenario script declares const TURN_RAMP: bool = true the runner gives the cached stats no ramp (spot_turn_ramp_seconds
+## 0), the turn of stories 009 to 055 (_apply_story_050_off()).
+##
+## Open Bases (Story 058). The shipped compound has no corner towers (breakable corner panels close the corners), Map 01's
+## wrecks and containers are breakable Structures and its fords are drawn as round pools. Unless the scenario script declares
+## const OPEN_BASES: bool = true (or names a MAP_SCENE) the runner plays Map 01 as story 054 left it
+## (tools/evidence/frozen/map_01_story_054.tscn and the compound and cover it names; _apply_map_scene()). The compound is
+## also Map 02's, so MAP_SCENE scenarios on Map 02 see the open Bases.
+##
 ## Output: SPLIT <scenario> t=<seconds> key=value ... (progress), CHECK <scenario> <check name> PASS|FAIL
 ## <detail> and exactly one last RESULT <scenario> ok|fail checks=<n> failed=<n> key=value ...; then quit with
 ## exit code 0 when every check passed, 1 when one failed, 2 for a missing or unknown scenario. TD-003
@@ -508,6 +518,8 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"pads_stick": preload("res://tools/evidence/split_screen/pads_stick.gd"),
 	&"full_throttle": preload("res://tools/evidence/split_screen/full_throttle.gd"),
 	&"turret_reach_showcase": preload("res://tools/evidence/split_screen/turret_reach_showcase.gd"),
+	&"open_bases": preload("res://tools/evidence/split_screen/open_bases.gd"),
+	&"turn_ramp": preload("res://tools/evidence/split_screen/turn_ramp.gd"),
 	&"map_03_showcase": preload("res://tools/evidence/split_screen/map_03_showcase.gd"),
 	&"map_03": preload("res://tools/evidence/split_screen/map_03.gd"),
 	&"teams_last_carrier": preload("res://tools/evidence/split_screen/teams_last_carrier.gd"),
@@ -734,6 +746,11 @@ const LINEUP_DEVICES_CONSTANT: StringName = &"LINEUP_DEVICES"
 const LINEUP_TEAMS_CONSTANT: StringName = &"LINEUP_TEAMS"
 const TEAMS_CONSTANT: StringName = &"TEAMS"
 ## The constants a scenario script declares as true to keep Story 050's chase view and Tokens (_apply_story_050_off()).
+const TURN_RAMP_CONSTANT: StringName = &"TURN_RAMP"
+## The constant a scenario script declares as true to play the shipped Map 01 of Story 058 (no corner towers, breakable wrecks
+## and containers, round ford pools) rather than FROZEN_MAP_01_054 (_apply_map_scene()).
+const OPEN_BASES_CONSTANT: StringName = &"OPEN_BASES"
+const FROZEN_MAP_01_054: String = "res://tools/evidence/frozen/map_01_story_054.tscn"
 const CLOSE_CHASE_CONSTANT: StringName = &"CLOSE_CHASE"
 const MORE_TOKENS_CONSTANT: StringName = &"MORE_TOKENS"
 const TOKEN_STOCK_PATH_050: String = "res://src/gameplay/maps/data/token_stock.tres"
@@ -1738,6 +1755,8 @@ func _apply_teams_off(script: GDScript) -> void:
 
 func _apply_map_scene(root: SplitScreen, script: GDScript) -> void:
 	var path: String = String(script.get_script_constant_map().get(MAP_SCENE_CONSTANT, ""))
+	if path.is_empty() and not bool(script.get_script_constant_map().get(OPEN_BASES_CONSTANT, false)):
+		path = FROZEN_MAP_01_054
 	if path.is_empty():
 		return
 	var map_scene: PackedScene = load(path) as PackedScene
@@ -1811,6 +1830,11 @@ func _apply_story_050_off(script: GDScript) -> void:
 		chase.offset = CHASE_OFFSET_049
 		chase.look_ahead = 0.0
 		chase.width_fov_degrees = 0.0
+	if not bool(constants.get(TURN_RAMP_CONSTANT, false)):
+		for path: String in SPOT_TURN_RATES_048:
+			var stats: UnitStats = load(path) as UnitStats
+			if stats != null:
+				stats.spot_turn_ramp_seconds = 0.0
 	if not bool(constants.get(MORE_TOKENS_CONSTANT, false)):
 		var stock: TokenStock = load(TOKEN_STOCK_PATH_050) as TokenStock
 		if stock != null:

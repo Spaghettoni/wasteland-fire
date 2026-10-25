@@ -1,157 +1,40 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://src/gameplay/props/prop_mesh.gd" id="4_prop_mesh"]
-[ext_resource type="PackedScene" path="res://assets/art/map_01/props/map_01_props.glb" id="5_props"]
-[ext_resource type="Material" path="res://src/gameplay/props/materials/prop_neutral.tres" id="6_prop_neutral"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_wreck"]
-size = Vector3(6, 1.3, 3)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_container"]
-size = Vector3(12, 2, 2.5)
+[ext_resource type="PackedScene" path="res://src/gameplay/cover/wreck.tscn" id="1_wreck"]
+[ext_resource type="PackedScene" path="res://src/gameplay/cover/container.tscn" id="2_container"]
 
 [node name="Cover" type="Node3D"]
 
 [node name="Wrecks" type="Node3D" parent="."]
 
-[node name="WreckWestOuterSouth" type="StaticBody3D" parent="Wrecks"]
-transform = Transform3D(0.8660254, 0, 0.5, 0, 1, 0, -0.5, 0, 0.8660254, -80, 0.65, 5)
-collision_layer = 64
-collision_mask = 0
-
-[node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckWestOuterSouth"]
-material_override = ExtResource("6_prop_neutral")
-script = ExtResource("4_prop_mesh")
-mesh_file = ExtResource("5_props")
-mesh_name = &"WreckPickup"
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Wrecks/WreckWestOuterSouth"]
-shape = SubResource("BoxShape3D_wreck")
-
-[node name="WreckWestMiddleNorth" type="StaticBody3D" parent="Wrecks"]
-transform = Transform3D(0.8660254, 0, -0.5, 0, 1, 0, 0.5, 0, 0.8660254, -53, 0.65, -8)
-collision_layer = 64
-collision_mask = 0
-
-[node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckWestMiddleNorth"]
-material_override = ExtResource("6_prop_neutral")
-script = ExtResource("4_prop_mesh")
-mesh_file = ExtResource("5_props")
-mesh_name = &"WreckFlipped"
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Wrecks/WreckWestMiddleNorth"]
-shape = SubResource("BoxShape3D_wreck")
-
-[node name="WreckWestInnerSouth" type="StaticBody3D" parent="Wrecks"]
-transform = Transform3D(0.7071068, 0, -0.7071068, 0, 1, 0, 0.7071068, 0, 0.7071068, -26, 0.65, 7.6)
-collision_layer = 64
-collision_mask = 0
-
-[node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckWestInnerSouth"]
-material_override = ExtResource("6_prop_neutral")
-script = ExtResource("4_prop_mesh")
-mesh_file = ExtResource("5_props")
-mesh_name = &"WreckFlipped"
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Wrecks/WreckWestInnerSouth"]
-shape = SubResource("BoxShape3D_wreck")
-
-[node name="WreckWestInnerNorth" type="StaticBody3D" parent="Wrecks"]
-transform = Transform3D(0.9396926, 0, 0.3420201, 0, 1, 0, -0.3420201, 0, 0.9396926, -22, 0.65, -10)
-collision_layer = 64
-collision_mask = 0
-
-[node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckWestInnerNorth"]
-material_override = ExtResource("6_prop_neutral")
-script = ExtResource("4_prop_mesh")
-mesh_file = ExtResource("5_props")
-mesh_name = &"WreckPickup"
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Wrecks/WreckWestInnerNorth"]
-shape = SubResource("BoxShape3D_wreck")
-
-[node name="WreckEastOuterSouth" type="StaticBody3D" parent="Wrecks"]
-transform = Transform3D(0.8660254, 0, -0.5, 0, 1, 0, 0.5, 0, 0.8660254, 80, 0.65, 5)
-collision_layer = 64
-collision_mask = 0
-
-[node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckEastOuterSouth"]
-material_override = ExtResource("6_prop_neutral")
-script = ExtResource("4_prop_mesh")
-mesh_file = ExtResource("5_props")
-mesh_name = &"WreckPickup"
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Wrecks/WreckEastOuterSouth"]
-shape = SubResource("BoxShape3D_wreck")
-
-[node name="WreckEastMiddleNorth" type="StaticBody3D" parent="Wrecks"]
-transform = Transform3D(0.8660254, 0, 0.5, 0, 1, 0, -0.5, 0, 0.8660254, 53, 0.65, -8)
-collision_layer = 64
-collision_mask = 0
-
-[node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckEastMiddleNorth"]
-material_override = ExtResource("6_prop_neutral")
-script = ExtResource("4_prop_mesh")
-mesh_file = ExtResource("5_props")
-mesh_name = &"WreckFlipped"
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Wrecks/WreckEastMiddleNorth"]
-shape = SubResource("BoxShape3D_wreck")
-
-[node name="WreckEastInnerSouth" type="StaticBody3D" parent="Wrecks"]
-transform = Transform3D(0.7071068, 0, 0.7071068, 0, 1, 0, -0.7071068, 0, 0.7071068, 26, 0.65, 7.6)
-collision_layer = 64
-collision_mask = 0
-
-[node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckEastInnerSouth"]
-material_override = ExtResource("6_prop_neutral")
-script = ExtResource("4_prop_mesh")
-mesh_file = ExtResource("5_props")
-mesh_name = &"WreckFlipped"
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Wrecks/WreckEastInnerSouth"]
-shape = SubResource("BoxShape3D_wreck")
-
-[node name="WreckEastInnerNorth" type="StaticBody3D" parent="Wrecks"]
-transform = Transform3D(0.9396926, 0, -0.3420201, 0, 1, 0, 0.3420201, 0, 0.9396926, 22, 0.65, -10)
-collision_layer = 64
-collision_mask = 0
-
-[node name="Mesh" type="MeshInstance3D" parent="Wrecks/WreckEastInnerNorth"]
-material_override = ExtResource("6_prop_neutral")
-script = ExtResource("4_prop_mesh")
-mesh_file = ExtResource("5_props")
-mesh_name = &"WreckPickup"
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Wrecks/WreckEastInnerNorth"]
-shape = SubResource("BoxShape3D_wreck")
-
 [node name="Containers" type="Node3D" parent="."]
 
-[node name="ContainerWest" type="StaticBody3D" parent="Containers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -58, 1, 0)
-collision_layer = 64
-collision_mask = 0
+[node name="WreckWestOuterSouth" parent="Wrecks" instance=ExtResource("1_wreck")]
+transform = Transform3D(0.8660254, 0, 0.5, 0, 1, 0, -0.5, 0, 0.8660254, -80, 0, 5)
 
-[node name="Mesh" type="MeshInstance3D" parent="Containers/ContainerWest"]
-material_override = ExtResource("6_prop_neutral")
-script = ExtResource("4_prop_mesh")
-mesh_file = ExtResource("5_props")
-mesh_name = &"Container"
+[node name="WreckWestMiddleNorth" parent="Wrecks" instance=ExtResource("1_wreck")]
+transform = Transform3D(0.8660254, 0, -0.5, 0, 1, 0, 0.5, 0, 0.8660254, -53, 0, -8)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Containers/ContainerWest"]
-shape = SubResource("BoxShape3D_container")
+[node name="WreckWestInnerSouth" parent="Wrecks" instance=ExtResource("1_wreck")]
+transform = Transform3D(0.7071068, 0, -0.7071068, 0, 1, 0, 0.7071068, 0, 0.7071068, -26, 0, 7.6)
 
-[node name="ContainerEast" type="StaticBody3D" parent="Containers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, 1, 0)
-collision_layer = 64
-collision_mask = 0
+[node name="WreckWestInnerNorth" parent="Wrecks" instance=ExtResource("1_wreck")]
+transform = Transform3D(0.9396926, 0, 0.3420201, 0, 1, 0, -0.3420201, 0, 0.9396926, -22, 0, -10)
 
-[node name="Mesh" type="MeshInstance3D" parent="Containers/ContainerEast"]
-material_override = ExtResource("6_prop_neutral")
-script = ExtResource("4_prop_mesh")
-mesh_file = ExtResource("5_props")
-mesh_name = &"Container"
+[node name="WreckEastOuterSouth" parent="Wrecks" instance=ExtResource("1_wreck")]
+transform = Transform3D(0.8660254, 0, -0.5, 0, 1, 0, 0.5, 0, 0.8660254, 80, 0, 5)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Containers/ContainerEast"]
-shape = SubResource("BoxShape3D_container")
+[node name="WreckEastMiddleNorth" parent="Wrecks" instance=ExtResource("1_wreck")]
+transform = Transform3D(0.8660254, 0, 0.5, 0, 1, 0, -0.5, 0, 0.8660254, 53, 0, -8)
+
+[node name="WreckEastInnerSouth" parent="Wrecks" instance=ExtResource("1_wreck")]
+transform = Transform3D(0.7071068, 0, 0.7071068, 0, 1, 0, -0.7071068, 0, 0.7071068, 26, 0, 7.6)
+
+[node name="WreckEastInnerNorth" parent="Wrecks" instance=ExtResource("1_wreck")]
+transform = Transform3D(0.9396926, 0, -0.3420201, 0, 1, 0, 0.3420201, 0, 0.9396926, 22, 0, -10)
+
+[node name="ContainerWest" parent="Containers" instance=ExtResource("2_container")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -58, 0, 0)
+
+[node name="ContainerEast" parent="Containers" instance=ExtResource("2_container")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, 0, 0)

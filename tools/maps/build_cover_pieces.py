@@ -1,6 +1,6 @@
 """Builds the destructible cover of Map 02: the car wreck and the two small buildings (Story 038).
 
-Writes src/gameplay/cover/wreck.tscn, shack_long.tscn and shack_square.tscn. Each is a Structure
+Writes src/gameplay/cover/wreck.tscn, shack_long.tscn, shack_square.tscn and container.tscn (Story 058). Each is a Structure
 (src/gameplay/defences/structure.gd) on the cover layer (64): it stops ground Units and every Shot,
 the Gyrocopter flies over it (at 2.5 m, over every piece of 2 m or less), both Players' Shots
 damage it (it belongs to no Player and its type is in no row of the damage matrix, so every Shot
@@ -44,7 +44,8 @@ WHEEL_RADIUS = 0.45
 WHEEL_WIDTH = 0.35
 
 # The small buildings: footprint (x, z) and wall height, metres; roof overhang and thickness.
-SHACKS = {"shack_long": (8.0, 5.4), "shack_square": (6.4, 6.4)}
+# Since Story 058 also "container", the breakable stand-in for Map 01's two containers (12 x 2.5 m, as their old boxes).
+SHACKS = {"shack_long": (8.0, 5.4), "shack_square": (6.4, 6.4), "container": (12.0, 2.5)}
 SHACK_HEIGHT = 2.0
 ROOF_OVERHANG = 0.25
 ROOF_THICKNESS = 0.14

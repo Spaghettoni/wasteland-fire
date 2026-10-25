@@ -34,6 +34,8 @@
 
 [ext_resource type="PackedScene" path="res://src/gameplay/defences/wall_panel_garage_side.tscn" id="16_panel_garage_side"]
 
+[ext_resource type="PackedScene" path="res://src/gameplay/defences/wall_panel_corner.tscn" id="17_panel_corner"]
+
 [sub_resource type="BoxMesh" id="BoxMesh_pad"]
 material = ExtResource("5_garage_floor")
 size = Vector3(12, 0.02, 10)
@@ -84,13 +86,6 @@ size = Vector3(5, 0.12, 0.12)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_zone"]
 size = Vector3(29.4, 4, 27.5)
-
-[sub_resource type="BoxMesh" id="BoxMesh_corner_tower"]
-material = ExtResource("3_wall")
-size = Vector3(4.3, 6, 4.3)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_corner_tower"]
-size = Vector3(4.3, 6, 4.3)
 
 [sub_resource type="BoxMesh" id="BoxMesh_leg"]
 material = ExtResource("4_tower")

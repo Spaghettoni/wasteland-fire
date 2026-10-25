@@ -1,0 +1,548 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/maps/base.gd" id="1_base"]
+[ext_resource type="PackedScene" path="res://src/gameplay/flag/flag.tscn" id="2_flag"]
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/wall.tres" id="3_wall"]
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/tower.tres" id="4_tower"]
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/garage_floor.tres" id="5_garage_floor"]
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/marking.tres" id="6_marking"]
+[ext_resource type="PackedScene" path="res://src/gameplay/defences/flag_wall.tscn" id="7_flag_wall"]
+[ext_resource type="PackedScene" path="res://src/gameplay/defences/turret.tscn" id="8_turret"]
+[ext_resource type="Script" path="res://src/gameplay/props/prop_mesh.gd" id="9_prop_mesh"]
+[ext_resource type="PackedScene" path="res://assets/art/map_01/base/map_01_base.glb" id="10_base_trim"]
+[ext_resource type="Material" path="res://src/gameplay/props/materials/prop_neutral.tres" id="11_prop_neutral"]
+[ext_resource type="PackedScene" path="res://src/gameplay/defences/wall_panel_back.tscn" id="12_panel_back"]
+[ext_resource type="PackedScene" path="res://src/gameplay/defences/wall_panel_side.tscn" id="13_panel_side"]
+[ext_resource type="PackedScene" path="res://src/gameplay/defences/wall_panel_gate.tscn" id="14_panel_gate"]
+[ext_resource type="PackedScene" path="res://src/gameplay/defences/wall_panel_garage_back.tscn" id="15_panel_garage_back"]
+[ext_resource type="PackedScene" path="res://src/gameplay/defences/wall_panel_garage_side.tscn" id="16_panel_garage_side"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_pad"]
+material = ExtResource("5_garage_floor")
+size = Vector3(12, 0.02, 10)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_garage_floor"]
+material = ExtResource("5_garage_floor")
+size = Vector2(12, 10)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_marking_dash"]
+material = ExtResource("6_marking")
+size = Vector2(1, 0.25)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_tank"]
+material = ExtResource("4_tower")
+top_radius = 4.0
+bottom_radius = 4.0
+height = 5.0
+radial_segments = 12
+rings = 0
+
+[sub_resource type="SphereMesh" id="SphereMesh_roof"]
+material = ExtResource("4_tower")
+radius = 4.0
+height = 1.4
+radial_segments = 12
+rings = 3
+is_hemisphere = true
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_platform"]
+material = ExtResource("4_tower")
+top_radius = 4.3
+bottom_radius = 4.3
+height = 0.3
+radial_segments = 12
+rings = 0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_band"]
+material = ExtResource("4_tower")
+top_radius = 4.06
+bottom_radius = 4.06
+height = 0.3
+radial_segments = 12
+rings = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_brace"]
+material = ExtResource("4_tower")
+size = Vector3(5, 0.12, 0.12)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_zone"]
+size = Vector3(29.4, 4, 27.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_corner_tower"]
+material = ExtResource("3_wall")
+size = Vector3(4.3, 6, 4.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_corner_tower"]
+size = Vector3(4.3, 6, 4.3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_leg"]
+material = ExtResource("4_tower")
+size = Vector3(0.6, 8, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_leg"]
+size = Vector3(0.6, 8, 0.6)
+
+[node name="Base" type="Node3D" node_paths=PackedStringArray("spawn_point", "spare_spawn_points", "zone", "pad", "beacon", "flag", "flag_seat", "color_meshes", "structures")]
+script = ExtResource("1_base")
+spawn_point = NodePath("SpareSpawnLeft")
+spare_spawn_points = [NodePath("SpareSpawnRight")]
+zone = NodePath("Zone")
+pad = NodePath("Pad")
+beacon = NodePath("WaterTower/Tank")
+flag = NodePath("Flag")
+flag_seat = NodePath("FlagSeat")
+color_meshes = [NodePath("Walls/TowerGateLeft/Mesh"), NodePath("Walls/TowerGateRight/Mesh"), NodePath("Walls/TowerBackLeft/Mesh"), NodePath("Walls/TowerBackRight/Mesh"), NodePath("Garage/Marking/Dash01"), NodePath("Garage/Marking/Dash02"), NodePath("Garage/Marking/Dash03"), NodePath("Garage/Marking/Dash04"), NodePath("Garage/Marking/Dash05"), NodePath("Garage/Marking/Dash06"), NodePath("Garage/Marking/Dash07"), NodePath("Garage/Marking/Dash08"), NodePath("Garage/Marking/Dash09"), NodePath("Garage/Marking/Dash10"), NodePath("Garage/Marking/Dash11"), NodePath("Garage/Marking/Dash12"), NodePath("Garage/Marking/Dash13"), NodePath("Garage/Marking/Dash14"), NodePath("WaterTower/Roof"), NodePath("Turrets/TurretLeft/Look/Head/Band"), NodePath("Turrets/TurretRight/Look/Head/Band")]
+structures = [NodePath("Defences/FlagWallGate"), NodePath("Defences/FlagWallGarage"), NodePath("Defences/FlagWallLeft"), NodePath("Defences/FlagWallRight"), NodePath("Turrets/TurretLeft"), NodePath("Turrets/TurretRight"), NodePath("Walls/WallBack/Panel1"), NodePath("Walls/WallBack/Panel2"), NodePath("Walls/WallBack/Panel3"), NodePath("Walls/WallBack/Panel4"), NodePath("Walls/WallBack/Panel5"), NodePath("Walls/WallBack/Panel6"), NodePath("Walls/WallBack/Panel7"), NodePath("Walls/WallBack/Panel8"), NodePath("Walls/WallLeft/Panel1"), NodePath("Walls/WallLeft/Panel2"), NodePath("Walls/WallLeft/Panel3"), NodePath("Walls/WallLeft/Panel4"), NodePath("Walls/WallLeft/Panel5"), NodePath("Walls/WallLeft/Panel6"), NodePath("Walls/WallLeft/Panel7"), NodePath("Walls/WallLeft/Panel8"), NodePath("Walls/WallRight/Panel1"), NodePath("Walls/WallRight/Panel2"), NodePath("Walls/WallRight/Panel3"), NodePath("Walls/WallRight/Panel4"), NodePath("Walls/WallRight/Panel5"), NodePath("Walls/WallRight/Panel6"), NodePath("Walls/WallRight/Panel7"), NodePath("Walls/WallRight/Panel8"), NodePath("Walls/GateWallLeft/Panel1"), NodePath("Walls/GateWallLeft/Panel2"), NodePath("Walls/GateWallLeft/Panel3"), NodePath("Walls/GateWallRight/Panel1"), NodePath("Walls/GateWallRight/Panel2"), NodePath("Walls/GateWallRight/Panel3"), NodePath("Garage/GarageBack/Panel1"), NodePath("Garage/GarageBack/Panel2"), NodePath("Garage/GarageBack/Panel3"), NodePath("Garage/GarageBack/Panel4"), NodePath("Garage/GarageSideLeft/Panel1"), NodePath("Garage/GarageSideLeft/Panel2"), NodePath("Garage/GarageSideLeft/Panel3"), NodePath("Garage/GarageSideRight/Panel1"), NodePath("Garage/GarageSideRight/Panel2"), NodePath("Garage/GarageSideRight/Panel3")]
+
+[node name="SpawnPoint" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
+
+[node name="SpareSpawnLeft" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 5)
+
+[node name="SpareSpawnRight" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 5)
+
+[node name="Pad" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.011, 7)
+visible = false
+cast_shadow = 0
+mesh = SubResource("BoxMesh_pad")
+
+[node name="Zone" type="Area3D" parent="."]
+collision_layer = 4
+collision_mask = 18
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Zone"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -0.15)
+shape = SubResource("BoxShape3D_zone")
+
+[node name="FlagSeat" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -7)
+
+[node name="Flag" parent="." instance=ExtResource("2_flag")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -7)
+
+[node name="Walls" type="Node3D" parent="."]
+
+[node name="WallBack" type="Node3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 14.35)
+
+[node name="Panel1" parent="Walls/WallBack" instance=ExtResource("12_panel_back")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.11875, 0, 0)
+
+[node name="Panel2" parent="Walls/WallBack" instance=ExtResource("12_panel_back")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.65625, 0, 0)
+
+[node name="Panel3" parent="Walls/WallBack" instance=ExtResource("12_panel_back")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19375, 0, 0)
+
+[node name="Panel4" parent="Walls/WallBack" instance=ExtResource("12_panel_back")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.73125, 0, 0)
+
+[node name="Panel5" parent="Walls/WallBack" instance=ExtResource("12_panel_back")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.73125, 0, 0)
+
+[node name="Panel6" parent="Walls/WallBack" instance=ExtResource("12_panel_back")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.19375, 0, 0)
+
+[node name="Panel7" parent="Walls/WallBack" instance=ExtResource("12_panel_back")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.65625, 0, 0)
+
+[node name="Panel8" parent="Walls/WallBack" instance=ExtResource("12_panel_back")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.11875, 0, 0)
+
+[node name="WallLeft" type="Node3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.35, 0, 0)
+
+[node name="Panel1" parent="Walls/WallLeft" instance=ExtResource("13_panel_side")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -11.24375)
+
+[node name="Panel2" parent="Walls/WallLeft" instance=ExtResource("13_panel_side")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -8.03125)
+
+[node name="Panel3" parent="Walls/WallLeft" instance=ExtResource("13_panel_side")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4.81875)
+
+[node name="Panel4" parent="Walls/WallLeft" instance=ExtResource("13_panel_side")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.60625)
+
+[node name="Panel5" parent="Walls/WallLeft" instance=ExtResource("13_panel_side")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.60625)
+
+[node name="Panel6" parent="Walls/WallLeft" instance=ExtResource("13_panel_side")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.81875)
+
+[node name="Panel7" parent="Walls/WallLeft" instance=ExtResource("13_panel_side")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8.03125)
+
+[node name="Panel8" parent="Walls/WallLeft" instance=ExtResource("13_panel_side")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 11.24375)
+
+[node name="WallRight" type="Node3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.35, 0, 0)
+
+[node name="Panel1" parent="Walls/WallRight" instance=ExtResource("13_panel_side")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -11.24375)
+
+[node name="Panel2" parent="Walls/WallRight" instance=ExtResource("13_panel_side")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -8.03125)
+
+[node name="Panel3" parent="Walls/WallRight" instance=ExtResource("13_panel_side")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4.81875)
+
+[node name="Panel4" parent="Walls/WallRight" instance=ExtResource("13_panel_side")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.60625)
+
+[node name="Panel5" parent="Walls/WallRight" instance=ExtResource("13_panel_side")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.60625)
+
+[node name="Panel6" parent="Walls/WallRight" instance=ExtResource("13_panel_side")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.81875)
+
+[node name="Panel7" parent="Walls/WallRight" instance=ExtResource("13_panel_side")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8.03125)
+
+[node name="Panel8" parent="Walls/WallRight" instance=ExtResource("13_panel_side")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 11.24375)
+
+[node name="GateWallLeft" type="Node3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.675, 0, -14.35)
+
+[node name="Panel1" parent="Walls/GateWallLeft" instance=ExtResource("14_panel_gate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.78333, 0, 0)
+
+[node name="Panel2" parent="Walls/GateWallLeft" instance=ExtResource("14_panel_gate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Panel3" parent="Walls/GateWallLeft" instance=ExtResource("14_panel_gate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.78333, 0, 0)
+
+[node name="GateWallRight" type="Node3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.675, 0, -14.35)
+
+[node name="Panel1" parent="Walls/GateWallRight" instance=ExtResource("14_panel_gate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.78333, 0, 0)
+
+[node name="Panel2" parent="Walls/GateWallRight" instance=ExtResource("14_panel_gate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Panel3" parent="Walls/GateWallRight" instance=ExtResource("14_panel_gate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.78333, 0, 0)
+
+[node name="TowerGateLeft" type="StaticBody3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 3, -15)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="Walls/TowerGateLeft"]
+mesh = SubResource("BoxMesh_corner_tower")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/TowerGateLeft"]
+shape = SubResource("BoxShape3D_corner_tower")
+
+[node name="Trim" type="MeshInstance3D" parent="Walls/TowerGateLeft"]
+material_override = ExtResource("11_prop_neutral")
+script = ExtResource("9_prop_mesh")
+mesh_file = ExtResource("10_base_trim")
+mesh_name = &"TowerTrim"
+
+[node name="TowerGateRight" type="StaticBody3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 3, -15)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="Walls/TowerGateRight"]
+mesh = SubResource("BoxMesh_corner_tower")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/TowerGateRight"]
+shape = SubResource("BoxShape3D_corner_tower")
+
+[node name="Trim" type="MeshInstance3D" parent="Walls/TowerGateRight"]
+material_override = ExtResource("11_prop_neutral")
+script = ExtResource("9_prop_mesh")
+mesh_file = ExtResource("10_base_trim")
+mesh_name = &"TowerTrim"
+
+[node name="TowerBackLeft" type="StaticBody3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 3, 15)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="Walls/TowerBackLeft"]
+mesh = SubResource("BoxMesh_corner_tower")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/TowerBackLeft"]
+shape = SubResource("BoxShape3D_corner_tower")
+
+[node name="Trim" type="MeshInstance3D" parent="Walls/TowerBackLeft"]
+material_override = ExtResource("11_prop_neutral")
+script = ExtResource("9_prop_mesh")
+mesh_file = ExtResource("10_base_trim")
+mesh_name = &"TowerTrim"
+
+[node name="TowerBackRight" type="StaticBody3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 3, 15)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="Walls/TowerBackRight"]
+mesh = SubResource("BoxMesh_corner_tower")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/TowerBackRight"]
+shape = SubResource("BoxShape3D_corner_tower")
+
+[node name="Trim" type="MeshInstance3D" parent="Walls/TowerBackRight"]
+material_override = ExtResource("11_prop_neutral")
+script = ExtResource("9_prop_mesh")
+mesh_file = ExtResource("10_base_trim")
+mesh_name = &"TowerTrim"
+
+[node name="Garage" type="Node3D" parent="."]
+
+[node name="GarageFloor" type="MeshInstance3D" parent="Garage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 7)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_garage_floor")
+
+[node name="GarageBack" type="Node3D" parent="Garage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12.5)
+
+[node name="Panel1" parent="Garage/GarageBack" instance=ExtResource("15_panel_garage_back")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.25, 0, 0)
+
+[node name="Panel2" parent="Garage/GarageBack" instance=ExtResource("15_panel_garage_back")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.75, 0, 0)
+
+[node name="Panel3" parent="Garage/GarageBack" instance=ExtResource("15_panel_garage_back")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.75, 0, 0)
+
+[node name="Panel4" parent="Garage/GarageBack" instance=ExtResource("15_panel_garage_back")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.25, 0, 0)
+
+[node name="GarageSideLeft" type="Node3D" parent="Garage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.5, 0, 7)
+
+[node name="Panel1" parent="Garage/GarageSideLeft" instance=ExtResource("16_panel_garage_side")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3.3333333)
+
+[node name="Panel2" parent="Garage/GarageSideLeft" instance=ExtResource("16_panel_garage_side")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Panel3" parent="Garage/GarageSideLeft" instance=ExtResource("16_panel_garage_side")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.3333333)
+
+[node name="GarageSideRight" type="Node3D" parent="Garage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 0, 7)
+
+[node name="Panel1" parent="Garage/GarageSideRight" instance=ExtResource("16_panel_garage_side")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3.3333333)
+
+[node name="Panel2" parent="Garage/GarageSideRight" instance=ExtResource("16_panel_garage_side")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Panel3" parent="Garage/GarageSideRight" instance=ExtResource("16_panel_garage_side")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.3333333)
+
+[node name="Marking" type="Node3D" parent="Garage"]
+
+[node name="Dash01" type="MeshInstance3D" parent="Garage/Marking"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 0.02, 1.8)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_marking_dash")
+
+[node name="Dash02" type="MeshInstance3D" parent="Garage/Marking"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 0.02, 1.8)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_marking_dash")
+
+[node name="Dash03" type="MeshInstance3D" parent="Garage/Marking"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 0.02, 1.8)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_marking_dash")
+
+[node name="Dash04" type="MeshInstance3D" parent="Garage/Marking"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 0.02, 1.8)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_marking_dash")
+
+[node name="Dash05" type="MeshInstance3D" parent="Garage/Marking"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 3.2, 0.02, 1)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_marking_dash")
+
+[node name="Dash06" type="MeshInstance3D" parent="Garage/Marking"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 3.2, 0.02, -0.6)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_marking_dash")
+
+[node name="Dash07" type="MeshInstance3D" parent="Garage/Marking"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 3.2, 0.02, -2.2)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_marking_dash")
+
+[node name="Dash08" type="MeshInstance3D" parent="Garage/Marking"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 0.02, -3)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_marking_dash")
+
+[node name="Dash09" type="MeshInstance3D" parent="Garage/Marking"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 0.02, -3)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_marking_dash")
+
+[node name="Dash10" type="MeshInstance3D" parent="Garage/Marking"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 0.02, -3)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_marking_dash")
+
+[node name="Dash11" type="MeshInstance3D" parent="Garage/Marking"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 0.02, -3)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_marking_dash")
+
+[node name="Dash12" type="MeshInstance3D" parent="Garage/Marking"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -3.2, 0.02, -2.2)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_marking_dash")
+
+[node name="Dash13" type="MeshInstance3D" parent="Garage/Marking"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -3.2, 0.02, -0.6)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_marking_dash")
+
+[node name="Dash14" type="MeshInstance3D" parent="Garage/Marking"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -3.2, 0.02, 1)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_marking_dash")
+
+[node name="WaterTower" type="Node3D" parent="."]
+
+[node name="Tank" type="MeshInstance3D" parent="WaterTower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.8, -7)
+layers = 2
+mesh = SubResource("CylinderMesh_tank")
+
+[node name="Roof" type="MeshInstance3D" parent="WaterTower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13.3, -7)
+layers = 2
+mesh = SubResource("SphereMesh_roof")
+
+[node name="Platform" type="MeshInstance3D" parent="WaterTower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.15, -7)
+layers = 2
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_platform")
+
+[node name="Band" type="MeshInstance3D" parent="WaterTower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13.13, -7)
+layers = 2
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_band")
+
+[node name="LegGateLeft" type="StaticBody3D" parent="WaterTower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 4, -9)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="WaterTower/LegGateLeft"]
+mesh = SubResource("BoxMesh_leg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WaterTower/LegGateLeft"]
+shape = SubResource("BoxShape3D_leg")
+
+[node name="LegGateRight" type="StaticBody3D" parent="WaterTower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 4, -9)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="WaterTower/LegGateRight"]
+mesh = SubResource("BoxMesh_leg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WaterTower/LegGateRight"]
+shape = SubResource("BoxShape3D_leg")
+
+[node name="Ladder" type="MeshInstance3D" parent="WaterTower"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 2, 0, -9.36)
+material_override = ExtResource("11_prop_neutral")
+script = ExtResource("9_prop_mesh")
+mesh_file = ExtResource("10_base_trim")
+mesh_name = &"WaterTowerLadder"
+
+[node name="LegGarageLeft" type="StaticBody3D" parent="WaterTower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 4, -5)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="WaterTower/LegGarageLeft"]
+mesh = SubResource("BoxMesh_leg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WaterTower/LegGarageLeft"]
+shape = SubResource("BoxShape3D_leg")
+
+[node name="LegGarageRight" type="StaticBody3D" parent="WaterTower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 4, -5)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="WaterTower/LegGarageRight"]
+mesh = SubResource("BoxMesh_leg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WaterTower/LegGarageRight"]
+shape = SubResource("BoxShape3D_leg")
+
+[node name="Braces" type="Node3D" parent="WaterTower"]
+
+[node name="BraceGate1" type="MeshInstance3D" parent="WaterTower/Braces"]
+transform = Transform3D(0.8, -0.6, 0, 0.6, 0.8, 0, 0, 0, 1, 0, 4.9, -9)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_brace")
+
+[node name="BraceGate2" type="MeshInstance3D" parent="WaterTower/Braces"]
+transform = Transform3D(0.8, 0.6, 0, -0.6, 0.8, 0, 0, 0, 1, 0, 4.9, -9)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_brace")
+
+[node name="BraceGarage1" type="MeshInstance3D" parent="WaterTower/Braces"]
+transform = Transform3D(0.8, -0.6, 0, 0.6, 0.8, 0, 0, 0, 1, 0, 4.9, -5)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_brace")
+
+[node name="BraceGarage2" type="MeshInstance3D" parent="WaterTower/Braces"]
+transform = Transform3D(0.8, 0.6, 0, -0.6, 0.8, 0, 0, 0, 1, 0, 4.9, -5)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_brace")
+
+[node name="BraceLeft1" type="MeshInstance3D" parent="WaterTower/Braces"]
+transform = Transform3D(0, 0, -1, 0.6, 0.8, 0, 0.8, -0.6, 0, -2, 4.9, -7)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_brace")
+
+[node name="BraceLeft2" type="MeshInstance3D" parent="WaterTower/Braces"]
+transform = Transform3D(0, 0, -1, -0.6, 0.8, 0, 0.8, 0.6, 0, -2, 4.9, -7)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_brace")
+
+[node name="BraceRight1" type="MeshInstance3D" parent="WaterTower/Braces"]
+transform = Transform3D(0, 0, -1, 0.6, 0.8, 0, 0.8, -0.6, 0, 2, 4.9, -7)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_brace")
+
+[node name="BraceRight2" type="MeshInstance3D" parent="WaterTower/Braces"]
+transform = Transform3D(0, 0, -1, -0.6, 0.8, 0, 0.8, 0.6, 0, 2, 4.9, -7)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_brace")
+
+[node name="Defences" type="Node3D" parent="."]
+
+[node name="FlagWallGate" parent="Defences" instance=ExtResource("7_flag_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -8.8)
+
+[node name="FlagWallGarage" parent="Defences" instance=ExtResource("7_flag_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5.2)
+
+[node name="FlagWallLeft" parent="Defences" instance=ExtResource("7_flag_wall")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -1.8, 0, -7)
+
+[node name="FlagWallRight" parent="Defences" instance=ExtResource("7_flag_wall")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 1.8, 0, -7)
+
+[node name="Turrets" type="Node3D" parent="."]
+
+[node name="TurretLeft" parent="Turrets" instance=ExtResource("8_turret")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -19)
+
+[node name="TurretRight" parent="Turrets" instance=ExtResource("8_turret")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -19)

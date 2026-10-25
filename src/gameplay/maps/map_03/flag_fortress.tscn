@@ -32,6 +32,8 @@
 
 [ext_resource type="PackedScene" path="res://src/gameplay/defences/wall_panel_garage_side.tscn" id="16_panel_garage_side"]
 
+[ext_resource type="PackedScene" path="res://src/gameplay/defences/wall_panel_corner.tscn" id="17_panel_corner"]
+
 [sub_resource type="BoxMesh" id="BoxMesh_pad"]
 material = ExtResource("5_garage_floor")
 size = Vector3(12, 0.02, 10)
@@ -82,13 +84,6 @@ size = Vector3(5, 0.12, 0.12)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_zone"]
 size = Vector3(29.4, 4, 27.5)
-
-[sub_resource type="BoxMesh" id="BoxMesh_corner_tower"]
-material = ExtResource("3_wall")
-size = Vector3(4.3, 6, 4.3)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_corner_tower"]
-size = Vector3(4.3, 6, 4.3)
 
 [sub_resource type="BoxMesh" id="BoxMesh_leg"]
 material = ExtResource("4_tower")
@@ -220,69 +215,19 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 [node name="Panel3" parent="Walls/GateWallRight" instance=ExtResource("14_panel_gate")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.78333, 0, 0)
 
-[node name="TowerGateLeft" type="StaticBody3D" parent="Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 3, -15)
-collision_mask = 0
+[node name="Corners" type="Node3D" parent="Walls"]
 
-[node name="Mesh" type="MeshInstance3D" parent="Walls/TowerGateLeft"]
-mesh = SubResource("BoxMesh_corner_tower")
+[node name="CornerGateLeft" parent="Walls/Corners" instance=ExtResource("17_panel_corner")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.925, 0, -13.925)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/TowerGateLeft"]
-shape = SubResource("BoxShape3D_corner_tower")
+[node name="CornerGateRight" parent="Walls/Corners" instance=ExtResource("17_panel_corner")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.925, 0, -13.925)
 
-[node name="Trim" type="MeshInstance3D" parent="Walls/TowerGateLeft"]
-material_override = ExtResource("11_prop_neutral")
-script = ExtResource("9_prop_mesh")
-mesh_file = ExtResource("10_base_trim")
-mesh_name = &"TowerTrim"
+[node name="CornerBackLeft" parent="Walls/Corners" instance=ExtResource("17_panel_corner")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.925, 0, 13.925)
 
-[node name="TowerGateRight" type="StaticBody3D" parent="Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 3, -15)
-collision_mask = 0
-
-[node name="Mesh" type="MeshInstance3D" parent="Walls/TowerGateRight"]
-mesh = SubResource("BoxMesh_corner_tower")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/TowerGateRight"]
-shape = SubResource("BoxShape3D_corner_tower")
-
-[node name="Trim" type="MeshInstance3D" parent="Walls/TowerGateRight"]
-material_override = ExtResource("11_prop_neutral")
-script = ExtResource("9_prop_mesh")
-mesh_file = ExtResource("10_base_trim")
-mesh_name = &"TowerTrim"
-
-[node name="TowerBackLeft" type="StaticBody3D" parent="Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 3, 15)
-collision_mask = 0
-
-[node name="Mesh" type="MeshInstance3D" parent="Walls/TowerBackLeft"]
-mesh = SubResource("BoxMesh_corner_tower")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/TowerBackLeft"]
-shape = SubResource("BoxShape3D_corner_tower")
-
-[node name="Trim" type="MeshInstance3D" parent="Walls/TowerBackLeft"]
-material_override = ExtResource("11_prop_neutral")
-script = ExtResource("9_prop_mesh")
-mesh_file = ExtResource("10_base_trim")
-mesh_name = &"TowerTrim"
-
-[node name="TowerBackRight" type="StaticBody3D" parent="Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 3, 15)
-collision_mask = 0
-
-[node name="Mesh" type="MeshInstance3D" parent="Walls/TowerBackRight"]
-mesh = SubResource("BoxMesh_corner_tower")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/TowerBackRight"]
-shape = SubResource("BoxShape3D_corner_tower")
-
-[node name="Trim" type="MeshInstance3D" parent="Walls/TowerBackRight"]
-material_override = ExtResource("11_prop_neutral")
-script = ExtResource("9_prop_mesh")
-mesh_file = ExtResource("10_base_trim")
-mesh_name = &"TowerTrim"
+[node name="CornerBackRight" parent="Walls/Corners" instance=ExtResource("17_panel_corner")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.925, 0, 13.925)
 
 [node name="WaterTower" type="Node3D" parent="."]
 

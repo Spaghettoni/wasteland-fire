@@ -589,7 +589,7 @@ func _apply_deliveries(may_act: Array[bool]) -> void:
 		var flag_index: int = _flags.carried_flag(player_index)
 		if flag_index == FlagRules.NONE or not may_act[player_index]:
 			continue
-		if not _flags.is_in_flag_zone(player_index):
+		if not _flags.is_in_own_zone(player_index):
 			continue
 		if flag_index == _teams[player_index]:
 			_flags.reseat(player_index)

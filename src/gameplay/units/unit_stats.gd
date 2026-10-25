@@ -132,6 +132,18 @@ extends Resource
 ## whose .tres has no line cannot turn at a standstill, as before Story 009.
 @export_range(0.0, 10.0, 0.01, "or_greater", "suffix:rad/s") var spot_turn_rate: float = 0.0
 
+## The turn on the spot picks up speed (Story 056; Martin, 2026-10-25: "je tazke mierit ked stojis teraz,
+## kedze sa vozidla rychlo otacaju ... ked stlacis, zacne sa otacat pomaly a za nejaky cas to naberie
+## rychlost"): a steer held while the Unit turns on the spot starts at spot_turn_start_share of the spot
+## rate and rises evenly to the whole of it over spot_turn_ramp_seconds; a release, or a steer the other
+## way, starts it over. A tap turns a little, a held steer turns fast. Zero seconds, the default, is no
+## ramp: the whole rate at once, as before. A rolling Unit's turn has no ramp.
+@export_range(0.0, 5.0, 0.01, "or_greater", "suffix:s") var spot_turn_ramp_seconds: float = 0.0
+
+## The share of spot_turn_rate a turn on the spot starts at (Story 056). Used while
+## spot_turn_ramp_seconds is above zero.
+@export_range(0.0, 1.0, 0.01) var spot_turn_start_share: float = 0.0
+
 ## Hit points a Unit of this type spawns with, and the most it can have (Story 003 AC-2). Damage
 ## takes them off (Unit.apply_damage()) and a Unit whose hit points reach zero is destroyed and
 ## leaves play. Zero by default, like every value here, so the tuned number lives in the .tres

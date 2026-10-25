@@ -6,8 +6,8 @@ extends RefCounted
 ##  A2 the sea: a Buggy driven north out of Orange's Garage island stops at the shore; a Gyrocopter driven the same way
 ##     flies on over the sea.
 ##  A3 a ford: a Buggy driven from the Garage island along the ford to the middle island reaches it.
-##  A4 the fortress: a Motorbike carrying Teal's Flag inside Orange's Garage zone wins nothing; inside Orange's fortress it wins
-##     the Round for Orange. The swap answers in the Garage and not in the fortress.
+##  A4 the Garage: a Motorbike carrying Teal's Flag inside Orange's fortress wins nothing; inside Orange's Garage it wins the
+##     Round for Orange (Story 057). The swap answers in the Garage and not in the fortress.
 ## Implements: production/epics/wasteland-fire/story-054-map-03-archipelago.md AC-1 to AC-5 and
 ## production/epics/wasteland-fire/story-053-garage-and-flag-fortress.md AC-1 to AC-3. Tooling only.
 ## Run: godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=map_03
@@ -98,7 +98,7 @@ func _check_map() -> void:
 		var in_garage: bool = base.zone.overlaps_body(_units[player])
 		var apart: float = base.zone.global_position.distance_to(base.flag_seat.global_position)
 		_kit.need(problems, in_garage, "Player %d did not start in its Garage" % (player + 1))
-		_kit.need(problems, base.flag_zone != null and base.delivery_zone() == base.flag_zone, "Player %d's Base has no flag zone" % (player + 1))
+		_kit.need(problems, base.flag_zone != null, "Player %d's Base has no fortress zone" % (player + 1))
 		_kit.need(problems, apart > FAR, "Player %d's Flag is %.0f m from its Garage" % [player + 1, apart])
 		lines.append("P%d Garage %s, Flag %.0f m away in %s" % [player + 1, _flat(base.global_position), apart, base.flag.get_parent().name])
 	var a: Vector3 = bases[0].flag_seat.global_position
@@ -151,21 +151,21 @@ func _check_fortress() -> void:
 	_h.place(_units[0], _facing(teal_seat, Vector3.FORWARD), _split.all_cameras()[0])
 	await _kit.advance(SETTLE)
 	var carrying: bool = _controller.is_carrying(0)
-	_h.place(_units[0], _facing(bases[0].zone.global_position, Vector3.FORWARD), _split.all_cameras()[0])
-	await _kit.advance(SETTLE)
-	var over_in_garage: bool = _controller.is_round_over()
 	var fortress: Vector3 = bases[0].flag_zone.global_position
 	_h.place(_units[0], _facing(fortress, Vector3.FORWARD), _split.all_cameras()[0])
 	await _kit.advance(SETTLE)
 	var swap_in_fortress: bool = _controller.can_swap(0)
+	var over_in_fortress: bool = _controller.is_round_over()
+	_h.place(_units[0], _facing(bases[0].zone.global_position, Vector3.FORWARD), _split.all_cameras()[0])
+	await _kit.advance(SETTLE)
 	var over: bool = _controller.is_round_over()
 	var winner: int = _controller.winner_index()
 	_kit.need(problems, swap_in_garage and not swap_in_fortress, "swap in the Garage %s, in the fortress %s" % [swap_in_garage, swap_in_fortress])
 	_kit.need(problems, carrying, "the Motorbike did not take Teal's Flag in Teal's fortress")
-	_kit.need(problems, not over_in_garage, "the Round ended in Orange's Garage")
-	_kit.need(problems, over and winner == 0, "in Orange's fortress: over %s, winner %d" % [over, winner])
-	_kit.verdict("A4_the_fortress", problems, "swap in the Garage %s, in the fortress %s; Teal's Flag taken %s; carried into Orange's Garage: over %s; into Orange's fortress: over %s, winner %d" % [
-		swap_in_garage, swap_in_fortress, carrying, over_in_garage, over, winner])
+	_kit.need(problems, not over_in_fortress, "the Round ended in Orange's fortress")
+	_kit.need(problems, over and winner == 0, "in Orange's Garage: over %s, winner %d" % [over, winner])
+	_kit.verdict("A4_the_garage", problems, "swap in the Garage %s, in the fortress %s; Teal's Flag taken %s; carried into Orange's fortress: over %s; into Orange's Garage: over %s, winner %d" % [
+		swap_in_garage, swap_in_fortress, carrying, over_in_fortress, over, winner])
 
 
 ## Puts the Player's Unit at a point facing a way, drives it straight for the ticks and returns where it ends, z.

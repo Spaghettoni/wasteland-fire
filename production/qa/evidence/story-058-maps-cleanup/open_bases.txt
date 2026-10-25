@@ -1,0 +1,7 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK open_bases O1_no_towers PASS Base1: towers 0, corner panels 4 (listed 4, painted 4); Base2: towers 0, corner panels 4 (listed 4, painted 4)
+CHECK open_bases O2_breakable_cover PASS 10 wrecks and containers are Structures, 10 in neutral_structures; 10 fell to 100000 damage; 10 stood again after R
+CHECK open_bases O3_round_water PASS FordWest: rectangle hidden true, pool of 40 points; FordEast: rectangle hidden true, pool of 40 points
+RESULT open_bases ok checks=3 failed=0 t=1.500 map=map_01.tscn
+exit=0

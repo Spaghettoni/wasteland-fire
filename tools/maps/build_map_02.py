@@ -20,6 +20,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from tscn import Scene, color, node_paths, num, packed_vec2, transform, vec2, vec3  # noqa: E402
+from shapes import pool_outline  # noqa: E402
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 OUT = os.path.join(ROOT, "src", "gameplay", "maps", "map_02")
@@ -67,6 +68,8 @@ PANEL_LENGTH = 3.0  # wall_panel_scrap.tscn is 3 m along its local z
 
 # The water at both ends of the passage: x0, z0, x1, z1 (the bottom one is the mirror image).
 WATER_NORTH = (108.0, 80.0, 135.0, 98.0)
+# The pool drawn over each is this much larger than its box, so its rounded edge covers the box's corners (Story 058).
+POOL_GROWTH = 1.25
 
 # Each Base: Map 01's compound Base, its Gate facing west (yaw 90; Martin, 2026-10-21: "aby otvor smeroval na zapad"), so its
 # Garage lies east of its Flag (the schematic of 2026-10-16 had it west; the Gate's side won).
@@ -331,12 +334,19 @@ def build_map():
                                                     "use_collision": "true", "collision_layer": 32, "collision_mask": 0,
                                                     "polygon": packed_vec2(to_local(points)), "depth": RIDGE_DEPTH, "material": ridge})
 
-    # The water at both ends of the passage: Map 01's ford (it slows ground Units), sized to the schematic.
+    # The water at both ends of the passage: Map 01's ford (it slows ground Units), sized to the schematic, its water drawn as a
+    # rounded pool instead of its rectangle (Story 058; Martin, 2026-10-25: "aby vodne mladky neboli hranate"): the pool is a
+    # little larger than the slowing box, its rounded ends running under the ridge and the canyon's rock.
+    scene.node("Pools", "Node3D", ".")
     for name, rect in (("WaterNorth", WATER_NORTH), ("WaterSouth", (WATER_NORTH[0], 2 * MIRROR_Z - WATER_NORTH[3], WATER_NORTH[2], 2 * MIRROR_Z - WATER_NORTH[1]))):
         x, z = sx_sz(((rect[0] + rect[2]) / 2.0, (rect[1] + rect[3]) / 2.0))
         scene.node(name, None, ".", {"transform": transform(x, 0, z)}, instance=ford)
         scene.node("CollisionShape3D", None, name, {"shape": water_shape})
-        scene.node("Water", None, name, {"mesh": water_mesh})
+        scene.node("Water", None, name, {"mesh": water_mesh, "visible": "false"})
+        size = (rect[2] - rect[0], rect[3] - rect[1])
+        outline = pool_outline((x, z), size[1] * POOL_GROWTH, size[0] * POOL_GROWTH, 0.0, seed=len(name))
+        scene.node(f"Pool{name}", "CSGPolygon3D", "Pools", {"transform": FLAT.format(x=0, y=0.0, z=0), "cast_shadow": 0,
+                                                            "polygon": packed_vec2(outline), "depth": 0.02, "material": ford_material})
         # Editable, or the export's binary scene drops the two overrides of the instance's children and the water is the ford's
         # own 12 x 40 m (measured on 4.7.2 from an exported pack, 2026-10-21; Martin saw it in the game).
         scene.editable(name)

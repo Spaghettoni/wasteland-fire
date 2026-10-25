@@ -132,6 +132,10 @@ Martin asked on 2026-10-21 to put Map 02, the schematic of 2026-10-16, into the 
 | 046 | Every wall breakable by both Players; a smaller Flag (1.9 m); every secondary bar white on grey (Martin, 2026-10-22) | Integration | In Progress | N/A (minimal) |
 | 047 | Canyon wall shadows no longer break off near the camera (Forward+); a check that a pad's B leaves the Round-over screen (Martin, 2026-10-22) | Visual/Feel | In Progress | N/A (minimal) |
 | 048 | Up to four Players in two Teams: Pick a side (join by moving a pad or a keyboard half), 1 v 1 to 2 v 2 and 3 v 1, four-way split, shared Base, Flag and Tokens, no friendly fire, Mines spare their Team (Martin, 2026-10-23) | Integration | In Progress | N/A (minimal) |
+| 058 | Water round or cut by the shore on every Map; Map 03's rocks and Map 01's wrecks and containers breakable (Martin, 2026-10-25) | Visual/Feel | In Progress | N/A (minimal) |
+| 057 | The Flag is delivered to the Garage, not the fortress (Martin, 2026-10-25) | Logic | In Progress | N/A (minimal) |
+| 056 | A turn on the spot starts slow and picks up speed in 0.5 s (Martin, 2026-10-25) | Logic | In Progress | N/A (minimal) |
+| 055 | No corner towers on any Base: low breakable corner panels in the Team colour (Martin, 2026-10-25) | Visual/Feel | In Progress | N/A (minimal) |
 | 054 | Map 03, the islands: five islands in the sea, Garage in one corner and the Flag to take in the opposite, shallows between them, built by `tools/maps/build_map_03.py`; a third card on the map choice (Martin, 2026-10-25) | Integration | In Progress | N/A (minimal) |
 | 053 | The Garage and the Flag fortress may be two places: a Flag is delivered to the fortress (Base.flag_zone), the Swap stays in the Garage (Martin, 2026-10-25) | Logic | In Progress | N/A (minimal) |
 | 052 | A Teammate's Unit in play holds a Token of its type: two Teammates can no longer both take a Team's last Motorbike, so the Team loses only when its last Motorbike falls (Martin, 2026-10-25) | Logic | In Progress | N/A (minimal) |

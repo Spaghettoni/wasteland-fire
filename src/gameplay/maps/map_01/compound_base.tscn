@@ -16,6 +16,7 @@
 [ext_resource type="PackedScene" path="res://src/gameplay/defences/wall_panel_gate.tscn" id="14_panel_gate"]
 [ext_resource type="PackedScene" path="res://src/gameplay/defences/wall_panel_garage_back.tscn" id="15_panel_garage_back"]
 [ext_resource type="PackedScene" path="res://src/gameplay/defences/wall_panel_garage_side.tscn" id="16_panel_garage_side"]
+[ext_resource type="PackedScene" path="res://src/gameplay/defences/wall_panel_corner.tscn" id="17_panel_corner"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_pad"]
 material = ExtResource("5_garage_floor")
@@ -68,13 +69,6 @@ size = Vector3(5, 0.12, 0.12)
 [sub_resource type="BoxShape3D" id="BoxShape3D_zone"]
 size = Vector3(29.4, 4, 27.5)
 
-[sub_resource type="BoxMesh" id="BoxMesh_corner_tower"]
-material = ExtResource("3_wall")
-size = Vector3(4.3, 6, 4.3)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_corner_tower"]
-size = Vector3(4.3, 6, 4.3)
-
 [sub_resource type="BoxMesh" id="BoxMesh_leg"]
 material = ExtResource("4_tower")
 size = Vector3(0.6, 8, 0.6)
@@ -91,8 +85,8 @@ pad = NodePath("Pad")
 beacon = NodePath("WaterTower/Tank")
 flag = NodePath("Flag")
 flag_seat = NodePath("FlagSeat")
-color_meshes = [NodePath("Walls/TowerGateLeft/Mesh"), NodePath("Walls/TowerGateRight/Mesh"), NodePath("Walls/TowerBackLeft/Mesh"), NodePath("Walls/TowerBackRight/Mesh"), NodePath("Garage/Marking/Dash01"), NodePath("Garage/Marking/Dash02"), NodePath("Garage/Marking/Dash03"), NodePath("Garage/Marking/Dash04"), NodePath("Garage/Marking/Dash05"), NodePath("Garage/Marking/Dash06"), NodePath("Garage/Marking/Dash07"), NodePath("Garage/Marking/Dash08"), NodePath("Garage/Marking/Dash09"), NodePath("Garage/Marking/Dash10"), NodePath("Garage/Marking/Dash11"), NodePath("Garage/Marking/Dash12"), NodePath("Garage/Marking/Dash13"), NodePath("Garage/Marking/Dash14"), NodePath("WaterTower/Roof"), NodePath("Turrets/TurretLeft/Look/Head/Band"), NodePath("Turrets/TurretRight/Look/Head/Band")]
-structures = [NodePath("Defences/FlagWallGate"), NodePath("Defences/FlagWallGarage"), NodePath("Defences/FlagWallLeft"), NodePath("Defences/FlagWallRight"), NodePath("Turrets/TurretLeft"), NodePath("Turrets/TurretRight"), NodePath("Walls/WallBack/Panel1"), NodePath("Walls/WallBack/Panel2"), NodePath("Walls/WallBack/Panel3"), NodePath("Walls/WallBack/Panel4"), NodePath("Walls/WallBack/Panel5"), NodePath("Walls/WallBack/Panel6"), NodePath("Walls/WallBack/Panel7"), NodePath("Walls/WallBack/Panel8"), NodePath("Walls/WallLeft/Panel1"), NodePath("Walls/WallLeft/Panel2"), NodePath("Walls/WallLeft/Panel3"), NodePath("Walls/WallLeft/Panel4"), NodePath("Walls/WallLeft/Panel5"), NodePath("Walls/WallLeft/Panel6"), NodePath("Walls/WallLeft/Panel7"), NodePath("Walls/WallLeft/Panel8"), NodePath("Walls/WallRight/Panel1"), NodePath("Walls/WallRight/Panel2"), NodePath("Walls/WallRight/Panel3"), NodePath("Walls/WallRight/Panel4"), NodePath("Walls/WallRight/Panel5"), NodePath("Walls/WallRight/Panel6"), NodePath("Walls/WallRight/Panel7"), NodePath("Walls/WallRight/Panel8"), NodePath("Walls/GateWallLeft/Panel1"), NodePath("Walls/GateWallLeft/Panel2"), NodePath("Walls/GateWallLeft/Panel3"), NodePath("Walls/GateWallRight/Panel1"), NodePath("Walls/GateWallRight/Panel2"), NodePath("Walls/GateWallRight/Panel3"), NodePath("Garage/GarageBack/Panel1"), NodePath("Garage/GarageBack/Panel2"), NodePath("Garage/GarageBack/Panel3"), NodePath("Garage/GarageBack/Panel4"), NodePath("Garage/GarageSideLeft/Panel1"), NodePath("Garage/GarageSideLeft/Panel2"), NodePath("Garage/GarageSideLeft/Panel3"), NodePath("Garage/GarageSideRight/Panel1"), NodePath("Garage/GarageSideRight/Panel2"), NodePath("Garage/GarageSideRight/Panel3")]
+color_meshes = [NodePath("Garage/Marking/Dash01"), NodePath("Garage/Marking/Dash02"), NodePath("Garage/Marking/Dash03"), NodePath("Garage/Marking/Dash04"), NodePath("Garage/Marking/Dash05"), NodePath("Garage/Marking/Dash06"), NodePath("Garage/Marking/Dash07"), NodePath("Garage/Marking/Dash08"), NodePath("Garage/Marking/Dash09"), NodePath("Garage/Marking/Dash10"), NodePath("Garage/Marking/Dash11"), NodePath("Garage/Marking/Dash12"), NodePath("Garage/Marking/Dash13"), NodePath("Garage/Marking/Dash14"), NodePath("Walls/Corners/CornerGateLeft/Mesh"), NodePath("Walls/Corners/CornerGateRight/Mesh"), NodePath("Walls/Corners/CornerBackLeft/Mesh"), NodePath("Walls/Corners/CornerBackRight/Mesh"), NodePath("WaterTower/Roof"), NodePath("Turrets/TurretLeft/Look/Head/Band"), NodePath("Turrets/TurretRight/Look/Head/Band")]
+structures = [NodePath("Defences/FlagWallGate"), NodePath("Defences/FlagWallGarage"), NodePath("Defences/FlagWallLeft"), NodePath("Defences/FlagWallRight"), NodePath("Turrets/TurretLeft"), NodePath("Turrets/TurretRight"), NodePath("Walls/WallBack/Panel1"), NodePath("Walls/WallBack/Panel2"), NodePath("Walls/WallBack/Panel3"), NodePath("Walls/WallBack/Panel4"), NodePath("Walls/WallBack/Panel5"), NodePath("Walls/WallBack/Panel6"), NodePath("Walls/WallBack/Panel7"), NodePath("Walls/WallBack/Panel8"), NodePath("Walls/WallLeft/Panel1"), NodePath("Walls/WallLeft/Panel2"), NodePath("Walls/WallLeft/Panel3"), NodePath("Walls/WallLeft/Panel4"), NodePath("Walls/WallLeft/Panel5"), NodePath("Walls/WallLeft/Panel6"), NodePath("Walls/WallLeft/Panel7"), NodePath("Walls/WallLeft/Panel8"), NodePath("Walls/WallRight/Panel1"), NodePath("Walls/WallRight/Panel2"), NodePath("Walls/WallRight/Panel3"), NodePath("Walls/WallRight/Panel4"), NodePath("Walls/WallRight/Panel5"), NodePath("Walls/WallRight/Panel6"), NodePath("Walls/WallRight/Panel7"), NodePath("Walls/WallRight/Panel8"), NodePath("Walls/GateWallLeft/Panel1"), NodePath("Walls/GateWallLeft/Panel2"), NodePath("Walls/GateWallLeft/Panel3"), NodePath("Walls/GateWallRight/Panel1"), NodePath("Walls/GateWallRight/Panel2"), NodePath("Walls/GateWallRight/Panel3"), NodePath("Garage/GarageBack/Panel1"), NodePath("Garage/GarageBack/Panel2"), NodePath("Garage/GarageBack/Panel3"), NodePath("Garage/GarageBack/Panel4"), NodePath("Garage/GarageSideLeft/Panel1"), NodePath("Garage/GarageSideLeft/Panel2"), NodePath("Garage/GarageSideLeft/Panel3"), NodePath("Garage/GarageSideRight/Panel1"), NodePath("Garage/GarageSideRight/Panel2"), NodePath("Garage/GarageSideRight/Panel3"), NodePath("Walls/Corners/CornerGateLeft"), NodePath("Walls/Corners/CornerGateRight"), NodePath("Walls/Corners/CornerBackLeft"), NodePath("Walls/Corners/CornerBackRight")]
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
@@ -230,69 +224,19 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 [node name="Panel3" parent="Walls/GateWallRight" instance=ExtResource("14_panel_gate")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.78333, 0, 0)
 
-[node name="TowerGateLeft" type="StaticBody3D" parent="Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 3, -15)
-collision_mask = 0
+[node name="Corners" type="Node3D" parent="Walls"]
 
-[node name="Mesh" type="MeshInstance3D" parent="Walls/TowerGateLeft"]
-mesh = SubResource("BoxMesh_corner_tower")
+[node name="CornerGateLeft" parent="Walls/Corners" instance=ExtResource("17_panel_corner")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.925, 0, -13.925)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/TowerGateLeft"]
-shape = SubResource("BoxShape3D_corner_tower")
+[node name="CornerGateRight" parent="Walls/Corners" instance=ExtResource("17_panel_corner")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.925, 0, -13.925)
 
-[node name="Trim" type="MeshInstance3D" parent="Walls/TowerGateLeft"]
-material_override = ExtResource("11_prop_neutral")
-script = ExtResource("9_prop_mesh")
-mesh_file = ExtResource("10_base_trim")
-mesh_name = &"TowerTrim"
+[node name="CornerBackLeft" parent="Walls/Corners" instance=ExtResource("17_panel_corner")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.925, 0, 13.925)
 
-[node name="TowerGateRight" type="StaticBody3D" parent="Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 3, -15)
-collision_mask = 0
-
-[node name="Mesh" type="MeshInstance3D" parent="Walls/TowerGateRight"]
-mesh = SubResource("BoxMesh_corner_tower")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/TowerGateRight"]
-shape = SubResource("BoxShape3D_corner_tower")
-
-[node name="Trim" type="MeshInstance3D" parent="Walls/TowerGateRight"]
-material_override = ExtResource("11_prop_neutral")
-script = ExtResource("9_prop_mesh")
-mesh_file = ExtResource("10_base_trim")
-mesh_name = &"TowerTrim"
-
-[node name="TowerBackLeft" type="StaticBody3D" parent="Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 3, 15)
-collision_mask = 0
-
-[node name="Mesh" type="MeshInstance3D" parent="Walls/TowerBackLeft"]
-mesh = SubResource("BoxMesh_corner_tower")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/TowerBackLeft"]
-shape = SubResource("BoxShape3D_corner_tower")
-
-[node name="Trim" type="MeshInstance3D" parent="Walls/TowerBackLeft"]
-material_override = ExtResource("11_prop_neutral")
-script = ExtResource("9_prop_mesh")
-mesh_file = ExtResource("10_base_trim")
-mesh_name = &"TowerTrim"
-
-[node name="TowerBackRight" type="StaticBody3D" parent="Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 3, 15)
-collision_mask = 0
-
-[node name="Mesh" type="MeshInstance3D" parent="Walls/TowerBackRight"]
-mesh = SubResource("BoxMesh_corner_tower")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/TowerBackRight"]
-shape = SubResource("BoxShape3D_corner_tower")
-
-[node name="Trim" type="MeshInstance3D" parent="Walls/TowerBackRight"]
-material_override = ExtResource("11_prop_neutral")
-script = ExtResource("9_prop_mesh")
-mesh_file = ExtResource("10_base_trim")
-mesh_name = &"TowerTrim"
+[node name="CornerBackRight" parent="Walls/Corners" instance=ExtResource("17_panel_corner")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.925, 0, 13.925)
 
 [node name="Garage" type="Node3D" parent="."]
 

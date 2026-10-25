@@ -84,7 +84,7 @@ The place at a Player's Base where the chosen Unit appears, at the start of a Ro
 _Avoid_: spawn point, hangar, depot, pad
 
 **Flag fortress (vlajková pevnosť)**:
-Where a Team's Flag stands and where that Team brings the other Team's Flag to win, when a Map puts it apart from the Garage (story 053; Martin 2026-10-25: "jedna vec je garaz a ina je vlajkova pevnost"). On Map 03 it is Map 01's compound without its Garage: walls, a Gate, two Turrets before it, the water tower and the Flag Walls round the Flag. On Map 01 and Map 02 the Base's compound is both the Garage and the fortress.
+Where a Team's Flag stands, when a Map puts it apart from the Garage (the other Team's Flag is brought to the Garage to win: story 057) (story 053; Martin 2026-10-25: "jedna vec je garaz a ina je vlajkova pevnost"). On Map 03 it is Map 01's compound without its Garage: walls with low breakable corners (no towers since story 055), a Gate, two Turrets before it, the water tower and the Flag Walls round the Flag. On Map 01 and Map 02 the Base's compound is both the Garage and the fortress.
 _Avoid_: castle, flag base, keep
 
 **Self-destruct**:
