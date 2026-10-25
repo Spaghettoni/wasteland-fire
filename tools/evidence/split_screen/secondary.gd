@@ -84,7 +84,8 @@ const BUSH_SIGHT_RADIUS: float = 1.9
 const CLOUD_AHEAD: float = 10.0
 const FLAG_AWAY: float = 12.0
 ## Where the bar stands since Story 045: the HUD band's second row, the Tokens line's place.
-const STATUS_TOP: float = 47.0
+## Since Story 051 the bar stands in the HUD's one row (it stood on the second row, y 47).
+const STATUS_TOP: float = 12.0
 ## X7: how far from a piece the Buggy fires, and for how long.
 const WALL_GAP: float = 6.0
 const WALL_FIRE_TICKS: int = 90

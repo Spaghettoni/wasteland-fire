@@ -1,0 +1,11 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK secondary X1_truck PASS Mines on the field [0, 1, 1, 2] (E, E at once, LT after the recharge); count 5 of 5; LT fired 0 Shots; Mines line shown false; bars ["Mine 1.00", "Mine 0.00", "Mine 0.50", "Mine 1.00"]
+CHECK secondary X2_nitro PASS Buggy top 19.60 m/s, with nitro 31.36, after 19.60, a press while recharging 19.60, ready 15 s on true; bars ["Boost 1.00", "Boost 0.74", "Boost 0.13", "Boost 1.00"]
+CHECK secondary X3_smoke PASS cloud 10.00 m ahead; Turret 20 m ahead: 3 Shots in the open, 0 while the cloud hung, 2 after it was gone; clouds: 0 from a press while recharging, 1 when ready, 0 after the restart; bars ["Smoke 1.00", "Smoke 0.00", "Smoke 1.00"]
+CHECK secondary X4_flag_drop PASS no Flag: bar '', 0 drops; picked up after 1 ticks, name 'Drop flag 1.00' (a bar drawn false); E: flag_dropped [1], DROPPED 1.70 m from the Motorbike, still dropped 0.5 s on true, bar ''; picked up again after being away: 1 ticks
+CHECK secondary X5_bushes PASS Map 02's Bushes all [1.4] times their scene, sight radius 2.66 m; a Motorbike in a Bush 15 m from a Turret: 0 Shots, the Bush standing true; 8 m out of it: 1 Shots
+CHECK secondary X7_walls PASS every wall of Map 01: ["flag_wall_stats.tres spares false"]; Player 1's Buggy firing at its own pieces: ["Panel1 40 -> 0", "TurretLeft 100 -> 100"]
+CHECK secondary X6_data PASS the Tokens line shown false, the bar at y 12 (its row); zones unshaded in their bars' colours: Depot/FuelZoneWest f5b32e (bar f5b32e), AmmoBuildingWest/AmmoZone 3d8bff (bar 3d8bff); LT ["lay_mine"], X bound false; nitro 2.0 s x 1.60, 15.0 s; smoke 15.0 s, 12 m, 3.0 s, 10 m ahead; Mines 15.0 s; Turret sight 416 / 256
+RESULT secondary ok checks=7 failed=0 t=66.400 arena=1
+exit=0

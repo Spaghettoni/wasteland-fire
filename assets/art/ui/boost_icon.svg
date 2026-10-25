@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- Boost: a flame. Repository art, story 051. -->
+  <g stroke="#0d0d0f" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M24 4 C30 14 40 20 38 32 C36 42 29 45 24 45 C17 45 10 41 10 31 C10 24 15 20 17 13 C21 18 21 22 22 24 C25 18 26 11 24 4 Z" fill="#ff8a1f"/>
+    <path d="M24 26 C28 31 30 34 29 38 C28 41 26 42 24 42 C21 42 19 40 19 37 C19 33 22 31 24 26 Z" fill="#ffe066"/>
+  </g>
+</svg>

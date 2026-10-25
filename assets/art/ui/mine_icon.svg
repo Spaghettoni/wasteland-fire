@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- Mine: the pancake seen from the side, with its light. Repository art, story 051. -->
+  <g stroke="#0d0d0f" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+    <ellipse cx="24" cy="32" rx="20" ry="8" fill="#5b616c"/>
+    <path d="M4 32 V27 C4 22 13 19 24 19 C35 19 44 22 44 27 V32" fill="#7a818d"/>
+    <ellipse cx="24" cy="26" rx="20" ry="7" fill="#9aa0aa"/>
+    <circle cx="24" cy="24" r="4" fill="#ff4a3d"/>
+  </g>
+</svg>

@@ -1,0 +1,9 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK resource_bars R1_data PASS motorbike 1.000 / 0.250 (was 2.000 / 0.500), tank 100; buggy 1.250 / 0.312 (was 2.500 / 0.625), tank 100; truck 1.500 / 0.375 (was 3.000 / 0.750), tank 100; gyrocopter 2.500 / 0.625 (was 5.000 / 1.250), tank 100
+CHECK resource_bars R2_burn PASS Motorbike, 600 ticks on W: 9.987 Fuel (10.000 at the new rate, 20.000 at the old); then 600 ticks standing: 4.000 (rates 1.000 and 0.250 per s): a full tank of 100 lasts 100 s driving, was 50 s
+CHECK resource_bars R3_band PASS p1 HitPointsBar(54,17:130x18) FuelIcon(194,12:28x28) FuelBar(224,17:90x18) AmmoIcon(324,12:28x28) AmmoBar(354,17:90x18); ammo 3d8bff, others 66d161, f5b32e, e67324, 2e9994; row labels [] | p2 HitPointsBar(54,17:130x18) FuelIcon(194,12:28x28) FuelBar(224,17:90x18) AmmoIcon(324,12:28x28) AmmoBar(354,17:90x18); ammo 3d8bff, others 66d161, f5b32e, e67324, 2e9994; row labels []
+CHECK resource_bars R4_follow PASS Fuel bars 85.88 and 94.86 of 100; Space for 30 ticks: p1 ammo bar 100 -> 97 (Weapon 97 of 100), p2 100 -> 100
+CHECK resource_bars R5_no_unit PASS capacity 0: bar and icon shown, bar empty true; load 100 back: filled true
+RESULT resource_bars ok checks=5 failed=0 t=20.550 burn_ticks=600
+exit=0

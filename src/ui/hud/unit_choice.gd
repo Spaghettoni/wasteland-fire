@@ -417,12 +417,13 @@ func _rebuild_slots(types: Array[UnitStats]) -> void:
 		_name_labels[type_index].text = tr(types[type_index].display_name)
 
 
-## Shows each slot's Tokens left in its count label and gives both of its labels the text colour
+## Shows each slot's Tokens free in its count label (tokens_free(), Story 052: the Team's Tokens
+## left less those its Teammates hold in play) and gives both of its labels the text colour
 ## of its state: normal_font_color while the Player can choose the type, dim_font_color when it
 ## cannot. Both colours are set on every call, and an override is never removed (the class doc).
 func _show_counts() -> void:
 	for type_index: int in _slot_panels.size():
-		var tokens: int = match_controller.tokens_left(player_index, type_index)
+		var tokens: int = match_controller.tokens_free(player_index, type_index)
 		var color: Color = normal_font_color
 		if not match_controller.can_choose(player_index, type_index):
 			color = dim_font_color
@@ -484,7 +485,7 @@ func _on_round_started() -> void:
 ## destruction is already taken, so the counts shown are the new ones. Another Player's destruction
 ## is not ours.
 func _on_unit_destroyed(destroyed_player_index: int) -> void:
-	if destroyed_player_index == player_index:
+	if _is_mine_or_teammate(destroyed_player_index):
 		_refresh()
 
 
@@ -492,19 +493,19 @@ func _on_unit_destroyed(destroyed_player_index: int) -> void:
 ## choice. No Token was taken, so the counts are the ones the Unit left with. Another Player's swap
 ## is not ours.
 func _on_unit_swapped(swapped_player_index: int) -> void:
-	if swapped_player_index == player_index:
+	if _is_mine_or_teammate(swapped_player_index):
 		_refresh()
 
 
 ## This Player chose: show the chosen type as ready. Another Player's choice is not ours.
 func _on_unit_chosen(chosen_player_index: int, _type_index: int) -> void:
-	if chosen_player_index == player_index:
+	if _is_mine_or_teammate(chosen_player_index):
 		_refresh()
 
 
 ## This Player's Unit appeared: nothing to choose, hide. Another Player's spawn is not ours.
 func _on_unit_spawned(spawned_player_index: int) -> void:
-	if spawned_player_index == player_index:
+	if _is_mine_or_teammate(spawned_player_index):
 		_refresh()
 
 
@@ -517,3 +518,10 @@ func _on_round_over(_winner_index: int) -> void:
 ## The cursor moved: the marked slot follows it. Emitted only while this Player is choosing.
 func _on_cursor_moved(_type_index: int) -> void:
 	_refresh()
+
+
+## True for this Player and for a Teammate (Story 052): a Teammate's Unit in play or chosen takes a
+## Token of its type from what this panel offers (MatchController.tokens_free()).
+func _is_mine_or_teammate(other_index: int) -> bool:
+	return other_index == player_index or (is_instance_valid(match_controller)
+		and match_controller.team_of(other_index) == match_controller.team_of(player_index))

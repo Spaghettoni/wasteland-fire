@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- Carrying the enemy Flag: a golden flag riding on a wheel. Repository art, story 051. -->
+  <g stroke="#0d0d0f" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M17 34 V5" fill="none"/>
+    <path d="M17 6 H40 L34 13 L40 20 H17 Z" fill="#ffd23d"/>
+    <circle cx="17" cy="37" r="8" fill="#3a3d44"/>
+    <circle cx="17" cy="37" r="2.5" fill="#c9cdd6"/>
+  </g>
+</svg>

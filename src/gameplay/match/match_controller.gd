@@ -471,12 +471,37 @@ func tokens_left(player_index: int, type_index: int) -> int:
 	return _ledger.count_of(team_of(player_index), stats.type_id) if stats != null else 0
 
 
-## True when the Player has a Token left of the Unit type at type_index: tokens_left() is above 0,
-## and nothing else. It does not look at the Round or at the Player's state (choose() does, and
-## refuses a type for which this is false), so a choice panel can ask it which types may be picked.
-## Read-only, no signal, safe in any handler, with the bounds of tokens_left().
+## The Tokens of the type at type_index the Player may still take (Story 052): its Team's
+## tokens_left() less one for each Teammate whose Unit of that type is in play, or who chose that
+## type and waits for it to appear. A Token is taken when a Unit is destroyed, never when it spawns,
+## so without this two Teammates could both take the Team's last Motorbike and the Team would lose
+## when the first of them fell, the other still driving (Martin, 2026-10-25: "obaja maju moto a
+## jedna z nich zomre, prehrali. To by tak nemalo byt. Az ked obe zomru"). With one Player in a Team
+## it is tokens_left(), as before. Read-only, no signal, with the bounds of tokens_left().
+func tokens_free(player_index: int, type_index: int) -> int:
+	var left: int = tokens_left(player_index, type_index)
+	if left <= 0:
+		return left
+	var types: Array[UnitStats] = unit_types()
+	var team: int = team_of(player_index)
+	for other: int in _units.size():
+		if other == player_index or team_of(other) != team:
+			continue
+		var takes: bool = chosen_type_index(other) == type_index
+		if not takes and is_alive(other) and is_instance_valid(_units[other]):
+			takes = _units[other].stats == types[type_index]
+		if takes:
+			left -= 1
+	return maxi(left, 0)
+
+
+## True when the Player may take a Unit of the type at type_index: tokens_free() is above 0 (since
+## Story 052; before it, tokens_left()), and nothing else. It does not look at the Round or at the
+## Player's state (choose() does, and refuses a type for which this is false), so a choice panel can
+## ask it which types may be picked. Read-only, no signal, safe in any handler, with the bounds of
+## tokens_left().
 func can_choose(player_index: int, type_index: int) -> bool:
-	return tokens_left(player_index, type_index) > 0
+	return tokens_free(player_index, type_index) > 0
 
 
 ## The index into unit_types() of the one Unit type that can carry the Flag, the Motorbike in the

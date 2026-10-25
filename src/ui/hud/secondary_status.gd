@@ -25,6 +25,13 @@ extends Control
 @export var flag_dropper: FlagDropper
 ## The name and the bar. Required.
 @export var name_label: Label
+## The picture shown for the secondary in play (Story 051: one row of icons). The name's Label keeps
+## its text, hidden, for the evidence. Optional: without it the name shows as before.
+@export var icon: TextureRect
+@export var boost_icon: Texture2D
+@export var smoke_icon: Texture2D
+@export var mine_icon: Texture2D
+@export var drop_icon: Texture2D
 @export var bar: ProgressBar
 @export var ready_style: StyleBox
 @export var charging_style: StyleBox
@@ -61,22 +68,27 @@ func _process(_delta: float) -> void:
 	var ready: bool = false
 	var with_bar: bool = true
 	var boost: bool = false
+	var picture: Texture2D = null
 	if flag_dropper != null and flag_dropper.can_drop():
 		label = drop_text
+		picture = drop_icon
 		charge = 1.0
 		ready = true
 		with_bar = false
 	elif nitro_booster != null and nitro_booster.state() != NitroBooster.State.NONE:
 		label = boost_text
+		picture = boost_icon
 		boost = true
 		charge = nitro_booster.charge()
 		ready = nitro_booster.state() == NitroBooster.State.READY
 	elif smoke_launcher != null and smoke_launcher.has_smoke():
 		label = smoke_text
+		picture = smoke_icon
 		charge = smoke_launcher.charge()
 		ready = smoke_launcher.is_ready()
 	elif mine_layer != null and mine_layer.recharges():
 		label = mine_text
+		picture = mine_icon
 		charge = mine_layer.charge()
 		ready = charge >= 1.0
 	visible = not label.is_empty()
@@ -84,8 +96,11 @@ func _process(_delta: float) -> void:
 		return
 	name_label.text = tr(label)
 	bar.visible = with_bar
-	# With no bar the name ends where the bar would, at the band's right edge.
-	name_label.offset_right = bar.offset_left - _GAP if with_bar else bar.offset_right
+	if icon != null and picture != null:
+		icon.texture = picture
+	else:
+		# With no bar the name ends where the bar would, at the band's right edge.
+		name_label.offset_right = bar.offset_left - _GAP if with_bar else bar.offset_right
 	bar.value = charge
 	var style: StyleBox = boost_fill_style if boost else (ready_style if ready else charging_style)
 	var back: StyleBox = boost_background_style if boost else background_style

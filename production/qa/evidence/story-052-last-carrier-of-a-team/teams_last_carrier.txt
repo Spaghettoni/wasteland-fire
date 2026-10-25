@@ -1,0 +1,6 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK teams_last_carrier R1_first_of_two_falls PASS Orange at 2 Motorbike Tokens, both on Motorbikes true; one destroyed: 1 left, the Round runs true, the Teammate drives true
+CHECK teams_last_carrier R2_teammates_token_held PASS the fallen Orange Player: Motorbike tokens_free 0, can_choose false, choose refused true, Buggy true; a Teal Player: Motorbike tokens_free 4 of 5 (its Teammate's held)
+CHECK teams_last_carrier R3_last_one_falls PASS the second Orange Motorbike destroyed: Orange Tokens 0, over true, winner 1 (Teal 1)
+RESULT teams_last_carrier ok checks=3 failed=0 t=11.000 players=4

@@ -128,6 +128,19 @@ extends Control
 ## the band, and the redraw when it changes size, with no change to this script. With edge_style
 ## null, the default, nothing is drawn: the look before Story 007.
 
+## One row (Story 051; Martin, 2026-10-25: "musime zmensit tie ui veci - health bar a tak, vsetko by
+## to malo byt v jednom riadku, aj boost a tak. to kde je vlajka by mala byt symbol vlajocka v doceku,
+## vlajocka uteka ... hp staci bar"; "Daj prosim este tu vlajku v ui uplne dolava"). Since then the
+## band is one row 16 to 624 px across, about 28 px tall: the Flag icon first (16 to 44), the
+## hit-point bar with no text on it (54 to 184), the Fuel icon and bar (194 to 314), the ammunition
+## icon and bar (324 to 444) and an empty SecondarySlot (458 to 624) that keeps the Team edge round
+## the SecondaryStatus drawn there beside this HUD. The Flag icon
+## is the status line in a picture: home_icon (the Flag in its dock), away_icon (the Flag running
+## off, red) or carrying_icon (a golden Flag on a wheel), each a different shape, not only a colour.
+## The hit-point line, the status line and the Tokens line are kept, hidden, with their texts, so the
+## text of each state is still data and still read by the evidence; layout and sizes are in
+## player_hud.tscn as before.
+
 ## The MatchController this HUD reads for the Flag status and the Tokens: the node that emits
 ## flag_picked_up, flag_dropped, flag_seated, round_started, unit_spawned and unit_destroyed and
 ## answers flag_status(), carrier_type_index(), unit_types() and tokens_left(). Required: without
@@ -194,6 +207,13 @@ extends Control
 ## team_teal_edge.tres. Optional: null, the default, draws nothing (the look before Story 007).
 @export var edge_style: StyleBox
 
+## The Flag icon's picture for each status (Story 051): own Flag at home, own Flag away, carrying the
+## enemy Flag. Optional: a HUD without a FlagIcon node, or with an icon unset, shows the status line
+## alone.
+@export var home_icon: Texture2D
+@export var away_icon: Texture2D
+@export var carrying_icon: Texture2D
+
 @onready var _bar: ProgressBar = %HitPointsBar
 @onready var _hit_points_label: Label = %HitPointsLabel
 @onready var _fuel_bar: ProgressBar = %FuelBar
@@ -203,6 +223,7 @@ extends Control
 @onready var _ammo_bar: ProgressBar = get_node_or_null(^"%AmmoBar") as ProgressBar
 @onready var _ammo_icon: Control = get_node_or_null(^"%AmmoIcon") as Control
 @onready var _status_label: Label = %FlagStatusLabel
+@onready var _flag_icon: TextureRect = get_node_or_null(^"%FlagIcon") as TextureRect
 @onready var _tokens_label: Label = %TokensLabel
 
 
@@ -231,6 +252,7 @@ func _ready() -> void:
 	if edge_style != null:
 		for element: Control in _band_elements():
 			element.resized.connect(queue_redraw)
+			element.visibility_changed.connect(queue_redraw)
 		queue_redraw()
 
 
@@ -262,7 +284,10 @@ func _band_elements() -> Array[Control]:
 func _band_rect() -> Rect2:
 	var band: Rect2 = _bar.get_rect()
 	for element: Control in _band_elements():
-		band = band.merge(element.get_rect())
+		# A hidden element (since Story 051 the hit-point, status and Tokens lines, kept for their
+		# text) does not stretch the edge.
+		if element.visible:
+			band = band.merge(element.get_rect())
 	return band
 
 
@@ -356,12 +381,17 @@ func _show_status() -> void:
 	if not is_instance_valid(match_controller):
 		return
 	var status: int = match_controller.flag_status(player_index)
+	var icon: Texture2D = home_icon
 	if status == MatchController.FlagStatus.CARRYING_ENEMY:
 		_status_label.text = tr(carrying_text)
+		icon = carrying_icon
 	elif status == MatchController.FlagStatus.OWN_AWAY:
 		_status_label.text = tr(away_text)
+		icon = away_icon
 	else:
 		_status_label.text = tr(home_text)
+	if _flag_icon != null and icon != null:
+		_flag_icon.texture = icon
 
 
 ## Shows the Player's Tokens of the carrier type (the class doc's Tokens line), or hides the line

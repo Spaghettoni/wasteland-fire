@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- Own Flag at home: the flag standing in its dock (a seat with two posts). Repository art, story 051. -->
+  <g stroke="#0d0d0f" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M5 30 V43 H43 V30" fill="none"/>
+    <rect x="5" y="38" width="38" height="5" fill="#9aa0aa"/>
+    <path d="M18 38 V6" fill="none"/>
+    <path d="M18 7 H36 L31 14 L36 21 H18 Z" fill="#ffffff"/>
+  </g>
+</svg>

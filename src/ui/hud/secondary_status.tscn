@@ -1,6 +1,10 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://src/ui/hud/secondary_status.gd" id="1_status"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/boost_icon.svg" id="2_boost"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/smoke_icon.svg" id="3_smoke"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/mine_icon.svg" id="4_mine"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/drop_flag_icon.svg" id="5_drop"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_boost_bg"]
 border_width_left = 2
@@ -26,17 +30,22 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
-[node name="SecondaryStatus" type="Control" node_paths=PackedStringArray("name_label", "bar")]
+[node name="SecondaryStatus" type="Control" node_paths=PackedStringArray("name_label", "icon", "bar")]
 visible = false
 layout_mode = 3
 anchors_preset = 0
-offset_left = 332.0
-offset_top = 47.0
+offset_left = 458.0
+offset_top = 12.0
 offset_right = 624.0
-offset_bottom = 75.0
+offset_bottom = 40.0
 mouse_filter = 2
 script = ExtResource("1_status")
 name_label = NodePath("Name")
+icon = NodePath("Icon")
+boost_icon = ExtResource("2_boost")
+smoke_icon = ExtResource("3_smoke")
+mine_icon = ExtResource("4_mine")
+drop_icon = ExtResource("5_drop")
 bar = NodePath("Bar")
 ready_style = SubResource("StyleBoxFlat_boost_fill")
 charging_style = SubResource("StyleBoxFlat_boost_fill")
@@ -49,9 +58,10 @@ mine_text = "Mine"
 drop_text = "Drop flag"
 
 [node name="Name" type="Label" parent="."]
+visible = false
 layout_mode = 0
-offset_right = 132.0
-offset_bottom = 28.0
+offset_right = 24.0
+offset_bottom = 24.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.06, 1)
@@ -62,13 +72,21 @@ vertical_alignment = 1
 
 [node name="Bar" type="ProgressBar" parent="."]
 layout_mode = 0
-offset_left = 142.0
-offset_top = 4.0
-offset_right = 292.0
-offset_bottom = 24.0
+offset_left = 34.0
+offset_top = 5.0
+offset_right = 166.0
+offset_bottom = 23.0
 mouse_filter = 2
 max_value = 1.0
 step = 0.0
 theme_override_styles/background = SubResource("StyleBoxFlat_boost_bg")
 theme_override_styles/fill = SubResource("StyleBoxFlat_boost_fill")
 show_percentage = false
+
+[node name="Icon" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 28.0
+offset_bottom = 28.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5

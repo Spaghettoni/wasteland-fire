@@ -26,6 +26,12 @@ friends at home.
   2 v 2 all work; with three or four Players the screen is split in four.
   A Team shares its Base, its Flag and its Tokens, and only the other Team
   hurts you (your Teammates' Shots and Mines do not).
+- The HUD is one row of bars and icons (story 051): a Flag icon first (in its
+  dock / running off / carried), hit points (a bar, no number), Fuel,
+  ammunition and the secondary weapon's icon and bar.
+- In a Team, a Teammate's Unit in play holds its Token (story 052): two
+  Teammates cannot both take the last Motorbike, so a Team loses only when its
+  last Motorbike falls.
 - More Tokens and a closer chase view (story 050): 7 / 4 / 3 / 3 per Team;
   the view from behind keeps the Unit low in the view, looks ahead, and in
   the four-way split draws Units as big as in a half.

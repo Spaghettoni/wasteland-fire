@@ -217,6 +217,14 @@ Martin, 2026-10-22: "drop flag nepotrebuje bar. a dajme prec tu info kolko ostav
 - The boost's bar is white on grey.
 - A Fuel zone's marking is the fuel bar's amber and an ammunition zone's the ammo bar's blue, both drawn flat (unshaded) so they read as the same colours.
 
+## The HUD in one row (2026-10-25)
+
+Martin, 2026-10-25: "musime zmensit tie ui veci - health bar a tak, vsetko by to malo byt v jednom riadku, aj boost a tak. to kde je vlajka by mala byt symbol vlajocka v doceku, vlajocka uteka. alebo nieco take. pre boost, minu, smoke drop dajme tiez ikonky. hp staci bar, nemusi byt aj pocet hp napisany." Built in story 051; it replaces story 045's second row.
+
+- One row across the top of each view: the Flag icon first (Martin, the same day: "Daj prosim este tu vlajku v ui uplne dolava"), the hit-point bar (no number on it), the Fuel icon and bar, the ammunition icon and bar, and the secondary weapon's icon with its bar (no bar for the Flag drop). The Team edge runs round that one row.
+- The Flag icon: the Flag in its dock (own Flag at home), the red Flag running off with speed lines (own Flag away), the golden Flag on a wheel (carrying the enemy Flag).
+- The secondary icons: a flame (Boost), a cloud (Smoke), the Mine's pancake (Mine), a Flag with an arrow down (Drop flag).
+
 ## Every wall for both sides; a smaller Flag; white bars (2026-10-22)
 
 Martin, 2026-10-22: "vlajka by mala byt mensia, prilis ju vidno v kricku", "truck aj gyro maju zlty bar, nie biely", "chcem aby uplne vsetky mury boli rovnake a znicitelne pre obe strany". Built in story 046; it replaces "a Player's own pieces still take no damage from that Player" (story 039) for walls.
@@ -231,7 +239,7 @@ Martin, 2026-10-23: "mozeme skusit spravit ten 4 player split screen? ideal aby 
 
 - The game opens on Pick a side. Each Player joins with a pad (left stick or D-pad) or a keyboard half (A / D, or the arrows) by moving left (Orange) or right (Teal); the same moves step a Player Orange, not playing, Teal. A, Space or Period makes a Player ready; B, Tab or Enter makes a ready Player not ready, or takes one who is not ready out. When both sides have a Player and everyone on a side is ready, the map choice opens.
 - Two to four Players: 1 v 1, 2 v 1, 3 v 1, 2 v 2. With three or four the screen is split in four: Orange's views on the left, Teal's on the right, a dark panel where a side has fewer Players.
-- A Team has one Base, one Flag and one Token stock: every Player of a Team spawns at its Garage, a destruction takes a Token from the Team, and the Team loses with its last Motorbike Token. Any Player can deliver the other Team's Flag to win; the Round-over screen names the winning Team.
+- A Team has one Base, one Flag and one Token stock: every Player of a Team spawns at its Garage, a destruction takes a Token from the Team, and the Team loses with its last Motorbike Token. A Teammate's Unit in play (or chosen and waiting to appear) holds a Token of its type, so a Player may take a type only while the Team has a Token of it that no Teammate holds (since 2026-10-25, story 052; Martin: "obaja maju moto a jedna z nich zomre, prehrali. To by tak nemalo byt. Az ked obe zomru": two Teammates could both take the Team's last Motorbike, and the Team lost when the first fell). The choice panel shows those free Tokens. Any Player can deliver the other Team's Flag to win; the Round-over screen names the winning Team.
 - Only the other Team hurts you: a Teammate's Shots and Mines leave you whole (a Mine goes off only under the other Team), your Team's Turrets never fire at you, and the other Team's Turrets fire at the nearest of your Team they can see. Walls still break under every Shot (story 046).
 
 ## A real flag (2026-10-22)

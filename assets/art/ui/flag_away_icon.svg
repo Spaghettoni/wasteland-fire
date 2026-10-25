@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- Own Flag away: the flag running off, leaning, with speed lines behind it. Repository art, story 051. -->
+  <g stroke="#0d0d0f" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M22 43 L30 7" fill="none"/>
+    <path d="M30 8 L45 12 L38 17 L42 24 L27 21 Z" fill="#ff4a3d"/>
+    <path d="M3 18 H15 M6 26 H18 M3 34 H14" fill="none"/>
+  </g>
+</svg>

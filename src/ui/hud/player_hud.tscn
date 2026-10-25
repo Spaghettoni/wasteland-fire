@@ -3,6 +3,9 @@
 [ext_resource type="Script" path="res://src/ui/hud/player_hud.gd" id="1_hud"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/fuel_icon.svg" id="2_fuel_icon"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/ammo_icon.svg" id="3_ammo_icon"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/flag_home_icon.svg" id="4_flag_home"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/flag_away_icon.svg" id="5_flag_away"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/flag_carrying_icon.svg" id="6_flag_carrying"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar_bg"]
 bg_color = Color(0.05, 0.05, 0.06, 0.75)
@@ -46,14 +49,17 @@ tokens_format = "%s Tokens: %d"
 carrying_text = "You carry the enemy Flag"
 home_text = "Your Flag is at home"
 away_text = "Your Flag is away"
+home_icon = ExtResource("4_flag_home")
+away_icon = ExtResource("5_flag_away")
+carrying_icon = ExtResource("6_flag_carrying")
 
 [node name="HitPointsBar" type="ProgressBar" parent="." unique_id=1610733521]
 unique_name_in_owner = true
 layout_mode = 1
-offset_left = 16.0
-offset_top = 16.0
-offset_right = 316.0
-offset_bottom = 40.0
+offset_left = 54.0
+offset_top = 17.0
+offset_right = 184.0
+offset_bottom = 35.0
 mouse_filter = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
 theme_override_styles/fill = SubResource("StyleBoxFlat_bar_fill")
@@ -62,10 +68,11 @@ show_percentage = false
 [node name="HitPointsLabel" type="Label" parent="." unique_id=1244553907]
 unique_name_in_owner = true
 layout_mode = 1
-offset_left = 16.0
-offset_top = 16.0
-offset_right = 316.0
-offset_bottom = 40.0
+visible = false
+offset_left = 54.0
+offset_top = 17.0
+offset_right = 184.0
+offset_bottom = 35.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.06, 1)
 theme_override_constants/outline_size = 6
@@ -77,10 +84,10 @@ autowrap_mode = 3
 [node name="FuelBar" type="ProgressBar" parent="." unique_id=2006001001]
 unique_name_in_owner = true
 layout_mode = 1
-offset_left = 362.0
-offset_top = 16.0
-offset_right = 474.0
-offset_bottom = 40.0
+offset_left = 224.0
+offset_top = 17.0
+offset_right = 314.0
+offset_bottom = 35.0
 mouse_filter = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
 theme_override_styles/fill = SubResource("StyleBoxFlat_fuel_fill")
@@ -89,10 +96,10 @@ show_percentage = false
 [node name="FuelIcon" type="TextureRect" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
-offset_left = 332.0
-offset_top = 14.0
-offset_right = 360.0
-offset_bottom = 42.0
+offset_left = 194.0
+offset_top = 12.0
+offset_right = 222.0
+offset_bottom = 40.0
 mouse_filter = 2
 texture = ExtResource("2_fuel_icon")
 expand_mode = 1
@@ -101,10 +108,10 @@ stretch_mode = 5
 [node name="AmmoIcon" type="TextureRect" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
-offset_left = 482.0
-offset_top = 14.0
-offset_right = 510.0
-offset_bottom = 42.0
+offset_left = 324.0
+offset_top = 12.0
+offset_right = 352.0
+offset_bottom = 40.0
 mouse_filter = 2
 texture = ExtResource("3_ammo_icon")
 expand_mode = 1
@@ -113,10 +120,10 @@ stretch_mode = 5
 [node name="AmmoBar" type="ProgressBar" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
-offset_left = 512.0
-offset_top = 16.0
-offset_right = 624.0
-offset_bottom = 40.0
+offset_left = 354.0
+offset_top = 17.0
+offset_right = 444.0
+offset_bottom = 35.0
 mouse_filter = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
 theme_override_styles/fill = SubResource("StyleBoxFlat_ammo_fill")
@@ -125,10 +132,11 @@ show_percentage = false
 [node name="FlagStatusLabel" type="Label" parent="." unique_id=1822146019]
 unique_name_in_owner = true
 layout_mode = 1
+visible = false
 offset_left = 16.0
-offset_top = 46.0
-offset_right = 316.0
-offset_bottom = 76.0
+offset_top = 12.0
+offset_right = 44.0
+offset_bottom = 40.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.06, 1)
 theme_override_constants/outline_size = 6
@@ -138,17 +146,33 @@ autowrap_mode = 3
 [node name="TokensLabel" type="Label" parent="." unique_id=2008001001]
 unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = -1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -308.0
-offset_top = 46.0
-offset_right = -16.0
-offset_bottom = 76.0
-grow_horizontal = 0
+offset_left = 458.0
+offset_top = 12.0
+offset_right = 624.0
+offset_bottom = 40.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.06, 1)
 theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 20
 horizontal_alignment = 2
 autowrap_mode = 3
+
+[node name="FlagIcon" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 44.0
+offset_bottom = 40.0
+mouse_filter = 2
+texture = ExtResource("4_flag_home")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SecondarySlot" type="Control" parent="."]
+layout_mode = 1
+offset_left = 458.0
+offset_top = 12.0
+offset_right = 624.0
+offset_bottom = 40.0
+mouse_filter = 2

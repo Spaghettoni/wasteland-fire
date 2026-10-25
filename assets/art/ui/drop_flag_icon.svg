@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- Drop the Flag: a flag with an arrow down to the ground. Repository art, story 051. -->
+  <g stroke="#0d0d0f" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M12 44 V5" fill="none"/>
+    <path d="M12 6 H30 L25 12 L30 18 H12 Z" fill="#ffd23d"/>
+    <path d="M36 22 V40 M30 34 L36 41 L42 34" fill="none"/>
+    <path d="M4 44 H44" fill="none"/>
+  </g>
+</svg>

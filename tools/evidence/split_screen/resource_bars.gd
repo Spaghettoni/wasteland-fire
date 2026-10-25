@@ -131,7 +131,8 @@ func _check_band() -> void:
 		for child: Node in hud.get_children():
 			if child is Label and child.visible and (child as Label).get_rect().intersects(hp.get_rect().merge(order[4].get_rect())):
 				row_labels.append(child.name)
-		_kit.need(problems, row_labels == PackedStringArray(["HitPointsLabel"]), "p%d row labels %s" % [player + 1, row_labels])
+		# Since Story 051 no text shows in the row: the hit-point line is hidden (the bar alone).
+		_kit.need(problems, row_labels.is_empty(), "p%d row labels %s" % [player + 1, row_labels])
 		var view: Node = hud.get_parent()
 		_kit.need(problems, view.find_children("*", "AmmoCount", true, false).is_empty(), "p%d view still has an Ammo line" % (player + 1))
 		var ammo: Color = _fill_colour(order[4])
