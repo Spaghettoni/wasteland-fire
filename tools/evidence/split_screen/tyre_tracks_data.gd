@@ -38,7 +38,10 @@ const GROUND_MATERIALS: PackedStringArray = ["road.tres", "salt_flat.tres", "san
 const GROUND_USERS: PackedStringArray = ["CanyonRoad", "Island", "PlaneMesh_salt_flat"]
 ## The other Maps whose ground is drawn by the ground shader (Story 038), each with the one node allowed to use a ground
 ## material: Map 02's Ground, its sand floor inside the canyon.
-const OTHER_GROUNDS: Dictionary = {"res://src/gameplay/maps/map_02/map_02.tscn": "Ground"}
+## The other Maps whose ground draws tracks, and the prefixes of the nodes that carry it: Map 02's one Ground; since
+## Story 054 Map 03's islands and the sand under its fords.
+const OTHER_GROUNDS: Dictionary = {"res://src/gameplay/maps/map_02/map_02.tscn": ["Ground"],
+	"res://src/gameplay/maps/map_03/map_03.tscn": ["Island", "BedFord"]}
 
 var measured: PackedStringArray = []
 var expected_errors: int = 0
@@ -202,7 +205,11 @@ func _ground_surfaces() -> void:
 	var elsewhere: PackedStringArray = []
 	for path: String in _scenes_under("res://src"):
 		if OTHER_GROUNDS.has(path):
-			_q.kit.need(problems, _ground_users_of(path) == PackedStringArray([OTHER_GROUNDS[path]]), "%s uses a ground material on %s, not only on %s" % [path, _ground_users_of(path), OTHER_GROUNDS[path]])
+			var ground_users: PackedStringArray = _ground_users_of(path)
+			var only_ground: bool = not ground_users.is_empty()
+			for user: String in ground_users:
+				only_ground = only_ground and (OTHER_GROUNDS[path] as Array).any(func(prefix: String) -> bool: return user.begins_with(prefix))
+			_q.kit.need(problems, only_ground, "%s uses a ground material on %s, not only on %s" % [path, ground_users, OTHER_GROUNDS[path]])
 		elif path != TERRAIN_SCENE and (FileAccess.get_file_as_string(path).contains("/materials/sand.tres") or FileAccess.get_file_as_string(path).contains("/materials/road.tres") or FileAccess.get_file_as_string(path).contains("/materials/salt_flat.tres")):
 			elsewhere.append(path)
 	_q.kit.need(problems, elsewhere.is_empty(), "other scenes use a ground material: %s" % [elsewhere])

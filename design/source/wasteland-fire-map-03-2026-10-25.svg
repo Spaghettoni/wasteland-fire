@@ -1,0 +1,163 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="964" height="1114" viewBox="0 0 964 1114">
+<defs><pattern id="waves" width="16" height="10" patternUnits="userSpaceOnUse"><path d="M0 5 q4 -4 8 0 t8 0" fill="none" stroke="#2f6fa3" stroke-width="1.1"/></pattern><pattern id="ford" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="10" height="10" fill="#7fc3d9"/><line x1="0" y1="0" x2="0" y2="10" stroke="#b9e3ef" stroke-width="4"/></pattern></defs>
+<rect width="964" height="1114" fill="#123a5e"/>
+<rect x="40.0" y="90.0" width="884.0" height="884.0" fill="url(#waves)" opacity="0.7"/>
+<line x1="74.0" y1="90.0" x2="74.0" y2="974.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="40.0" y1="124.0" x2="924.0" y2="124.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="142.0" y1="90.0" x2="142.0" y2="974.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="40.0" y1="192.0" x2="924.0" y2="192.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="210.0" y1="90.0" x2="210.0" y2="974.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="40.0" y1="260.0" x2="924.0" y2="260.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="278.0" y1="90.0" x2="278.0" y2="974.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="40.0" y1="328.0" x2="924.0" y2="328.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="346.0" y1="90.0" x2="346.0" y2="974.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="40.0" y1="396.0" x2="924.0" y2="396.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="414.0" y1="90.0" x2="414.0" y2="974.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="40.0" y1="464.0" x2="924.0" y2="464.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="482.0" y1="90.0" x2="482.0" y2="974.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="40.0" y1="532.0" x2="924.0" y2="532.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="550.0" y1="90.0" x2="550.0" y2="974.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="40.0" y1="600.0" x2="924.0" y2="600.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="618.0" y1="90.0" x2="618.0" y2="974.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="40.0" y1="668.0" x2="924.0" y2="668.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="686.0" y1="90.0" x2="686.0" y2="974.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="40.0" y1="736.0" x2="924.0" y2="736.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="754.0" y1="90.0" x2="754.0" y2="974.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="40.0" y1="804.0" x2="924.0" y2="804.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="822.0" y1="90.0" x2="822.0" y2="974.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="40.0" y1="872.0" x2="924.0" y2="872.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="890.0" y1="90.0" x2="890.0" y2="974.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<line x1="40.0" y1="940.0" x2="924.0" y2="940.0" stroke="#3f6a94" stroke-width="0.5" opacity="0.5"/>
+<polygon points="305.2,368.8 346.0,341.6 407.2,396.0 373.2,430.0" fill="url(#ford)" stroke="none" stroke-width="0" stroke-linejoin="round" />
+<polygon points="658.8,368.8 618.0,341.6 556.8,396.0 590.8,430.0" fill="url(#ford)" stroke="none" stroke-width="0" stroke-linejoin="round" />
+<polygon points="108.0,375.6 162.4,375.6 169.2,702.0 114.8,702.0" fill="url(#ford)" stroke="none" stroke-width="0" stroke-linejoin="round" />
+<polygon points="856.0,375.6 801.6,375.6 794.8,702.0 849.2,702.0" fill="url(#ford)" stroke="none" stroke-width="0" stroke-linejoin="round" />
+<polygon points="359.6,634.0 400.4,668.0 305.2,776.8 271.2,736.0" fill="url(#ford)" stroke="none" stroke-width="0" stroke-linejoin="round" />
+<polygon points="604.4,634.0 563.6,668.0 658.8,776.8 692.8,736.0" fill="url(#ford)" stroke="none" stroke-width="0" stroke-linejoin="round" />
+<polygon points="352.8,171.6 359.6,219.2 482.0,219.2 482.0,171.6" fill="url(#ford)" stroke="none" stroke-width="0" stroke-linejoin="round" />
+<polygon points="611.2,171.6 604.4,219.2 482.0,219.2 482.0,171.6" fill="url(#ford)" stroke="none" stroke-width="0" stroke-linejoin="round" />
+<polygon points="291.6,858.4 291.6,906.0 482.0,906.0 482.0,858.4" fill="url(#ford)" stroke="none" stroke-width="0" stroke-linejoin="round" />
+<polygon points="672.4,858.4 672.4,906.0 482.0,906.0 482.0,858.4" fill="url(#ford)" stroke="none" stroke-width="0" stroke-linejoin="round" />
+<path d="M67.2,151.2 C97.8,129.7 196.4,124.0 244.0,130.8 C291.6,137.6 332.4,162.5 352.8,192.0 C373.2,221.5 373.2,275.9 366.4,307.6 C359.6,339.3 340.3,367.7 312.0,382.4 C283.7,397.1 233.8,399.4 196.4,396.0 C159.0,392.6 110.3,384.7 87.6,362.0 C64.9,339.3 63.8,295.1 60.4,260.0 C57.0,224.9 36.6,172.7 67.2,151.2 Z" fill="#d9c08f" stroke="#a88a52" stroke-width="2" />
+<path d="M896.8,151.2 C866.2,129.7 767.6,124.0 720.0,130.8 C672.4,137.6 631.6,162.5 611.2,192.0 C590.8,221.5 590.8,275.9 597.6,307.6 C604.4,339.3 623.7,367.7 652.0,382.4 C680.3,397.1 730.2,399.4 767.6,396.0 C805.0,392.6 853.7,384.7 876.4,362.0 C899.1,339.3 900.2,295.1 903.6,260.0 C907.0,224.9 927.4,172.7 896.8,151.2 Z" fill="#d9c08f" stroke="#a88a52" stroke-width="2" />
+<path d="M67.2,702.0 C93.3,681.6 169.2,672.5 210.0,681.6 C250.8,690.7 297.3,722.4 312.0,756.4 C326.7,790.4 321.1,855.0 298.4,885.6 C275.7,916.2 213.4,935.5 176.0,940.0 C138.6,944.5 94.4,935.5 74.0,912.8 C53.6,890.1 54.7,839.1 53.6,804.0 C52.5,768.9 41.1,722.4 67.2,702.0 Z" fill="#d9c08f" stroke="#a88a52" stroke-width="2" />
+<path d="M896.8,702.0 C870.7,681.6 794.8,672.5 754.0,681.6 C713.2,690.7 666.7,722.4 652.0,756.4 C637.3,790.4 642.9,855.0 665.6,885.6 C688.3,916.2 750.6,935.5 788.0,940.0 C825.4,944.5 869.6,935.5 890.0,912.8 C910.4,890.1 909.3,839.1 910.4,804.0 C911.5,768.9 922.9,722.4 896.8,702.0 Z" fill="#d9c08f" stroke="#a88a52" stroke-width="2" />
+<path d="M346.0,457.2 C359.6,419.8 395.9,394.9 427.6,382.4 C459.3,369.9 504.7,369.9 536.4,382.4 C568.1,394.9 604.4,419.8 618.0,457.2 C631.6,494.6 631.6,569.4 618.0,606.8 C604.4,644.2 568.1,669.1 536.4,681.6 C504.7,694.1 459.3,694.1 427.6,681.6 C395.9,669.1 359.6,644.2 346.0,606.8 C332.4,569.4 332.4,494.6 346.0,457.2 Z" fill="#d9c08f" stroke="#a88a52" stroke-width="2" />
+<polygon points="434.4,491.2 468.4,464.0 475.2,504.8 448.0,518.4" fill="#8a5a3c" stroke="#5e3a22" stroke-width="1.5" stroke-linejoin="round" />
+<polygon points="529.6,491.2 495.6,464.0 488.8,504.8 516.0,518.4" fill="#8a5a3c" stroke="#5e3a22" stroke-width="1.5" stroke-linejoin="round" />
+<polygon points="128.4,198.8 162.4,178.4 182.8,212.4 148.8,226.0" fill="#8a5a3c" stroke="#5e3a22" stroke-width="1.5" stroke-linejoin="round" />
+<polygon points="835.6,198.8 801.6,178.4 781.2,212.4 815.2,226.0" fill="#8a5a3c" stroke="#5e3a22" stroke-width="1.5" stroke-linejoin="round" />
+<polygon points="441.2,579.6 468.4,566.0 475.2,606.8 448.0,613.6" fill="#8a5a3c" stroke="#5e3a22" stroke-width="1.5" stroke-linejoin="round" />
+<polygon points="522.8,579.6 495.6,566.0 488.8,606.8 516.0,613.6" fill="#8a5a3c" stroke="#5e3a22" stroke-width="1.5" stroke-linejoin="round" />
+<rect x="145.4" y="243.0" width="74.8" height="47.6" rx="3" fill="#e67324" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(0 182.8 266.8)"/>
+<text x="182.8" y="271.9" font-family="DejaVu Sans, sans-serif" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold" stroke="#0e2744" stroke-width="3" paint-order="stroke">GARÁŽ</text>
+<rect x="264.4" y="192.0" width="40.8" height="27.2" rx="0" fill="#f5b32e" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(0 284.8 205.6)"/>
+<text x="284.8" y="210.7" font-family="DejaVu Sans, sans-serif" font-size="12" fill="#0d0d0f" text-anchor="middle" font-weight="bold" stroke="#0e2744" stroke-width="3" paint-order="stroke">F</text>
+<rect x="111.4" y="314.4" width="34.0" height="27.2" rx="0" fill="#3d8bff" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(0 128.4 328.0)"/>
+<text x="128.4" y="333.1" font-family="DejaVu Sans, sans-serif" font-size="12" fill="#0d0d0f" text-anchor="middle" font-weight="bold" stroke="#0e2744" stroke-width="3" paint-order="stroke">A</text>
+<rect x="125.0" y="759.8" width="102.0" height="102.0" rx="0" fill="#e67324" fill-opacity="0.18" stroke="none" stroke-width="0" transform="rotate(0 176.0 810.8)"/>
+<line x1="125.0" y1="759.8" x2="227.0" y2="759.8" stroke="#4a4f57" stroke-width="7.5" stroke-linecap="square"/>
+<line x1="125.0" y1="861.8" x2="227.0" y2="861.8" stroke="#4a4f57" stroke-width="7.5" stroke-linecap="square"/>
+<line x1="125.0" y1="759.8" x2="125.0" y2="861.8" stroke="#4a4f57" stroke-width="7.5" stroke-linecap="square"/>
+<line x1="227.0" y1="759.8" x2="227.0" y2="797.2" stroke="#4a4f57" stroke-width="7.5" stroke-linecap="square"/>
+<line x1="227.0" y1="824.4" x2="227.0" y2="861.8" stroke="#4a4f57" stroke-width="7.5" stroke-linecap="square"/>
+<circle cx="247.4" cy="776.8" r="7.5" fill="#5b616c" stroke="#e67324" stroke-width="3"/>
+<circle cx="247.4" cy="844.8" r="7.5" fill="#5b616c" stroke="#e67324" stroke-width="3"/>
+<path d="M176.0,822.8 V796.8 h16 l-5,6 l5,6 h-16" fill="#e67324" stroke="#0d0d0f" stroke-width="2"/>
+<text x="176.0" y="848.2" font-family="DejaVu Sans, sans-serif" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold" stroke="#0e2744" stroke-width="3" paint-order="stroke">VLAJKA</text>
+<rect x="84.2" y="865.2" width="34.0" height="27.2" rx="0" fill="#3d8bff" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(0 101.2 878.8)"/>
+<text x="101.2" y="883.9" font-family="DejaVu Sans, sans-serif" font-size="12" fill="#0d0d0f" text-anchor="middle" font-weight="bold" stroke="#0e2744" stroke-width="3" paint-order="stroke">A</text>
+<rect x="743.8" y="243.0" width="74.8" height="47.6" rx="3" fill="#2e9994" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(0 781.2 266.8)"/>
+<text x="781.2" y="271.9" font-family="DejaVu Sans, sans-serif" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold" stroke="#0e2744" stroke-width="3" paint-order="stroke">GARÁŽ</text>
+<rect x="658.8" y="192.0" width="40.8" height="27.2" rx="0" fill="#f5b32e" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(0 679.2 205.6)"/>
+<text x="679.2" y="210.7" font-family="DejaVu Sans, sans-serif" font-size="12" fill="#0d0d0f" text-anchor="middle" font-weight="bold" stroke="#0e2744" stroke-width="3" paint-order="stroke">F</text>
+<rect x="818.6" y="314.4" width="34.0" height="27.2" rx="0" fill="#3d8bff" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(0 835.6 328.0)"/>
+<text x="835.6" y="333.1" font-family="DejaVu Sans, sans-serif" font-size="12" fill="#0d0d0f" text-anchor="middle" font-weight="bold" stroke="#0e2744" stroke-width="3" paint-order="stroke">A</text>
+<rect x="737.0" y="759.8" width="102.0" height="102.0" rx="0" fill="#2e9994" fill-opacity="0.18" stroke="none" stroke-width="0" transform="rotate(0 788.0 810.8)"/>
+<line x1="737.0" y1="759.8" x2="839.0" y2="759.8" stroke="#4a4f57" stroke-width="7.5" stroke-linecap="square"/>
+<line x1="737.0" y1="861.8" x2="839.0" y2="861.8" stroke="#4a4f57" stroke-width="7.5" stroke-linecap="square"/>
+<line x1="839.0" y1="759.8" x2="839.0" y2="861.8" stroke="#4a4f57" stroke-width="7.5" stroke-linecap="square"/>
+<line x1="737.0" y1="759.8" x2="737.0" y2="797.2" stroke="#4a4f57" stroke-width="7.5" stroke-linecap="square"/>
+<line x1="737.0" y1="824.4" x2="737.0" y2="861.8" stroke="#4a4f57" stroke-width="7.5" stroke-linecap="square"/>
+<circle cx="716.6" cy="776.8" r="7.5" fill="#5b616c" stroke="#2e9994" stroke-width="3"/>
+<circle cx="716.6" cy="844.8" r="7.5" fill="#5b616c" stroke="#2e9994" stroke-width="3"/>
+<path d="M788.0,822.8 V796.8 h16 l-5,6 l5,6 h-16" fill="#2e9994" stroke="#0d0d0f" stroke-width="2"/>
+<text x="788.0" y="848.2" font-family="DejaVu Sans, sans-serif" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold" stroke="#0e2744" stroke-width="3" paint-order="stroke">VLAJKA</text>
+<rect x="845.8" y="865.2" width="34.0" height="27.2" rx="0" fill="#3d8bff" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(0 862.8 878.8)"/>
+<text x="862.8" y="883.9" font-family="DejaVu Sans, sans-serif" font-size="12" fill="#0d0d0f" text-anchor="middle" font-weight="bold" stroke="#0e2744" stroke-width="3" paint-order="stroke">A</text>
+<rect x="386.8" y="511.6" width="27.2" height="40.8" rx="0" fill="#f5b32e" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(0 400.4 532.0)"/>
+<text x="400.4" y="537.1" font-family="DejaVu Sans, sans-serif" font-size="12" fill="#0d0d0f" text-anchor="middle" font-weight="bold" stroke="#0e2744" stroke-width="3" paint-order="stroke">F</text>
+<rect x="550.0" y="511.6" width="27.2" height="40.8" rx="0" fill="#f5b32e" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(0 563.6 532.0)"/>
+<text x="563.6" y="537.1" font-family="DejaVu Sans, sans-serif" font-size="12" fill="#0d0d0f" text-anchor="middle" font-weight="bold" stroke="#0e2744" stroke-width="3" paint-order="stroke">F</text>
+<circle cx="380.0" cy="477.6" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<circle cx="584.0" cy="477.6" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<circle cx="380.0" cy="586.4" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<circle cx="584.0" cy="586.4" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<circle cx="454.8" cy="423.2" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<circle cx="509.2" cy="423.2" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<circle cx="454.8" cy="647.6" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<circle cx="509.2" cy="647.6" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<circle cx="278.0" cy="294.0" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<circle cx="686.0" cy="294.0" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<circle cx="237.2" cy="341.6" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<circle cx="726.8" cy="341.6" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<circle cx="108.0" cy="192.0" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<circle cx="856.0" cy="192.0" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<circle cx="318.8" cy="260.0" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<circle cx="645.2" cy="260.0" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<circle cx="244.0" cy="906.0" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<circle cx="720.0" cy="906.0" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<circle cx="101.2" cy="742.8" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<circle cx="862.8" cy="742.8" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<circle cx="257.6" cy="164.8" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<circle cx="706.4" cy="164.8" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<circle cx="271.2" cy="804.0" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<circle cx="692.8" cy="804.0" r="10.2" fill="#4f8a3a" stroke="#2c5420" stroke-width="1.5"/>
+<rect x="398.7" y="436.0" width="30.6" height="15.3" rx="2" fill="#8c8f96" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(30 414.0 443.6)"/>
+<rect x="534.7" y="436.0" width="30.6" height="15.3" rx="2" fill="#8c8f96" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(-30 550.0 443.6)"/>
+<rect x="446.3" y="524.4" width="30.6" height="15.3" rx="2" fill="#8c8f96" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(90 461.6 532.0)"/>
+<rect x="487.1" y="524.4" width="30.6" height="15.3" rx="2" fill="#8c8f96" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(-90 502.4 532.0)"/>
+<rect x="194.7" y="198.0" width="30.6" height="15.3" rx="2" fill="#8c8f96" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(10 210.0 205.6)"/>
+<rect x="738.7" y="198.0" width="30.6" height="15.3" rx="2" fill="#8c8f96" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(-10 754.0 205.6)"/>
+<rect x="119.9" y="558.4" width="30.6" height="15.3" rx="2" fill="#8c8f96" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(80 135.2 566.0)"/>
+<rect x="813.5" y="558.4" width="30.6" height="15.3" rx="2" fill="#8c8f96" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(-80 828.8 566.0)"/>
+<rect x="310.3" y="701.1" width="30.6" height="15.3" rx="2" fill="#8c8f96" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(-45 325.6 708.8)"/>
+<rect x="623.1" y="701.1" width="30.6" height="15.3" rx="2" fill="#8c8f96" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(45 638.4 708.8)"/>
+<rect x="398.7" y="187.8" width="30.6" height="15.3" rx="2" fill="#8c8f96" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(0 414.0 195.4)"/>
+<rect x="534.7" y="187.8" width="30.6" height="15.3" rx="2" fill="#8c8f96" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(0 550.0 195.4)"/>
+<rect x="385.1" y="874.6" width="30.6" height="15.3" rx="2" fill="#8c8f96" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(0 400.4 882.2)"/>
+<rect x="548.3" y="874.6" width="30.6" height="15.3" rx="2" fill="#8c8f96" stroke="#0d0d0f" stroke-width="1.5" transform="rotate(0 563.6 882.2)"/>
+<ellipse cx="420.8" cy="627.2" rx="20.4" ry="11.9" fill="#6fb3cf" stroke="#3c7f9c" stroke-width="1.2"/>
+<ellipse cx="543.2" cy="627.2" rx="20.4" ry="11.9" fill="#6fb3cf" stroke="#3c7f9c" stroke-width="1.2"/>
+<ellipse cx="271.2" cy="321.2" rx="20.4" ry="11.9" fill="#6fb3cf" stroke="#3c7f9c" stroke-width="1.2"/>
+<ellipse cx="692.8" cy="321.2" rx="20.4" ry="11.9" fill="#6fb3cf" stroke="#3c7f9c" stroke-width="1.2"/>
+<ellipse cx="94.4" cy="831.2" rx="20.4" ry="11.9" fill="#6fb3cf" stroke="#3c7f9c" stroke-width="1.2"/>
+<ellipse cx="869.6" cy="831.2" rx="20.4" ry="11.9" fill="#6fb3cf" stroke="#3c7f9c" stroke-width="1.2"/>
+<ellipse cx="182.8" cy="362.0" rx="20.4" ry="11.9" fill="#6fb3cf" stroke="#3c7f9c" stroke-width="1.2"/>
+<ellipse cx="781.2" cy="362.0" rx="20.4" ry="11.9" fill="#6fb3cf" stroke="#3c7f9c" stroke-width="1.2"/>
+<path d="M210.0,294.0 L359.6,389.2 L482.0,532.0 L604.4,661.2 L679.2,742.8 L726.8,810.8" fill="none" stroke="#e67324" stroke-width="2.5" stroke-dasharray="7 6" opacity="0.9"/>
+<path d="M196.4,239.6 L359.6,195.4 L604.4,195.4 L781.2,328.0 L822.0,532.0 L822.0,702.0 L788.0,770.0" fill="none" stroke="#e67324" stroke-width="2.5" stroke-dasharray="7 6" opacity="0.9"/>
+<path d="M155.6,396.0 L142.0,668.0 L244.0,838.0 L312.0,882.2 L652.0,882.2 L713.2,844.8" fill="none" stroke="#e67324" stroke-width="2.5" stroke-dasharray="7 6" opacity="0.9"/>
+<text x="40" y="38" font-family="DejaVu Sans, sans-serif" font-size="24" fill="#fff" font-weight="bold">Map 03 · Súostrovie (návrh)</text>
+<text x="40" y="64" font-family="DejaVu Sans, sans-serif" font-size="14" fill="#cfe3f5">240 × 240 m · more okolo · strany zrkadlovo (obe rovnaké) · mriežka 20 m</text>
+<rect x="40" y="1002.0" width="18" height="14" fill="#d9c08f" stroke="#cfe3f5" stroke-width="1"/>
+<text x="66" y="1014.0" font-family="DejaVu Sans, sans-serif" font-size="14" fill="#fff">ostrov</text>
+<rect x="210" y="1002.0" width="18" height="14" fill="#7fc3d9" stroke="#cfe3f5" stroke-width="1"/>
+<text x="236" y="1014.0" font-family="DejaVu Sans, sans-serif" font-size="14" fill="#fff">plytčina (prejazdná)</text>
+<rect x="380" y="1002.0" width="18" height="14" fill="#123a5e" stroke="#cfe3f5" stroke-width="1"/>
+<text x="406" y="1014.0" font-family="DejaVu Sans, sans-serif" font-size="14" fill="#fff">more (len gyro)</text>
+<rect x="550" y="1002.0" width="18" height="14" fill="#8a5a3c" stroke="#cfe3f5" stroke-width="1"/>
+<text x="576" y="1014.0" font-family="DejaVu Sans, sans-serif" font-size="14" fill="#fff">skala</text>
+<rect x="720" y="1002.0" width="18" height="14" fill="#f5b32e" stroke="#cfe3f5" stroke-width="1"/>
+<text x="746" y="1014.0" font-family="DejaVu Sans, sans-serif" font-size="14" fill="#fff">F benzín</text>
+<rect x="40" y="1032.0" width="18" height="14" fill="#3d8bff" stroke="#cfe3f5" stroke-width="1"/>
+<text x="66" y="1044.0" font-family="DejaVu Sans, sans-serif" font-size="14" fill="#fff">A munícia</text>
+<rect x="210" y="1032.0" width="18" height="14" fill="#4f8a3a" stroke="#cfe3f5" stroke-width="1"/>
+<text x="236" y="1044.0" font-family="DejaVu Sans, sans-serif" font-size="14" fill="#fff">krík</text>
+<rect x="380" y="1032.0" width="18" height="14" fill="#8c8f96" stroke="#cfe3f5" stroke-width="1"/>
+<text x="406" y="1044.0" font-family="DejaVu Sans, sans-serif" font-size="14" fill="#fff">vrak</text>
+<rect x="550" y="1032.0" width="18" height="14" fill="#6fb3cf" stroke="#cfe3f5" stroke-width="1"/>
+<text x="576" y="1044.0" font-family="DejaVu Sans, sans-serif" font-size="14" fill="#fff">mláka</text>
+<text x="40" y="1080.0" font-family="DejaVu Sans, sans-serif" font-size="14" fill="#fff">Garáž = spawn a výmena vozidla. Pevnosť = vlastná vlajka, 2 vežičky pred bránou; súperovu vlajku vezieš do svojej pevnosti.</text>
+<text x="40" y="1104.0" font-family="DejaVu Sans, sans-serif" font-size="14" fill="#e67324">- - - tri cesty Orange k vlajke Teal: cez stred (najkratšia), cez sever a súperovu garáž, cez juh a vlastnú pevnosť</text>
+</svg>

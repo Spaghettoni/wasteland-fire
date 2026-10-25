@@ -170,6 +170,14 @@ extends Node3D
 ## compound_base.tscn) are set in the scene.
 @export var zone: Area3D
 
+## The zone a Flag is brought into (Story 053; Martin, 2026-10-25: "jedna vec je garaz a ina je
+## vlajkova pevnost"): where a Player delivers the other Team's Flag to win and brings its own home.
+## Optional: null, the default, means zone, as on Map 01 and Map 02, where the Garage and the Flag
+## share one compound. Map 03 sets it to its flag fortress's zone, which stands far from the Garage;
+## zone then serves the Garage alone (the swap). Read through delivery_zone(). It watches the same
+## layers as zone.
+@export var flag_zone: Area3D
+
 ## The flat slab that marks the Base on the ground. It gets color_material in _ready(). No
 ## collision, by design. compound_base.tscn hides it (the Garage floor shows there) and keeps it
 ## because first_spawn_problem() measures the spawn points against its box, the Garage floor's.
@@ -294,3 +302,9 @@ func _paint_color_meshes() -> void:
 			push_warning("Base '%s': color_meshes entry %d is not assigned, so that part keeps its own look." % [name, index])
 			continue
 		mesh.material_override = color_material
+
+
+## The zone a Flag is delivered into or brought home to (Story 053): flag_zone when the scene sets
+## one, else zone.
+func delivery_zone() -> Area3D:
+	return flag_zone if flag_zone != null else zone

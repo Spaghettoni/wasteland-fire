@@ -26,6 +26,10 @@ friends at home.
   2 v 2 all work; with three or four Players the screen is split in four.
   A Team shares its Base, its Flag and its Tokens, and only the other Team
   hurts you (your Teammates' Shots and Mines do not).
+- Map 03, the islands (stories 053, 054): Garage in one corner, the Flag to
+  take in the opposite one; a Team brings the enemy Flag to its own Flag
+  fortress, not its Garage. Shallows join the islands; only the Gyrocopter
+  crosses the sea.
 - The HUD is one row of bars and icons (story 051): a Flag icon first (in its
   dock / running off / carried), hit points (a bar, no number), Fuel,
   ammunition and the secondary weapon's icon and bar.

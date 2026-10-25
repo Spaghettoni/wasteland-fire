@@ -80,8 +80,12 @@ One Unit of one type in a Player's stock: a Player with five Motorbike Tokens ca
 _Avoid_: life, lives, credit, ticket, respawn, coin
 
 **Garage (garáž)**:
-The place at a Player's Base where the chosen Unit appears, at the start of a Round, after every destruction and after a Swap. It is the spawn point of stories 003 and 004. On Map 01 a new Unit appears on one of the Garage's two side spots, because the Flag Walls close the middle spot's lane to the Gate (reading, 2026-10-07), and no Mine can be laid in a Garage (decided 2026-10-07). Every new Unit appears there with a full tank and a full load of ammo (the comments; decided 2026-10-10). Its back wall and two side walls are Wall Panels (decided 2026-10-10) of its Base's Player (reading, 2026-10-10).
+The place at a Player's Base where the chosen Unit appears, at the start of a Round, after every destruction and after a Swap. It is the spawn point of stories 003 and 004. On Map 01 a new Unit appears on one of the Garage's two side spots, because the Flag Walls close the middle spot's lane to the Gate (reading, 2026-10-07), and no Mine can be laid in a Garage (decided 2026-10-07). Every new Unit appears there with a full tank and a full load of ammo (the comments; decided 2026-10-10). Its back wall and two side walls are Wall Panels (decided 2026-10-10) of its Base's Player (reading, 2026-10-10). On Map 03 (story 054) the Garage stands alone in its Team's north corner, apart from the Flag fortress: the Base there is the Garage, and the Swap happens in it.
 _Avoid_: spawn point, hangar, depot, pad
+
+**Flag fortress (vlajková pevnosť)**:
+Where a Team's Flag stands and where that Team brings the other Team's Flag to win, when a Map puts it apart from the Garage (story 053; Martin 2026-10-25: "jedna vec je garaz a ina je vlajkova pevnost"). On Map 03 it is Map 01's compound without its Garage: walls, a Gate, two Turrets before it, the water tower and the Flag Walls round the Flag. On Map 01 and Map 02 the Base's compound is both the Garage and the fortress.
+_Avoid_: castle, flag base, keep
 
 **Self-destruct**:
 A Player's action that destroys their own Unit on purpose, so a stranded Unit can be replaced. It counts as a destruction and costs a Token. Like every destroyed Unit it explodes (the comments), and since every new Unit starts full, a Self-destruct trades a Token for a full tank and a full load of ammo (decided 2026-10-10). A Player whose ground Unit has run out of Fuel is shown the key. Inside the own Base the same key does the Swap instead (story 011), and a stranded Unit there is shown the key for that.

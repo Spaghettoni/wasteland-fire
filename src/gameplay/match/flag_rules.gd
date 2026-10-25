@@ -124,9 +124,17 @@ func is_own_at_home(player_index: int) -> bool:
 
 
 ## True while the Player's own Base zone reports that Player's Unit inside it, as the physics
-## server last reported it (about two ticks behind the Unit's movement; see Base).
+## server last reported it (about two ticks behind the Unit's movement; see Base). The Garage's zone:
+## the swap asks it.
 func is_in_own_zone(player_index: int) -> bool:
 	return _player_bases[player_index].zone.overlaps_body(_units[player_index])
+
+
+## True while the zone the Player's Flags are brought to reports that Player's Unit inside it
+## (Base.delivery_zone(), Story 053): the flag fortress's zone where a Map has one apart from the
+## Garage, else the same zone as is_in_own_zone(). A delivery and the own Flag's return ask it.
+func is_in_flag_zone(player_index: int) -> bool:
+	return _player_bases[player_index].delivery_zone().overlaps_body(_units[player_index])
 
 
 ## The first Player, in index order, who may pick up the Flag of the given index on this tick

@@ -27,7 +27,7 @@ extends Node
 ## (windowed); since Story 024, ammo_buildings, ammo_buildings_showcase and ammo_buildings_fps
 ## (windowed); since Story 032, pads, pads_data and pads_showcase
 ## (windowed); since Story 036, resource_bars and resource_bars_showcase (windowed);
-## since Story 037, turret_flying_sight and cliff_tops; since Story 038, map_02, bushes, cover_pieces and map_02_showcase (windowed); since Story 039, flag_open; since Story 040, pads_stick; since Story 041, fire_heights and fire_heights_showcase (windowed); since Story 042, secondary; since Story 043, real_flag; since Stories 042 and 043, secondary_flag_showcase (windowed); since Story 044, recharge_showcase (windowed); since Story 047, pad_back and shadow_showcase (windowed); since Story 048, teams, teams_three and teams_showcase (windowed); since Story 049, full_throttle and turret_reach_showcase (windowed); since Story 050, chase_view, chase_showcase and chase_showcase_two (windowed); since Story 051, hud_showcase (windowed); since Story 052, teams_last_carrier. Each is a script under tools/evidence/split_screen/,
+## since Story 037, turret_flying_sight and cliff_tops; since Story 038, map_02, bushes, cover_pieces and map_02_showcase (windowed); since Story 039, flag_open; since Story 040, pads_stick; since Story 041, fire_heights and fire_heights_showcase (windowed); since Story 042, secondary; since Story 043, real_flag; since Stories 042 and 043, secondary_flag_showcase (windowed); since Story 044, recharge_showcase (windowed); since Story 047, pad_back and shadow_showcase (windowed); since Story 048, teams, teams_three and teams_showcase (windowed); since Story 049, full_throttle and turret_reach_showcase (windowed); since Story 050, chase_view, chase_showcase and chase_showcase_two (windowed); since Story 051, hud_showcase (windowed); since Story 052, teams_last_carrier; since Story 054, map_03 and map_03_showcase (windowed). Each is a script under tools/evidence/split_screen/,
 ## a RefCounted with `func run(harness: Node) -> void`, a coroutine this runner awaits; its top says what it
 ## proves and how to run it. SCENARIOS maps the name to the script, so a new scenario is a script and one
 ## line there. A scenario reaches this script, DriveStep, UnitTrack and check_kit.gd through preload
@@ -508,6 +508,8 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"pads_stick": preload("res://tools/evidence/split_screen/pads_stick.gd"),
 	&"full_throttle": preload("res://tools/evidence/split_screen/full_throttle.gd"),
 	&"turret_reach_showcase": preload("res://tools/evidence/split_screen/turret_reach_showcase.gd"),
+	&"map_03_showcase": preload("res://tools/evidence/split_screen/map_03_showcase.gd"),
+	&"map_03": preload("res://tools/evidence/split_screen/map_03.gd"),
 	&"teams_last_carrier": preload("res://tools/evidence/split_screen/teams_last_carrier.gd"),
 	&"hud_showcase": preload("res://tools/evidence/split_screen/hud_showcase.gd"),
 	&"chase_view": preload("res://tools/evidence/split_screen/chase_view.gd"),

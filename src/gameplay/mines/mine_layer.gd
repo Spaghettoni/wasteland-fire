@@ -170,15 +170,22 @@ func request_lay() -> void:
 ## of either Base or its approach in front of the Gate, grown by the trigger radius (the class doc).
 func is_in_no_mine_area(point: Vector3) -> bool:
 	for base: Base in bases:
-		var box_node: CollisionShape3D = _zone_box(base)
-		if box_node == null:
+		if base == null:
 			continue
-		var half: Vector3 = (box_node.shape as BoxShape3D).size / 2.0
-		var local: Vector3 = box_node.global_transform.affine_inverse() * point
-		var reach: float = settings.trigger_radius
-		var along: float = half.z + settings.approach_past_zone + reach
-		if absf(local.x) <= half.x + reach and local.z >= -along and local.z <= half.z + reach:
-			return true
+		# Since Story 053 a Base's flag fortress may stand apart from its Garage: both are kept clear.
+		var areas: Array[Area3D] = [base.zone]
+		if base.flag_zone != null:
+			areas.append(base.flag_zone)
+		for area: Area3D in areas:
+			var box_node: CollisionShape3D = _area_box(area)
+			if box_node == null:
+				continue
+			var half: Vector3 = (box_node.shape as BoxShape3D).size / 2.0
+			var local: Vector3 = box_node.global_transform.affine_inverse() * point
+			var reach: float = settings.trigger_radius
+			var along: float = half.z + settings.approach_past_zone + reach
+			if absf(local.x) <= half.x + reach and local.z >= -along and local.z <= half.z + reach:
+				return true
 	return false
 
 
@@ -284,12 +291,11 @@ func _lay() -> void:
 		_report(_left - 1, _capacity)
 
 
-## The box of a Base's zone (the first CollisionShape3D child of its zone that holds a box), or
-## null for a Base without one.
-func _zone_box(base: Base) -> CollisionShape3D:
-	if base == null or base.zone == null:
+## The box of an Area3D (its first CollisionShape3D child that holds a box), or null.
+func _area_box(area: Area3D) -> CollisionShape3D:
+	if area == null:
 		return null
-	for child: Node in base.zone.get_children():
+	for child: Node in area.get_children():
 		var shape_node: CollisionShape3D = child as CollisionShape3D
 		if shape_node != null and shape_node.shape is BoxShape3D:
 			return shape_node

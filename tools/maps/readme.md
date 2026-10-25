@@ -7,6 +7,7 @@ repository root. Tooling only; nothing under `src/` imports these files.
 | Script | Writes |
 |---|---|
 | `build_map_02.py` | `src/gameplay/maps/map_02/map_02.tscn` (Map 02 from the schematic `design/source/wasteland-fire-map-02-2026-10-16.svg`), `map_02_fuel_building.tscn`, `map_02_tyre_track_settings.tres` |
+| `build_map_03.py` | `src/gameplay/maps/map_03/map_03.tscn` (Map 03, the islands, from `design/source/wasteland-fire-map-03-2026-10-25.svg`), `garage_base.tscn` and `flag_fortress.tscn` (cut from Map 01's compound), `map_03_tyre_track_settings.tres` |
 | `build_cover_pieces.py` | `src/gameplay/cover/wreck.tscn`, `shack_long.tscn`, `shack_square.tscn` (the breakable car wreck and small buildings) |
 | `tscn.py` | nothing: the small `.tscn` writer the two scripts share (transforms are written row by row, as Godot's text format stores a basis) |
 | `render_preview.gd` | a Map's picture from above for its card on the map choice (`assets/art/ui/map_0N_preview.png`); run windowed |
@@ -14,10 +15,13 @@ repository root. Tooling only; nothing under `src/` imports these files.
 ```
 python3 tools/maps/build_cover_pieces.py
 python3 tools/maps/build_map_02.py
+python3 tools/maps/build_map_03.py
 xvfb-run -s "-screen 0 1280x720x24" godot --rendering-driver opengl3 --path . -s res://tools/maps/render_preview.gd -- \
   --map=res://src/gameplay/maps/map_02/map_02.tscn --out=assets/art/ui/map_02_preview.png --span=124x254 --height=820 --rotate=ccw
 xvfb-run -s "-screen 0 1280x720x24" godot --rendering-driver opengl3 --path . -s res://tools/maps/render_preview.gd -- \
   --map=res://src/gameplay/maps/map_01/map_01.tscn --out=assets/art/ui/map_01_preview.png --span=300x110 --height=400
+xvfb-run -s "-screen 0 1280x720x24" godot --rendering-driver opengl3 --path . -s res://tools/maps/render_preview.gd -- \
+  --map=res://src/gameplay/maps/map_03/map_03.tscn --out=assets/art/ui/map_03_preview.png --span=244x244 --height=820
 ```
 
 After a rebuild, open the project once in the editor (or run `godot --headless --editor --quit --path .`)

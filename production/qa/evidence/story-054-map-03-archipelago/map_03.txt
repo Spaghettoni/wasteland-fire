@@ -1,0 +1,8 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK map_03 A1_the_map PASS P1 Garage (-86, -76), Flag 158 m away in FortressOrange; P2 Garage (86, -76), Flag 158 m away in FortressTeal; mirrored true; Orange's Garage (-86, -76), the Flag it goes for (81, 82) (opposite true)
+CHECK map_03 A2_the_sea PASS from (-80, -96) north for 240 ticks: Buggy stopped at z -112.8, Gyrocopter flew on to z -118.8 (the shore is about z -110)
+CHECK map_03 A3_a_ford PASS a Buggy from (-54, -56) along the ford for 300 ticks ended at (-24, -26) (the middle island begins about (-34.0, -36.0))
+CHECK map_03 A4_the_fortress PASS swap in the Garage true, in the fortress false; Teal's Flag taken true; carried into Orange's Garage: over false; into Orange's fortress: over true, winner 0
+RESULT map_03 ok checks=4 failed=0 t=18.750 map=map_03
+exit=0

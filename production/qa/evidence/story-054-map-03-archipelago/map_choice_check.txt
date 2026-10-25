@@ -1,0 +1,9 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CHECK map_choice K1_screen PASS main scene res://src/ui/lobby/pick_side.tscn; cards ["Map 01", "Map 02"]; cursor 0
+CHECK map_choice K2_choosing PASS D, Right, A, Left, D-pad right, stick left, stick right: [1, 2, 1, 0, 1, 0, 1]
+CHECK map_choice K3_start_on_release PASS up after Space down true; the match plays res://src/gameplay/maps/map_02/map_02.tscn
+CHECK map_choice K4_nothing_carried FAIL both Players choosing a second in: [false, true] | PROBLEMS: choosing after a second: [false, true]
+CHECK map_choice K5_back_to_choice PASS Round over with the line shown true; Esc: the map choice is the scene true, the tree running true
+CHECK map_choice K6_other_map PASS Enter on the first card plays res://src/gameplay/maps/map_01/map_01.tscn
+RESULT map_choice fail checks=6 failed=1

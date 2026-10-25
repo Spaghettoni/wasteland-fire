@@ -21,8 +21,9 @@ extends SceneTree
 const CHOICE_SCENE: String = "res://src/ui/map_choice/map_choice.tscn"
 ## The scene the project opens on since Story 048: Pick a side, which opens this map choice.
 const MAIN_SCENE: String = "res://src/ui/lobby/pick_side.tscn"
-const MAP_PATHS: Array[String] = ["res://src/gameplay/maps/map_01/map_01.tscn", "res://src/gameplay/maps/map_02/map_02.tscn"]
-const NAMES: Array[String] = ["Map 01", "Map 02"]
+## Since Story 054 three Maps: the third is the archipelago.
+const MAP_PATHS: Array[String] = ["res://src/gameplay/maps/map_01/map_01.tscn", "res://src/gameplay/maps/map_02/map_02.tscn", "res://src/gameplay/maps/map_03/map_03.tscn"]
+const NAMES: Array[String] = ["Map 01", "Map 02", "Map 03"]
 const SETTLE_FRAMES: int = 10
 const MATCH_FRAMES: int = 60
 
@@ -54,7 +55,7 @@ func _run() -> void:
 
 	problems = PackedStringArray()
 	var trail: Array[int] = []
-	for step: Array in [[KEY_D, 1], [KEY_RIGHT, 0], [KEY_A, 1], [KEY_LEFT, 0]]:
+	for step: Array in [[KEY_D, 1], [KEY_RIGHT, 2], [KEY_A, 1], [KEY_LEFT, 0]]:
 		await _key(step[0], true)
 		await _key(step[0], false)
 		trail.append(choice.cursor)

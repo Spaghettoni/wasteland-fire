@@ -1,0 +1,816 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/maps/map_field.gd" id="1_map_field"]
+[ext_resource type="Resource" path="res://src/gameplay/maps/data/token_stock.tres" id="2_token_stock"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/map_03/garage_base.tscn" id="3_garage_base"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/map_03/flag_fortress.tscn" id="4_flag_fortress"]
+[ext_resource type="Material" path="res://src/gameplay/split_screen/data/team_orange_material.tres" id="5_team_orange_material"]
+[ext_resource type="Material" path="res://src/gameplay/split_screen/data/team_teal_material.tres" id="6_team_teal_material"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/ford.tscn" id="7_ford"]
+[ext_resource type="PackedScene" path="res://src/gameplay/supply/ammo_building.tscn" id="8_ammo_building"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/map_02/map_02_fuel_building.tscn" id="9_map_02_fuel_building"]
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/tyre_tracks.tscn" id="10_tyre_tracks"]
+[ext_resource type="Resource" path="res://src/gameplay/maps/map_03/map_03_tyre_track_settings.tres" id="11_map_03_tyre_track_settings"]
+[ext_resource type="PackedScene" path="res://src/gameplay/cover/bush.tscn" id="12_bush"]
+[ext_resource type="PackedScene" path="res://src/gameplay/cover/wreck.tscn" id="13_wreck"]
+[ext_resource type="PackedScene" path="res://src/gameplay/cover/shack_long.tscn" id="14_shack_long"]
+[ext_resource type="PackedScene" path="res://src/gameplay/cover/shack_square.tscn" id="15_shack_square"]
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/sand.tres" id="16_sand"]
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/ridge.tres" id="17_ridge"]
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/sea.tres" id="18_sea"]
+[ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/ford.tres" id="19_ford"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(280, 1, 280)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_sea"]
+material = ExtResource("18_sea")
+size = Vector2(1000, 1000)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edge"]
+size = Vector3(248, 12, 4)
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sea"]
+sky_top_color = Color(0.4, 0.56, 0.76, 1)
+sky_horizon_color = Color(0.72, 0.8, 0.88, 1)
+sky_curve = 0.09
+ground_bottom_color = Color(0.2, 0.32, 0.42, 1)
+ground_horizon_color = Color(0.6, 0.7, 0.76, 1)
+
+[sub_resource type="Sky" id="Sky_sea"]
+sky_material = SubResource("ProceduralSkyMaterial_sea")
+
+[sub_resource type="Environment" id="Environment_sky"]
+background_mode = 2
+sky = SubResource("Sky_sea")
+ambient_light_source = 3
+ambient_light_color = Color(0.8, 0.8, 0.82, 1)
+ambient_light_sky_contribution = 0.6
+ambient_light_energy = 0.9
+ssao_enabled = true
+ssao_radius = 2.0
+ssao_intensity = 3.0
+ssao_light_affect = 0.4
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.8, 0.82, 0.84, 1)
+fog_density = 0.2
+fog_sky_affect = 0.3
+fog_depth_begin = 60.0
+fog_depth_end = 260.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest1"]
+size = Vector3(14, 3, 37.732137)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_FordWest1"]
+material = ExtResource("19_ford")
+size = Vector2(14, 37.732137)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast1"]
+size = Vector3(14, 3, 37.732137)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_FordEast1"]
+material = ExtResource("19_ford")
+size = Vector2(14, 37.732137)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest2"]
+size = Vector3(14, 3, 114)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_FordWest2"]
+material = ExtResource("19_ford")
+size = Vector2(14, 114)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast2"]
+size = Vector3(14, 3, 114)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_FordEast2"]
+material = ExtResource("19_ford")
+size = Vector2(14, 114)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest3"]
+size = Vector3(14, 3, 52.407207)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_FordWest3"]
+material = ExtResource("19_ford")
+size = Vector2(14, 52.407207)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast3"]
+size = Vector3(14, 3, 52.407207)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_FordEast3"]
+material = ExtResource("19_ford")
+size = Vector2(14, 52.407207)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordNorth"]
+size = Vector3(14, 3, 84)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_FordNorth"]
+material = ExtResource("19_ford")
+size = Vector2(14, 84)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordSouth"]
+size = Vector3(14, 3, 116)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_FordSouth"]
+material = ExtResource("19_ford")
+size = Vector2(14, 116)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_PuddleWest1"]
+size = Vector3(5, 3, 9)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_PuddleWest1"]
+material = ExtResource("19_ford")
+size = Vector2(5, 9)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_PuddleEast1"]
+size = Vector3(5, 3, 9)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_PuddleEast1"]
+material = ExtResource("19_ford")
+size = Vector2(5, 9)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_PuddleWest2"]
+size = Vector3(5, 3, 8)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_PuddleWest2"]
+material = ExtResource("19_ford")
+size = Vector2(5, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_PuddleEast2"]
+size = Vector3(5, 3, 8)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_PuddleEast2"]
+material = ExtResource("19_ford")
+size = Vector2(5, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_PuddleWest3"]
+size = Vector3(5, 3, 9)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_PuddleWest3"]
+material = ExtResource("19_ford")
+size = Vector2(5, 9)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_PuddleEast3"]
+size = Vector3(5, 3, 9)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_PuddleEast3"]
+material = ExtResource("19_ford")
+size = Vector2(5, 9)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_PuddleWest4"]
+size = Vector3(4, 3, 8)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_PuddleWest4"]
+material = ExtResource("19_ford")
+size = Vector2(4, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_PuddleEast4"]
+size = Vector3(4, 3, 8)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_PuddleEast4"]
+material = ExtResource("19_ford")
+size = Vector2(4, 8)
+
+[node name="Map" type="Node3D" node_paths=PackedStringArray("player_1_base", "player_2_base", "neutral_structures", "supply_zones", "tyre_tracks", "player_1_outposts", "player_2_outposts", "bushes")]
+script = ExtResource("1_map_field")
+player_1_base = NodePath("GarageOrange")
+player_2_base = NodePath("GarageTeal")
+neutral_structures = [NodePath("Cover/WreckWest1"), NodePath("Cover/WreckEast1"), NodePath("Cover/WreckWest2"), NodePath("Cover/WreckEast2"), NodePath("Cover/WreckWest3"), NodePath("Cover/WreckEast3"), NodePath("Cover/WreckWest4"), NodePath("Cover/WreckEast4"), NodePath("Cover/WreckWest5"), NodePath("Cover/WreckEast5"), NodePath("Cover/WreckWest6"), NodePath("Cover/WreckEast6"), NodePath("Cover/WreckWest7"), NodePath("Cover/WreckEast7"), NodePath("Cover/ShackWest1"), NodePath("Cover/ShackEast1"), NodePath("Cover/ShackWest2"), NodePath("Cover/ShackEast2")]
+supply_zones = [NodePath("FuelWest1/FuelZone"), NodePath("FuelEast1/FuelZone"), NodePath("FuelWest2/FuelZone"), NodePath("FuelEast2/FuelZone"), NodePath("AmmoWest1/AmmoZone"), NodePath("AmmoEast1/AmmoZone"), NodePath("AmmoWest2/AmmoZone"), NodePath("AmmoEast2/AmmoZone")]
+tyre_tracks = NodePath("TyreTracks")
+token_stock = ExtResource("2_token_stock")
+player_1_outposts = []
+player_2_outposts = []
+bushes = [NodePath("Cover/BushWest1"), NodePath("Cover/BushEast1"), NodePath("Cover/BushWest2"), NodePath("Cover/BushEast2"), NodePath("Cover/BushWest3"), NodePath("Cover/BushEast3"), NodePath("Cover/BushWest4"), NodePath("Cover/BushEast4"), NodePath("Cover/BushWest5"), NodePath("Cover/BushEast5"), NodePath("Cover/BushWest6"), NodePath("Cover/BushEast6"), NodePath("Cover/BushWest7"), NodePath("Cover/BushEast7"), NodePath("Cover/BushWest8"), NodePath("Cover/BushEast8"), NodePath("Cover/BushWest9"), NodePath("Cover/BushEast9"), NodePath("Cover/BushWest10"), NodePath("Cover/BushEast10"), NodePath("Cover/BushWest11"), NodePath("Cover/BushEast11"), NodePath("Cover/BushWest12"), NodePath("Cover/BushEast12")]
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.81915206, 0.40557979, -0.40557979, 0, 0.70710678, 0.70710678, 0.57357645, -0.57922797, 0.57922797, 0, 0, 0)
+light_color = Color(1, 0.95, 0.86, 1)
+light_energy = 1.3
+shadow_enabled = true
+directional_shadow_max_distance = 100.0
+directional_shadow_pancake_size = 0.0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_sky")
+
+[node name="Floor" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("BoxShape3D_floor")
+
+[node name="Sea" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.12, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_sea")
+
+[node name="Edge" type="Node3D" parent="."]
+
+[node name="EdgeNorth" type="StaticBody3D" parent="Edge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Edge/EdgeNorth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, -122)
+shape = SubResource("BoxShape3D_edge")
+
+[node name="EdgeSouth" type="StaticBody3D" parent="Edge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Edge/EdgeSouth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 122)
+shape = SubResource("BoxShape3D_edge")
+
+[node name="EdgeWest" type="StaticBody3D" parent="Edge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Edge/EdgeWest"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -122, 6, 0)
+shape = SubResource("BoxShape3D_edge")
+
+[node name="EdgeEast" type="StaticBody3D" parent="Edge" groups=["map_edge"]]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Edge/EdgeEast"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 122, 6, 0)
+shape = SubResource("BoxShape3D_edge")
+
+[node name="Terrain" type="Node3D" parent="."]
+
+[node name="IslandMiddle" type="CSGPolygon3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.198, 0)
+cast_shadow = 0
+polygon = PackedVector2Array(-40, -22, -37.481481, -27.194444, -34.074074, -31.777778, -30, -35.75, -25.481481, -39.111111, -20.740741, -41.861111, -16, -44, -11.037037, -45.527778, -5.62963, -46.444444, 0, -46.75, 5.62963, -46.444444, 11.037037, -45.527778, 16, -44, 20.740741, -41.861111, 25.481481, -39.111111, 30, -35.75, 34.074074, -31.777778, 37.481481, -27.194444, 40, -22, 41.666667, -15.685185, 42.666667, -8.148148, 43, 0, 42.666667, 8.148148, 41.666667, 15.685185, 40, 22, 37.481481, 27.194444, 34.074074, 31.777778, 30, 35.75, 25.481481, 39.111111, 20.740741, 41.861111, 16, 44, 11.037037, 45.527778, 5.62963, 46.444444, 0, 46.75, -5.62963, 46.444444, -11.037037, 45.527778, -16, 44, -20.740741, 41.861111, -25.481481, 39.111111, -30, 35.75, -34.074074, 31.777778, -37.481481, 27.194444, -40, 22, -41.666667, 15.685185, -42.666667, 8.148148, -43, 0, -42.666667, -8.148148, -41.666667, -15.685185)
+depth = 0.2
+material = ExtResource("16_sand")
+
+[node name="IslandGarageWest" type="CSGPolygon3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.198, 0)
+cast_shadow = 0
+polygon = PackedVector2Array(-112, -108, -107.060185, -110.50463, -100.37037, -112.37037, -92.625, -113.625, -84.518519, -114.296296, -76.74537, -114.412037, -70, -114, -64.00463, -113.032407, -58.148148, -111.481481, -52.625, -109.375, -47.62963, -106.740741, -43.356481, -103.606481, -40, -100, -37.62037, -95.592593, -36.074074, -90.296296, -35.25, -84.5, -35.037037, -78.592593, -35.324074, -72.962963, -36, -68, -37.060185, -63.546296, -38.592593, -59.259259, -40.625, -55.25, -43.185185, -51.62963, -46.300926, -48.509259, -50, -46, -54.601852, -44.152778, -60.148148, -42.888889, -66.25, -42.125, -72.518519, -41.777778, -78.564815, -41.763889, -84, -42, -89.027778, -42.384259, -94, -42.962963, -98.75, -43.875, -103.111111, -45.259259, -106.916667, -47.25463, -110, -50, -112.273148, -53.75, -113.851852, -58.444444, -114.875, -63.75, -115.481481, -69.333333, -115.810185, -74.861111, -116, -80, -116.351852, -85.037037, -116.814815, -90.296296, -117, -95.5, -116.518519, -100.37037, -114.981481, -104.62963)
+depth = 0.2
+material = ExtResource("16_sand")
+
+[node name="IslandGarageEast" type="CSGPolygon3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.198, 0)
+cast_shadow = 0
+polygon = PackedVector2Array(114.981481, -104.62963, 116.518519, -100.37037, 117, -95.5, 116.814815, -90.296296, 116.351852, -85.037037, 116, -80, 115.810185, -74.861111, 115.481481, -69.333333, 114.875, -63.75, 113.851852, -58.444444, 112.273148, -53.75, 110, -50, 106.916667, -47.25463, 103.111111, -45.259259, 98.75, -43.875, 94, -42.962963, 89.027778, -42.384259, 84, -42, 78.564815, -41.763889, 72.518519, -41.777778, 66.25, -42.125, 60.148148, -42.888889, 54.601852, -44.152778, 50, -46, 46.300926, -48.509259, 43.185185, -51.62963, 40.625, -55.25, 38.592593, -59.259259, 37.060185, -63.546296, 36, -68, 35.324074, -72.962963, 35.037037, -78.592593, 35.25, -84.5, 36.074074, -90.296296, 37.62037, -95.592593, 40, -100, 43.356481, -103.606481, 47.62963, -106.740741, 52.625, -109.375, 58.148148, -111.481481, 64.00463, -113.032407, 70, -114, 76.74537, -114.412037, 84.518519, -114.296296, 92.625, -113.625, 100.37037, -112.37037, 107.060185, -110.50463, 112, -108)
+depth = 0.2
+material = ExtResource("16_sand")
+
+[node name="IslandFortressWest" type="CSGPolygon3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.198, 0)
+cast_shadow = 0
+polygon = PackedVector2Array(-114, 52, -110, 49.425926, -104.666667, 47.407407, -98.5, 46, -92, 45.259259, -85.666667, 45.240741, -80, 46, -74.615741, 47.643519, -69.037037, 50.148148, -63.625, 53.375, -58.740741, 57.185185, -54.74537, 61.439815, -52, 66, -50.467593, 71.351852, -49.851852, 77.703704, -50.125, 84.5, -51.259259, 91.185185, -53.226852, 97.203704, -56, 102, -60.069444, 105.597222, -65.555556, 108.444444, -71.875, 110.625, -78.444444, 112.222222, -84.680556, 113.319444, -90, 114, -94.546296, 114.296296, -98.814815, 114.148148, -102.75, 113.5, -106.296296, 112.296296, -109.398148, 110.481481, -112, 108, -114.041667, 104.606481, -115.555556, 100.296296, -116.625, 95.375, -117.333333, 90.148148, -117.763889, 84.921296, -118, 80, -118.259259, 75.078704, -118.518519, 69.851852, -118.5, 64.625, -117.925926, 59.703704, -116.518519, 55.393519)
+depth = 0.2
+material = ExtResource("16_sand")
+
+[node name="IslandFortressEast" type="CSGPolygon3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.198, 0)
+cast_shadow = 0
+polygon = PackedVector2Array(116.518519, 55.393519, 117.925926, 59.703704, 118.5, 64.625, 118.518519, 69.851852, 118.259259, 75.078704, 118, 80, 117.763889, 84.921296, 117.333333, 90.148148, 116.625, 95.375, 115.555556, 100.296296, 114.041667, 104.606481, 112, 108, 109.398148, 110.481481, 106.296296, 112.296296, 102.75, 113.5, 98.814815, 114.148148, 94.546296, 114.296296, 90, 114, 84.680556, 113.319444, 78.444444, 112.222222, 71.875, 110.625, 65.555556, 108.444444, 60.069444, 105.597222, 56, 102, 53.226852, 97.203704, 51.259259, 91.185185, 50.125, 84.5, 49.851852, 77.703704, 50.467593, 71.351852, 52, 66, 54.74537, 61.439815, 58.740741, 57.185185, 63.625, 53.375, 69.037037, 50.148148, 74.615741, 47.643519, 80, 46, 85.666667, 45.240741, 92, 45.259259, 98.5, 46, 104.666667, 47.407407, 110, 49.425926, 114, 52)
+depth = 0.2
+material = ExtResource("16_sand")
+
+[node name="BedFordWest1" type="CSGPolygon3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.2, 0)
+cast_shadow = 0
+polygon = PackedVector2Array(-56.66847, -48.511111, -28.748949, -23.129728, -19.33153, -33.488889, -47.251051, -58.870272)
+depth = 0.2
+material = ExtResource("16_sand")
+
+[node name="BedFordEast1" type="CSGPolygon3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.2, 0)
+cast_shadow = 0
+polygon = PackedVector2Array(47.251051, -58.870272, 19.33153, -33.488889, 28.748949, -23.129728, 56.66847, -48.511111)
+depth = 0.2
+material = ExtResource("16_sand")
+
+[node name="BedFordWest2" type="CSGPolygon3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.2, 0)
+cast_shadow = 0
+polygon = PackedVector2Array(-108, -56, -108, 58, -94, 58, -94, -56)
+depth = 0.2
+material = ExtResource("16_sand")
+
+[node name="BedFordEast2" type="CSGPolygon3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.2, 0)
+cast_shadow = 0
+polygon = PackedVector2Array(94, -56, 94, 58, 108, 58, 108, -56)
+depth = 0.2
+material = ExtResource("16_sand")
+
+[node name="BedFordWest3" type="CSGPolygon3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.2, 0)
+cast_shadow = 0
+polygon = PackedVector2Array(-34.332792, 23.658849, -65.016717, 66.144283, -53.667208, 74.341151, -22.983283, 31.855717)
+depth = 0.2
+material = ExtResource("16_sand")
+
+[node name="BedFordEast3" type="CSGPolygon3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.2, 0)
+cast_shadow = 0
+polygon = PackedVector2Array(22.983283, 31.855717, 53.667208, 74.341151, 65.016717, 66.144283, 34.332792, 23.658849)
+depth = 0.2
+material = ExtResource("16_sand")
+
+[node name="BedFordNorth" type="CSGPolygon3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.2, 0)
+cast_shadow = 0
+polygon = PackedVector2Array(-42, -93, 42, -93, 42, -107, -42, -107)
+depth = 0.2
+material = ExtResource("16_sand")
+
+[node name="BedFordSouth" type="CSGPolygon3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.2, 0)
+cast_shadow = 0
+polygon = PackedVector2Array(-58, 111, 58, 111, 58, 97, -58, 97)
+depth = 0.2
+material = ExtResource("16_sand")
+
+[node name="SeaWall" type="CSGCombiner3D" parent="Terrain"]
+use_collision = true
+collision_layer = 32
+collision_mask = 0
+layers = 0
+cast_shadow = 0
+
+[node name="Slab" type="CSGBox3D" parent="Terrain/SeaWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+size = Vector3(260, 0.4, 260)
+
+[node name="CutIslandMiddle" type="CSGPolygon3D" parent="Terrain/SeaWall"]
+operation = 2
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -1, 0)
+polygon = PackedVector2Array(-40, -22, -37.481481, -27.194444, -34.074074, -31.777778, -30, -35.75, -25.481481, -39.111111, -20.740741, -41.861111, -16, -44, -11.037037, -45.527778, -5.62963, -46.444444, 0, -46.75, 5.62963, -46.444444, 11.037037, -45.527778, 16, -44, 20.740741, -41.861111, 25.481481, -39.111111, 30, -35.75, 34.074074, -31.777778, 37.481481, -27.194444, 40, -22, 41.666667, -15.685185, 42.666667, -8.148148, 43, 0, 42.666667, 8.148148, 41.666667, 15.685185, 40, 22, 37.481481, 27.194444, 34.074074, 31.777778, 30, 35.75, 25.481481, 39.111111, 20.740741, 41.861111, 16, 44, 11.037037, 45.527778, 5.62963, 46.444444, 0, 46.75, -5.62963, 46.444444, -11.037037, 45.527778, -16, 44, -20.740741, 41.861111, -25.481481, 39.111111, -30, 35.75, -34.074074, 31.777778, -37.481481, 27.194444, -40, 22, -41.666667, 15.685185, -42.666667, 8.148148, -43, 0, -42.666667, -8.148148, -41.666667, -15.685185)
+depth = 3.0
+
+[node name="CutIslandGarageWest" type="CSGPolygon3D" parent="Terrain/SeaWall"]
+operation = 2
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -1, 0)
+polygon = PackedVector2Array(-112, -108, -107.060185, -110.50463, -100.37037, -112.37037, -92.625, -113.625, -84.518519, -114.296296, -76.74537, -114.412037, -70, -114, -64.00463, -113.032407, -58.148148, -111.481481, -52.625, -109.375, -47.62963, -106.740741, -43.356481, -103.606481, -40, -100, -37.62037, -95.592593, -36.074074, -90.296296, -35.25, -84.5, -35.037037, -78.592593, -35.324074, -72.962963, -36, -68, -37.060185, -63.546296, -38.592593, -59.259259, -40.625, -55.25, -43.185185, -51.62963, -46.300926, -48.509259, -50, -46, -54.601852, -44.152778, -60.148148, -42.888889, -66.25, -42.125, -72.518519, -41.777778, -78.564815, -41.763889, -84, -42, -89.027778, -42.384259, -94, -42.962963, -98.75, -43.875, -103.111111, -45.259259, -106.916667, -47.25463, -110, -50, -112.273148, -53.75, -113.851852, -58.444444, -114.875, -63.75, -115.481481, -69.333333, -115.810185, -74.861111, -116, -80, -116.351852, -85.037037, -116.814815, -90.296296, -117, -95.5, -116.518519, -100.37037, -114.981481, -104.62963)
+depth = 3.0
+
+[node name="CutIslandGarageEast" type="CSGPolygon3D" parent="Terrain/SeaWall"]
+operation = 2
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -1, 0)
+polygon = PackedVector2Array(114.981481, -104.62963, 116.518519, -100.37037, 117, -95.5, 116.814815, -90.296296, 116.351852, -85.037037, 116, -80, 115.810185, -74.861111, 115.481481, -69.333333, 114.875, -63.75, 113.851852, -58.444444, 112.273148, -53.75, 110, -50, 106.916667, -47.25463, 103.111111, -45.259259, 98.75, -43.875, 94, -42.962963, 89.027778, -42.384259, 84, -42, 78.564815, -41.763889, 72.518519, -41.777778, 66.25, -42.125, 60.148148, -42.888889, 54.601852, -44.152778, 50, -46, 46.300926, -48.509259, 43.185185, -51.62963, 40.625, -55.25, 38.592593, -59.259259, 37.060185, -63.546296, 36, -68, 35.324074, -72.962963, 35.037037, -78.592593, 35.25, -84.5, 36.074074, -90.296296, 37.62037, -95.592593, 40, -100, 43.356481, -103.606481, 47.62963, -106.740741, 52.625, -109.375, 58.148148, -111.481481, 64.00463, -113.032407, 70, -114, 76.74537, -114.412037, 84.518519, -114.296296, 92.625, -113.625, 100.37037, -112.37037, 107.060185, -110.50463, 112, -108)
+depth = 3.0
+
+[node name="CutIslandFortressWest" type="CSGPolygon3D" parent="Terrain/SeaWall"]
+operation = 2
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -1, 0)
+polygon = PackedVector2Array(-114, 52, -110, 49.425926, -104.666667, 47.407407, -98.5, 46, -92, 45.259259, -85.666667, 45.240741, -80, 46, -74.615741, 47.643519, -69.037037, 50.148148, -63.625, 53.375, -58.740741, 57.185185, -54.74537, 61.439815, -52, 66, -50.467593, 71.351852, -49.851852, 77.703704, -50.125, 84.5, -51.259259, 91.185185, -53.226852, 97.203704, -56, 102, -60.069444, 105.597222, -65.555556, 108.444444, -71.875, 110.625, -78.444444, 112.222222, -84.680556, 113.319444, -90, 114, -94.546296, 114.296296, -98.814815, 114.148148, -102.75, 113.5, -106.296296, 112.296296, -109.398148, 110.481481, -112, 108, -114.041667, 104.606481, -115.555556, 100.296296, -116.625, 95.375, -117.333333, 90.148148, -117.763889, 84.921296, -118, 80, -118.259259, 75.078704, -118.518519, 69.851852, -118.5, 64.625, -117.925926, 59.703704, -116.518519, 55.393519)
+depth = 3.0
+
+[node name="CutIslandFortressEast" type="CSGPolygon3D" parent="Terrain/SeaWall"]
+operation = 2
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -1, 0)
+polygon = PackedVector2Array(116.518519, 55.393519, 117.925926, 59.703704, 118.5, 64.625, 118.518519, 69.851852, 118.259259, 75.078704, 118, 80, 117.763889, 84.921296, 117.333333, 90.148148, 116.625, 95.375, 115.555556, 100.296296, 114.041667, 104.606481, 112, 108, 109.398148, 110.481481, 106.296296, 112.296296, 102.75, 113.5, 98.814815, 114.148148, 94.546296, 114.296296, 90, 114, 84.680556, 113.319444, 78.444444, 112.222222, 71.875, 110.625, 65.555556, 108.444444, 60.069444, 105.597222, 56, 102, 53.226852, 97.203704, 51.259259, 91.185185, 50.125, 84.5, 49.851852, 77.703704, 50.467593, 71.351852, 52, 66, 54.74537, 61.439815, 58.740741, 57.185185, 63.625, 53.375, 69.037037, 50.148148, 74.615741, 47.643519, 80, 46, 85.666667, 45.240741, 92, 45.259259, 98.5, 46, 104.666667, 47.407407, 110, 49.425926, 114, 52)
+depth = 3.0
+
+[node name="CutFordWest1" type="CSGPolygon3D" parent="Terrain/SeaWall"]
+operation = 2
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -1, 0)
+polygon = PackedVector2Array(-56.66847, -48.511111, -28.748949, -23.129728, -19.33153, -33.488889, -47.251051, -58.870272)
+depth = 3.0
+
+[node name="CutFordEast1" type="CSGPolygon3D" parent="Terrain/SeaWall"]
+operation = 2
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -1, 0)
+polygon = PackedVector2Array(47.251051, -58.870272, 19.33153, -33.488889, 28.748949, -23.129728, 56.66847, -48.511111)
+depth = 3.0
+
+[node name="CutFordWest2" type="CSGPolygon3D" parent="Terrain/SeaWall"]
+operation = 2
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -1, 0)
+polygon = PackedVector2Array(-108, -56, -108, 58, -94, 58, -94, -56)
+depth = 3.0
+
+[node name="CutFordEast2" type="CSGPolygon3D" parent="Terrain/SeaWall"]
+operation = 2
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -1, 0)
+polygon = PackedVector2Array(94, -56, 94, 58, 108, 58, 108, -56)
+depth = 3.0
+
+[node name="CutFordWest3" type="CSGPolygon3D" parent="Terrain/SeaWall"]
+operation = 2
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -1, 0)
+polygon = PackedVector2Array(-34.332792, 23.658849, -65.016717, 66.144283, -53.667208, 74.341151, -22.983283, 31.855717)
+depth = 3.0
+
+[node name="CutFordEast3" type="CSGPolygon3D" parent="Terrain/SeaWall"]
+operation = 2
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -1, 0)
+polygon = PackedVector2Array(22.983283, 31.855717, 53.667208, 74.341151, 65.016717, 66.144283, 34.332792, 23.658849)
+depth = 3.0
+
+[node name="CutFordNorth" type="CSGPolygon3D" parent="Terrain/SeaWall"]
+operation = 2
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -1, 0)
+polygon = PackedVector2Array(-42, -93, 42, -93, 42, -107, -42, -107)
+depth = 3.0
+
+[node name="CutFordSouth" type="CSGPolygon3D" parent="Terrain/SeaWall"]
+operation = 2
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -1, 0)
+polygon = PackedVector2Array(-58, 111, 58, 111, 58, 97, -58, 97)
+depth = 3.0
+
+[node name="FordWest1" parent="." instance=ExtResource("7_ford")]
+transform = Transform3D(0.672673, 0, 0.73994, 0, 1, 0, -0.73994, 0, 0.672673, -38, 0, -41)
+
+[node name="CollisionShape3D" parent="FordWest1"]
+shape = SubResource("BoxShape3D_FordWest1")
+
+[node name="Water" parent="FordWest1"]
+mesh = SubResource("PlaneMesh_FordWest1")
+
+[node name="FordEast1" parent="." instance=ExtResource("7_ford")]
+transform = Transform3D(0.672673, 0, -0.73994, 0, 1, 0, 0.73994, 0, 0.672673, 38, 0, -41)
+
+[node name="CollisionShape3D" parent="FordEast1"]
+shape = SubResource("BoxShape3D_FordEast1")
+
+[node name="Water" parent="FordEast1"]
+mesh = SubResource("PlaneMesh_FordEast1")
+
+[node name="FordWest2" parent="." instance=ExtResource("7_ford")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -101, 0, 1)
+
+[node name="CollisionShape3D" parent="FordWest2"]
+shape = SubResource("BoxShape3D_FordWest2")
+
+[node name="Water" parent="FordWest2"]
+mesh = SubResource("PlaneMesh_FordWest2")
+
+[node name="FordEast2" parent="." instance=ExtResource("7_ford")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 101, 0, 1)
+
+[node name="CollisionShape3D" parent="FordEast2"]
+shape = SubResource("BoxShape3D_FordEast2")
+
+[node name="Water" parent="FordEast2"]
+mesh = SubResource("PlaneMesh_FordEast2")
+
+[node name="FordWest3" parent="." instance=ExtResource("7_ford")]
+transform = Transform3D(0.810679, 0, -0.585491, 0, 1, 0, 0.585491, 0, 0.810679, -44, 0, 49)
+
+[node name="CollisionShape3D" parent="FordWest3"]
+shape = SubResource("BoxShape3D_FordWest3")
+
+[node name="Water" parent="FordWest3"]
+mesh = SubResource("PlaneMesh_FordWest3")
+
+[node name="FordEast3" parent="." instance=ExtResource("7_ford")]
+transform = Transform3D(0.810679, 0, 0.585491, 0, 1, 0, -0.585491, 0, 0.810679, 44, 0, 49)
+
+[node name="CollisionShape3D" parent="FordEast3"]
+shape = SubResource("BoxShape3D_FordEast3")
+
+[node name="Water" parent="FordEast3"]
+mesh = SubResource("PlaneMesh_FordEast3")
+
+[node name="FordNorth" parent="." instance=ExtResource("7_ford")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 0, -100)
+
+[node name="CollisionShape3D" parent="FordNorth"]
+shape = SubResource("BoxShape3D_FordNorth")
+
+[node name="Water" parent="FordNorth"]
+mesh = SubResource("PlaneMesh_FordNorth")
+
+[node name="FordSouth" parent="." instance=ExtResource("7_ford")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 0, 104)
+
+[node name="CollisionShape3D" parent="FordSouth"]
+shape = SubResource("BoxShape3D_FordSouth")
+
+[node name="Water" parent="FordSouth"]
+mesh = SubResource("PlaneMesh_FordSouth")
+
+[node name="PuddleWest1" parent="." instance=ExtResource("7_ford")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -62, 0, -62)
+
+[node name="CollisionShape3D" parent="PuddleWest1"]
+shape = SubResource("BoxShape3D_PuddleWest1")
+
+[node name="Water" parent="PuddleWest1"]
+mesh = SubResource("PlaneMesh_PuddleWest1")
+
+[node name="PuddleEast1" parent="." instance=ExtResource("7_ford")]
+transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 62, 0, -62)
+
+[node name="CollisionShape3D" parent="PuddleEast1"]
+shape = SubResource("BoxShape3D_PuddleEast1")
+
+[node name="Water" parent="PuddleEast1"]
+mesh = SubResource("PlaneMesh_PuddleEast1")
+
+[node name="PuddleWest2" parent="." instance=ExtResource("7_ford")]
+transform = Transform3D(0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, 0.939693, -88, 0, -52)
+
+[node name="CollisionShape3D" parent="PuddleWest2"]
+shape = SubResource("BoxShape3D_PuddleWest2")
+
+[node name="Water" parent="PuddleWest2"]
+mesh = SubResource("PlaneMesh_PuddleWest2")
+
+[node name="PuddleEast2" parent="." instance=ExtResource("7_ford")]
+transform = Transform3D(0.939693, 0, 0.34202, 0, 1, 0, -0.34202, 0, 0.939693, 88, 0, -52)
+
+[node name="CollisionShape3D" parent="PuddleEast2"]
+shape = SubResource("BoxShape3D_PuddleEast2")
+
+[node name="Water" parent="PuddleEast2"]
+mesh = SubResource("PlaneMesh_PuddleEast2")
+
+[node name="PuddleWest3" parent="." instance=ExtResource("7_ford")]
+transform = Transform3D(0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, -18, 0, 28)
+
+[node name="CollisionShape3D" parent="PuddleWest3"]
+shape = SubResource("BoxShape3D_PuddleWest3")
+
+[node name="Water" parent="PuddleWest3"]
+mesh = SubResource("PlaneMesh_PuddleWest3")
+
+[node name="PuddleEast3" parent="." instance=ExtResource("7_ford")]
+transform = Transform3D(0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, 18, 0, 28)
+
+[node name="CollisionShape3D" parent="PuddleEast3"]
+shape = SubResource("BoxShape3D_PuddleEast3")
+
+[node name="Water" parent="PuddleEast3"]
+mesh = SubResource("PlaneMesh_PuddleEast3")
+
+[node name="PuddleWest4" parent="." instance=ExtResource("7_ford")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -112, 0, 90)
+
+[node name="CollisionShape3D" parent="PuddleWest4"]
+shape = SubResource("BoxShape3D_PuddleWest4")
+
+[node name="Water" parent="PuddleWest4"]
+mesh = SubResource("PlaneMesh_PuddleWest4")
+
+[node name="PuddleEast4" parent="." instance=ExtResource("7_ford")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 112, 0, 90)
+
+[node name="CollisionShape3D" parent="PuddleEast4"]
+shape = SubResource("BoxShape3D_PuddleEast4")
+
+[node name="Water" parent="PuddleEast4"]
+mesh = SubResource("PlaneMesh_PuddleEast4")
+
+[node name="Cliffs" type="Node3D" parent="."]
+
+[node name="RockWest1" type="CSGPolygon3D" parent="Cliffs"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.5, 0)
+use_collision = true
+collision_layer = 32
+collision_mask = 0
+polygon = PackedVector2Array(-14, -12, -6, -20, -2, -9, -10, -4)
+depth = 2.5
+material = ExtResource("17_ridge")
+
+[node name="RockEast1" type="CSGPolygon3D" parent="Cliffs"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.5, 0)
+use_collision = true
+collision_layer = 32
+collision_mask = 0
+polygon = PackedVector2Array(10, -4, 2, -9, 6, -20, 14, -12)
+depth = 2.5
+material = ExtResource("17_ridge")
+
+[node name="RockWest2" type="CSGPolygon3D" parent="Cliffs"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.5, 0)
+use_collision = true
+collision_layer = 32
+collision_mask = 0
+polygon = PackedVector2Array(-14, 12, -6, 9, -2, 20, -10, 24)
+depth = 2.5
+material = ExtResource("17_ridge")
+
+[node name="RockEast2" type="CSGPolygon3D" parent="Cliffs"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.5, 0)
+use_collision = true
+collision_layer = 32
+collision_mask = 0
+polygon = PackedVector2Array(10, 24, 2, 20, 6, 9, 14, 12)
+depth = 2.5
+material = ExtResource("17_ridge")
+
+[node name="RockWest3" type="CSGPolygon3D" parent="Cliffs"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.5, 0)
+use_collision = true
+collision_layer = 32
+collision_mask = 0
+polygon = PackedVector2Array(-104, -96, -95, -102, -89, -93, -98, -88)
+depth = 2.5
+material = ExtResource("17_ridge")
+
+[node name="RockEast3" type="CSGPolygon3D" parent="Cliffs"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.5, 0)
+use_collision = true
+collision_layer = 32
+collision_mask = 0
+polygon = PackedVector2Array(98, -88, 89, -93, 95, -102, 104, -96)
+depth = 2.5
+material = ExtResource("17_ridge")
+
+[node name="FortressOrange" parent="." instance=ExtResource("4_flag_fortress")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -88, 0, 82)
+
+[node name="FortressTeal" parent="." instance=ExtResource("4_flag_fortress")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 88, 0, 82)
+
+[node name="GarageOrange" parent="." node_paths=PackedStringArray("flag", "flag_seat", "flag_zone", "color_meshes", "structures") instance=ExtResource("3_garage_base")]
+transform = Transform3D(-0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, -0.707107, -86, 0, -76)
+color_material = ExtResource("5_team_orange_material")
+flag = NodePath("../FortressOrange/Flag")
+flag_seat = NodePath("../FortressOrange/FlagSeat")
+flag_zone = NodePath("../FortressOrange/FlagZone")
+color_meshes = [NodePath("Garage/Marking/Dash01"), NodePath("Garage/Marking/Dash02"), NodePath("Garage/Marking/Dash03"), NodePath("Garage/Marking/Dash04"), NodePath("Garage/Marking/Dash05"), NodePath("Garage/Marking/Dash06"), NodePath("Garage/Marking/Dash07"), NodePath("Garage/Marking/Dash08"), NodePath("Garage/Marking/Dash09"), NodePath("Garage/Marking/Dash10"), NodePath("Garage/Marking/Dash11"), NodePath("Garage/Marking/Dash12"), NodePath("Garage/Marking/Dash13"), NodePath("Garage/Marking/Dash14"), NodePath("Mast/Pennant"), NodePath("../FortressOrange/Walls/TowerGateLeft/Mesh"), NodePath("../FortressOrange/Walls/TowerGateRight/Mesh"), NodePath("../FortressOrange/Walls/TowerBackLeft/Mesh"), NodePath("../FortressOrange/Walls/TowerBackRight/Mesh"), NodePath("../FortressOrange/WaterTower/Roof"), NodePath("../FortressOrange/WaterTower/Tank"), NodePath("../FortressOrange/Turrets/TurretLeft/Look/Head/Band"), NodePath("../FortressOrange/Turrets/TurretRight/Look/Head/Band")]
+structures = [NodePath("Garage/GarageBack/Panel1"), NodePath("Garage/GarageBack/Panel2"), NodePath("Garage/GarageBack/Panel3"), NodePath("Garage/GarageBack/Panel4"), NodePath("Garage/GarageSideLeft/Panel1"), NodePath("Garage/GarageSideLeft/Panel2"), NodePath("Garage/GarageSideLeft/Panel3"), NodePath("Garage/GarageSideRight/Panel1"), NodePath("Garage/GarageSideRight/Panel2"), NodePath("Garage/GarageSideRight/Panel3"), NodePath("../FortressOrange/Walls/WallBack/Panel1"), NodePath("../FortressOrange/Walls/WallBack/Panel2"), NodePath("../FortressOrange/Walls/WallBack/Panel3"), NodePath("../FortressOrange/Walls/WallBack/Panel4"), NodePath("../FortressOrange/Walls/WallBack/Panel5"), NodePath("../FortressOrange/Walls/WallBack/Panel6"), NodePath("../FortressOrange/Walls/WallBack/Panel7"), NodePath("../FortressOrange/Walls/WallBack/Panel8"), NodePath("../FortressOrange/Walls/WallLeft/Panel1"), NodePath("../FortressOrange/Walls/WallLeft/Panel2"), NodePath("../FortressOrange/Walls/WallLeft/Panel3"), NodePath("../FortressOrange/Walls/WallLeft/Panel4"), NodePath("../FortressOrange/Walls/WallLeft/Panel5"), NodePath("../FortressOrange/Walls/WallLeft/Panel6"), NodePath("../FortressOrange/Walls/WallLeft/Panel7"), NodePath("../FortressOrange/Walls/WallLeft/Panel8"), NodePath("../FortressOrange/Walls/WallRight/Panel1"), NodePath("../FortressOrange/Walls/WallRight/Panel2"), NodePath("../FortressOrange/Walls/WallRight/Panel3"), NodePath("../FortressOrange/Walls/WallRight/Panel4"), NodePath("../FortressOrange/Walls/WallRight/Panel5"), NodePath("../FortressOrange/Walls/WallRight/Panel6"), NodePath("../FortressOrange/Walls/WallRight/Panel7"), NodePath("../FortressOrange/Walls/WallRight/Panel8"), NodePath("../FortressOrange/Walls/GateWallLeft/Panel1"), NodePath("../FortressOrange/Walls/GateWallLeft/Panel2"), NodePath("../FortressOrange/Walls/GateWallLeft/Panel3"), NodePath("../FortressOrange/Walls/GateWallRight/Panel1"), NodePath("../FortressOrange/Walls/GateWallRight/Panel2"), NodePath("../FortressOrange/Walls/GateWallRight/Panel3"), NodePath("../FortressOrange/Defences/FlagWallGate"), NodePath("../FortressOrange/Defences/FlagWallGarage"), NodePath("../FortressOrange/Defences/FlagWallLeft"), NodePath("../FortressOrange/Defences/FlagWallRight"), NodePath("../FortressOrange/Turrets/TurretLeft"), NodePath("../FortressOrange/Turrets/TurretRight")]
+
+[node name="GarageTeal" parent="." node_paths=PackedStringArray("flag", "flag_seat", "flag_zone", "color_meshes", "structures", "spawn_point", "spare_spawn_points") instance=ExtResource("3_garage_base")]
+transform = Transform3D(-0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, -0.707107, 86, 0, -76)
+color_material = ExtResource("6_team_teal_material")
+flag = NodePath("../FortressTeal/Flag")
+flag_seat = NodePath("../FortressTeal/FlagSeat")
+flag_zone = NodePath("../FortressTeal/FlagZone")
+color_meshes = [NodePath("Garage/Marking/Dash01"), NodePath("Garage/Marking/Dash02"), NodePath("Garage/Marking/Dash03"), NodePath("Garage/Marking/Dash04"), NodePath("Garage/Marking/Dash05"), NodePath("Garage/Marking/Dash06"), NodePath("Garage/Marking/Dash07"), NodePath("Garage/Marking/Dash08"), NodePath("Garage/Marking/Dash09"), NodePath("Garage/Marking/Dash10"), NodePath("Garage/Marking/Dash11"), NodePath("Garage/Marking/Dash12"), NodePath("Garage/Marking/Dash13"), NodePath("Garage/Marking/Dash14"), NodePath("Mast/Pennant"), NodePath("../FortressTeal/Walls/TowerGateLeft/Mesh"), NodePath("../FortressTeal/Walls/TowerGateRight/Mesh"), NodePath("../FortressTeal/Walls/TowerBackLeft/Mesh"), NodePath("../FortressTeal/Walls/TowerBackRight/Mesh"), NodePath("../FortressTeal/WaterTower/Roof"), NodePath("../FortressTeal/WaterTower/Tank"), NodePath("../FortressTeal/Turrets/TurretLeft/Look/Head/Band"), NodePath("../FortressTeal/Turrets/TurretRight/Look/Head/Band")]
+structures = [NodePath("Garage/GarageBack/Panel1"), NodePath("Garage/GarageBack/Panel2"), NodePath("Garage/GarageBack/Panel3"), NodePath("Garage/GarageBack/Panel4"), NodePath("Garage/GarageSideLeft/Panel1"), NodePath("Garage/GarageSideLeft/Panel2"), NodePath("Garage/GarageSideLeft/Panel3"), NodePath("Garage/GarageSideRight/Panel1"), NodePath("Garage/GarageSideRight/Panel2"), NodePath("Garage/GarageSideRight/Panel3"), NodePath("../FortressTeal/Walls/WallBack/Panel1"), NodePath("../FortressTeal/Walls/WallBack/Panel2"), NodePath("../FortressTeal/Walls/WallBack/Panel3"), NodePath("../FortressTeal/Walls/WallBack/Panel4"), NodePath("../FortressTeal/Walls/WallBack/Panel5"), NodePath("../FortressTeal/Walls/WallBack/Panel6"), NodePath("../FortressTeal/Walls/WallBack/Panel7"), NodePath("../FortressTeal/Walls/WallBack/Panel8"), NodePath("../FortressTeal/Walls/WallLeft/Panel1"), NodePath("../FortressTeal/Walls/WallLeft/Panel2"), NodePath("../FortressTeal/Walls/WallLeft/Panel3"), NodePath("../FortressTeal/Walls/WallLeft/Panel4"), NodePath("../FortressTeal/Walls/WallLeft/Panel5"), NodePath("../FortressTeal/Walls/WallLeft/Panel6"), NodePath("../FortressTeal/Walls/WallLeft/Panel7"), NodePath("../FortressTeal/Walls/WallLeft/Panel8"), NodePath("../FortressTeal/Walls/WallRight/Panel1"), NodePath("../FortressTeal/Walls/WallRight/Panel2"), NodePath("../FortressTeal/Walls/WallRight/Panel3"), NodePath("../FortressTeal/Walls/WallRight/Panel4"), NodePath("../FortressTeal/Walls/WallRight/Panel5"), NodePath("../FortressTeal/Walls/WallRight/Panel6"), NodePath("../FortressTeal/Walls/WallRight/Panel7"), NodePath("../FortressTeal/Walls/WallRight/Panel8"), NodePath("../FortressTeal/Walls/GateWallLeft/Panel1"), NodePath("../FortressTeal/Walls/GateWallLeft/Panel2"), NodePath("../FortressTeal/Walls/GateWallLeft/Panel3"), NodePath("../FortressTeal/Walls/GateWallRight/Panel1"), NodePath("../FortressTeal/Walls/GateWallRight/Panel2"), NodePath("../FortressTeal/Walls/GateWallRight/Panel3"), NodePath("../FortressTeal/Defences/FlagWallGate"), NodePath("../FortressTeal/Defences/FlagWallGarage"), NodePath("../FortressTeal/Defences/FlagWallLeft"), NodePath("../FortressTeal/Defences/FlagWallRight"), NodePath("../FortressTeal/Turrets/TurretLeft"), NodePath("../FortressTeal/Turrets/TurretRight")]
+spawn_point = NodePath("SpareSpawnRight")
+spare_spawn_points = [NodePath("SpareSpawnLeft")]
+
+[node name="FuelWest1" parent="." instance=ExtResource("9_map_02_fuel_building")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -60, 0, -98)
+
+[node name="FuelEast1" parent="." instance=ExtResource("9_map_02_fuel_building")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 60, 0, -98)
+
+[node name="FuelWest2" parent="." instance=ExtResource("9_map_02_fuel_building")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26, 0, 0)
+
+[node name="FuelEast2" parent="." instance=ExtResource("9_map_02_fuel_building")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 26, 0, 0)
+
+[node name="AmmoWest1" parent="." instance=ExtResource("8_ammo_building")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -104, 0, -62)
+
+[node name="AmmoEast1" parent="." instance=ExtResource("8_ammo_building")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 104, 0, -62)
+
+[node name="AmmoWest2" parent="." instance=ExtResource("8_ammo_building")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 0, 102)
+
+[node name="AmmoEast2" parent="." instance=ExtResource("8_ammo_building")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 110, 0, 102)
+
+[node name="Cover" type="Node3D" parent="."]
+
+[node name="WreckWest1" parent="Cover" instance=ExtResource("13_wreck")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -20, 0, -26)
+
+[node name="WreckEast1" parent="Cover" instance=ExtResource("13_wreck")]
+transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 20, 0, -26)
+
+[node name="WreckWest2" parent="Cover" instance=ExtResource("13_wreck")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -6, 0, 0)
+
+[node name="WreckEast2" parent="Cover" instance=ExtResource("13_wreck")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 6, 0, 0)
+
+[node name="WreckWest3" parent="Cover" instance=ExtResource("13_wreck")]
+transform = Transform3D(0.984808, 0, 0.173648, 0, 1, 0, -0.173648, 0, 0.984808, -78, 0, -94)
+
+[node name="WreckEast3" parent="Cover" instance=ExtResource("13_wreck")]
+transform = Transform3D(0.984808, 0, -0.173648, 0, 1, 0, 0.173648, 0, 0.984808, 78, 0, -94)
+
+[node name="WreckWest4" parent="Cover" instance=ExtResource("13_wreck")]
+transform = Transform3D(0.173648, 0, 0.984808, 0, 1, 0, -0.984808, 0, 0.173648, -101, 0, 10)
+
+[node name="WreckEast4" parent="Cover" instance=ExtResource("13_wreck")]
+transform = Transform3D(0.173648, 0, -0.984808, 0, 1, 0, 0.984808, 0, 0.173648, 101, 0, 10)
+
+[node name="WreckWest5" parent="Cover" instance=ExtResource("13_wreck")]
+transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, -44, 0, 50)
+
+[node name="WreckEast5" parent="Cover" instance=ExtResource("13_wreck")]
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 44, 0, 50)
+
+[node name="WreckWest6" parent="Cover" instance=ExtResource("13_wreck")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0, -100)
+
+[node name="WreckEast6" parent="Cover" instance=ExtResource("13_wreck")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, -100)
+
+[node name="WreckWest7" parent="Cover" instance=ExtResource("13_wreck")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26, 0, 104)
+
+[node name="WreckEast7" parent="Cover" instance=ExtResource("13_wreck")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 0, 104)
+
+[node name="ShackWest1" parent="Cover" instance=ExtResource("14_shack_long")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, 16)
+
+[node name="ShackEast1" parent="Cover" instance=ExtResource("14_shack_long")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 30, 0, 16)
+
+[node name="ShackWest2" parent="Cover" instance=ExtResource("15_shack_square")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -82, 0, 106)
+
+[node name="ShackEast2" parent="Cover" instance=ExtResource("15_shack_square")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 82, 0, 106)
+
+[node name="BushWest1" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(0.798636, 0, 0.601815, 0, 1, 0, -0.601815, 0, 0.798636, -30, 0, -14)
+
+[node name="BushEast1" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(0.798636, 0, -0.601815, 0, 1, 0, 0.601815, 0, 0.798636, 30, 0, -14)
+
+[node name="BushWest2" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(0.275637, 0, 0.961262, 0, 1, 0, -0.961262, 0, 0.275637, -8, 0, -32)
+
+[node name="BushEast2" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(0.275637, 0, -0.961262, 0, 1, 0, 0.961262, 0, 0.275637, 8, 0, -32)
+
+[node name="BushWest3" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(-0.358368, 0, 0.93358, 0, 1, 0, -0.93358, 0, -0.358368, -8, 0, 34)
+
+[node name="BushEast3" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(-0.358368, 0, -0.93358, 0, 1, 0, 0.93358, 0, -0.358368, 8, 0, 34)
+
+[node name="BushWest4" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(-0.848048, 0, 0.529919, 0, 1, 0, -0.529919, 0, -0.848048, -62, 0, -74)
+
+[node name="BushEast4" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(-0.848048, 0, -0.529919, 0, 1, 0, 0.529919, 0, -0.848048, 62, 0, -74)
+
+[node name="BushWest5" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(-0.996195, 0, -0.087156, 0, 1, 0, 0.087156, 0, -0.996195, -72, 0, -56)
+
+[node name="BushEast5" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(-0.996195, 0, 0.087156, 0, 1, 0, -0.087156, 0, -0.996195, 72, 0, -56)
+
+[node name="BushWest6" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(-0.743145, 0, -0.669131, 0, 1, 0, 0.669131, 0, -0.743145, -108, 0, -96)
+
+[node name="BushEast6" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(-0.743145, 0, 0.669131, 0, 1, 0, -0.669131, 0, -0.743145, 108, 0, -96)
+
+[node name="BushWest7" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(-0.190809, 0, -0.981627, 0, 1, 0, 0.981627, 0, -0.190809, -48, 0, -82)
+
+[node name="BushEast7" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(-0.190809, 0, 0.981627, 0, 1, 0, -0.981627, 0, -0.190809, 48, 0, -82)
+
+[node name="BushWest8" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(0.438371, 0, -0.898794, 0, 1, 0, 0.898794, 0, 0.438371, -70, 0, 108)
+
+[node name="BushEast8" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(0.438371, 0, 0.898794, 0, 1, 0, -0.898794, 0, 0.438371, 70, 0, 108)
+
+[node name="BushWest9" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(0.891007, 0, -0.45399, 0, 1, 0, 0.45399, 0, 0.891007, -110, 0, 64)
+
+[node name="BushEast9" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(0.891007, 0, 0.45399, 0, 1, 0, -0.45399, 0, 0.891007, 110, 0, 64)
+
+[node name="BushWest10" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(0.984808, 0, 0.173648, 0, 1, 0, -0.173648, 0, 0.984808, -64, 0, -104)
+
+[node name="BushEast10" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(0.984808, 0, -0.173648, 0, 1, 0, 0.173648, 0, 0.984808, 64, 0, -104)
+
+[node name="BushWest11" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(0.681998, 0, 0.731354, 0, 1, 0, -0.731354, 0, 0.681998, -62, 0, 80)
+
+[node name="BushEast11" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(0.681998, 0, -0.731354, 0, 1, 0, 0.731354, 0, 0.681998, 62, 0, 80)
+
+[node name="BushWest12" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(0.104528, 0, 0.994522, 0, 1, 0, -0.994522, 0, 0.104528, -34, 0, -2)
+
+[node name="BushEast12" parent="Cover" instance=ExtResource("12_bush")]
+transform = Transform3D(0.104528, 0, -0.994522, 0, 1, 0, 0.994522, 0, 0.104528, 34, 0, -2)
+
+[node name="TyreTracks" parent="." instance=ExtResource("10_tyre_tracks")]
+settings = ExtResource("11_map_03_tyre_track_settings")
+
+[editable path="FordWest1"]
+[editable path="FordEast1"]
+[editable path="FordWest2"]
+[editable path="FordEast2"]
+[editable path="FordWest3"]
+[editable path="FordEast3"]
+[editable path="FordNorth"]
+[editable path="FordSouth"]
+[editable path="PuddleWest1"]
+[editable path="PuddleEast1"]
+[editable path="PuddleWest2"]
+[editable path="PuddleEast2"]
+[editable path="PuddleWest3"]
+[editable path="PuddleEast3"]
+[editable path="PuddleWest4"]
+[editable path="PuddleEast4"]
