@@ -528,6 +528,7 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"chase_showcase": preload("res://tools/evidence/split_screen/chase_showcase.gd"),
 	&"chase_showcase_two": preload("res://tools/evidence/split_screen/chase_showcase_two.gd"),
 	&"fire_heights": preload("res://tools/evidence/split_screen/fire_heights.gd"),
+	&"rockets_showcase": preload("res://tools/evidence/split_screen/rockets_showcase.gd"),
 	&"fire_heights_showcase": preload("res://tools/evidence/split_screen/fire_heights_showcase.gd"),
 	&"secondary": preload("res://tools/evidence/split_screen/secondary.gd"),
 	&"real_flag": preload("res://tools/evidence/split_screen/real_flag.gd"),

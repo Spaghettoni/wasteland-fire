@@ -11,6 +11,8 @@ extends RefCounted
 ##     Wall Panel at Player 1's Gyrocopter and hits it, and does not fire at Player 1's Buggy behind the same panel.
 ##  H6 the inputs: Right Shift fires Player 2's Weapon high, Left Shift Player 1's, a pad's RB Player 1's; a high shot's tracer
 ##     is drawn high_shot_lift above its flight line, a low one's on it.
+##  H8 the looks (Story 061): a Unit's high Shot is the red rocket (shot_rocket.tscn), its low Shot the yellow tracer
+##     (shot.tscn); the Turret's Shots, high over the panel in H5 too, are all the yellow tracer.
 ##  H7 the data: match_rules.tres masks 67 (low) and 17 (high), lift 2.9; the two high fire actions on the two Shift keys.
 ## Implements: production/epics/wasteland-fire/story-041-fire-in-two-heights.md AC-1 to AC-7.
 ## Tooling only: nothing under src/ depends on this file.
@@ -63,6 +65,8 @@ const PAD_1: int = 0
 var _m: M2
 var _floor: StaticBody3D
 var _lifts: Array[float] = []
+var _scenes: Array[String] = []
+var _turret_scenes: Array[String] = []
 var _new_shots: Array[Shot] = []
 
 
@@ -102,6 +106,7 @@ func _note_lifts() -> void:
 	for shot: Shot in _new_shots:
 		if is_instance_valid(shot) and shot.tracer != null:
 			_lifts.append(shot.tracer.position.y)
+			_scenes.append(shot.scene_file_path.get_file())
 	_new_shots.clear()
 
 
@@ -218,7 +223,9 @@ func _check_turret() -> void:
 	var after_high: float = turret.hit_points
 	turret.restore()
 	var fired: Array[int] = [0]
-	turret.fired.connect(func(_shot: Shot) -> void: fired[0] += 1)
+	turret.fired.connect(func(shot: Shot) -> void:
+		fired[0] += 1
+		_turret_scenes.append(shot.scene_file_path.get_file()))
 	turret.arm(_m.units[0], _m.units[0].get_parent(), _m.controller.rules)
 	var panel: Structure = PANEL_SCENE.instantiate() as Structure
 	_m.split.get_node("World").add_child(panel)
@@ -250,12 +257,16 @@ func _check_inputs() -> void:
 	await _m.put(1, M2.BUGGY, ARENA, Vector3.FORWARD)
 	var start: float = _m.units[0].hit_points
 	_lifts.clear()
+	_scenes.clear()
 	await _fire(1, true)
 	var right_shift: float = start - _m.units[0].hit_points
 	var high_lifts: Array[float] = _lifts.duplicate()
+	var high_scenes: Array[String] = _scenes.duplicate()
 	_lifts.clear()
+	_scenes.clear()
 	await _fire(1, false)
 	var low_lifts: Array[float] = _lifts.duplicate()
+	var low_scenes: Array[String] = _scenes.duplicate()
 	# A pad's RB: Player 1 fires high at Player 2's Gyrocopter.
 	await _stage(M2.BUGGY, M2.GYROCOPTER)
 	var pads: PadAssignment = _m.split.get_node("PadAssignment") as PadAssignment
@@ -276,6 +287,13 @@ func _check_inputs() -> void:
 	_m.kit.need(problems, not high_lifts.is_empty() and high_lifts.all(func(y: float) -> bool: return is_equal_approx(y, LIFT)), "high tracers drawn at %s" % [high_lifts])
 	_m.kit.need(problems, not low_lifts.is_empty() and low_lifts.all(func(y: float) -> bool: return is_zero_approx(y)), "low tracers drawn at %s" % [low_lifts])
 	_m.kit.verdict("H6_inputs", problems, "Right Shift -%.1f, RB -%.1f (Left Shift: H1); tracers high %s, low %s" % [right_shift, rb, high_lifts.slice(0, 1), low_lifts.slice(0, 1)])
+	var looks: PackedStringArray = PackedStringArray()
+	var only: Callable = func(list: Array[String], file: String) -> bool: return not list.is_empty() and list.all(func(each: String) -> bool: return each == file)
+	_m.kit.need(looks, only.call(high_scenes, "shot_rocket.tscn"), "a Unit's high Shots %s" % [high_scenes])
+	_m.kit.need(looks, only.call(low_scenes, "shot.tscn"), "a Unit's low Shots %s" % [low_scenes])
+	_m.kit.need(looks, only.call(_turret_scenes, "shot.tscn"), "the Turret's Shots %s" % [_turret_scenes])
+	_m.kit.verdict("H8_looks", looks, "a Unit's high Shots %s, low %s; the Turret's (%d, high over the panel among them) %s" % [
+		high_scenes.slice(0, 1), low_scenes.slice(0, 1), _turret_scenes.size(), _turret_scenes.slice(0, 1)])
 
 
 func _check_data() -> void:

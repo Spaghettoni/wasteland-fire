@@ -6,6 +6,8 @@ extends RefCounted
 ##  A2 the sea: a Buggy driven north out of Orange's Garage island stops at the shore; a Gyrocopter driven the same way
 ##     flies on over the sea.
 ##  A3 a ford: a Buggy driven from the Garage island along the ford to the middle island reaches it.
+##  A6 the Turrets (Martin, 2026-10-26): each Team's Base lists 6 Turrets (the fortress's 2 at the Gate and 1 outside each other
+##     wall, and 1 at the Garage), every one armed at the other Team.
 ##  A5 the shores (Martin, 2026-10-26): at each end of each ford a Buggy standing on the island 2.5 m from where the water
 ##     begins, facing along the ford, is in no ford's slowing zone; 3 m out on the water it is in that ford's.
 ##  A4 the Garage: a Motorbike carrying Teal's Flag inside Orange's fortress wins nothing; inside Orange's Garage it wins the
@@ -80,6 +82,8 @@ const SHORES: Array = [
 	[&"FordSouth", Vector3(60.70, 0, 104.00), Vector3(55.20, 0, 104.00), 90.00],
 ]
 const FAR: float = 100.0
+## A6: the Gate's 2, 3 more around the fortress and 1 at the Garage.
+const TURRETS_PER_BASE: int = 6
 const MIRROR_TOLERANCE: float = 0.05
 
 var _h: Harness
@@ -102,6 +106,7 @@ func run(harness: Node) -> void:
 	await _check_sea()
 	await _check_ford()
 	await _check_shores()
+	_check_turrets()
 	await _check_fortress()
 	_h.finish("map=map_03")
 
@@ -154,6 +159,22 @@ func _check_ford() -> void:
 	var at: Vector3 = _units[0].global_position
 	_kit.need(problems, at.x > MIDDLE_REACHED.x and at.z > MIDDLE_REACHED.y, "the Buggy ended at %s, not on the middle island" % _flat(at))
 	_kit.verdict("A3_a_ford", problems, "a Buggy from %s along the ford for %d ticks ended at %s (the middle island begins about %s)" % [_flat(FORD_START), FORD_TICKS, _flat(at), MIDDLE_REACHED])
+
+
+func _check_turrets() -> void:
+	var problems: PackedStringArray = PackedStringArray()
+	var counts: Array[int] = []
+	var armed: Array[int] = []
+	for base: Base in [_split.field.player_1_base, _split.field.player_2_base]:
+		var turrets: Array[Turret] = []
+		for structure: Structure in base.structures:
+			if structure is Turret:
+				turrets.append(structure as Turret)
+		counts.append(turrets.size())
+		armed.append(turrets.filter(func(turret: Turret) -> bool: return turret.get(&"_target") != null).size())
+	_kit.need(problems, counts == [TURRETS_PER_BASE, TURRETS_PER_BASE], "Turrets per Base %s" % [counts])
+	_kit.need(problems, armed == counts, "armed %s of %s" % [armed, counts])
+	_kit.verdict("A6_the_turrets", problems, "Turrets per Base %s, armed %s" % [counts, armed])
 
 
 func _check_shores() -> void:

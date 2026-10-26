@@ -1,0 +1,88 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/combat/shot.gd" id="1_shot"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
+shading_mode = 0
+albedo_color = Color(0.93, 0.13, 0.1, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nose"]
+shading_mode = 0
+albedo_color = Color(0.55, 0.05, 0.04, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fin"]
+shading_mode = 0
+albedo_color = Color(0.3, 0.06, 0.05, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_flame"]
+shading_mode = 0
+albedo_color = Color(1, 0.75, 0.25, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_trail"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 0.55, 0.3, 0.35)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_body"]
+material = SubResource("StandardMaterial3D_body")
+top_radius = 0.14
+bottom_radius = 0.14
+height = 0.9
+radial_segments = 10
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_nose"]
+material = SubResource("StandardMaterial3D_nose")
+top_radius = 0.0
+bottom_radius = 0.14
+height = 0.32
+radial_segments = 10
+rings = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_fin"]
+material = SubResource("StandardMaterial3D_fin")
+size = Vector3(0.5, 0.03, 0.24)
+
+[sub_resource type="BoxMesh" id="BoxMesh_flame"]
+material = SubResource("StandardMaterial3D_flame")
+size = Vector3(0.18, 0.18, 0.3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_trail"]
+material = SubResource("StandardMaterial3D_trail")
+size = Vector3(0.14, 0.14, 1.8)
+
+[node name="Shot" type="Node3D" groups=["shots"] node_paths=PackedStringArray("tracer")]
+script = ExtResource("1_shot")
+tracer = NodePath("Rocket")
+
+[node name="Rocket" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="Rocket"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_body")
+
+[node name="Nose" type="MeshInstance3D" parent="Rocket"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.61)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_nose")
+
+[node name="FinFlat" type="MeshInstance3D" parent="Rocket"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.36)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_fin")
+
+[node name="FinUp" type="MeshInstance3D" parent="Rocket"]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0.36)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_fin")
+
+[node name="Flame" type="MeshInstance3D" parent="Rocket"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.6)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_flame")
+
+[node name="Trail" type="MeshInstance3D" parent="Rocket"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.65)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_trail")

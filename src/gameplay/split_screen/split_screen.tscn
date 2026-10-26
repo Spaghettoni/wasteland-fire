@@ -17,6 +17,7 @@
 [ext_resource type="Script" path="res://src/gameplay/match/round_restart_input.gd" id="15_rri"]
 [ext_resource type="Script" path="res://src/gameplay/combat/weapon.gd" id="17_weapon"]
 [ext_resource type="PackedScene" path="res://src/gameplay/combat/shot.tscn" id="18_shot"]
+[ext_resource type="PackedScene" path="res://src/gameplay/combat/shot_rocket.tscn" id="18_rocket"]
 [ext_resource type="Script" path="res://src/gameplay/combat/player_fire_input.gd" id="19_pfi"]
 [ext_resource type="Script" path="res://src/gameplay/match/player_choice_input.gd" id="20_pci"]
 [ext_resource type="PackedScene" path="res://src/ui/hud/unit_choice.tscn" id="21_choice"]
@@ -115,6 +116,7 @@ script = ExtResource("17_weapon")
 unit = NodePath("%Player1Unit")
 rules = ExtResource("10_rules")
 shot_scene = ExtResource("18_shot")
+high_shot_scene = ExtResource("18_rocket")
 
 [node name="Player2Weapon" type="Node" parent="World" node_paths=PackedStringArray("unit")]
 unique_name_in_owner = true
@@ -122,6 +124,7 @@ script = ExtResource("17_weapon")
 unit = NodePath("%Player2Unit")
 rules = ExtResource("10_rules")
 shot_scene = ExtResource("18_shot")
+high_shot_scene = ExtResource("18_rocket")
 
 [node name="Player1FireInput" type="Node" parent="World" node_paths=PackedStringArray("weapon")]
 script = ExtResource("19_pfi")

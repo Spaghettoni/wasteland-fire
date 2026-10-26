@@ -110,8 +110,8 @@ spare_spawn_points = [NodePath("SpareSpawnRight")]
 zone = NodePath("Zone")
 pad = NodePath("Pad")
 beacon = NodePath("Mast")
-color_meshes = [NodePath("Garage/Marking/Dash01"), NodePath("Garage/Marking/Dash02"), NodePath("Garage/Marking/Dash03"), NodePath("Garage/Marking/Dash04"), NodePath("Garage/Marking/Dash05"), NodePath("Garage/Marking/Dash06"), NodePath("Garage/Marking/Dash07"), NodePath("Garage/Marking/Dash08"), NodePath("Garage/Marking/Dash09"), NodePath("Garage/Marking/Dash10"), NodePath("Garage/Marking/Dash11"), NodePath("Garage/Marking/Dash12"), NodePath("Garage/Marking/Dash13"), NodePath("Garage/Marking/Dash14"), NodePath("Mast/Pennant")]
-structures = [NodePath("Garage/GarageBack/Panel1"), NodePath("Garage/GarageBack/Panel2"), NodePath("Garage/GarageBack/Panel3"), NodePath("Garage/GarageBack/Panel4"), NodePath("Garage/GarageSideLeft/Panel1"), NodePath("Garage/GarageSideLeft/Panel2"), NodePath("Garage/GarageSideLeft/Panel3"), NodePath("Garage/GarageSideRight/Panel1"), NodePath("Garage/GarageSideRight/Panel2"), NodePath("Garage/GarageSideRight/Panel3")]
+color_meshes = [NodePath("Garage/Marking/Dash01"), NodePath("Garage/Marking/Dash02"), NodePath("Garage/Marking/Dash03"), NodePath("Garage/Marking/Dash04"), NodePath("Garage/Marking/Dash05"), NodePath("Garage/Marking/Dash06"), NodePath("Garage/Marking/Dash07"), NodePath("Garage/Marking/Dash08"), NodePath("Garage/Marking/Dash09"), NodePath("Garage/Marking/Dash10"), NodePath("Garage/Marking/Dash11"), NodePath("Garage/Marking/Dash12"), NodePath("Garage/Marking/Dash13"), NodePath("Garage/Marking/Dash14"), NodePath("Mast/Pennant"), NodePath("Turrets/TurretGarage/Look/Head/Band")]
+structures = [NodePath("Garage/GarageBack/Panel1"), NodePath("Garage/GarageBack/Panel2"), NodePath("Garage/GarageBack/Panel3"), NodePath("Garage/GarageBack/Panel4"), NodePath("Garage/GarageSideLeft/Panel1"), NodePath("Garage/GarageSideLeft/Panel2"), NodePath("Garage/GarageSideLeft/Panel3"), NodePath("Garage/GarageSideRight/Panel1"), NodePath("Garage/GarageSideRight/Panel2"), NodePath("Garage/GarageSideRight/Panel3"), NodePath("Turrets/TurretGarage")]
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
@@ -257,6 +257,11 @@ shape = SubResource("BoxShape3D_garage_zone")
 [node name="Mast" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.6, 5, 12.6)
 mesh = SubResource("BoxMesh_mast")
+
+[node name="Turrets" type="Node3D" parent="."]
+
+[node name="TurretGarage" parent="Turrets" instance=ExtResource("8_turret")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 4)
 
 [node name="Pennant" type="MeshInstance3D" parent="Mast"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -1.6)

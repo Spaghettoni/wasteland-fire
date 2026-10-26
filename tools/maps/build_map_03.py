@@ -101,6 +101,14 @@ FORD_STRIPS = 7
 FORD_SAMPLE = 0.25
 FORD_ZONE_INSET = 0.5
 
+# More Turrets on Map 03 (Martin, 2026-10-26: "pacia sa mi tie 2 veze pri brane, no dal by som po 1 vezi na kazdu dalsiu stranu
+# stvorca. Cize +3 okolo pevnosti. A este +1 ku garazi"): name and (x, z) in the fortress's or the Garage's own frame. The
+# fortress's walls stand 15.35 m from its centre and its two Gate Turrets 4.65 m outside the Gate wall, so these stand as far
+# outside the other three walls; the Garage's beside its left side, toward its open end.
+FORTRESS_TURRETS = [("TurretBack", (0.0, 19.0)), ("TurretSideLeft", (-20.0, 0.0)), ("TurretSideRight", (20.0, 0.0))]
+GARAGE_TURRETS = [("TurretGarage", (-10.0, 4.0))]
+TURRET_SCENE_ID = "8_turret"
+
 SEA_WALL_HEIGHT = 0.4  # below the shooting height (0.5 m): a Turret sees and Shots fly over the water
 
 # --- The scenes it uses ----------------------------------------------------------------------
@@ -306,7 +314,8 @@ def build_garage(header, nodes):
             '"beacon", "color_meshes", "structures")]\n'
             'script = ExtResource("1_base")\nspawn_point = NodePath("SpareSpawnLeft")\nspare_spawn_points = [NodePath("SpareSpawnRight")]\n'
             'zone = NodePath("Zone")\npad = NodePath("Pad")\nbeacon = NodePath("Mast")\n'
-            f'color_meshes = {node_paths(dashes + ["Mast/Pennant"])}\nstructures = {node_paths(garage_panels)}')
+            f'color_meshes = {node_paths(dashes + ["Mast/Pennant"] + turret_bands(GARAGE_TURRETS))}\n'
+            f'structures = {node_paths(garage_panels + turret_paths(GARAGE_TURRETS))}')
     out.append(root)
     for path, head, body in nodes:
         if path != "." and _under(path, keep):
@@ -315,10 +324,11 @@ def build_garage(header, nodes):
     out.append('[node name="CollisionShape3D" type="CollisionShape3D" parent="Zone"]\n'
                f'transform = {transform(0, 2, 6)}\nshape = SubResource("BoxShape3D_garage_zone")')
     out.append(f'[node name="Mast" type="MeshInstance3D" parent="."]\ntransform = {transform(7.6, 5, 12.6)}\nmesh = SubResource("BoxMesh_mast")')
+    out += extra_turrets(GARAGE_TURRETS)
     out.append(f'[node name="Pennant" type="MeshInstance3D" parent="Mast"]\ntransform = {transform(0, 4.0, -1.6)}\nmesh = SubResource("BoxMesh_pennant")')
     with open(os.path.join(OUT, "garage_base.tscn"), "w", encoding="utf-8") as handle:
         handle.write("\n\n".join(out).rstrip() + "\n")
-    return dashes, garage_panels
+    return dashes + turret_bands(GARAGE_TURRETS), garage_panels + turret_paths(GARAGE_TURRETS)
 
 
 def build_fortress(header, nodes):
@@ -337,14 +347,32 @@ def build_fortress(header, nodes):
             out.append(head.replace('name="Zone"', 'name="FlagZone"') + "\n" + body.strip())
         elif path == "Zone/CollisionShape3D":
             out.append(head.replace('parent="Zone"', 'parent="FlagZone"') + "\n" + body.strip())
+    out += extra_turrets(FORTRESS_TURRETS, under_existing=True)
     with open(os.path.join(OUT, "flag_fortress.tscn"), "w", encoding="utf-8") as handle:
         handle.write("\n\n".join(out).rstrip() + "\n")
     paths = [p for p, _, _ in nodes]
     colored = [p + "/Mesh" for p in paths if re.fullmatch(r"Walls/Corners/\w+", p)] + ["WaterTower/Roof", "WaterTower/Tank"]
-    colored += [p + "/Look/Head/Band" for p in paths if re.fullmatch(r"Turrets/Turret\w+", p)]
+    colored += [p + "/Look/Head/Band" for p in paths if re.fullmatch(r"Turrets/Turret\w+", p)] + turret_bands(FORTRESS_TURRETS)
     structures = [p for p in paths if re.fullmatch(r"Defences/FlagWall\w+", p) or re.fullmatch(r"Turrets/Turret\w+", p)
                   or re.fullmatch(r"Walls/\w+/Panel\d+", p) or re.fullmatch(r"Walls/Corners/\w+", p)]
+    structures += turret_paths(FORTRESS_TURRETS)
     return colored, structures
+
+
+def extra_turrets(turrets, under_existing=False):
+    """Nodes of more Turrets under a Turrets node (made here unless the scene already has one)."""
+    out = [] if under_existing else ['[node name="Turrets" type="Node3D" parent="."]']
+    for name, (x, z) in turrets:
+        out.append(f'[node name="{name}" parent="Turrets" instance=ExtResource("{TURRET_SCENE_ID}")]\ntransform = {transform(x, 0, z)}')
+    return out
+
+
+def turret_paths(turrets):
+    return [f"Turrets/{name}" for name, _ in turrets]
+
+
+def turret_bands(turrets):
+    return [f"Turrets/{name}/Look/Head/Band" for name, _ in turrets]
 
 
 # --- The Map ------------------------------------------------------------------------------------

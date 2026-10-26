@@ -92,6 +92,11 @@ const PRIORITY_OFFSET: int = 1
 ## The Shot scene (shot.tscn) this weapon instances for every shot. Required.
 @export var shot_scene: PackedScene
 
+## The Shot scene of a high shot (Story 061; Martin, 2026-10-26: "Dole budu tie zlte strely co mame.
+## Hore budu cervene raketky."): shot_rocket.tscn, the same Shot with a red rocket drawn. Optional:
+## without it a high shot is a shot_scene Shot drawn higher, as before.
+@export var high_shot_scene: PackedScene
+
 ## Shots left in the load: the type's ammo_capacity after a spawn, down by one for every Shot fired,
 ## zero while the Unit is out of play and for a type with no count. Read-only: assigning to it
 ## pushes an error.
@@ -209,13 +214,14 @@ func _fire(high: bool) -> void:
 	var facing: Vector3 = -unit.global_transform.basis.z.normalized()
 	var muzzle: Vector3 = (unit.global_position + facing * stats.muzzle_forward
 			+ Vector3.UP * rules.shooting_height)
-	var instance: Node = shot_scene.instantiate()
+	var scene: PackedScene = high_shot_scene if high and high_shot_scene != null else shot_scene
+	var instance: Node = scene.instantiate()
 	var shot: Shot = instance as Shot
 	if shot == null:
 		if instance != null:
 			instance.free()
-		push_error("Weapon '%s': shot_scene '%s' is not a Shot scene, so it fires nothing." % [
-				name, shot_scene.resource_path])
+		push_error("Weapon '%s': '%s' is not a Shot scene, so it fires nothing." % [
+				name, scene.resource_path])
 		return
 	unit.get_parent().add_child(shot)
 	shot.launch(unit, muzzle, facing, stats.damage, stats.shot_speed, stats.weapon_range,
