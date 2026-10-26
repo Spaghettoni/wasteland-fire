@@ -257,7 +257,7 @@ unique_name_in_owner = true
 current = true
 script = ExtResource("5_cam")
 target = NodePath("%Player1Unit")
-settings = ExtResource("28_above")
+settings = ExtResource("6_set")
 
 [node name="Player1Countdown" parent="Views/Player1View/SubViewport" unique_id=9000043 node_paths=PackedStringArray("match_controller") instance=ExtResource("12_cd")]
 match_controller = NodePath("%MatchController")
@@ -323,7 +323,7 @@ unique_name_in_owner = true
 current = true
 script = ExtResource("5_cam")
 target = NodePath("%Player2Unit")
-settings = ExtResource("28_above")
+settings = ExtResource("6_set")
 
 [node name="Player2Countdown" parent="Views/Player2View/SubViewport" unique_id=9000044 node_paths=PackedStringArray("match_controller") instance=ExtResource("12_cd")]
 match_controller = NodePath("%MatchController")

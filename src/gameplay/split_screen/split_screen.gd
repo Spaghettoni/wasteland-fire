@@ -72,10 +72,10 @@ extends Control
 ## and this script reads no input.
 ##
 ## The views (Story 010, production/epics/wasteland-fire/story-010-camera-from-above.md AC-4 and
-## AC-5). Each camera starts in the view from above (above_camera_settings.tres, the first entry of
-## its Player's list of views) and its PlayerCameraInput, which reads that Player's p1_ or p2_camera
-## key, steps it through the list: the view from above, then the chase view of Stories 001 to 009
-## (chase_camera_settings.tres), then round again. The list, the two resources and the keys are data
+## AC-5). Each camera starts in the chase view (chase_camera_settings.tres; Story 062, Martin,
+## 2026-10-26: "nech je ten sikmy pohlad zozadu default, nie ten zhora"; before it, the view from
+## above) and its PlayerCameraInput, which reads that Player's camera key, steps it through its list
+## of views: the view from above (above_camera_settings.tres), then the chase view, then round again. The list, the two resources and the keys are data
 ## of this scene and of project.godot; the other Player's camera is never touched.
 ##
 ## Player colour. Each Unit is coloured on its Body mesh only, by a material_override on the

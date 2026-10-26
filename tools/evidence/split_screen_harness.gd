@@ -118,7 +118,11 @@ extends Node
 ## settings before the scene enters the tree (_apply_chase_camera(): the instanced scene's
 ## ChaseCamera.settings, never the shared .tres), unless the scenario script declares
 ## const SHIPPED_CAMERA: bool = true, which keeps the camera the build ships with. A scenario of
-## Story 010 declares it; any other scenario, now and later, runs on the chase view.
+## Story 010 declares it; any other scenario, now and later, runs on the chase view. Since Story
+## 062 (Martin, 2026-10-26: "nech je ten sikmy pohlad zozadu default, nie ten zhora") the build
+## ships with the chase view first; a scenario declaring SHIPPED_CAMERA still starts in the view from
+## above it was measured on (ABOVE_CAMERA_SETTINGS), unless it also declares const CHASE_FIRST:
+## bool = true, which keeps the scene's cameras as the build ships them.
 ##
 ## The swap (Story 011). The shipped rules now swap a Unit at its own Base when its Player presses
 ## Self-destruct there (MatchRules.own_base_swap), and the scenarios written before it Self-destruct
@@ -838,6 +842,8 @@ const STORY_007_SPARE_SPOTS: Array[NodePath] = [^"SpareSpawnLeft", ^"SpareSpawnR
 ## The chase view of Stories 001 to 009 (the second view of each Player's list in the launch scene):
 ## the settings every scenario that does not declare SHIPPED_CAMERA runs on.
 const CHASE_CAMERA_SETTINGS: ChaseCameraSettings = preload("res://src/gameplay/camera/data/chase_camera_settings.tres")
+const ABOVE_CAMERA_SETTINGS: ChaseCameraSettings = preload("res://src/gameplay/camera/data/above_camera_settings.tres")
+const CHASE_FIRST_CONSTANT: StringName = &"CHASE_FIRST"
 ## Raw physics ticks confirm_choices() waits for the chosen Units to appear before it gives up: the
 ## bench settle, the key's tick and margin.
 const CHOICE_LIMIT_TICKS: int = 120
@@ -2048,7 +2054,16 @@ func _give_back_story_007_spots(base: Base) -> void:
 ## SHIPPED_CAMERA (the class doc says why). Only the two cameras' property is assigned: the shared
 ## .tres is never touched, and each Player's list of views in the scene is left as it is.
 func _apply_chase_camera(root: SplitScreen, script: GDScript) -> void:
-	if bool(script.get_script_constant_map().get(SHIPPED_CAMERA_CONSTANT, false)):
+	var constants: Dictionary = script.get_script_constant_map()
+	if not bool(constants.get(CHASE_FIRST_CONSTANT, false)):
+		# Players 3 and 4, copied from Player 2's nodes by the lineup before this, started in the view from above
+		# before Story 062 whatever the scenario declared.
+		for camera: ChaseCamera in root.all_cameras().slice(2):
+			camera.settings = ABOVE_CAMERA_SETTINGS
+	if bool(constants.get(SHIPPED_CAMERA_CONSTANT, false)):
+		if not bool(constants.get(CHASE_FIRST_CONSTANT, false)):
+			root.player_1_camera.settings = ABOVE_CAMERA_SETTINGS
+			root.player_2_camera.settings = ABOVE_CAMERA_SETTINGS
 		return
 	root.player_1_camera.settings = CHASE_CAMERA_SETTINGS
 	root.player_2_camera.settings = CHASE_CAMERA_SETTINGS

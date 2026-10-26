@@ -14,7 +14,8 @@ extends SceneTree
 ##  C6 Default: the Default button puts every control back, in the table and in the file.
 ##  C7 into the match: Fire for Keyboard 1 set to F and Fire's pad input to X again, Escape closes the screen; Pick a side
 ##     names the new keys; Keyboard 1 joins Orange and pad 0 Teal, F and pad A make them ready, Space starts the match: Player
-##     1's Fire takes F (not C) and, pad 0 connected, Player 2's Fire takes the pad's X (not RT).
+##     1's Fire takes F (not C) and, pad 0 connected, Player 2's Fire takes the pad's X (not RT); both cameras start in the
+##     chase view (Story 062).
 ## With --frames=<folder> (windowed only) it saves the screens.
 ## Implements: production/epics/wasteland-fire/story-060-controls-settings.md AC-1 to AC-6.
 ## Tooling only: nothing under src/ depends on this file.
@@ -179,18 +180,22 @@ func _run() -> void:
 	var split: SplitScreen = current_scene as SplitScreen
 	var p1_fire: Array[String] = []
 	var p2_fire: Array[String] = []
+	var views: Array[String] = []
 	if split != null:
 		var pads: PadAssignment = split.get_node_or_null("PadAssignment") as PadAssignment
 		if pads != null:
 			pads.connect_pad(0)
 		p1_fire = _events(&"p1_fire")
 		p2_fire = _events(&"p2_fire")
+		for camera: ChaseCamera in split.all_cameras():
+			views.append(camera.settings.resource_path.get_file())
 	_need(problems, closed, "Escape did not close the screen")
 	_need(problems, line_ready.contains("F"), "Pick a side's line '%s' does not name F" % line_ready)
 	_need(problems, split != null, "the match did not start (scene %s)" % current_scene)
 	_need(problems, p1_fire.has("key F") and not p1_fire.has("key C"), "Player 1's Fire %s" % [p1_fire])
 	_need(problems, p2_fire.has("pad 2") and not p2_fire.has("axis 5"), "Player 2's Fire %s" % [p2_fire])
-	_check("C7_into_the_match", problems, "closed %s; Pick a side: '%s'; in the match Player 1's Fire %s, Player 2's (pad 0) %s" % [closed, line_ready, p1_fire, p2_fire])
+	_need(problems, views == ["chase_camera_settings.tres", "chase_camera_settings.tres"], "the views at the start %s" % [views])
+	_check("C7_into_the_match", problems, "closed %s; Pick a side: '%s'; in the match Player 1's Fire %s, Player 2's (pad 0) %s; the views at the start %s (Story 062)" % [closed, line_ready, p1_fire, p2_fire, views])
 	if split != null:
 		split.queue_free()
 	_finish()
