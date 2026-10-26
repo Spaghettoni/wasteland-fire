@@ -23,3 +23,11 @@ Date: 2026-10-26 · Godot 4.7.2 · Linux, headless for checks, xvfb + Vulkan for
 Frames in `story-059-060/`: defaults, listening, a moved key, the pad, Pick a side.
 
 `pick_side_check` 6/6 and `map_choice_check` 6/6 pass. Full regression: see the commit (all scenarios ok).
+
+## Story 060, update 2026-10-26 (Martin's defaults)
+
+Martin, with a picture of his table: "chcem aby toto boli defaults a pri controleroch RT bol default pre fire". `ControlsSettings.default_keys` and `default_pad`; the Controls screen opens with F1 (C is now Keyboard 1's Fire). The file keeps only changes from the defaults, with a format mark; an older file is ignored.
+
+- controls_check 7/7: C1 Fire ["C", "Slash", "RT", "A"], Secondary Space / Comma, Camera Q / Right Shift; C7 "Press A, F or Slash when you are ready".
+- pick_side_check 6/6 (ready with C and Slash), map_choice_check 6/6; full regression again before the build.
+- Frames in `story-059-060/` re-captured.

@@ -54,7 +54,7 @@ enum Place { ORANGE, MIDDLE, TEAL }
 @export var controls_scene: PackedScene
 ## The button that opens it (the mouse's way), and the physical key that does.
 @export var controls_button: Button
-@export var controls_key: Key = KEY_C
+@export var controls_key: Key = KEY_F1
 ## Texts, through tr(): the device names (%s the half's four drive keys, %d the pad's number from 1),
 ## the ready mark, the status lines (join_text: four %s, Keyboard 1's and Keyboard 2's steer keys;
 ## need_ready_text: four %s, the two halves' fire keys, then their self-destruct keys).

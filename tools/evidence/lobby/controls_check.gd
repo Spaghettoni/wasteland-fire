@@ -2,19 +2,19 @@ extends SceneTree
 ## The Controls screen's evidence (Story 060), driven by real key and pad events on the Pick a side screen, in a runner of its
 ## own like pick_side_check.gd. It keeps its controls in a file of its own (FILE), removed before and after. CHECK lines and
 ## one RESULT line, in the harness's format:
-##  C1 the screen: C on Pick a side opens it; the table holds the defaults (Fire: Space, Period, A, RT; Throttle: W, Up,
-##     Stick up, nothing in the second pad column).
+##  C1 the screen: F1 on Pick a side opens it; the table holds the shipped defaults (Fire: C, Slash, RT, A; Throttle: W, Up,
+##     Stick up, nothing in the second pad column; Secondary: Space, Comma; Camera: Q, Right Shift).
 ##  C2 a key: Down four times and Enter choose Fire for Keyboard 1; F takes it.
 ##  C3 a key in use: Fire for Keyboard 1, then W: Fire takes W and Throttle takes Fire's old key, F; then Up, Keyboard 2's
 ##     Throttle: Fire for Keyboard 1 takes Up and Keyboard 2's Throttle takes W, so no key is on two actions.
-##  C4 the pad: Fire's first pad slot, then X: Fire takes X. Secondary's first pad slot, then RT pulled: Secondary takes RT
-##     and Fire's second slot, which had RT, takes LT. Menu is refused (kept for the menus); Delete empties Fire's second slot;
+##  C4 the pad: Fire's first pad slot, then X: Fire takes X. Secondary's first pad slot, then A: Secondary takes A and
+##     Fire's second slot, which had A, takes LT. Menu is refused (kept for the menus); Delete empties Fire's second slot;
 ##     Delete on Throttle's only pad input is refused.
 ##  C5 kept: the file holds it; controls read fresh from the file are the same.
 ##  C6 Default: the Default button puts every control back, in the table and in the file.
 ##  C7 into the match: Fire for Keyboard 1 set to F and Fire's pad input to X again, Escape closes the screen; Pick a side
 ##     names the new keys; Keyboard 1 joins Orange and pad 0 Teal, F and pad A make them ready, Space starts the match: Player
-##     1's Fire takes F (not Space) and, pad 0 connected, Player 2's Fire takes the pad's X (not A).
+##     1's Fire takes F (not C) and, pad 0 connected, Player 2's Fire takes the pad's X (not RT).
 ## With --frames=<folder> (windowed only) it saves the screens.
 ## Implements: production/epics/wasteland-fire/story-060-controls-settings.md AC-1 to AC-6.
 ## Tooling only: nothing under src/ depends on this file.
@@ -28,6 +28,7 @@ const START_MARGIN_SECONDS: float = 0.5
 const THROTTLE: int = 0
 const FIRE: int = 4
 const SECONDARY: int = 6
+const CAMERA: int = 7
 const KB1: int = 0
 const KB2: int = 1
 const PAD: int = 2
@@ -49,10 +50,10 @@ func _run() -> void:
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(FILE))
 	var pick: PickSide = await _open()
 	var problems: PackedStringArray = PackedStringArray()
-	await _key(KEY_C)
+	await _key(KEY_F1)
 	var screen: ControlsScreen = pick.controls_screen()
 	var opened: bool = screen != null and screen.is_inside_tree()
-	_need(problems, opened, "C did not open the Controls screen")
+	_need(problems, opened, "F1 did not open the Controls screen")
 	if not opened:
 		_check("C1_the_screen", problems, "no screen")
 		_finish()
@@ -60,9 +61,12 @@ func _run() -> void:
 	await _wait(SETTLE_FRAMES)
 	var fire_row: Array[String] = _row(screen, FIRE)
 	var throttle_row: Array[String] = _row(screen, THROTTLE)
-	_need(problems, fire_row == ["Space", "Period", "A", "RT"], "Fire %s" % [fire_row])
+	var secondary_row: Array[String] = _row(screen, SECONDARY)
+	var camera_row: Array[String] = _row(screen, CAMERA)
+	_need(problems, fire_row == ["C", "Slash", "RT", "A"], "Fire %s" % [fire_row])
 	_need(problems, throttle_row == ["W", "Up", "Stick up", "—"], "Throttle %s" % [throttle_row])
-	_check("C1_the_screen", problems, "C opened it; Fire %s; Throttle %s; status '%s'" % [fire_row, throttle_row, screen.status_text()])
+	_need(problems, secondary_row.slice(0, 2) == ["Space", "Comma"] and camera_row.slice(0, 2) == ["Q", "Right Shift"], "Secondary %s, Camera %s" % [secondary_row, camera_row])
+	_check("C1_the_screen", problems, "F1 opened it; Fire %s; Throttle %s; Secondary %s; Camera %s; status '%s'" % [fire_row, throttle_row, secondary_row, camera_row, screen.status_text()])
 	await _save("controls-01-defaults.png")
 
 	problems = PackedStringArray()
@@ -99,7 +103,8 @@ func _run() -> void:
 	var fire_x: Array[String] = _row(screen, FIRE)
 	screen.listen(SECONDARY, PAD)
 	await _calm()
-	await _pad_axis(0, JOY_AXIS_TRIGGER_RIGHT, 1.0)
+	await _pad_button(0, JOY_BUTTON_A)
+	await _calm()
 	var secondary_rt: Array[String] = _row(screen, SECONDARY)
 	var fire_lt: Array[String] = _row(screen, FIRE)
 	await _calm()
@@ -117,11 +122,11 @@ func _run() -> void:
 	var kept: Array[String] = _row(screen, THROTTLE)
 	var kept_line: String = screen.status_text()
 	_need(problems, fire_x[PAD] == "X", "Fire after X %s" % [fire_x])
-	_need(problems, secondary_rt[PAD] == "RT" and fire_lt[PAD_ALSO] == "LT", "after RT: Secondary %s, Fire %s" % [secondary_rt, fire_lt])
+	_need(problems, secondary_rt[PAD] == "A" and fire_lt[PAD_ALSO] == "LT", "after A: Secondary %s, Fire %s" % [secondary_rt, fire_lt])
 	_need(problems, after_menu == fire_lt, "Menu changed Fire to %s" % [after_menu])
 	_need(problems, emptied[PAD_ALSO] == "—" and emptied[PAD] == "X", "after Delete Fire %s" % [emptied])
 	_need(problems, kept[PAD] == "Stick up", "Throttle after Delete %s" % [kept])
-	_check("C4_the_pad", problems, "X: Fire %s; RT: Secondary %s, Fire %s; Menu: '%s'; Delete: Fire %s; Delete on Throttle: %s '%s'" % [
+	_check("C4_the_pad", problems, "X: Fire %s; A: Secondary %s, Fire %s; Menu: '%s'; Delete: Fire %s; Delete on Throttle: %s '%s'" % [
 		fire_x, secondary_rt, fire_lt, menu_line, emptied, kept, kept_line])
 	await _save("controls-04-pad.png")
 
@@ -133,7 +138,7 @@ func _run() -> void:
 	var fresh_pad: Array = fresh.pad_of("fire").map(func(binding: PadBinding) -> String: return binding.display_name)
 	var fresh_secondary: Array = fresh.pad_of("lay_mine").map(func(binding: PadBinding) -> String: return binding.display_name)
 	_need(problems, FileAccess.file_exists(FILE) and read, "the file %s was not written or read" % FILE)
-	_need(problems, fresh_fire == "Up" and fresh_pad == ["X"] and fresh_secondary == ["RT"], "read back: Fire %s, pad %s, Secondary %s" % [fresh_fire, fresh_pad, fresh_secondary])
+	_need(problems, fresh_fire == "Up" and fresh_pad == ["X"] and fresh_secondary == ["A"], "read back: Fire %s, pad %s, Secondary %s" % [fresh_fire, fresh_pad, fresh_secondary])
 	_check("C5_kept", problems, "the file read fresh: Keyboard 1's Fire %s, Fire's pad %s, Secondary's pad %s" % [fresh_fire, fresh_pad, fresh_secondary])
 
 	problems = PackedStringArray()
@@ -144,7 +149,7 @@ func _run() -> void:
 	var again: ControlBindings = ControlBindings.create(pick.controls_settings, pick.pad_layout)
 	again.path = FILE
 	again.load_saved()
-	_need(problems, back_fire == ["Space", "Period", "A", "RT"] and back_throttle == ["W", "Up", "Stick up", "—"], "after Default Fire %s, Throttle %s" % [back_fire, back_throttle])
+	_need(problems, back_fire == ["C", "Slash", "RT", "A"] and back_throttle == ["W", "Up", "Stick up", "—"], "after Default Fire %s, Throttle %s" % [back_fire, back_throttle])
 	_need(problems, again.is_default(), "the file after Default does not hold the defaults")
 	_check("C6_default", problems, "Default: Fire %s, Throttle %s; the file holds the defaults %s; '%s'" % [back_fire, back_throttle, again.is_default(), screen.status_text()])
 	await _save("controls-05-default.png")
@@ -183,8 +188,8 @@ func _run() -> void:
 	_need(problems, closed, "Escape did not close the screen")
 	_need(problems, line_ready.contains("F"), "Pick a side's line '%s' does not name F" % line_ready)
 	_need(problems, split != null, "the match did not start (scene %s)" % current_scene)
-	_need(problems, p1_fire.has("key F") and not p1_fire.has("key Space"), "Player 1's Fire %s" % [p1_fire])
-	_need(problems, p2_fire.has("pad 2") and not p2_fire.has("pad 0"), "Player 2's Fire %s" % [p2_fire])
+	_need(problems, p1_fire.has("key F") and not p1_fire.has("key C"), "Player 1's Fire %s" % [p1_fire])
+	_need(problems, p2_fire.has("pad 2") and not p2_fire.has("axis 5"), "Player 2's Fire %s" % [p2_fire])
 	_check("C7_into_the_match", problems, "closed %s; Pick a side: '%s'; in the match Player 1's Fire %s, Player 2's (pad 0) %s" % [closed, line_ready, p1_fire, p2_fire])
 	if split != null:
 		split.queue_free()
@@ -213,6 +218,8 @@ func _events(action: StringName) -> Array[String]:
 			out.append("key " + ControlBindings.key_name(event as InputEventKey))
 		elif event is InputEventJoypadButton:
 			out.append("pad %d" % (event as InputEventJoypadButton).button_index)
+		elif event is InputEventJoypadMotion:
+			out.append("axis %d" % (event as InputEventJoypadMotion).axis)
 	return out
 
 

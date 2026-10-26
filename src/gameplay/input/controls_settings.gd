@@ -22,6 +22,16 @@ extends Resource
 ## Where the Players' changes are kept between launches (a ConfigFile). Required.
 @export var save_path: String = ""
 
+## The shipped keys (Martin, 2026-10-26, his table: "chcem aby toto boli defaults"), by whole action
+## name (p1_fire): Vector2i(physical keycode, KeyLocation). An action not named here defaults to
+## project.godot's key. Only the Controls (ControlBindings) play them: an evidence run without a
+## lineup's controls keeps project.godot's.
+@export var default_keys: Dictionary = {}
+
+## The shipped pad inputs of the actions it names, in slot order, instead of the pad layout's
+## (Martin, 2026-10-26: "pri controleroch RT bol default pre fire").
+@export var default_pad: Array[PadBinding] = []
+
 ## How many pad inputs one action may take (the stick and the D-pad both steer). At least 1.
 @export_range(1, 4, 1) var pad_slots: int = 2
 

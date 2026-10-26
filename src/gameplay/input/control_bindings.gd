@@ -26,6 +26,11 @@ const KEY_PREFIXES: Array[String] = ["p1_", "p2_"]
 ## The file sections.
 const _KEYBOARD: String = "keyboard"
 const _PAD: String = "pad"
+## The file's format: it holds only what differs from the defaults (Story 060, 2026-10-26). A file
+## without it, written before, held every control and is ignored for the defaults.
+const _META: String = "meta"
+const _FORMAT_KEY: String = "format"
+const _FORMAT: String = "changes"
 
 ## What may be set and how it is named. Read-only here.
 var settings: ControlsSettings
@@ -43,7 +48,9 @@ var _keys: Dictionary = {}
 var _pad: Dictionary = {}
 
 
-## Controls at their defaults: project.godot's keys and the layout's pad inputs. Returns null, with
+## Controls at their defaults: ControlsSettings.default_keys, project.godot's keys for the actions it
+## does not name; ControlsSettings.default_pad, the layout's pad inputs for the actions it does not
+## name. Returns null, with
 ## one error, when the settings or the layout are missing or refused.
 static func create(controls_settings: ControlsSettings, layout: PadLayout) -> ControlBindings:
 	if controls_settings == null or layout == null:
@@ -63,6 +70,12 @@ static func create(controls_settings: ControlsSettings, layout: PadLayout) -> Co
 		for suffix: String in controls_settings.actions:
 			var events: Array = project.get(suffix, [])
 			keys[suffix] = events[0] if not events.is_empty() else null
+			var shipped: Variant = controls_settings.default_keys.get(prefix + suffix, null)
+			if shipped is Vector2i:
+				var event := InputEventKey.new()
+				event.physical_keycode = (shipped as Vector2i).x as Key
+				event.location = (shipped as Vector2i).y as KeyLocation
+				keys[suffix] = event
 		bindings._default_keys[prefix] = keys
 	bindings.reset()
 	return bindings
@@ -78,9 +91,15 @@ func reset() -> void:
 		_pad[suffix] = _default_pad(suffix)
 
 
-## The shipped layout's pad inputs of the action, at most pad_slots.
+## The default pad inputs of the action, at most pad_slots: ControlsSettings.default_pad's when it
+## names the action, else the shipped layout's.
 func _default_pad(suffix: String) -> Array:
 	var slots: Array = []
+	for binding: PadBinding in settings.default_pad:
+		if binding != null and String(binding.action_suffix) == suffix and slots.size() < settings.pad_slots:
+			slots.append(binding)
+	if not slots.is_empty():
+		return slots
 	for binding: PadBinding in _default_layout.bindings:
 		if binding != null and not binding.shared and String(binding.action_suffix) == suffix and slots.size() < settings.pad_slots:
 			slots.append(binding)
@@ -104,13 +123,17 @@ func is_default() -> bool:
 			if not _same_key(key_of(prefix, suffix), (_default_keys[prefix] as Dictionary)[suffix]):
 				return false
 	for suffix: String in settings.actions:
-		var now: Array = _pad[suffix]
-		var then: Array = _default_pad(suffix)
-		if now.size() != then.size():
+		if not _same_pad(_pad[suffix], _default_pad(suffix)):
 			return false
-		for index: int in now.size():
-			if not (now[index] as PadBinding).same_input(then[index]):
-				return false
+	return true
+
+
+static func _same_pad(now: Array, then: Array) -> bool:
+	if now.size() != then.size():
+		return false
+	for index: int in now.size():
+		if not (now[index] as PadBinding).same_input(then[index]):
+			return false
 	return true
 
 
@@ -235,15 +258,19 @@ static func key_name(event: InputEventKey) -> String:
 	return key if side.is_empty() else "%s %s" % [side.capitalize(), key]
 
 
-## Writes the controls to the file. Returns the ConfigFile's error.
+## Writes the controls that differ from the defaults to the file, so a later change of a default
+## reaches every action nobody changed. Returns the ConfigFile's error.
 func save() -> Error:
 	var file := ConfigFile.new()
+	file.set_value(_META, _FORMAT_KEY, _FORMAT)
 	for prefix: String in KEY_PREFIXES:
 		for suffix: String in settings.actions:
 			var event: InputEventKey = key_of(prefix, suffix)
-			if event != null:
+			if event != null and not _same_key(event, (_default_keys[prefix] as Dictionary)[suffix]):
 				file.set_value(_KEYBOARD, prefix + suffix, {"key": int(event.physical_keycode), "side": int(event.location)})
 	for suffix: String in settings.actions:
+		if _same_pad(_pad[suffix], _default_pad(suffix)):
+			continue
 		var slots: Array = []
 		for binding: PadBinding in _pad[suffix]:
 			slots.append({"kind": int(binding.kind), "button": int(binding.button), "axis": int(binding.axis), "direction": binding.axis_direction})
@@ -259,6 +286,8 @@ func load_saved() -> bool:
 	if file.load(path) != OK:
 		return false
 	reset()
+	if file.get_value(_META, _FORMAT_KEY, "") != _FORMAT:
+		return false
 	for prefix: String in KEY_PREFIXES:
 		for suffix: String in settings.actions:
 			var entry: Variant = file.get_value(_KEYBOARD, prefix + suffix, null)

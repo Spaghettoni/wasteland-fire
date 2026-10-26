@@ -1,14 +1,42 @@
 [gd_resource type="Resource" script_class="ControlsSettings" format=3]
 
 [ext_resource type="Script" path="res://src/gameplay/input/controls_settings.gd" id="1_settings"]
+[ext_resource type="Script" path="res://src/gameplay/input/pad_binding.gd" id="2_binding"]
+
+[sub_resource type="Resource" id="PadBinding_fire_rt"]
+script = ExtResource("2_binding")
+action_suffix = &"fire"
+kind = 1
+axis = 5
+axis_direction = 1
+display_name = "RT"
+
+[sub_resource type="Resource" id="PadBinding_fire_a"]
+script = ExtResource("2_binding")
+action_suffix = &"fire"
+button = 0
+display_name = "A"
 
 [resource]
 script = ExtResource("1_settings")
 actions = PackedStringArray("throttle", "reverse", "steer_left", "steer_right", "fire", "fire_high", "lay_mine", "camera", "self_destruct")
 action_names = PackedStringArray("Throttle", "Reverse", "Steer left", "Steer right", "Fire", "Fire high", "Secondary", "Camera", "Self-destruct")
 save_path = "user://controls.cfg"
+default_keys = {
+"p1_camera": Vector2i(81, 0),
+"p1_fire": Vector2i(67, 0),
+"p1_fire_high": Vector2i(86, 0),
+"p1_lay_mine": Vector2i(32, 0),
+"p1_self_destruct": Vector2i(4194306, 0),
+"p2_camera": Vector2i(4194325, 2),
+"p2_fire": Vector2i(47, 0),
+"p2_fire_high": Vector2i(46, 0),
+"p2_lay_mine": Vector2i(44, 0),
+"p2_self_destruct": Vector2i(4194309, 0)
+}
+default_pad = Array[ExtResource("2_binding")]([SubResource("PadBinding_fire_rt"), SubResource("PadBinding_fire_a")])
 pad_slots = 2
-reserved_keys = PackedInt32Array(4194305)
+reserved_keys = PackedInt32Array(4194305, 4194332)
 reserved_buttons = PackedInt32Array(5, 6)
 button_names = PackedStringArray("A", "B", "X", "Y", "View", "Guide", "Menu", "LS", "RS", "LB", "RB", "D-pad up", "D-pad down", "D-pad left", "D-pad right", "Share", "Paddle 1", "Paddle 2", "Paddle 3", "Paddle 4", "Touchpad")
 button_format = "Button %d"

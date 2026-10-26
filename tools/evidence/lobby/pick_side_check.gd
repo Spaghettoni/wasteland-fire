@@ -6,7 +6,7 @@ extends SceneTree
 ##     D-pad left joins Orange; a fifth device (pad 2) is refused.
 ##  L3 moving and leaving: Keyboard 2's Left steps it to the middle and on to Orange, Right twice back to Teal; pad 1's B, not
 ##     ready, takes it out, and its D-pad left brings it back to Orange.
-##  L4 ready and start: A, Space, Period and A make all four ready; the map choice opens with the lineup Keyboard 1, pad 1
+##  L4 ready and start: A, C, Slash and A (the shipped Fire keys, Story 060) make all four ready; the map choice opens with the lineup Keyboard 1, pad 1
 ##     (Orange) and pad 0, Keyboard 2 (Teal).
 ##  L5 into the match: Space on the map choice starts it with four Players, four views in two columns, the Teams [0, 0, 1, 1].
 ##  L6 one against one: a fresh screen, A and Right (the two keyboard halves) and their confirms start a match of two Players
@@ -69,8 +69,8 @@ func _run() -> void:
 	_check("L3_move_and_leave", problems, "Left, Left, Right Right, pad 1 B, pad 1 D-pad left: %s" % [trail])
 
 	problems = PackedStringArray()
-	await _key(KEY_SPACE)
-	await _key(KEY_PERIOD)
+	await _key(KEY_C)
+	await _key(KEY_SLASH)
 	await _pad_button(0, JOY_BUTTON_A)
 	await _save("pick-03-three-ready.png")
 	await _pad_button(1, JOY_BUTTON_A)
@@ -108,8 +108,8 @@ func _run() -> void:
 	pick = await _open()
 	await _key(KEY_A)
 	await _key(KEY_RIGHT)
-	await _key(KEY_SPACE)
-	await _key(KEY_PERIOD)
+	await _key(KEY_C)
+	await _key(KEY_SLASH)
 	await create_timer(pick.start_delay_seconds + START_MARGIN_SECONDS).timeout
 	await _wait(SETTLE_FRAMES)
 	choice = current_scene as MapChoice
@@ -131,6 +131,9 @@ func _counts(pick: PickSide) -> Array[int]:
 
 func _open() -> PickSide:
 	var pick: PickSide = (load(PICK_SCENE) as PackedScene).instantiate() as PickSide
+	var own: ControlsSettings = pick.controls_settings.duplicate() as ControlsSettings
+	own.save_path = "user://evidence_no_controls.cfg"
+	pick.controls_settings = own
 	root.add_child(pick)
 	current_scene = pick
 	await _wait(SETTLE_FRAMES)

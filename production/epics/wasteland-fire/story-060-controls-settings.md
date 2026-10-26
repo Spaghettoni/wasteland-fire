@@ -20,11 +20,12 @@
 
 ## Acceptance Criteria
 
-- [x] AC-1: Pick a side opens the Controls screen with C, a controller's Menu or the Controls button. It lists Throttle, Reverse, Steer left, Steer right, Fire, Fire high, Secondary, Camera and Self-destruct, with a column for Keyboard 1, Keyboard 2 and two for the controller.
+- [x] AC-1: Pick a side opens the Controls screen with F1, a controller's Menu or the Controls button. It lists Throttle, Reverse, Steer left, Steer right, Fire, Fire high, Secondary, Camera and Self-destruct, with a column for Keyboard 1, Keyboard 2 and two for the controller.
 - [x] AC-2: Choosing a cell (arrows / D-pad / mouse, Enter / A / click) and pressing a key, a button, a stick or a trigger sets it. A key or pad input another action holds moves to the action this one came from (across both keyboard halves), so no input does two things.
 - [x] AC-3: Default puts every control back, on the screen and in the file.
-- [x] AC-4: Escape (keyboard) and Menu and Guide (controller) cannot be taken; Delete empties a controller slot unless it is the action's only one; Escape or six seconds cancel.
+- [x] AC-4: Escape and F1 (keyboard) and Menu and Guide (controller) cannot be taken; Delete empties a controller slot unless it is the action's only one; Escape or six seconds cancel.
 - [x] AC-5: The controls are kept in `user://controls.cfg` and read when the game starts; a file that would put one key on two actions, or a controller layout PadLayout refuses, is ignored for the defaults.
+- [x] AC-7 (2026-10-26, Martin's table): the shipped defaults: Keyboard 1 W S A D, Fire C, Fire high V, Secondary Space, Camera Q, Self-destruct Tab; Keyboard 2 the arrows, Fire Slash, Fire high Period, Secondary Comma, Camera Right Shift, Self-destruct Enter; controller Fire RT first, A second.
 - [x] AC-6: The match plays them: a keyboard half's Player gets that half's keys; every controller gets the layout; Pick a side's cards and lines name the keys; the in-game hints name them (they read the Input Map and the layout).
 
 ---
