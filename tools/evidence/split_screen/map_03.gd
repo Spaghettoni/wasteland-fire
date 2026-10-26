@@ -6,6 +6,8 @@ extends RefCounted
 ##  A2 the sea: a Buggy driven north out of Orange's Garage island stops at the shore; a Gyrocopter driven the same way
 ##     flies on over the sea.
 ##  A3 a ford: a Buggy driven from the Garage island along the ford to the middle island reaches it.
+##  A5 the shores (Martin, 2026-10-26): at each end of each ford a Buggy standing on the island 2.5 m from where the water
+##     begins, facing along the ford, is in no ford's slowing zone; 3 m out on the water it is in that ford's.
 ##  A4 the Garage: a Motorbike carrying Teal's Flag inside Orange's fortress wins nothing; inside Orange's Garage it wins the
 ##     Round for Orange (Story 057). The swap answers in the Garage and not in the fortress.
 ## Implements: production/epics/wasteland-fire/story-054-map-03-archipelago.md AC-1 to AC-5 and
@@ -63,6 +65,20 @@ const SHORE_LIMIT: float = -116.0
 const FORD_START: Vector3 = Vector3(-54.0, 0.0, -56.0)
 const FORD_TICKS: int = 300
 const MIDDLE_REACHED: Vector2 = Vector2(-34.0, -36.0)
+## A5: per ford end, its name, a point on the island 2.5 m from the water and a point 3 m out on it, and the ford's yaw in
+## degrees, along its centre line. Computed by tools/maps/build_map_03.py's outlines (west and the two shared fords).
+const SHORES: Array = [
+	[&"FordWest1", Vector3(-48.08, 0, -50.16), Vector3(-44.01, 0, -46.46), 47.73],
+	[&"FordWest1", Vector3(-29.28, 0, -33.07), Vector3(-33.35, 0, -36.77), 47.73],
+	[&"FordWest2", Vector3(-101.00, 0, -47.00), Vector3(-101.00, 0, -41.50), 0.00],
+	[&"FordWest2", Vector3(-101.00, 0, 49.00), Vector3(-101.00, 0, 43.50), 0.00],
+	[&"FordWest3", Vector3(-31.15, 0, 31.20), Vector3(-34.37, 0, 35.66), -35.84],
+	[&"FordWest3", Vector3(-55.39, 0, 64.76), Vector3(-52.17, 0, 60.31), -35.84],
+	[&"FordNorth", Vector3(-42.45, 0, -100.00), Vector3(-36.95, 0, -100.00), 90.00],
+	[&"FordNorth", Vector3(42.45, 0, -100.00), Vector3(36.95, 0, -100.00), 90.00],
+	[&"FordSouth", Vector3(-60.70, 0, 104.00), Vector3(-55.20, 0, 104.00), 90.00],
+	[&"FordSouth", Vector3(60.70, 0, 104.00), Vector3(55.20, 0, 104.00), 90.00],
+]
 const FAR: float = 100.0
 const MIRROR_TOLERANCE: float = 0.05
 
@@ -85,6 +101,7 @@ func run(harness: Node) -> void:
 	_check_map()
 	await _check_sea()
 	await _check_ford()
+	await _check_shores()
 	await _check_fortress()
 	_h.finish("map=map_03")
 
@@ -137,6 +154,35 @@ func _check_ford() -> void:
 	var at: Vector3 = _units[0].global_position
 	_kit.need(problems, at.x > MIDDLE_REACHED.x and at.z > MIDDLE_REACHED.y, "the Buggy ended at %s, not on the middle island" % _flat(at))
 	_kit.verdict("A3_a_ford", problems, "a Buggy from %s along the ford for %d ticks ended at %s (the middle island begins about %s)" % [_flat(FORD_START), FORD_TICKS, _flat(at), MIDDLE_REACHED])
+
+
+func _check_shores() -> void:
+	var problems: PackedStringArray = PackedStringArray()
+	var fords: Array[Ford] = []
+	for node: Node in _split.field.find_children("*", "Ford", true, false):
+		fords.append(node as Ford)
+	var unit: Unit = _units[0]
+	var land_dry: int = 0
+	var water_wet: int = 0
+	for shore: Array in SHORES:
+		var ford: Ford = _split.field.get_node(NodePath(String(shore[0]))) as Ford
+		var heading: Basis = Basis(Vector3.UP, deg_to_rad(float(shore[3])))
+		for wet: bool in [false, true]:
+			var at: Vector3 = shore[2] if wet else shore[1]
+			_h.place(unit, Transform3D(heading, at), _split.all_cameras()[0])
+			await _kit.advance(4)
+			var inside: PackedStringArray = PackedStringArray()
+			for each: Ford in fords:
+				if each.overlaps_body(unit):
+					inside.append(each.name)
+			if wet:
+				_kit.need(problems, ford.overlaps_body(unit), "%s: 3 m out on the water at %s the Buggy is not in its zone" % [shore[0], _flat(at)])
+				water_wet += 1 if ford.overlaps_body(unit) else 0
+			else:
+				_kit.need(problems, inside.is_empty(), "%s: on the island at %s the Buggy is in %s" % [shore[0], _flat(at), ", ".join(inside)])
+				land_dry += 1 if inside.is_empty() else 0
+	_kit.verdict("A5_the_shores", problems, "%d ford ends: on the island 2.5 m from the water, in no ford %d of %d; 3 m out on the water, in the ford %d of %d" % [
+		SHORES.size(), land_dry, SHORES.size(), water_wet, SHORES.size()])
 
 
 func _check_fortress() -> void:

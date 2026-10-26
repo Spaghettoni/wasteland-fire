@@ -1,0 +1,137 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/ui/lobby/controls_screen.gd" id="1_screen"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cell"]
+content_margin_left = 8.0
+content_margin_top = 5.0
+content_margin_right = 8.0
+content_margin_bottom = 5.0
+bg_color = Color(0.1, 0.09, 0.08, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.45, 0.4, 0.34, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_focus"]
+draw_center = false
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.72, 0.32, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_listen"]
+content_margin_left = 8.0
+content_margin_top = 5.0
+content_margin_right = 8.0
+content_margin_bottom = 5.0
+bg_color = Color(0.42, 0.25, 0.08, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.72, 0.32, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[node name="ControlsScreen" type="Control" node_paths=PackedStringArray("table", "status_label", "default_button", "back_button")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_screen")
+cell_style = SubResource("StyleBoxFlat_cell")
+focus_style = SubResource("StyleBoxFlat_focus")
+listen_style = SubResource("StyleBoxFlat_listen")
+keyboard_1_head = "Keyboard 1"
+keyboard_2_head = "Keyboard 2"
+pad_head = "Controller"
+pad_extra_head = "Controller (also)"
+default_text = "Default"
+back_text = "Back"
+browse_text = "Arrows, D-pad or mouse to move  ·  Enter, A or click to change  ·  Esc or B to go back"
+listen_key_format = "%s, %s: press a key  (Esc cancels)"
+listen_pad_format = "%s, %s: press a button or move a stick  (Esc cancels, Delete empties)"
+taken_format = "%s: %s"
+moved_format = "%s: %s  (%s took the old one)"
+reserved_text = "That one is kept for the menus"
+last_input_text = "Every action keeps at least one input"
+cleared_format = "%s: emptied"
+reset_text = "All controls are back to the defaults"
+waiting_text = "…"
+empty_text = "—"
+table = NodePath("Layout/Table")
+status_label = NodePath("Layout/Status")
+default_button = NodePath("Layout/Buttons/Default")
+back_button = NodePath("Layout/Buttons/Back")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.16, 0.12, 0.09, 1)
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 60.0
+offset_top = 30.0
+offset_right = -60.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.72, 0.32, 1)
+theme_override_font_sizes/font_size = 36
+text = "Controls"
+horizontal_alignment = 1
+
+[node name="Table" type="GridContainer" parent="Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 6
+columns = 5
+
+[node name="Status" type="Label" parent="Layout"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Buttons" type="HBoxContainer" parent="Layout"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 24
+
+[node name="Default" type="Button" parent="Layout/Buttons"]
+custom_minimum_size = Vector2(180, 44)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+
+[node name="Back" type="Button" parent="Layout/Buttons"]
+custom_minimum_size = Vector2(180, 44)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20

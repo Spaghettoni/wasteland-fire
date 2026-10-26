@@ -18,6 +18,13 @@ extends Control
 ## join. When every Player on a side is ready and both sides have one, the map choice opens after
 ## start_delay_seconds with the Lineup (Orange in joining order, then Teal); anyone's move or back in
 ## that time stops it.
+##
+## Controls (Story 060; Martin, 2026-10-26: "moznost nastavit ovladanie ... na zaciatku v menu, kde si
+## volime timy"): the Players' own controls (ControlBindings) are read from their file when the screen
+## opens; the keyboard halves here are their keys, the card and status lines name them, and the Lineup
+## carries them into the match. controls_key, a pad's Menu button or the Controls button opens the
+## Controls screen over this one; nothing here reacts to input while it is open, and its keys are read
+## again when it closes.
 
 ## Emitted when the lineup is complete and the map choice is about to open.
 signal lineup_ready(lineup: Lineup)
@@ -39,7 +46,18 @@ enum Place { ORANGE, MIDDLE, TEAL }
 @export_range(0.0, 10.0, 0.1) var start_delay_seconds: float = 1.0
 ## How far a stick must lean to count as a move (and come back under to count again).
 @export_range(0.1, 0.95, 0.05) var stick_threshold: float = 0.6
-## Texts, through tr(): the device names (%d is the pad's number, from 1), the ready mark, the status lines.
+## What the Controls screen may change, and the shipped pad layout (Story 060). Without either, the
+## Players play project.godot's keys and pad_layout.tres and the Controls screen does not open.
+@export var controls_settings: ControlsSettings
+@export var pad_layout: PadLayout
+## The Controls screen scene, whose root is a ControlsScreen.
+@export var controls_scene: PackedScene
+## The button that opens it (the mouse's way), and the physical key that does.
+@export var controls_button: Button
+@export var controls_key: Key = KEY_C
+## Texts, through tr(): the device names (%s the half's four drive keys, %d the pad's number from 1),
+## the ready mark, the status lines (join_text: four %s, Keyboard 1's and Keyboard 2's steer keys;
+## need_ready_text: four %s, the two halves' fire keys, then their self-destruct keys).
 @export var keyboard_1_text: String = ""
 @export var keyboard_2_text: String = ""
 @export var pad_format: String = ""
@@ -57,6 +75,10 @@ var _countdown: float = -1.0
 var _started: bool = false
 var _keys_1: Dictionary = {}
 var _keys_2: Dictionary = {}
+## The Players' controls, or null (no settings or layout): the keys of project.godot then.
+var _controls: ControlBindings
+## The Controls screen while it is open.
+var _controls_screen: ControlsScreen
 
 
 func _ready() -> void:
@@ -65,9 +87,56 @@ func _ready() -> void:
 		set_process(false)
 		set_process_input(false)
 		return
-	_keys_1 = _project_keys("p1_")
-	_keys_2 = _project_keys("p2_")
+	if controls_settings != null and pad_layout != null:
+		_controls = ControlBindings.create(controls_settings, pad_layout)
+		if _controls != null:
+			_controls.load_saved()
+	if controls_button != null:
+		controls_button.focus_mode = Control.FOCUS_NONE
+		controls_button.pressed.connect(open_controls)
+		controls_button.visible = _controls != null and controls_scene != null
+	_read_keys()
 	_refresh()
+
+
+## The Players' controls this screen plays, or null.
+func controls() -> ControlBindings:
+	return _controls
+
+
+## The Controls screen open now, or null.
+func controls_screen() -> ControlsScreen:
+	return _controls_screen
+
+
+## Opens the Controls screen over this one (controls_key, a pad's Menu, or the Controls button).
+func open_controls() -> void:
+	if _started or _controls == null or controls_scene == null or _controls_screen != null:
+		return
+	var screen: ControlsScreen = controls_scene.instantiate() as ControlsScreen
+	if screen == null:
+		push_error("PickSide '%s': the root of controls_scene is not a ControlsScreen, so it does not open." % name)
+		return
+	screen.bindings = _controls
+	screen.closed.connect(_on_controls_closed)
+	_controls_screen = screen
+	_countdown = -1.0
+	add_child(screen)
+
+
+func _on_controls_closed() -> void:
+	_controls_screen = null
+	_read_keys()
+	_refresh()
+
+
+func _read_keys() -> void:
+	if _controls != null:
+		_keys_1 = _controls.keyboard_keys("p1_")
+		_keys_2 = _controls.keyboard_keys("p2_")
+	else:
+		_keys_1 = _project_keys("p1_")
+		_keys_2 = _project_keys("p2_")
 
 
 ## The lineup of the Players on a side now (Orange first), playable or not.
@@ -78,7 +147,9 @@ func current_lineup() -> Lineup:
 		if entry[1] != Place.MIDDLE:
 			devices.append(entry[0])
 			teams.append(Lineup.ORANGE if entry[1] == Place.ORANGE else Lineup.TEAL)
-	return Lineup.of(devices, teams)
+	var lineup: Lineup = Lineup.of(devices, teams)
+	lineup.controls = _controls
+	return lineup
 
 
 ## A device moves one step left (-1) or right (1): it joins on that side when absent.
@@ -132,7 +203,7 @@ func _process(delta: float) -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if _started:
+	if _started or _controls_screen != null:
 		return
 	var key: InputEventKey = event as InputEventKey
 	if key != null:
@@ -152,6 +223,9 @@ func _input(event: InputEvent) -> void:
 				continue
 			get_viewport().set_input_as_handled()
 			return
+		if key.physical_keycode == controls_key:
+			get_viewport().set_input_as_handled()
+			open_controls()
 		return
 	var button: InputEventJoypadButton = event as InputEventJoypadButton
 	if button != null:
@@ -166,6 +240,8 @@ func _input(event: InputEvent) -> void:
 				confirm(button.device)
 			JOY_BUTTON_B:
 				back(button.device)
+			JOY_BUTTON_START:
+				open_controls()
 			_:
 				return
 		get_viewport().set_input_as_handled()
@@ -205,19 +281,21 @@ func _refresh() -> void:
 	for entry: Array in _joined:
 		if entry[1] != Place.MIDDLE and not entry[2]:
 			all_ready = false
-	var text: String = join_text
+	var text: String = tr(join_text) % [_key_text(_keys_1, "steer_left"), _key_text(_keys_1, "steer_right"),
+			_key_text(_keys_2, "steer_left"), _key_text(_keys_2, "steer_right")]
 	if _joined.is_empty():
-		text = join_text
+		pass
 	elif not lineup.is_playable():
-		text = need_sides_text
+		text = tr(need_sides_text)
 	elif not all_ready:
-		text = need_ready_text
+		text = tr(need_ready_text) % [_key_text(_keys_1, "fire"), _key_text(_keys_2, "fire"),
+				_key_text(_keys_1, "self_destruct"), _key_text(_keys_2, "self_destruct")]
 	else:
-		text = starting_text
+		text = tr(starting_text)
 		if _countdown < 0.0:
 			_countdown = start_delay_seconds
 	if status_label != null:
-		status_label.text = tr(text)
+		status_label.text = text
 
 
 func _card(entry: Array) -> PanelContainer:
@@ -236,9 +314,9 @@ func _card(entry: Array) -> PanelContainer:
 ## The name a device is shown by: a keyboard half's, or the pad's number (device id + 1).
 func device_name(device: int) -> String:
 	if device == Lineup.KEYBOARD_1:
-		return tr(keyboard_1_text)
+		return tr(keyboard_1_text) % _drive_keys(_keys_1)
 	if device == Lineup.KEYBOARD_2:
-		return tr(keyboard_2_text)
+		return tr(keyboard_2_text) % _drive_keys(_keys_2)
 	return tr(pad_format) % (device + 1)
 
 
@@ -260,6 +338,18 @@ func _start() -> void:
 	tree.root.add_child(choice)
 	tree.current_scene = choice
 	queue_free()
+
+
+## The name of a half's key for the action suffix, or "?" with none.
+func _key_text(keys: Dictionary, suffix: String) -> String:
+	for event: InputEventKey in keys.get(suffix, []):
+		return ControlBindings.key_name(event)
+	return "?"
+
+
+## A half's four drive keys, as its card shows them: throttle, steer left, reverse, steer right.
+func _drive_keys(keys: Dictionary) -> String:
+	return " ".join([_key_text(keys, "throttle"), _key_text(keys, "steer_left"), _key_text(keys, "reverse"), _key_text(keys, "steer_right")])
 
 
 func _matches(key: InputEventKey, keys: Dictionary, suffix: String) -> bool:

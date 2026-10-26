@@ -28,6 +28,9 @@ const MAX_PLAYERS: int = 4
 var devices: Array[int] = []
 ## One entry per Player: that Player's Team.
 var teams: Array[int] = []
+## The Players' own controls from the Controls screen (Story 060): the keys of the two keyboard halves
+## and the pad layout the launch scene plays. Null plays project.godot's keys and pad_layout.tres.
+var controls: ControlBindings
 
 
 ## A lineup of the given devices and Teams, put in Player order (Orange first, each side in the

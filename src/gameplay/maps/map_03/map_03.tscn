@@ -58,29 +58,173 @@ fog_sky_affect = 0.3
 fog_depth_begin = 60.0
 fog_depth_end = 260.0
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest1"]
-size = Vector3(14, 3, 33.732137)
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest1_0"]
+size = Vector3(2, 3, 20.5)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast1"]
-size = Vector3(14, 3, 33.732137)
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest1_1"]
+size = Vector3(2, 3, 19.75)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest2"]
-size = Vector3(14, 3, 110)
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest1_2"]
+size = Vector3(2, 3, 19.5)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast2"]
-size = Vector3(14, 3, 110)
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest1_3"]
+size = Vector3(2, 3, 19.25)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest3"]
-size = Vector3(14, 3, 48.407207)
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest1_4"]
+size = Vector3(2, 3, 19.25)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast3"]
-size = Vector3(14, 3, 48.407207)
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest1_5"]
+size = Vector3(2, 3, 19.5)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_FordNorth"]
-size = Vector3(14, 3, 84)
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest1_6"]
+size = Vector3(2, 3, 20)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_FordSouth"]
-size = Vector3(14, 3, 116)
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast1_0"]
+size = Vector3(2, 3, 20)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast1_1"]
+size = Vector3(2, 3, 19.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast1_2"]
+size = Vector3(2, 3, 19.25)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast1_3"]
+size = Vector3(2, 3, 19.25)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast1_4"]
+size = Vector3(2, 3, 19.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast1_5"]
+size = Vector3(2, 3, 19.75)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast1_6"]
+size = Vector3(2, 3, 20.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest2_0"]
+size = Vector3(2, 3, 93.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest2_1"]
+size = Vector3(2, 3, 91.75)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest2_2"]
+size = Vector3(2, 3, 90.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest2_3"]
+size = Vector3(2, 3, 89.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest2_4"]
+size = Vector3(2, 3, 88.25)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest2_5"]
+size = Vector3(2, 3, 87.75)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest2_6"]
+size = Vector3(2, 3, 87)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast2_0"]
+size = Vector3(2, 3, 87)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast2_1"]
+size = Vector3(2, 3, 87.75)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast2_2"]
+size = Vector3(2, 3, 88.25)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast2_3"]
+size = Vector3(2, 3, 89.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast2_4"]
+size = Vector3(2, 3, 90.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast2_5"]
+size = Vector3(2, 3, 91.75)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast2_6"]
+size = Vector3(2, 3, 93.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest3_0"]
+size = Vector3(2, 3, 35)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest3_1"]
+size = Vector3(2, 3, 34.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest3_2"]
+size = Vector3(2, 3, 34.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest3_3"]
+size = Vector3(2, 3, 34.75)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest3_4"]
+size = Vector3(2, 3, 35.25)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest3_5"]
+size = Vector3(2, 3, 35.75)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordWest3_6"]
+size = Vector3(2, 3, 37.25)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast3_0"]
+size = Vector3(2, 3, 37.25)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast3_1"]
+size = Vector3(2, 3, 35.75)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast3_2"]
+size = Vector3(2, 3, 35.25)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast3_3"]
+size = Vector3(2, 3, 34.75)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast3_4"]
+size = Vector3(2, 3, 34.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast3_5"]
+size = Vector3(2, 3, 34.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordEast3_6"]
+size = Vector3(2, 3, 35)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordNorth_0"]
+size = Vector3(2, 3, 72.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordNorth_1"]
+size = Vector3(2, 3, 73.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordNorth_2"]
+size = Vector3(2, 3, 75.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordNorth_3"]
+size = Vector3(2, 3, 77.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordNorth_4"]
+size = Vector3(2, 3, 80.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordNorth_5"]
+size = Vector3(2, 3, 84.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordNorth_6"]
+size = Vector3(2, 3, 89.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordSouth_0"]
+size = Vector3(2, 3, 133)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordSouth_1"]
+size = Vector3(2, 3, 124.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordSouth_2"]
+size = Vector3(2, 3, 117.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordSouth_3"]
+size = Vector3(2, 3, 113)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordSouth_4"]
+size = Vector3(2, 3, 109.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordSouth_5"]
+size = Vector3(2, 3, 107.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_FordSouth_6"]
+size = Vector3(2, 3, 105)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_PuddleWest1"]
 size = Vector3(3.75, 3, 6.75)
@@ -210,56 +354,56 @@ material = ExtResource("16_sand")
 [node name="BedFordWest1" type="CSGPolygon3D" parent="Terrain"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.28, 0)
 cast_shadow = 0
-polygon = PackedVector2Array(-55.18859, -47.165765, -30.228829, -24.475074, -20.81141, -34.834235, -45.771171, -57.524926)
+polygon = PackedVector2Array(-53.893695, -45.988588, -31.70871, -25.820419, -22.29129, -36.179581, -44.476275, -56.347749)
 depth = 0.2
 material = ExtResource("16_sand")
 
 [node name="BedFordEast1" type="CSGPolygon3D" parent="Terrain"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.28, 0)
 cast_shadow = 0
-polygon = PackedVector2Array(45.771171, -57.524926, 20.81141, -34.834235, 30.228829, -24.475074, 55.18859, -47.165765)
+polygon = PackedVector2Array(44.476275, -56.347749, 22.29129, -36.179581, 31.70871, -25.820419, 53.893695, -45.988588)
 depth = 0.2
 material = ExtResource("16_sand")
 
 [node name="BedFordWest2" type="CSGPolygon3D" parent="Terrain"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.28, 0)
 cast_shadow = 0
-polygon = PackedVector2Array(-108, -54, -108, 56, -94, 56, -94, -54)
+polygon = PackedVector2Array(-108, -52, -108, 54, -94, 54, -94, -52)
 depth = 0.2
 material = ExtResource("16_sand")
 
 [node name="BedFordEast2" type="CSGPolygon3D" parent="Terrain"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.28, 0)
 cast_shadow = 0
-polygon = PackedVector2Array(94, -54, 94, 56, 108, 56, 108, -54)
+polygon = PackedVector2Array(94, -52, 94, 54, 108, 54, 108, -52)
 depth = 0.2
 material = ExtResource("16_sand")
 
 [node name="BedFordWest3" type="CSGPolygon3D" parent="Terrain"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.28, 0)
 cast_shadow = 0
-polygon = PackedVector2Array(-35.503773, 25.280208, -63.845736, 64.522925, -52.496227, 72.719792, -24.154264, 33.477075)
+polygon = PackedVector2Array(-36.235637, 26.293557, -63.113873, 63.509576, -51.764363, 71.706443, -24.886127, 34.490424)
 depth = 0.2
 material = ExtResource("16_sand")
 
 [node name="BedFordEast3" type="CSGPolygon3D" parent="Terrain"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.28, 0)
 cast_shadow = 0
-polygon = PackedVector2Array(24.154264, 33.477075, 52.496227, 72.719792, 63.845736, 64.522925, 35.503773, 25.280208)
+polygon = PackedVector2Array(24.886127, 34.490424, 51.764363, 71.706443, 63.113873, 63.509576, 36.235637, 26.293557)
 depth = 0.2
 material = ExtResource("16_sand")
 
 [node name="BedFordNorth" type="CSGPolygon3D" parent="Terrain"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.28, 0)
 cast_shadow = 0
-polygon = PackedVector2Array(-42, -93, 42, -93, 42, -107, -42, -107)
+polygon = PackedVector2Array(-49.75, -93, 49.75, -93, 49.75, -107, -49.75, -107)
 depth = 0.2
 material = ExtResource("16_sand")
 
 [node name="BedFordSouth" type="CSGPolygon3D" parent="Terrain"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.28, 0)
 cast_shadow = 0
-polygon = PackedVector2Array(-58, 111, 58, 111, 58, 97, -58, 97)
+polygon = PackedVector2Array(-75, 111, 75, 111, 75, 97, -75, 97)
 depth = 0.2
 material = ExtResource("16_sand")
 
@@ -307,58 +451,83 @@ depth = 3.0
 [node name="CutFordWest1" type="CSGPolygon3D" parent="Terrain/SeaWall"]
 operation = 2
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -1, 0)
-polygon = PackedVector2Array(-55.18859, -47.165765, -30.228829, -24.475074, -20.81141, -34.834235, -45.771171, -57.524926)
+polygon = PackedVector2Array(-53.893695, -45.988588, -31.70871, -25.820419, -22.29129, -36.179581, -44.476275, -56.347749)
 depth = 3.0
 
 [node name="CutFordEast1" type="CSGPolygon3D" parent="Terrain/SeaWall"]
 operation = 2
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -1, 0)
-polygon = PackedVector2Array(45.771171, -57.524926, 20.81141, -34.834235, 30.228829, -24.475074, 55.18859, -47.165765)
+polygon = PackedVector2Array(44.476275, -56.347749, 22.29129, -36.179581, 31.70871, -25.820419, 53.893695, -45.988588)
 depth = 3.0
 
 [node name="CutFordWest2" type="CSGPolygon3D" parent="Terrain/SeaWall"]
 operation = 2
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -1, 0)
-polygon = PackedVector2Array(-108, -54, -108, 56, -94, 56, -94, -54)
+polygon = PackedVector2Array(-108, -52, -108, 54, -94, 54, -94, -52)
 depth = 3.0
 
 [node name="CutFordEast2" type="CSGPolygon3D" parent="Terrain/SeaWall"]
 operation = 2
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -1, 0)
-polygon = PackedVector2Array(94, -54, 94, 56, 108, 56, 108, -54)
+polygon = PackedVector2Array(94, -52, 94, 54, 108, 54, 108, -52)
 depth = 3.0
 
 [node name="CutFordWest3" type="CSGPolygon3D" parent="Terrain/SeaWall"]
 operation = 2
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -1, 0)
-polygon = PackedVector2Array(-35.503773, 25.280208, -63.845736, 64.522925, -52.496227, 72.719792, -24.154264, 33.477075)
+polygon = PackedVector2Array(-36.235637, 26.293557, -63.113873, 63.509576, -51.764363, 71.706443, -24.886127, 34.490424)
 depth = 3.0
 
 [node name="CutFordEast3" type="CSGPolygon3D" parent="Terrain/SeaWall"]
 operation = 2
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -1, 0)
-polygon = PackedVector2Array(24.154264, 33.477075, 52.496227, 72.719792, 63.845736, 64.522925, 35.503773, 25.280208)
+polygon = PackedVector2Array(24.886127, 34.490424, 51.764363, 71.706443, 63.113873, 63.509576, 36.235637, 26.293557)
 depth = 3.0
 
 [node name="CutFordNorth" type="CSGPolygon3D" parent="Terrain/SeaWall"]
 operation = 2
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -1, 0)
-polygon = PackedVector2Array(-42, -93, 42, -93, 42, -107, -42, -107)
+polygon = PackedVector2Array(-49.75, -93, 49.75, -93, 49.75, -107, -49.75, -107)
 depth = 3.0
 
 [node name="CutFordSouth" type="CSGPolygon3D" parent="Terrain/SeaWall"]
 operation = 2
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -1, 0)
-polygon = PackedVector2Array(-58, 111, 58, 111, 58, 97, -58, 97)
+polygon = PackedVector2Array(-75, 111, 75, 111, 75, 97, -75, 97)
 depth = 3.0
 
 [node name="Pools" type="Node3D" parent="."]
 
 [node name="FordWest1" parent="." instance=ExtResource("7_ford")]
-transform = Transform3D(0.672673, 0, 0.73994, 0, 1, 0, -0.73994, 0, 0.672673, -38, 0, -41)
+transform = Transform3D(0.672673, 0, 0.73994, 0, 1, 0, -0.73994, 0, 0.672673, -38.092493, 0, -41.084084)
 
 [node name="CollisionShape3D" parent="FordWest1"]
-shape = SubResource("BoxShape3D_FordWest1")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.5, -1.491069)
+shape = SubResource("BoxShape3D_FordWest1_0")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="FordWest1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1.5, -1.366069)
+shape = SubResource("BoxShape3D_FordWest1_1")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="FordWest1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1.5, -0.991069)
+shape = SubResource("BoxShape3D_FordWest1_2")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="FordWest1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -0.866069)
+shape = SubResource("BoxShape3D_FordWest1_3")
+
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="FordWest1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.5, -0.616069)
+shape = SubResource("BoxShape3D_FordWest1_4")
+
+[node name="CollisionShape3D6" type="CollisionShape3D" parent="FordWest1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.5, -0.491069)
+shape = SubResource("BoxShape3D_FordWest1_5")
+
+[node name="CollisionShape3D7" type="CollisionShape3D" parent="FordWest1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.5, -0.241069)
+shape = SubResource("BoxShape3D_FordWest1_6")
 
 [node name="Water" parent="FordWest1"]
 visible = false
@@ -366,15 +535,40 @@ visible = false
 [node name="PoolFordWest1" type="CSGPolygon3D" parent="Pools"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.05, 0)
 cast_shadow = 0
-polygon = PackedVector2Array(-55.18859, -47.165765, -30.228829, -24.475074, -20.81141, -34.834235, -45.771171, -57.524926)
+polygon = PackedVector2Array(-53.893695, -45.988588, -31.70871, -25.820419, -22.29129, -36.179581, -44.476275, -56.347749)
 depth = 0.02
 material = ExtResource("18_ford")
 
 [node name="FordEast1" parent="." instance=ExtResource("7_ford")]
-transform = Transform3D(0.672673, 0, -0.73994, 0, 1, 0, 0.73994, 0, 0.672673, 38, 0, -41)
+transform = Transform3D(0.672673, 0, -0.73994, 0, 1, 0, 0.73994, 0, 0.672673, 38.092493, 0, -41.084084)
 
 [node name="CollisionShape3D" parent="FordEast1"]
-shape = SubResource("BoxShape3D_FordEast1")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.5, -0.241069)
+shape = SubResource("BoxShape3D_FordEast1_0")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="FordEast1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1.5, -0.491069)
+shape = SubResource("BoxShape3D_FordEast1_1")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="FordEast1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1.5, -0.616069)
+shape = SubResource("BoxShape3D_FordEast1_2")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="FordEast1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -0.866069)
+shape = SubResource("BoxShape3D_FordEast1_3")
+
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="FordEast1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.5, -0.991069)
+shape = SubResource("BoxShape3D_FordEast1_4")
+
+[node name="CollisionShape3D6" type="CollisionShape3D" parent="FordEast1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.5, -1.366069)
+shape = SubResource("BoxShape3D_FordEast1_5")
+
+[node name="CollisionShape3D7" type="CollisionShape3D" parent="FordEast1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.5, -1.491069)
+shape = SubResource("BoxShape3D_FordEast1_6")
 
 [node name="Water" parent="FordEast1"]
 visible = false
@@ -382,7 +576,7 @@ visible = false
 [node name="PoolFordEast1" type="CSGPolygon3D" parent="Pools"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.05, 0)
 cast_shadow = 0
-polygon = PackedVector2Array(45.771171, -57.524926, 20.81141, -34.834235, 30.228829, -24.475074, 55.18859, -47.165765)
+polygon = PackedVector2Array(44.476275, -56.347749, 22.29129, -36.179581, 31.70871, -25.820419, 53.893695, -45.988588)
 depth = 0.02
 material = ExtResource("18_ford")
 
@@ -390,7 +584,32 @@ material = ExtResource("18_ford")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -101, 0, 1)
 
 [node name="CollisionShape3D" parent="FordWest2"]
-shape = SubResource("BoxShape3D_FordWest2")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.5, -0.5)
+shape = SubResource("BoxShape3D_FordWest2_0")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="FordWest2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1.5, -0.125)
+shape = SubResource("BoxShape3D_FordWest2_1")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="FordWest2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1.5, 0)
+shape = SubResource("BoxShape3D_FordWest2_2")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="FordWest2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("BoxShape3D_FordWest2_3")
+
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="FordWest2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.5, 0.125)
+shape = SubResource("BoxShape3D_FordWest2_4")
+
+[node name="CollisionShape3D6" type="CollisionShape3D" parent="FordWest2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.5, 0.125)
+shape = SubResource("BoxShape3D_FordWest2_5")
+
+[node name="CollisionShape3D7" type="CollisionShape3D" parent="FordWest2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.5, 0.25)
+shape = SubResource("BoxShape3D_FordWest2_6")
 
 [node name="Water" parent="FordWest2"]
 visible = false
@@ -398,7 +617,7 @@ visible = false
 [node name="PoolFordWest2" type="CSGPolygon3D" parent="Pools"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.05, 0)
 cast_shadow = 0
-polygon = PackedVector2Array(-108, -54, -108, 56, -94, 56, -94, -54)
+polygon = PackedVector2Array(-108, -52, -108, 54, -94, 54, -94, -52)
 depth = 0.02
 material = ExtResource("18_ford")
 
@@ -406,7 +625,32 @@ material = ExtResource("18_ford")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 101, 0, 1)
 
 [node name="CollisionShape3D" parent="FordEast2"]
-shape = SubResource("BoxShape3D_FordEast2")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.5, 0.25)
+shape = SubResource("BoxShape3D_FordEast2_0")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="FordEast2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1.5, 0.125)
+shape = SubResource("BoxShape3D_FordEast2_1")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="FordEast2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1.5, 0.125)
+shape = SubResource("BoxShape3D_FordEast2_2")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="FordEast2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("BoxShape3D_FordEast2_3")
+
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="FordEast2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.5, 0)
+shape = SubResource("BoxShape3D_FordEast2_4")
+
+[node name="CollisionShape3D6" type="CollisionShape3D" parent="FordEast2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.5, -0.125)
+shape = SubResource("BoxShape3D_FordEast2_5")
+
+[node name="CollisionShape3D7" type="CollisionShape3D" parent="FordEast2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.5, -0.5)
+shape = SubResource("BoxShape3D_FordEast2_6")
 
 [node name="Water" parent="FordEast2"]
 visible = false
@@ -414,7 +658,7 @@ visible = false
 [node name="PoolFordEast2" type="CSGPolygon3D" parent="Pools"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.05, 0)
 cast_shadow = 0
-polygon = PackedVector2Array(94, -54, 94, 56, 108, 56, 108, -54)
+polygon = PackedVector2Array(94, -52, 94, 54, 108, 54, 108, -52)
 depth = 0.02
 material = ExtResource("18_ford")
 
@@ -422,7 +666,32 @@ material = ExtResource("18_ford")
 transform = Transform3D(0.810679, 0, -0.585491, 0, 1, 0, 0.585491, 0, 0.810679, -44, 0, 49)
 
 [node name="CollisionShape3D" parent="FordWest3"]
-shape = SubResource("BoxShape3D_FordWest3")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.5, -2.703603)
+shape = SubResource("BoxShape3D_FordWest3_0")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="FordWest3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1.5, -2.203603)
+shape = SubResource("BoxShape3D_FordWest3_1")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="FordWest3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1.5, -1.703603)
+shape = SubResource("BoxShape3D_FordWest3_2")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="FordWest3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -1.328603)
+shape = SubResource("BoxShape3D_FordWest3_3")
+
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="FordWest3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.5, -0.828603)
+shape = SubResource("BoxShape3D_FordWest3_4")
+
+[node name="CollisionShape3D6" type="CollisionShape3D" parent="FordWest3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.5, -0.328603)
+shape = SubResource("BoxShape3D_FordWest3_5")
+
+[node name="CollisionShape3D7" type="CollisionShape3D" parent="FordWest3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.5, 0.421397)
+shape = SubResource("BoxShape3D_FordWest3_6")
 
 [node name="Water" parent="FordWest3"]
 visible = false
@@ -430,7 +699,7 @@ visible = false
 [node name="PoolFordWest3" type="CSGPolygon3D" parent="Pools"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.05, 0)
 cast_shadow = 0
-polygon = PackedVector2Array(-35.503773, 25.280208, -63.845736, 64.522925, -52.496227, 72.719792, -24.154264, 33.477075)
+polygon = PackedVector2Array(-36.235637, 26.293557, -63.113873, 63.509576, -51.764363, 71.706443, -24.886127, 34.490424)
 depth = 0.02
 material = ExtResource("18_ford")
 
@@ -438,7 +707,32 @@ material = ExtResource("18_ford")
 transform = Transform3D(0.810679, 0, 0.585491, 0, 1, 0, -0.585491, 0, 0.810679, 44, 0, 49)
 
 [node name="CollisionShape3D" parent="FordEast3"]
-shape = SubResource("BoxShape3D_FordEast3")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.5, 0.421397)
+shape = SubResource("BoxShape3D_FordEast3_0")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="FordEast3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1.5, -0.328603)
+shape = SubResource("BoxShape3D_FordEast3_1")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="FordEast3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1.5, -0.828603)
+shape = SubResource("BoxShape3D_FordEast3_2")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="FordEast3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -1.328603)
+shape = SubResource("BoxShape3D_FordEast3_3")
+
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="FordEast3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.5, -1.703603)
+shape = SubResource("BoxShape3D_FordEast3_4")
+
+[node name="CollisionShape3D6" type="CollisionShape3D" parent="FordEast3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.5, -2.203603)
+shape = SubResource("BoxShape3D_FordEast3_5")
+
+[node name="CollisionShape3D7" type="CollisionShape3D" parent="FordEast3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.5, -2.703603)
+shape = SubResource("BoxShape3D_FordEast3_6")
 
 [node name="Water" parent="FordEast3"]
 visible = false
@@ -446,7 +740,7 @@ visible = false
 [node name="PoolFordEast3" type="CSGPolygon3D" parent="Pools"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.05, 0)
 cast_shadow = 0
-polygon = PackedVector2Array(24.154264, 33.477075, 52.496227, 72.719792, 63.845736, 64.522925, 35.503773, 25.280208)
+polygon = PackedVector2Array(24.886127, 34.490424, 51.764363, 71.706443, 63.113873, 63.509576, 36.235637, 26.293557)
 depth = 0.02
 material = ExtResource("18_ford")
 
@@ -454,7 +748,32 @@ material = ExtResource("18_ford")
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 0, -100)
 
 [node name="CollisionShape3D" parent="FordNorth"]
-shape = SubResource("BoxShape3D_FordNorth")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.5, 0)
+shape = SubResource("BoxShape3D_FordNorth_0")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="FordNorth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1.5, 0)
+shape = SubResource("BoxShape3D_FordNorth_1")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="FordNorth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1.5, 0)
+shape = SubResource("BoxShape3D_FordNorth_2")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="FordNorth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("BoxShape3D_FordNorth_3")
+
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="FordNorth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.5, 0)
+shape = SubResource("BoxShape3D_FordNorth_4")
+
+[node name="CollisionShape3D6" type="CollisionShape3D" parent="FordNorth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.5, 0)
+shape = SubResource("BoxShape3D_FordNorth_5")
+
+[node name="CollisionShape3D7" type="CollisionShape3D" parent="FordNorth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.5, 0)
+shape = SubResource("BoxShape3D_FordNorth_6")
 
 [node name="Water" parent="FordNorth"]
 visible = false
@@ -462,7 +781,7 @@ visible = false
 [node name="PoolFordNorth" type="CSGPolygon3D" parent="Pools"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.05, 0)
 cast_shadow = 0
-polygon = PackedVector2Array(-42, -93, 42, -93, 42, -107, -42, -107)
+polygon = PackedVector2Array(-49.75, -93, 49.75, -93, 49.75, -107, -49.75, -107)
 depth = 0.02
 material = ExtResource("18_ford")
 
@@ -470,7 +789,32 @@ material = ExtResource("18_ford")
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 0, 104)
 
 [node name="CollisionShape3D" parent="FordSouth"]
-shape = SubResource("BoxShape3D_FordSouth")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.5, 0)
+shape = SubResource("BoxShape3D_FordSouth_0")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="FordSouth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1.5, 0)
+shape = SubResource("BoxShape3D_FordSouth_1")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="FordSouth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1.5, 0)
+shape = SubResource("BoxShape3D_FordSouth_2")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="FordSouth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("BoxShape3D_FordSouth_3")
+
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="FordSouth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.5, 0)
+shape = SubResource("BoxShape3D_FordSouth_4")
+
+[node name="CollisionShape3D6" type="CollisionShape3D" parent="FordSouth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.5, 0)
+shape = SubResource("BoxShape3D_FordSouth_5")
+
+[node name="CollisionShape3D7" type="CollisionShape3D" parent="FordSouth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.5, 0)
+shape = SubResource("BoxShape3D_FordSouth_6")
 
 [node name="Water" parent="FordSouth"]
 visible = false
@@ -478,7 +822,7 @@ visible = false
 [node name="PoolFordSouth" type="CSGPolygon3D" parent="Pools"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.05, 0)
 cast_shadow = 0
-polygon = PackedVector2Array(-58, 111, 58, 111, 58, 97, -58, 97)
+polygon = PackedVector2Array(-75, 111, 75, 111, 75, 97, -75, 97)
 depth = 0.02
 material = ExtResource("18_ford")
 

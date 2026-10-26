@@ -605,7 +605,8 @@ func team_of(player_index: int) -> int:
 ## Unit, HUD band and choice panel takes its Team's colours; with more than two Players the views stand
 ## in two columns, Orange on the left and Teal on the right, an empty place showing a dark panel; the
 ## Players' actions get the keys of their keyboard half and no other (_apply_inputs()); PadAssignment
-## gives each listed pad to its Player only; the Round-over screens name the winning Team; and the
+## gives each listed pad to its Player only, with the lineup's pad layout when it carries the Players'
+## controls (Story 060); the Round-over screens name the winning Team; and the
 ## MatchController gets the Teams. Returns false, with an error and nothing changed, when the scene is
 ## in the tree or the lineup cannot be played (Lineup.is_playable()).
 func apply_lineup(new_lineup: Lineup) -> bool:
@@ -645,6 +646,8 @@ func apply_lineup(new_lineup: Lineup) -> bool:
 		for player: int in count:
 			prefixes.append(StringName("p%d_" % (player + 1)))
 		pads.action_prefixes = prefixes
+		if lineup.controls != null:
+			pads.layout = lineup.controls.pad_layout()
 		var reserved: Dictionary[int, int] = {}
 		for player: int in count:
 			if not Lineup.is_keyboard(lineup.devices[player]):
@@ -781,10 +784,13 @@ func _lay_out_views(count: int) -> void:
 
 ## Gives each Player's actions the keys of that Player's keyboard half and nothing else on the
 ## keyboard (Story 048): the halves are the keys project.godot gives Player 1 and Player 2, read from
-## the project settings, so a change made here before is never read back; Players 3 and 4 get their
+## the project settings, so a change made here before is never read back, or, when the lineup carries
+## the Players' controls (Story 060), ControlBindings.keyboard_keys(); Players 3 and 4 get their
 ## actions made (named as Player 1's, with Player 1's dead zones) the first time.
 func _apply_inputs() -> void:
 	var sets: Dictionary = {Lineup.KEYBOARD_1: _project_keys("p1_"), Lineup.KEYBOARD_2: _project_keys("p2_")}
+	if lineup.controls != null:
+		sets = {Lineup.KEYBOARD_1: lineup.controls.keyboard_keys("p1_"), Lineup.KEYBOARD_2: lineup.controls.keyboard_keys("p2_")}
 	var suffixes: Array[String] = []
 	for keys: Dictionary in sets.values():
 		for suffix: String in keys:

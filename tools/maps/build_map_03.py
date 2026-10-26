@@ -91,6 +91,15 @@ POOL_TOP = 0.02
 POOL_DEPTH = 0.02
 BED_TOP = -0.08
 POOL_BOX_SHARE = 0.75
+# A ford between islands (Martin, 2026-10-26: "tie vodne cesty po obvode su obcas ustrihnute, nejdu cele az po ostrov"; "ta
+# spomalovacia zona ... sa aktivuje este ked idem na ostrove"): each end runs on into its island until the whole end edge lies
+# this far inside the shore, so no sea shows between a ford and a curved shore; and the ford slows Units only over its
+# water: its zone is strips across the ford, each running between the shores, pulled this far back from them.
+FORD_TUCK = 1.5
+FORD_TUCK_MAX = 24.0
+FORD_STRIPS = 7
+FORD_SAMPLE = 0.25
+FORD_ZONE_INSET = 0.5
 
 SEA_WALL_HEIGHT = 0.4  # below the shooting height (0.5 m): a Turret sees and Shots fly over the water
 
@@ -142,6 +151,84 @@ def ford_rect(a, b, width=FORD_WIDTH, reach=2.0):
     return ((a[0] + b[0]) / 2.0, (a[1] + b[1]) / 2.0), length, width, math.degrees(math.atan2(dx, dz))
 
 
+def inside(point, outline):
+    """Whether a point (x, z) lies inside a closed outline (even-odd rule)."""
+    x, z = point
+    hit = False
+    n = len(outline)
+    for i in range(n):
+        (x1, z1), (x2, z2) = outline[i], outline[(i + 1) % n]
+        if (z1 > z) != (z2 > z) and x < x1 + (z - z1) * (x2 - x1) / (z2 - z1):
+            hit = not hit
+    return hit
+
+
+_LAND = []
+
+
+def on_land(point):
+    if not _LAND:
+        _LAND.extend(outline for _name, outline in islands())
+    return any(inside(point, outline) for outline in _LAND)
+
+
+def ford_frame(centre, yaw):
+    """The ford's local axes in the Map's (x, z): along (local z) and across (local x)."""
+    yaw_r = math.radians(yaw)
+    return (math.sin(yaw_r), math.cos(yaw_r)), (math.cos(yaw_r), -math.sin(yaw_r))
+
+
+def local_point(centre, yaw, x, z):
+    along, across = ford_frame(centre, yaw)
+    return centre[0] + along[0] * z + across[0] * x, centre[1] + along[1] * z + across[1] * x
+
+
+def tucked_ford(a, b, width=FORD_WIDTH):
+    """The ford from a to b, each end run on into its island until both end corners lie FORD_TUCK inside the shore."""
+    centre, length, width, yaw = ford_rect(a, b, width, reach=0.0)
+    ends = []
+    for sign in (-1, 1):
+        reach = 0.0
+        while reach < FORD_TUCK_MAX:
+            z = sign * (length / 2 + reach)
+            corners = [local_point(centre, yaw, x, z) for x in (-width / 2, width / 2)]
+            deeper = [local_point(centre, yaw, x, z - sign * FORD_TUCK) for x in (-width / 2, width / 2)]
+            if all(on_land(p) for p in corners + deeper):
+                break
+            reach += 0.25
+        ends.append(sign * (length / 2 + reach))
+    z0, z1 = ends
+    mid = (z0 + z1) / 2.0
+    return local_point(centre, yaw, 0.0, mid), z1 - z0, width, yaw
+
+
+def water_strips(centre, length, width, yaw):
+    """The ford's slowing zone as boxes in its local frame, (x, z, size_x, size_z): FORD_STRIPS strips across the ford, each
+    over the longest run of the ford where both its edges and its middle are on water, pulled FORD_ZONE_INSET back."""
+    out = []
+    step = width / FORD_STRIPS
+    count = int(length / FORD_SAMPLE)
+    for i in range(FORD_STRIPS):
+        x0 = -width / 2 + i * step
+        xs = (x0 + 0.01, x0 + step / 2, x0 + step - 0.01)
+        best, run = None, None
+        for k in range(count + 1):
+            z = -length / 2 + k * FORD_SAMPLE
+            wet = not any(on_land(local_point(centre, yaw, x, z)) for x in xs)
+            if wet:
+                run = (run[0], z) if run else (z, z)
+                if best is None or run[1] - run[0] > best[1] - best[0]:
+                    best = run
+            else:
+                run = None
+        if best is None:
+            continue
+        z0, z1 = best[0] + FORD_ZONE_INSET, best[1] - FORD_ZONE_INSET
+        if z1 > z0:
+            out.append((x0 + step / 2, (z0 + z1) / 2, step, z1 - z0))
+    return out
+
+
 def rect_outline(centre, length, width, yaw):
     """The four corners of a ford's rectangle, in the Map's (x, z)."""
     yaw_r = math.radians(yaw)
@@ -159,10 +246,10 @@ def all_fords():
     fords = []
     for index, (a, b) in enumerate(FORDS):
         for side, (pa, pb) in (("West", (a, b)), ("East", (mirror(a), mirror(b)))):
-            centre, length, width, yaw = ford_rect(pa, pb)
+            centre, length, width, yaw = tucked_ford(pa, pb)
             fords.append((f"Ford{side}{index + 1}", centre, length, width, yaw))
     for index, (a, b) in enumerate(FORDS_SHARED):
-        centre, length, width, yaw = ford_rect(a, b, reach=0.0)
+        centre, length, width, yaw = tucked_ford(a, b)
         fords.append((("FordNorth", "FordSouth")[index], centre, length, width, yaw))
     for index, (centre, length, width, yaw) in enumerate(PUDDLES):
         fords.append((f"PuddleWest{index + 1}", centre, length, width, yaw))
@@ -382,10 +469,19 @@ def build_map(garage_colored, garage_structures, fortress_colored, fortress_stru
     scene.node("Pools", "Node3D", ".")
     for index, (name, centre, length, width, yaw) in enumerate(fords):
         puddle = name.startswith("Puddle")
-        box = (width * POOL_BOX_SHARE, 3, length * POOL_BOX_SHARE) if puddle else (width, 3, length)
-        shape = scene.sub_resource("BoxShape3D", f"BoxShape3D_{name}", {"size": vec3(*box)})
         scene.node(name, None, ".", {"transform": transform(centre[0], 0, centre[1], yaw)}, instance=ford)
-        scene.node("CollisionShape3D", None, name, {"shape": shape})
+        if puddle:
+            box = (width * POOL_BOX_SHARE, 3, length * POOL_BOX_SHARE)
+            shape = scene.sub_resource("BoxShape3D", f"BoxShape3D_{name}", {"size": vec3(*box)})
+            scene.node("CollisionShape3D", None, name, {"shape": shape})
+        else:
+            for strip, (sx, sz, size_x, size_z) in enumerate(water_strips(centre, length, width, yaw)):
+                shape = scene.sub_resource("BoxShape3D", f"BoxShape3D_{name}_{strip}", {"size": vec3(size_x, 3, size_z)})
+                at = transform(sx, 1.5, sz)
+                if strip == 0:
+                    scene.node("CollisionShape3D", None, name, {"transform": at, "shape": shape})
+                else:
+                    scene.node(f"CollisionShape3D{strip + 1}", "CollisionShape3D", name, {"transform": at, "shape": shape})
         scene.node("Water", None, name, {"visible": "false"})
         scene.editable(name)
         if puddle:

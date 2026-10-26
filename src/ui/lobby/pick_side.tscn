@@ -2,6 +2,9 @@
 
 [ext_resource type="Script" path="res://src/ui/lobby/pick_side.gd" id="1_pick"]
 [ext_resource type="PackedScene" path="res://src/ui/map_choice/map_choice.tscn" id="2_choice"]
+[ext_resource type="Resource" path="res://src/gameplay/input/data/controls_settings.tres" id="3_controls"]
+[ext_resource type="Resource" path="res://src/gameplay/input/data/pad_layout.tres" id="4_pad"]
+[ext_resource type="PackedScene" path="res://src/ui/lobby/controls_screen.tscn" id="5_screen"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
 content_margin_left = 12.0
@@ -35,7 +38,7 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[node name="PickSide" type="Control" node_paths=PackedStringArray("orange_list", "middle_list", "teal_list", "status_label")]
+[node name="PickSide" type="Control" node_paths=PackedStringArray("orange_list", "middle_list", "teal_list", "status_label", "controls_button")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -44,19 +47,23 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_pick")
 map_choice_scene = ExtResource("2_choice")
+controls_settings = ExtResource("3_controls")
+pad_layout = ExtResource("4_pad")
+controls_scene = ExtResource("5_screen")
+controls_button = NodePath("Layout/Bottom/Controls")
 orange_list = NodePath("Layout/Sides/Orange/List")
 middle_list = NodePath("Layout/Sides/Middle/List")
 teal_list = NodePath("Layout/Sides/Teal/List")
 status_label = NodePath("Layout/Status")
 card_style = SubResource("StyleBoxFlat_card")
 ready_style = SubResource("StyleBoxFlat_ready")
-keyboard_1_text = "Keyboard  W A S D"
-keyboard_2_text = "Keyboard  Arrows"
+keyboard_1_text = "Keyboard  %s"
+keyboard_2_text = "Keyboard  %s"
 pad_format = "Controller %d"
 ready_suffix = "   ✓ Ready"
-join_text = "Move left or right (stick, D-pad, A / D or the arrows) to join a side"
+join_text = "Move left or right (stick, D-pad, %s / %s or %s / %s) to join a side"
 need_sides_text = "Both sides need a player"
-need_ready_text = "Press A, Space or Period when you are ready  ·  B, Tab or Enter to go back"
+need_ready_text = "Press A, %s or %s when you are ready  ·  B, %s or %s to go back"
 starting_text = "Everyone is ready: choose the map…"
 
 [node name="Background" type="ColorRect" parent="."]
@@ -161,3 +168,14 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1
 autowrap_mode = 3
+
+[node name="Bottom" type="HBoxContainer" parent="Layout"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 16
+
+[node name="Controls" type="Button" parent="Layout/Bottom"]
+custom_minimum_size = Vector2(260, 40)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Controls  (C / Menu)"

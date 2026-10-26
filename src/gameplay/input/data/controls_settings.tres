@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ControlsSettings" format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/input/controls_settings.gd" id="1_settings"]
+
+[resource]
+script = ExtResource("1_settings")
+actions = PackedStringArray("throttle", "reverse", "steer_left", "steer_right", "fire", "fire_high", "lay_mine", "camera", "self_destruct")
+action_names = PackedStringArray("Throttle", "Reverse", "Steer left", "Steer right", "Fire", "Fire high", "Secondary", "Camera", "Self-destruct")
+save_path = "user://controls.cfg"
+pad_slots = 2
+reserved_keys = PackedInt32Array(4194305)
+reserved_buttons = PackedInt32Array(5, 6)
+button_names = PackedStringArray("A", "B", "X", "Y", "View", "Guide", "Menu", "LS", "RS", "LB", "RB", "D-pad up", "D-pad down", "D-pad left", "D-pad right", "Share", "Paddle 1", "Paddle 2", "Paddle 3", "Paddle 4", "Touchpad")
+button_format = "Button %d"
+axis_names = PackedStringArray("Stick left", "Stick right", "Stick up", "Stick down", "Right stick left", "Right stick right", "Right stick up", "Right stick down", "LT", "LT", "RT", "RT")
+capture_threshold = 0.6
