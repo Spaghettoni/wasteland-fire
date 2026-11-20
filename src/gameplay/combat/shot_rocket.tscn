@@ -1,6 +1,9 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://src/gameplay/combat/shot.gd" id="1_shot"]
+[ext_resource type="PackedScene" path="res://src/gameplay/effects/muzzle_flash.tscn" id="2_muzzle"]
+[ext_resource type="PackedScene" path="res://src/gameplay/effects/impact.tscn" id="3_impact"]
+[ext_resource type="Script" path="res://src/gameplay/effects/fx_particles.gd" id="4_fx"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
 shading_mode = 0
@@ -51,9 +54,13 @@ size = Vector3(0.18, 0.18, 0.3)
 material = SubResource("StandardMaterial3D_trail")
 size = Vector3(0.14, 0.14, 1.8)
 
-[node name="Shot" type="Node3D" groups=["shots"] node_paths=PackedStringArray("tracer")]
+[node name="Shot" type="Node3D" groups=["shots"] node_paths=PackedStringArray("tracer", "trail")]
 script = ExtResource("1_shot")
 tracer = NodePath("Rocket")
+muzzle_scene = ExtResource("2_muzzle")
+impact_scene = ExtResource("3_impact")
+impact_size = 1.8
+trail = NodePath("Trail")
 
 [node name="Rocket" type="Node3D" parent="."]
 
@@ -86,3 +93,22 @@ mesh = SubResource("BoxMesh_flame")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.65)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_trail")
+
+[node name="TrailPoint" type="Marker3D" parent="Rocket"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.75)
+
+[node name="Trail" type="MultiMeshInstance3D" parent="." node_paths=PackedStringArray("follow")]
+script = ExtResource("4_fx")
+max_particles = 96
+life_min = 0.6
+life_max = 1.0
+size_start = 0.3
+size_end = 0.9
+colour_start = Color(0.72, 0.7, 0.66, 0.55)
+colour_end = Color(0.6, 0.58, 0.55, 0.0)
+gravity = Vector3(0, 0.5, 0)
+drag = 2.0
+rate = 70.0
+rate_speed = 0.4
+follow = NodePath("../Rocket/TrailPoint")
+seed_value = 31

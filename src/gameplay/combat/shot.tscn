@@ -1,6 +1,8 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://src/gameplay/combat/shot.gd" id="1_shot"]
+[ext_resource type="PackedScene" path="res://src/gameplay/effects/muzzle_flash.tscn" id="2_muzzle"]
+[ext_resource type="PackedScene" path="res://src/gameplay/effects/impact.tscn" id="3_impact"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tracer"]
 shading_mode = 0
@@ -13,6 +15,8 @@ size = Vector3(0.3, 0.3, 1.2)
 [node name="Shot" type="Node3D" groups=["shots"] node_paths=PackedStringArray("tracer")]
 script = ExtResource("1_shot")
 tracer = NodePath("Tracer")
+muzzle_scene = ExtResource("2_muzzle")
+impact_scene = ExtResource("3_impact")
 
 [node name="Tracer" type="MeshInstance3D" parent="."]
 cast_shadow = 0
