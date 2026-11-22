@@ -16,3 +16,13 @@ trailed 4 m behind a driving Buggy. Now Burning moves the living flames and smok
 position each frame (FxParticles.shift), at ride_share 0.9, and emits them where the target is drawn.
 - `flame_tank` F7 at 60 fps: flames' middle 0.81 m from the Buggy's middle; run with --fixed-fps 600: 0.73 m (was 4 m).
 - Full regression (131): the same exits as the run before.
+
+## Follow-up 2: vehicles' fire (the see-through silhouette)
+
+Martin, with a frame: "veza hori, mury horia, budovy horia, vozidla nehoria". The fire's box was the box of every mesh under
+its target, and a Unit in the game wears its see-through silhouette (Story 027): mesh copies and a fill quad 150 m wide. The
+harness takes the silhouette off unless a scenario declares SEE_THROUGH, so no check saw it. Burning now leaves the
+silhouette's copies and fill out; `flame_tank` declares SEE_THROUGH and F7 checks the box.
+- Before the fix, with the silhouette: F7 FAIL, the fire's box (150.0, 150.0, 2.97), the flames' middle 75.8 m above the Buggy.
+- After: F7 PASS, box (1.86, 2.00, 2.97), the flames' middle 0.81 m from the Buggy's middle across the ground.
+- Full regression (131): the same exits as the run before.

@@ -152,7 +152,9 @@ func _flicker(delta: float) -> void:
 
 
 ## The box of every mesh drawn under the target, in the target's frame (this node's, which sits at its origin), the
-## particles' own meshes left out; a 1 m box when there is none.
+## particles' own meshes left out, and so is a Unit's see-through silhouette (its mesh copies and its fill quad, which is
+## many metres wide: counted in, it spread the fire over a box so big that a burning vehicle showed none; Martin,
+## 2026-11-22: "veza hori, mury horia, budovy horia, vozidla nehoria"); a 1 m box when there is none.
 func _drawn_box() -> AABB:
 	var box: AABB = AABB()
 	var found: bool = false
@@ -160,6 +162,8 @@ func _drawn_box() -> AABB:
 	for node: Node in _target.find_children("*", "MeshInstance3D", true, false):
 		var mesh: MeshInstance3D = node as MeshInstance3D
 		if mesh.mesh == null or not mesh.visible or is_ancestor_of(mesh):
+			continue
+		if mesh.is_in_group(UnitSilhouette.COPY_GROUP) or mesh.is_in_group(UnitSilhouette.FILL_GROUP):
 			continue
 		var part: AABB = (inverse * mesh.global_transform) * mesh.get_aabb()
 		box = part if not found else box.merge(part)

@@ -36,6 +36,8 @@ const HEIGHTS: bool = true
 const FIRE_HEIGHTS: bool = true
 const FLAME_TANK: bool = true
 const FLAT_DAMAGE: bool = true
+## The Units wear their see-through silhouette as in the game (Story 069: its fill quad once spread a vehicle's fire away).
+const SEE_THROUGH: bool = true
 const STOCK_COUNTS: Dictionary = {&"motorbike": 12, &"buggy": 12, &"truck": 12, &"gyrocopter": 12}
 const WATCHDOG_SECONDS: float = 240.0
 const MOMENT_FRAME_LAG: int = 1
@@ -173,8 +175,10 @@ func run(harness: Node) -> void:
 	_q.kit.need(problems, speed > 5.0, "the Buggy drove at only %.1f m/s" % speed)
 	_q.kit.need(problems, off_ground <= RIDE_METRES, "the flames' middle %.2f m from the Buggy across the ground" % off_ground)
 	_q.kit.need(problems, lit, "the glow is not lit")
-	_q.kit.verdict("F7_the_fire_rides", problems, "the burning Buggy at %.1f m/s: its flames' middle %.2f m from its middle across the ground, %.2f m above it; glow lit %s" % [
-		speed, off_ground, middle.y - buggy_at.y, lit])
+	var box: Vector3 = fire._box.size if fire != null else Vector3.INF
+	_q.kit.need(problems, box.x < 4.0 and box.y < 4.0 and box.z < 6.0, "the fire's box %s is not the Buggy's" % box)
+	_q.kit.verdict("F7_the_fire_rides", problems, "the burning Buggy (see-through silhouette on) at %.1f m/s: its fire's box %s; its flames' middle %.2f m from its middle across the ground, %.2f m above it; glow lit %s" % [
+		speed, box, off_ground, middle.y - buggy_at.y, lit])
 	await _q.kit.advance(int(tank.burn_seconds * 60.0))
 
 	_k.free_arena()
