@@ -89,11 +89,15 @@ silhouette = ExtResource("47_silhouette")
 script = ExtResource("4_pdi")
 unit = NodePath("%Player1Unit")
 action_prefix = &"p1_"
+switch_from = 0.8
+release_seconds = 0.35
 
 [node name="Player2DriveInput" type="Node" parent="World" unique_id=9000012 node_paths=PackedStringArray("unit")]
 script = ExtResource("4_pdi")
 unit = NodePath("%Player2Unit")
 action_prefix = &"p2_"
+switch_from = 0.8
+release_seconds = 0.35
 
 [node name="Player1MatchInput" type="Node" parent="World" unique_id=9000013 node_paths=PackedStringArray("unit", "match_controller")]
 script = ExtResource("11_pmi")

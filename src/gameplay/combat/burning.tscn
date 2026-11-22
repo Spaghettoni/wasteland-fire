@@ -3,28 +3,40 @@
 [ext_resource type="Script" path="res://src/gameplay/combat/burning.gd" id="1_burn"]
 [ext_resource type="Script" path="res://src/gameplay/effects/fx_particles.gd" id="2_fx"]
 
-[node name="Burning" type="Node3D" node_paths=PackedStringArray("flames", "smoke")]
+[node name="Burning" type="Node3D" node_paths=PackedStringArray("flames", "smoke", "glow")]
 script = ExtResource("1_burn")
 flames = NodePath("Flames")
 smoke = NodePath("Smoke")
+flame_rate = 110.0
+flame_rise = 2.0
+smoke_rate = 12.0
+below_top = 0.1
+above_top = 0.3
+inset = 0.15
+ride_share = 1.0
+glow = NodePath("Glow")
+glow_energy = 2.5
+glow_flicker = 0.45
+glow_flicker_hz = 14.0
 
 [node name="Flames" type="MultiMeshInstance3D" parent="."]
 script = ExtResource("2_fx")
 kind = 2
-max_particles = 96
-life_min = 0.4
-life_max = 0.85
-size_start = 0.5
-size_end = 0.1
-colour_start = Color(1, 0.78, 0.25, 1)
-colour_end = Color(0.85, 0.15, 0.02, 0.5)
-drag = 0.8
+unshaded = true
+max_particles = 200
+life_min = 0.45
+life_max = 0.95
+size_start = 0.75
+size_end = 0.12
+colour_start = Color(1, 0.62, 0.1, 1)
+colour_end = Color(0.8, 0.12, 0.02, 0.55)
+drag = 0.15
 spin = 3.0
 seed_value = 11
 
 [node name="Smoke" type="MultiMeshInstance3D" parent="."]
 script = ExtResource("2_fx")
-max_particles = 40
+max_particles = 60
 life_min = 1.0
 life_max = 1.8
 size_start = 0.5
@@ -33,3 +45,9 @@ colour_start = Color(0.14, 0.12, 0.1, 0.55)
 colour_end = Color(0.3, 0.28, 0.26, 0.0)
 drag = 0.6
 seed_value = 13
+
+[node name="Glow" type="OmniLight3D" parent="."]
+light_color = Color(1, 0.55, 0.15, 1)
+light_energy = 2.5
+omni_range = 4.5
+shadow_enabled = false

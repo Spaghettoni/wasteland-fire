@@ -43,6 +43,9 @@ enum Kind {
 @export var colour_end: Color = Color(0.5, 0.5, 0.5, 0.0)
 ## Drawn unlit and added to what is behind it (a flash, a spark, a flame), or drawn lit and blended.
 @export var glow: bool = false
+## Drawn unlit but blended, so its colour stays the colour set whatever light falls on it (a burning thing's
+## flames under the sun and their own glow).
+@export var unshaded: bool = false
 ## Acceleration in m/s^2, world space (gravity pulls -Y; smoke rises with a small +Y).
 @export var gravity: Vector3 = Vector3.ZERO
 ## The share of its speed a particle loses each second (0 none, 1 stops in about a second).
@@ -216,6 +219,8 @@ func _make_mesh() -> Mesh:
 	var material: StandardMaterial3D = StandardMaterial3D.new()
 	material.vertex_color_use_as_albedo = true
 	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	if unshaded:
+		material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	if glow:
 		material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		material.blend_mode = BaseMaterial3D.BLEND_MODE_ADD

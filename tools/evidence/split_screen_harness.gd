@@ -536,6 +536,7 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"flame_tank": preload("res://tools/evidence/split_screen/flame_tank.gd"),
 	&"drivers_showcase": preload("res://tools/evidence/split_screen/drivers_showcase.gd"),
 	&"mines_gyro_065": preload("res://tools/evidence/split_screen/mines_gyro_065.gd"),
+	&"direction_lock": preload("res://tools/evidence/split_screen/direction_lock.gd"),
 	&"effects_showcase": preload("res://tools/evidence/split_screen/effects_showcase.gd"),
 	&"fire_heights_showcase": preload("res://tools/evidence/split_screen/fire_heights_showcase.gd"),
 	&"secondary": preload("res://tools/evidence/split_screen/secondary.gd"),
@@ -772,6 +773,9 @@ const TOKEN_COUNTS_049: Dictionary = {&"motorbike": 5, &"buggy": 3, &"truck": 2,
 const CHASE_OFFSET_049: Vector3 = Vector3(0.0, 7.0, 13.0)
 ## The constant a scenario script declares as true to keep the drive and the numbers of Story 049 (_apply_full_throttle_off()).
 const FULL_THROTTLE_CONSTANT: StringName = &"FULL_THROTTLE"
+## A scenario script constant: the scenario keeps the stick's direction lock (Story 069); without it every PlayerDriveInput's
+## switch_from is 0, so a stick turns the Unit round as soon as it passes full_throttle_from, as before.
+const DIRECTION_LOCK_CONSTANT: StringName = &"DIRECTION_LOCK"
 ## The constant a scenario script declares as true to run with the Flame Tank of Story 063 (the Truck type's flamethrower, its
 ## load of 250 puffs, rockets at 10 a time, its track contacts and its name); without it the Truck type fires and counts its
 ## Shots as before the story (_apply_flame_tank_off()). Its model is the new one either way.
@@ -1971,6 +1975,11 @@ func _apply_full_throttle_off(script: GDScript) -> void:
 ## Turns full_throttle off on every PlayerDriveInput of a freshly instanced launch scene, before it enters the tree, unless the
 ## scenario script declares FULL_THROTTLE (Story 049); the Players a lineup adds copy Player 2's.
 func _apply_full_throttle_nodes_off(root: SplitScreen, script: GDScript) -> void:
+	if not bool(script.get_script_constant_map().get(DIRECTION_LOCK_CONSTANT, false)):
+		for node: Node in root.find_children("*", "", true, false):
+			var lock: PlayerDriveInput = node as PlayerDriveInput
+			if lock != null:
+				lock.switch_from = 0.0
 	if bool(script.get_script_constant_map().get(FULL_THROTTLE_CONSTANT, false)):
 		return
 	for node: Node in root.find_children("*", "", true, false):

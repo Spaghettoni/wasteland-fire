@@ -22,6 +22,13 @@ extends Node
 ## the speed. Where the stick starts to count is the pad's full_throttle_from dead zone
 ## (pad_layout.tres). A key is 1 already, so the keyboard drives as before. Steering stays analog.
 ##
+## The direction lock (Story 069; Martin, 2026-11-22: "ked cuvam a otacam sa packou ... pri jemnom pohybe stane ze idem
+## dolava dopredu"): once the Unit drives one way, a stick pushed the other way only turns it round when pushed at least
+## switch_from of its travel (a key is always 1, so the keyboard turns at once); a smaller push keeps the Unit going the way
+## it went. The lock lets go once the throttle has been neutral (the stick inside full_throttle_from up and down) for
+## release_seconds, so reversing, turning on the spot and then pushing up a little drives forward. A switch_from of 0 turns
+## the lock off. Only with full_throttle on.
+##
 ## Ordering: the command has to reach the Unit before the Unit moves in the same physics tick,
 ## or the Unit reacts one tick late. Tree order cannot promise that, because a parent is
 ## processed before its children and this node may sit anywhere relative to the Unit. So _ready()
@@ -47,6 +54,15 @@ const _SUFFIX_STEER_RIGHT: String = "steer_right"
 ## Prefix shared by this Player's Input Map actions, for example p1_. Required, with no default:
 ## the owning scene stores it. Read once, in _ready().
 @export var action_prefix: StringName = &""
+
+## The direction lock (class doc): the share of the stick's travel, raw, that turns the Unit round, and the seconds of
+## neutral throttle that let the lock go. A switch_from of 0 turns the lock off.
+@export_range(0.0, 1.0, 0.01) var switch_from: float = 0.0
+@export_range(0.0, 2.0, 0.01, "suffix:s") var release_seconds: float = 0.0
+
+## The way the Unit last drove, -1, 0 (none, or let go) or +1.
+var _locked: float = 0.0
+var _neutral_seconds: float = 0.0
 
 var _throttle_action: StringName
 var _reverse_action: StringName
@@ -76,13 +92,30 @@ func _ready() -> void:
 	process_physics_priority = unit.process_physics_priority + PRIORITY_OFFSET
 
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if not is_instance_valid(unit):
 		return
 	var throttle: float = Input.get_axis(_reverse_action, _throttle_action)
-	unit.set_drive_input(
-		signf(throttle) if full_throttle else throttle,
-		Input.get_axis(_steer_right_action, _steer_left_action))
+	if full_throttle:
+		var raw: float = Input.get_action_raw_strength(_throttle_action) - Input.get_action_raw_strength(_reverse_action)
+		throttle = locked_throttle(signf(throttle), raw, delta)
+	unit.set_drive_input(throttle, Input.get_axis(_steer_right_action, _steer_left_action))
+
+
+## The throttle the direction lock gives (class doc) for `wanted` (-1, 0 or +1, past the dead zone) and the stick's raw
+## push `raw` (-1 to 1), `delta` seconds after the last call; it remembers the way the Unit drove.
+func locked_throttle(wanted: float, raw: float, delta: float) -> float:
+	if switch_from <= 0.0:
+		return wanted
+	if is_zero_approx(wanted):
+		_neutral_seconds += delta
+		if _neutral_seconds >= release_seconds:
+			_locked = 0.0
+		return 0.0
+	_neutral_seconds = 0.0
+	if is_zero_approx(_locked) or is_equal_approx(wanted, _locked) or absf(raw) >= switch_from:
+		_locked = wanted
+	return _locked
 
 
 func _action_name(suffix: String) -> StringName:

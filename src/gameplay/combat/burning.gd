@@ -23,6 +23,16 @@ extends Node3D
 @export var flame_rise: float = 2.2
 @export var smoke_rate: float = 8.0
 @export var smoke_rise: float = 1.2
+## The share of the target's own velocity each new flame and puff of smoke takes, so the fire rides on a driving Unit
+## instead of being left behind it (Martin, 2026-11-22: "chcel by som vidiet, ze vozidla horia"); a little under 1 so the
+## flames ride along; their small drag lets them stream back a little off a fast one.
+@export_range(0.0, 1.0, 0.01) var ride_share: float = 0.0
+## The flickering glow the fire throws on the target and the ground around it: an OmniLight3D child, its energy
+## glow_energy times a random factor between 1 - glow_flicker and 1, drawn anew glow_flicker_hz times a second.
+@export var glow: OmniLight3D
+@export var glow_energy: float = 0.0
+@export_range(0.0, 1.0, 0.01) var glow_flicker: float = 0.0
+@export var glow_flicker_hz: float = 0.0
 ## The flames rise from the top of the target's drawn box (its meshes' box, read once when it catches fire), this much
 ## below and above it, metres, and stay this far inside its sides.
 @export var below_top: float = 0.5
@@ -39,6 +49,11 @@ var _target: Node3D
 var _box: AABB = AABB(Vector3(-0.5, 0.0, -0.5), Vector3(1.0, 1.0, 1.0))
 var _lump_clock: float = 0.0
 var _out: bool = false
+## The target's velocity, m/s, from its moves between drawn frames.
+var _ride: Vector3 = Vector3.ZERO
+var _last_at: Vector3 = Vector3.ZERO
+var _has_last: bool = false
+var _flicker_clock: float = 0.0
 
 
 ## Sets `target` on fire for `seconds` at `dps`, or rekindles its fire. Returns the Burning node, or
@@ -83,11 +98,19 @@ func _ready() -> void:
 	for fx: FxParticles in [flames, smoke]:
 		if fx != null:
 			fx.global_transform = Transform3D.IDENTITY
+	if glow != null:
+		glow.position = Vector3(_box.get_center().x, _box.end.y + above_top, _box.get_center().z)
+		glow.light_energy = glow_energy
 
 
 func _process(delta: float) -> void:
 	if _out or delta <= 0.0:
 		return
+	var at: Vector3 = global_position
+	_ride = (at - _last_at) / delta if _has_last else Vector3.ZERO
+	_last_at = at
+	_has_last = true
+	_flicker(delta)
 	_emit(flames, flame_rate * delta, flame_rise)
 	_emit(smoke, smoke_rate * delta, smoke_rise)
 
@@ -107,8 +130,20 @@ func _emit(fx: FxParticles, amount: float, rise: float) -> void:
 		var local: Vector3 = Vector3(r.randf_range(lo.x, maxf(hi.x, lo.x)),
 				r.randf_range(top - below_top, top + above_top), r.randf_range(lo.z, maxf(hi.z, lo.z)))
 		var at: Vector3 = global_transform * local
-		fx.emit(at, Vector3(r.randf_range(-0.3, 0.3), rise * r.randf_range(0.7, 1.3), r.randf_range(-0.3, 0.3)))
+		fx.emit(at, _ride * ride_share + Vector3(r.randf_range(-0.3, 0.3), rise * r.randf_range(0.7, 1.3), r.randf_range(-0.3, 0.3)))
 	fx.set_meta(&"carry", carry)
+
+
+## Draws the glow's energy anew glow_flicker_hz times a second.
+func _flicker(delta: float) -> void:
+	if glow == null or glow_flicker_hz <= 0.0:
+		return
+	_flicker_clock += delta
+	if _flicker_clock < 1.0 / glow_flicker_hz:
+		return
+	_flicker_clock = 0.0
+	var r: RandomNumberGenerator = flames.rng() if flames != null else RandomNumberGenerator.new()
+	glow.light_energy = glow_energy * r.randf_range(1.0 - glow_flicker, 1.0)
 
 
 ## The box of every mesh drawn under the target, in the target's frame (this node's, which sits at its origin), the
@@ -164,4 +199,6 @@ func _go_out() -> void:
 			fx.finish(keep)
 	flames = null
 	smoke = null
+	if glow != null:
+		glow.visible = false
 	queue_free()

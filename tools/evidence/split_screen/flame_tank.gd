@@ -12,9 +12,12 @@ extends RefCounted
 ##     for the check) loses hit points to the flame and keeps burning after it.
 ##  F6 flat damage (Story 067; Martin, 2026-11-22: "nechcem aby niektore vozdidla uberali niektorym viac a niektorym menej ...
 ##     stale by mal byt rozny pocet hp"): every Unit type takes every other's damage at 1.0; the types' hit points still differ.
+##  F7 the fire rides (Story 069; Martin, 2026-11-22: "chcel by som vidiet, ze vozidla horia, nevidno to teraz"): Player 2's
+##     Buggy set on fire drives off at full throttle; after BURN_DRIVE ticks its flames are in the air around it (their middle
+##     within RIDE_METRES of its drawn box's middle, across the ground), not strung out behind it, and its glow is lit.
 ##  F4 the load: a new Flame Tank (its Unit out of play and back) holds 250; a flame puff spends 1 and a rocket (high fire) high_ammo_cost.
-## SPLIT moments for the frames in a windowed --write-movie run: flames (F3, the stream on the Turret) and afterburn (F3,
-## the Turret burning after the trigger is let go).
+## SPLIT moments for the frames in a windowed --write-movie run: flames (F3, the stream on the Turret), afterburn (F3,
+## the Turret burning after the trigger is let go) and burn_rides (F7, the burning Buggy driving).
 ## Implements: production/epics/wasteland-fire/story-063-flame-tank.md AC-2 to AC-5. Tooling only.
 ## Run: godot --headless --fixed-fps 60 --path . res://tools/evidence/split_screen_harness.tscn -- --scenario=flame_tank
 
@@ -45,6 +48,9 @@ const F2_GAP: float = 8.0
 const F3_GAP: float = 9.0
 ## F2: how close the burn's damage after the trigger must come to burn_seconds * burn dps * matrix, hit points.
 const BURN_TOLERANCE: float = 4.0
+const BURNING_SCENE: String = "res://src/gameplay/combat/burning.tscn"
+const BURN_DRIVE: int = 75
+const RIDE_METRES: float = 1.5
 
 var _k: Kit13
 var _q: Quick
@@ -147,6 +153,30 @@ func run(harness: Node) -> void:
 	_q.kit.verdict("F5_a_teammate_burns", problems, "Player 2's Buggy on Player 1's Team: %.1f -> %.1f under half a second of flame, on fire %s, %.1f a second later" % [mate_start, mate_release, mate_burning, mate_after])
 	await _q.kit.advance(int(tank.burn_seconds * 60.0))
 
+	# F7
+	problems = PackedStringArray()
+	_q.units.retype(0, Quick.TRUCK, base + Vector3(-30.0, 0.0, 0.0), facing)
+	_q.units.retype(1, Quick.BUGGY, base, facing)
+	await _q.kit.advance(SETTLE)
+	var fire: Burning = Burning.ignite(units[1], load(BURNING_SCENE) as PackedScene, 0.1, tank.burn_seconds)
+	var throttle: Key = _key_of(&"p2_throttle")
+	_q.harness.set_key(throttle, true)
+	await _q.kit.advance(BURN_DRIVE)
+	var middle: Vector3 = _flames_middle(fire)
+	var buggy_at: Vector3 = fire.global_transform * fire._box.get_center()
+	var off_ground: float = Vector2(middle.x - buggy_at.x, middle.z - buggy_at.z).length()
+	var speed: float = units[1].current_speed
+	print("SPLIT %s t=%.3f frame=%d moment=burn_rides speed=%.1f" % [_q.harness.scenario, _q.harness.time(), Engine.get_process_frames() - MOMENT_FRAME_LAG, speed])
+	await _q.kit.advance(HALF_SECOND)
+	_q.harness.set_key(throttle, false)
+	var lit: bool = fire != null and fire.glow != null and fire.glow.visible and fire.glow.light_energy > 0.0
+	_q.kit.need(problems, speed > 5.0, "the Buggy drove at only %.1f m/s" % speed)
+	_q.kit.need(problems, off_ground <= RIDE_METRES, "the flames' middle %.2f m from the Buggy across the ground" % off_ground)
+	_q.kit.need(problems, lit, "the glow is not lit")
+	_q.kit.verdict("F7_the_fire_rides", problems, "the burning Buggy at %.1f m/s: its flames' middle %.2f m from its middle across the ground, %.2f m above it; glow lit %s" % [
+		speed, off_ground, middle.y - buggy_at.y, lit])
+	await _q.kit.advance(int(tank.burn_seconds * 60.0))
+
 	_k.free_arena()
 
 	# F4
@@ -192,6 +222,28 @@ func run(harness: Node) -> void:
 	_q.kit.verdict("F6_flat_damage", problems, "every Unit type against every Unit type 1.0 (the matrix's other entries %s); hit points still differ by type %s" % [matrix.multipliers.keys(), points])
 	_k.close()
 	harness.finish("flame=%.1fm burn=%.0fs" % [tank.flame_range, tank.burn_seconds])
+
+
+## The middle of the fire's living flames (world), or the Burning's own position when none lives.
+func _flames_middle(fire: Burning) -> Vector3:
+	if fire == null or fire.flames == null:
+		return Vector3.INF
+	var fx: FxParticles = fire.flames
+	var sum: Vector3 = Vector3.ZERO
+	var count: int = 0
+	for i: int in fx.max_particles:
+		if fx._age[i] < fx._life[i]:
+			sum += fx._pos[i]
+			count += 1
+	return sum / float(count) if count > 0 else fire.global_position
+
+
+func _key_of(action: StringName) -> Key:
+	for event: InputEvent in InputMap.action_get_events(action):
+		var key: InputEventKey = event as InputEventKey
+		if key != null:
+			return key.physical_keycode
+	return KEY_NONE
 
 
 ## A real Left Shift key event: Player 1's high fire.

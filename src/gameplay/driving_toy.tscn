@@ -27,3 +27,5 @@ settings = ExtResource("5_ccset")
 script = ExtResource("6_pdinp")
 unit = NodePath("../Motorbike")
 action_prefix = &"p1_"
+switch_from = 0.8
+release_seconds = 0.35
