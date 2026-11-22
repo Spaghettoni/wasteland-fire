@@ -1,0 +1,61 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/combat/flame_shot.gd" id="1_flame"]
+[ext_resource type="Shader" path="res://src/gameplay/effects/spatial_fx_flame.gdshader" id="2_shader"]
+[ext_resource type="Script" path="res://src/gameplay/effects/fx_particles.gd" id="3_fx"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_flame"]
+render_priority = 1
+shader = ExtResource("2_shader")
+
+[sub_resource type="BoxMesh" id="BoxMesh_cube"]
+material = SubResource("ShaderMaterial_flame")
+size = Vector3(0.7, 0.7, 0.7)
+
+[node name="FlameShot" type="Node3D" groups=["shots"] node_paths=PackedStringArray("tracer", "cubes", "trail")]
+script = ExtResource("1_flame")
+size_start = 0.8
+size_end = 2.4
+tracer = NodePath("Flame")
+cubes = [NodePath("Flame/A"), NodePath("Flame/B"), NodePath("Flame/C"), NodePath("Flame/D")]
+trail = NodePath("Embers")
+
+[node name="Flame" type="Node3D" parent="."]
+
+[node name="A" type="MeshInstance3D" parent="Flame"]
+cast_shadow = 0
+mesh = SubResource("BoxMesh_cube")
+
+[node name="B" type="MeshInstance3D" parent="Flame"]
+transform = Transform3D(0.8, 0.3, 0, -0.3, 0.8, 0, 0, 0, 0.85, 0.28, 0.18, 0.2)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_cube")
+
+[node name="C" type="MeshInstance3D" parent="Flame"]
+transform = Transform3D(0.7, 0, 0.3, 0, 0.75, 0, -0.3, 0, 0.7, -0.26, 0.12, -0.22)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_cube")
+
+[node name="D" type="MeshInstance3D" parent="Flame"]
+transform = Transform3D(0.6, -0.2, 0, 0.2, 0.6, 0, 0, 0, 0.6, 0.05, 0.36, 0.3)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_cube")
+
+[node name="Embers" type="MultiMeshInstance3D" parent="." node_paths=PackedStringArray("follow")]
+script = ExtResource("3_fx")
+follow = NodePath("../Flame")
+kind = 2
+max_particles = 32
+life_min = 0.25
+life_max = 0.55
+size_start = 0.26
+size_end = 0.06
+colour_start = Color(1, 0.8, 0.3, 1)
+colour_end = Color(0.75, 0.12, 0.02, 0.6)
+glow = true
+gravity = Vector3(0, 2.5, 0)
+drag = 2.0
+spin = 4.0
+rate = 40.0
+rate_speed = 1.2
+seed_value = 7

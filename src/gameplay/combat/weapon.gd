@@ -97,6 +97,10 @@ const PRIORITY_OFFSET: int = 1
 ## without it a high shot is a shot_scene Shot drawn higher, as before.
 @export var high_shot_scene: PackedScene
 
+## The Burning scene a Flame Tank's flames leave on what they hit (Story 063). Required for a type with
+## a flame_shot_scene to leave fires; without it the flames only scorch.
+@export var burning_scene: PackedScene
+
 ## Shots left in the load: the type's ammo_capacity after a spawn, down by one for every Shot fired,
 ## zero while the Unit is out of play and for a type with no count. Read-only: assigning to it
 ## pushes an error.
@@ -127,6 +131,8 @@ var _capacity: int = 0
 var _in_play: bool = false
 ## The fraction of a Shot rearm() has been given and not yet turned into a whole one.
 var _carry: float = 0.0
+## Flame puffs fired, for the nozzle they come from and their turn in the spread (Story 063).
+var _puffs: int = 0
 
 
 func _ready() -> void:
@@ -163,9 +169,13 @@ func _physics_process(_delta: float) -> void:
 	var now: int = Engine.get_physics_frames()
 	if now < _next_fire_frame:
 		return
-	_fire(_trigger_high)
-	var interval_ticks: int = roundi(
-			unit.stats.fire_interval_seconds * Engine.physics_ticks_per_second)
+	var flame: bool = not _trigger_high and unit.stats.flame_shot_scene != null
+	if flame:
+		_fire_flame()
+	else:
+		_fire(_trigger_high)
+	var interval: float = unit.stats.flame_interval_seconds if flame else unit.stats.fire_interval_seconds
+	var interval_ticks: int = roundi(interval * Engine.physics_ticks_per_second)
 	_next_fire_frame = now + maxi(interval_ticks, 1)
 
 
@@ -228,15 +238,47 @@ func _fire(high: bool) -> void:
 			rules.damage_matrix, rules.shot_mask(high))
 	if high:
 		shot.lift_tracer(rules.high_shot_lift)
-	_spend()
+	_spend(stats.high_ammo_cost if high else 1)
 
 
-## Takes one Shot off the load once a Shot has been launched, and says so; the last one also says
-## out_of_ammo. A type with no count spends and says nothing.
-func _spend() -> void:
+## Fires one flame puff (Story 063): from the nozzle on one side, then the other, along the facing
+## turned by the next share of UnitStats.flame_pattern times flame_spread_degrees, with the flamer's numbers,
+## carrying the fire it leaves (UnitStats.burn_seconds, and burn_share of the flame's damage a
+## second); spends one Shot of the load.
+func _fire_flame() -> void:
+	var stats: UnitStats = unit.stats
+	var basis: Basis = unit.global_transform.basis.orthonormalized()
+	var facing: Vector3 = -basis.z
+	var side: float = stats.flame_nozzle_side * (1.0 if (_puffs & 1) == 0 else -1.0)
+	var share: float = stats.flame_pattern[_puffs % stats.flame_pattern.size()] if not stats.flame_pattern.is_empty() else 0.0
+	var turn: float = deg_to_rad(stats.flame_spread_degrees * share)
+	_puffs += 1
+	var direction: Vector3 = facing.rotated(Vector3.UP, turn)
+	var muzzle: Vector3 = (unit.global_position + facing * stats.muzzle_forward + basis.x * side
+			+ Vector3.UP * rules.shooting_height)
+	var instance: Node = stats.flame_shot_scene.instantiate()
+	var puff: FlameShot = instance as FlameShot
+	if puff == null:
+		if instance != null:
+			instance.free()
+		push_error("Weapon '%s': '%s' is not a FlameShot scene, so it fires nothing." % [
+				name, stats.flame_shot_scene.resource_path])
+		return
+	puff.burn_dps = stats.flame_damage / stats.flame_interval_seconds * stats.burn_share
+	puff.burn_seconds = stats.burn_seconds
+	puff.burning_scene = burning_scene
+	unit.get_parent().add_child(puff)
+	puff.launch(unit, muzzle, direction, stats.flame_damage, stats.flame_speed, stats.flame_range,
+			rules.damage_matrix, rules.shot_mask(false))
+	_spend(1)
+
+
+## Takes `cost` Shots off the load (at most what is left) once a Shot has been launched, and says so;
+## the last one also says out_of_ammo. A type with no count spends and says nothing.
+func _spend(cost: int = 1) -> void:
 	if _capacity <= 0:
 		return
-	_left -= 1
+	_left -= mini(maxi(cost, 1), _left)
 	ammo_changed.emit(_left, _capacity)
 	if _left <= 0:
 		out_of_ammo.emit()

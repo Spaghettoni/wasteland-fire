@@ -533,6 +533,8 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"chase_showcase_two": preload("res://tools/evidence/split_screen/chase_showcase_two.gd"),
 	&"fire_heights": preload("res://tools/evidence/split_screen/fire_heights.gd"),
 	&"rockets_showcase": preload("res://tools/evidence/split_screen/rockets_showcase.gd"),
+	&"flame_tank": preload("res://tools/evidence/split_screen/flame_tank.gd"),
+	&"drivers_showcase": preload("res://tools/evidence/split_screen/drivers_showcase.gd"),
 	&"effects_showcase": preload("res://tools/evidence/split_screen/effects_showcase.gd"),
 	&"fire_heights_showcase": preload("res://tools/evidence/split_screen/fire_heights_showcase.gd"),
 	&"secondary": preload("res://tools/evidence/split_screen/secondary.gd"),
@@ -764,6 +766,14 @@ const TOKEN_COUNTS_049: Dictionary = {&"motorbike": 5, &"buggy": 3, &"truck": 2,
 const CHASE_OFFSET_049: Vector3 = Vector3(0.0, 7.0, 13.0)
 ## The constant a scenario script declares as true to keep the drive and the numbers of Story 049 (_apply_full_throttle_off()).
 const FULL_THROTTLE_CONSTANT: StringName = &"FULL_THROTTLE"
+## The constant a scenario script declares as true to run with the Flame Tank of Story 063 (the Truck type's flamethrower, its
+## load of 250 puffs, rockets at 10 a time, its track contacts and its name); without it the Truck type fires and counts its
+## Shots as before the story (_apply_flame_tank_off()). Its model is the new one either way.
+const FLAME_TANK_CONSTANT: StringName = &"FLAME_TANK"
+const TRUCK_STATS_PATH_063: String = "res://src/gameplay/units/data/truck_stats.tres"
+## The Truck's tyre contacts before Story 063: (x, y, width) each.
+const TRUCK_TYRES_062: Array[Vector3] = [Vector3(-0.86, -1.28, 0.36), Vector3(0.86, -1.28, 0.36),
+	Vector3(-0.86, 1.3, 0.36), Vector3(0.86, 1.3, 0.36)]
 ## Each type's spot_turn_rate before Story 049, by stats path, and the Turret's range.
 const SPOT_TURN_RATES_048: Dictionary = {
 	"res://src/gameplay/units/data/motorbike_stats.tres": 1.4,
@@ -1005,6 +1015,7 @@ func _ready() -> void:
 	_apply_stick_drive_off(SCENARIOS[scenario])
 	_apply_fire_heights_off(SCENARIOS[scenario])
 	_apply_flying_sight_off(SCENARIOS[scenario])
+	_apply_flame_tank_off(SCENARIOS[scenario])
 	if LEGACY_SCENARIOS.has(scenario):
 		_apply_legacy_data()
 	if LEGACY_SCENARIOS.has(scenario) or STORY_005_SCENARIOS.has(scenario):
@@ -1852,6 +1863,29 @@ func _apply_story_050_off(script: GDScript) -> void:
 ## Gives the shared data the numbers of stories 009 to 048, unless the scenario script declares FULL_THROTTLE (Story 049): the
 ## pad layout's throttle and reverse take the common dead zone (no full_throttle_suffixes), each type its old spot_turn_rate,
 ## the Turret its 35 m. On the cached resources, before every other opt-out, which may set them again.
+## Gives the Truck type its weapon of before Story 063, on the shared resource, unless the scenario script declares FLAME_TANK:
+## no flamethrower (its low fire the Shot of damage, fire_interval_seconds, weapon_range and shot_speed again), a load of 25
+## with every Shot one, the name Truck and its four tyre contacts. Runs before _apply_ammo_off(), which may zero the load.
+func _apply_flame_tank_off(script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(FLAME_TANK_CONSTANT, false)):
+		return
+	var stats: UnitStats = load(TRUCK_STATS_PATH_063) as UnitStats
+	if stats == null:
+		push_error("split_screen_harness: %s did not load as UnitStats, so the Flame Tank is not turned off." % TRUCK_STATS_PATH_063)
+		return
+	stats.flame_shot_scene = null
+	stats.ammo_capacity = 25
+	stats.high_ammo_cost = 1
+	stats.display_name = "Truck"
+	var tyres: Array[TyreContact] = []
+	for spec: Vector3 in TRUCK_TYRES_062:
+		var tyre := TyreContact.new()
+		tyre.offset = Vector2(spec.x, spec.y)
+		tyre.width = spec.z
+		tyres.append(tyre)
+	stats.tyres = tyres
+
+
 func _apply_full_throttle_off(script: GDScript) -> void:
 	if bool(script.get_script_constant_map().get(FULL_THROTTLE_CONSTANT, false)):
 		return

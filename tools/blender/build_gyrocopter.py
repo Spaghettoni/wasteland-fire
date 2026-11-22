@@ -221,6 +221,9 @@ def main():
     build_tail()
     build_gear()
     build_rotor()
+    # The pilot on the seat, hands on the stick (Story 064).
+    kit.driver((0.0, 0.04, 0.47), ((-0.04, 0.33, 0.6), (0.04, 0.34, 0.62)), lean=4.0,
+            feet=((-0.12, 0.62, 0.32), (0.12, 0.62, 0.32)), scale=1.05)
     kit.finish(args["out"], args["previews"], VIEWS, ground_size=GROUND_SIZE,
             ao_distance=AO_DISTANCE)
 

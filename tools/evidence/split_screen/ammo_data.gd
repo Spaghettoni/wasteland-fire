@@ -11,6 +11,9 @@ const Kit22: GDScript = preload("res://tools/evidence/split_screen/ammo_kit.gd")
 
 ## The story's values, by type index (Motorbike, Buggy, Truck, Gyrocopter): the test inputs of this module.
 const LOADS: Array[int] = [100, 50, 25, 40]
+## The loads the four files hold since Story 063: the Truck type is the Flame Tank, whose load counts flame puffs (250, 20 s of
+## flame at 0.08 s); the runner gives a scenario without FLAME_TANK the Truck's 25 in memory.
+const FILE_LOADS: Array[int] = [100, 50, 250, 40]
 ## Seconds of continuous fire a load is (R1), the share of the tank a new Unit starts with, and the tank of every type.
 const LOAD_SECONDS: float = 20.0
 const START_SHARE: float = 1.0
@@ -55,7 +58,7 @@ func _data() -> void:
 		_q.kit.need(problems, is_equal_approx(float(stats.ammo_capacity) * stats.fire_interval_seconds, LOAD_SECONDS), "%s: a load is %.2f s of fire, not %.0f" % [stats.type_id, float(stats.ammo_capacity) * stats.fire_interval_seconds, LOAD_SECONDS])
 		_q.kit.need(problems, is_equal_approx(stats.spawn_fuel_fraction, START_SHARE) and is_equal_approx(stats.fuel_capacity, TANK), "%s starts with %.2f of a %.0f tank" % [stats.type_id, stats.spawn_fuel_fraction, stats.fuel_capacity])
 		var file: String = FileAccess.get_file_as_string(stats.resource_path)
-		_q.kit.need(problems, file.contains("ammo_capacity = %d\n" % LOADS[index]) and file.contains("spawn_fuel_fraction = 1.0\n"), "%s does not hold the lines ammo_capacity = %d and spawn_fuel_fraction = 1.0" % [stats.resource_path.get_file(), LOADS[index]])
+		_q.kit.need(problems, file.contains("ammo_capacity = %d\n" % FILE_LOADS[index]) and file.contains("spawn_fuel_fraction = 1.0\n"), "%s does not hold the lines ammo_capacity = %d and spawn_fuel_fraction = 1.0" % [stats.resource_path.get_file(), FILE_LOADS[index]])
 	for player: int in Kit22.Kit.PLAYERS:
 		var label: AmmoCount = _k.count_label(player)
 		var notice: PlayerNotice = _k.mines().notice(player)

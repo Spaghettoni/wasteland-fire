@@ -26,6 +26,7 @@ const Round: GDScript = preload("res://tools/evidence/split_screen/tyre_tracks_r
 const OWN_CHOICE: bool = true
 const OWN_BASE_SWAP: bool = true
 const SHIPPED_CAMERA: bool = true
+const FLAME_TANK: bool = true
 const BASE_DEFENCES: bool = true
 const TURRETS: bool = true
 const TURRET_LOOKS: bool = true

@@ -19,7 +19,11 @@ const PIXEL_HIGH: float = 0.075
 const HOLD: float = 20.0
 const FADE: float = 40.0
 ## The tyres of AC-1 by type: widths front to back (the Motorbike's differ), and how many.
-const WIDTHS: Dictionary = {&"motorbike": [0.20, 0.25], &"buggy": [0.30, 0.30, 0.30, 0.30], &"truck": [0.36, 0.36, 0.36, 0.36], &"gyrocopter": []}
+## Since Story 063 the Truck type is the Flame Tank, on tracks: its four contacts are the ends of its tracks' ground runs, 0.5 m wide.
+const WIDTHS: Dictionary = {&"motorbike": [0.20, 0.25], &"buggy": [0.30, 0.30, 0.30, 0.30], &"truck": [0.5, 0.5, 0.5, 0.5], &"gyrocopter": []}
+## The types on tracks (Story 063): their contacts are the ends of each track's ground run (GROUND_FRONT, GROUND_BACK, TRACK_X,
+## TRACK_W of the script), and everything between two of a side's contacts touches the ground too.
+const TRACKED: Array[StringName] = [&"truck"]
 ## The Blender scripts: the constants that name where a type's tyres are and how wide, by type.
 const SCRIPTS: Dictionary = {&"motorbike": "res://tools/blender/build_motorbike.py", &"buggy": "res://tools/blender/build_buggy.py", &"truck": "res://tools/blender/build_truck.py"}
 ## How near the ground a vertex counts as touching it, and how far a model's lowest point may be from the ground, metres; how many such vertices a
@@ -111,6 +115,11 @@ func _tyres_match_blender() -> void:
 		var expected: Array[Vector3] = []
 		if type_id == &"motorbike":
 			expected = [Vector3(0.0, -_constant(text, "FRONT_Y"), _constant(text, "FRONT_W")), Vector3(0.0, -_constant(text, "REAR_Y"), _constant(text, "REAR_W"))]
+		elif TRACKED.has(type_id):
+			var tx: float = _constant(text, "TRACK_X")
+			for z: float in [-_constant(text, "GROUND_FRONT"), -_constant(text, "GROUND_BACK")]:
+				expected.append(Vector3(-tx, z, _constant(text, "TRACK_W")))
+				expected.append(Vector3(tx, z, _constant(text, "TRACK_W")))
 		else:
 			var x: float = _constant(text, "TRACK_X")
 			var width: float = _constant(text, "WHEEL_W")
@@ -157,9 +166,17 @@ func _tyres_touch_the_ground() -> void:
 			var inside: bool = false
 			for index: int in stats.tyres.size():
 				var tyre: TyreContact = stats.tyres[index]
-				if absf(vertex.x - tyre.offset.x) <= tyre.width / 2.0 + TOUCH_HEIGHT and absf(vertex.z - tyre.offset.y) <= FOOTPRINT_LENGTH:
+				var across: bool = absf(vertex.x - tyre.offset.x) <= tyre.width / 2.0 + TOUCH_HEIGHT
+				if across and absf(vertex.z - tyre.offset.y) <= FOOTPRINT_LENGTH:
 					counts[index] += 1
 					inside = true
+				elif across and TRACKED.has(stats.type_id):
+					# On a track: anywhere between this contact and another of its side.
+					for other: TyreContact in stats.tyres:
+						if other != tyre and is_equal_approx(other.offset.x, tyre.offset.x):
+							var lo: float = minf(tyre.offset.y, other.offset.y) - FOOTPRINT_LENGTH
+							var hi: float = maxf(tyre.offset.y, other.offset.y) + FOOTPRINT_LENGTH
+							inside = inside or (vertex.z >= lo and vertex.z <= hi)
 			strays += 0 if inside else 1
 		_q.kit.need(problems, strays == 0 and counts.min() >= LEAST_TOUCHING and absf(lowest) <= STAND_SLACK, "%s: %d vertices within %.0f cm of the ground, %d outside every tyre's footprint, per tyre %s, lowest point %.4f m" % [stats.type_id, touching.size(), TOUCH_HEIGHT * 100.0, strays, counts, lowest])
 		found.append("%s %d vertices, lowest %.4f m" % [stats.type_id, touching.size(), lowest])

@@ -1,0 +1,35 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/combat/burning.gd" id="1_burn"]
+[ext_resource type="Script" path="res://src/gameplay/effects/fx_particles.gd" id="2_fx"]
+
+[node name="Burning" type="Node3D" node_paths=PackedStringArray("flames", "smoke")]
+script = ExtResource("1_burn")
+flames = NodePath("Flames")
+smoke = NodePath("Smoke")
+
+[node name="Flames" type="MultiMeshInstance3D" parent="."]
+script = ExtResource("2_fx")
+kind = 2
+max_particles = 96
+life_min = 0.4
+life_max = 0.85
+size_start = 0.5
+size_end = 0.1
+colour_start = Color(1, 0.78, 0.25, 1)
+colour_end = Color(0.85, 0.15, 0.02, 0.5)
+drag = 0.8
+spin = 3.0
+seed_value = 11
+
+[node name="Smoke" type="MultiMeshInstance3D" parent="."]
+script = ExtResource("2_fx")
+max_particles = 40
+life_min = 1.0
+life_max = 1.8
+size_start = 0.5
+size_end = 1.8
+colour_start = Color(0.14, 0.12, 0.1, 0.55)
+colour_end = Color(0.3, 0.28, 0.26, 0.0)
+drag = 0.6
+seed_value = 13

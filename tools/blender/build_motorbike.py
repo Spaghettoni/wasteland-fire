@@ -261,6 +261,10 @@ def main():
     build_exhausts()
     build_body()
     build_front()
+    # The rider on the saddle, leaning to the grips, feet on the pegs (Story 064).
+    grip_y = fork_point(-0.14)[1] - 0.065
+    kit.driver((0.0, -0.4, 0.95), ((-0.32, grip_y, 1.19), (0.32, grip_y, 1.19)), lean=28.0,
+            legs="straddle", feet=((-0.2, -0.1, 0.36), (0.2, -0.1, 0.36)), scale=1.1)
     kit.finish(args["out"], args["previews"], VIEWS, ao_distance=AO_DISTANCE)
 
 

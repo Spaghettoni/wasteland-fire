@@ -16,14 +16,16 @@ const LIFT: float = 0.15
 const PROBE_FROM: float = -1.0
 const PROBE_TO: float = 10.0
 const PROBE_STEP: float = 0.5
+## Since Story 063 the leg and container moments stage Buggies: the Truck type's model (the Flame Tank, its driver on top) stands
+## over those pieces from its own camera above.
 ## The moments: {name, type of both Units, pieces: each Player's piece by its path from the Map, dirs: the way each Unit faces (the camera is behind it), laterals: metres each
 ## Unit stands to the side of the piece's centre line (the way UP x dir points)}.
 const OUT: Array[Vector3] = [Vector3.RIGHT, Vector3.LEFT]
 const MOMENTS: Array[Dictionary] = [
 	{"name": "turret", "type": Quick.MOTORBIKE, "pieces": ["Base1/Turrets/TurretLeft", "Base2/Turrets/TurretLeft"], "dirs": OUT, "laterals": [0.0, 0.0]},
 	{"name": "tower", "type": Quick.BUGGY, "pieces": ["Base1/Walls/TowerGateLeft", "Base2/Walls/TowerGateLeft"], "dirs": OUT, "laterals": [0.0, 0.0]},
-	{"name": "leg", "type": Quick.TRUCK, "pieces": ["Base1/WaterTower/LegGateLeft", "Base2/WaterTower/LegGateLeft"], "dirs": OUT, "laterals": [0.0, 0.0]},
-	{"name": "container", "type": Quick.TRUCK, "pieces": ["Cover/Containers/ContainerWest", "Cover/Containers/ContainerEast"], "dirs": OUT, "laterals": [0.0, 0.0]},
+	{"name": "leg", "type": Quick.BUGGY, "pieces": ["Base1/WaterTower/LegGateLeft", "Base2/WaterTower/LegGateLeft"], "dirs": OUT, "laterals": [0.0, 0.0]},
+	{"name": "container", "type": Quick.BUGGY, "pieces": ["Cover/Containers/ContainerWest", "Cover/Containers/ContainerEast"], "dirs": OUT, "laterals": [0.0, 0.0]},
 	{"name": "cliff", "type": Quick.BUGGY, "pieces": ["Cliffs/RockCanyonSouth", "Cliffs/RockCanyonSouth"], "dirs": [Vector3.FORWARD, Vector3.FORWARD], "laterals": [-30.0, 30.0]},
 	{"name": "leak", "type": Quick.MOTORBIKE, "pieces": ["Depot/FuelTanks/FuelTankSouth/Collider", "Depot/FuelTanks/FuelTankSouth/Collider"], "dirs": [Vector3.FORWARD, Vector3.FORWARD], "laterals": [-1.3, 1.3]},
 ]

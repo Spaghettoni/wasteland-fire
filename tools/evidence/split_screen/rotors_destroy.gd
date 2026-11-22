@@ -68,7 +68,7 @@ func _explosions() -> void:
 ## (up to hull_top, under the rotor), where it was, while the rotor and the propeller turn.
 func _smoke() -> void:
 	var problems: PackedStringArray = []
-	var frozen: PackedScene = load(Kit25.FROZEN_FILE_PATH) as PackedScene
+	var frozen: PackedScene = load(Kit25.UNSPLIT_FILE_PATH) as PackedScene
 	var model_scene: MeshUnitModel = load(Kit25.MODEL_PATH).instantiate() as MeshUnitModel
 	var hull: AABB = MeshUnitModel.hull_of(frozen, model_scene.hull_top)
 	var lift: float = model_scene.hover_height + model_scene.offset.y

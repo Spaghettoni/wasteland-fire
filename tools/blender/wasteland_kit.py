@@ -57,6 +57,9 @@ PALETTE = {
     "paint_white": (0.68, 0.66, 0.6),
     "container_grey": (0.47, 0.45, 0.41),
     "concrete": (0.6, 0.58, 0.54),
+    # The drivers (Story 064): sunburnt skin and dark worn cloth, neither near a Team colour.
+    "skin": (0.71, 0.50, 0.38),
+    "cloth": (0.24, 0.21, 0.18),
 }
 # The tone of the vertex colour under the Team material, as KitMerge.DARK_TONE gives the kit's dark
 # Team paints: 0.68 under ORANGE or TEAL comes within 0.02 a channel of ORANGE_DARK and TEAL_DARK.
@@ -670,3 +673,71 @@ def finish(out_path, previews_dir, views, ground_size=12.0, ao_distance=AO_DISTA
                 export_tangents=False, export_materials="EXPORT", export_vertex_color="NAME",
                 export_vertex_color_name="Col", export_image_format="NONE")
         print("EXPORTED %s" % out_path)
+
+
+def driver(hip, hands, lean=0.0, legs="seated", feet=None, scale=1.0, turn=0.0):
+    """A driver (Story 064; Martin, 2026-11-22: "chcem aby v kazdom vozidle bolo vidno panaka"): a
+    chunky low-poly figure seated with its hip at hip (the top of the seat, the middle of the
+    figure), leaning lean degrees forward, its hands at hands (left, right; world points: the bars,
+    the wheel, the grips). A Team helmet with dark goggles, a beard, a leather vest with Team shoulder
+    pads and a spike on each; bare arms in gloves. legs "seated" (thighs forward, shins down to
+    feet), "straddle" (a rider's, out round the tank to feet), or "none" (hidden in a hull). feet
+    (left, right) default below the knees. scale grows the figure about the hip (a little over life
+    size reads from the camera above). turn is degrees about Z: where the figure faces, +Y at 0.
+    Returns its parts."""
+    hip = Vector(hip)
+    s = scale
+    rot = Matrix.Rotation(math.radians(turn), 4, "Z") @ Matrix.Rotation(math.radians(-lean), 4, "X")
+
+    def at(x, y, z):
+        return hip + (rot @ Vector((x * s, y * s, z * s)))
+
+    def upright(name, size, local, key, bevel=0.02):
+        size = tuple(v * s for v in size)
+        obj = box(name, size, (0.0, 0.0, 0.0), key, bevel=bevel * s)
+        obj.data.transform(Matrix.Translation(at(*local)) @ rot)
+        return obj
+
+    parts = []
+    parts.append(upright("driver_torso", (0.38, 0.24, 0.42), (0.0, 0.0, 0.23), "leather", 0.05))
+    parts.append(upright("driver_belly", (0.34, 0.2, 0.14), (0.0, 0.01, 0.06), "cloth", 0.03))
+    parts.append(upright("driver_neck", (0.12, 0.12, 0.08), (0.0, 0.0, 0.47), "skin", 0.02))
+    parts.append(upright("driver_head", (0.21, 0.21, 0.22), (0.0, 0.01, 0.6), "skin", 0.04))
+    parts.append(upright("driver_beard", (0.2, 0.08, 0.12), (0.0, 0.1, 0.53), "rust_dark", 0.025))
+    parts.append(upright("driver_helmet", (0.26, 0.25, 0.15), (0.0, -0.01, 0.7), "accent", 0.05))
+    parts.append(upright("driver_helmet_rim", (0.27, 0.27, 0.04), (0.0, -0.005, 0.635), "accent_dark",
+            0.015))
+    parts.append(upright("driver_goggles", (0.22, 0.05, 0.06), (0.0, 0.115, 0.6), "glass", 0.015))
+    shoulders = []
+    for side in (-1.0, 1.0):
+        parts.append(upright("driver_pad", (0.15, 0.2, 0.08), (side * 0.2, 0.0, 0.43), "accent_dark",
+                0.025))
+        tip = at(side * 0.24, 0.0, 0.47)
+        parts.append(cone("driver_pad_spike", 0.03 * s, 0.1 * s, tip,
+                (rot @ Vector((side * 0.5, 0.0, 1.0))).normalized(), "steel"))
+        shoulders.append(at(side * 0.21, 0.02, 0.36))
+    for shoulder, hand in zip(shoulders, hands):
+        hand = Vector(hand)
+        elbow = (shoulder + hand) / 2.0 + Vector((0.0, -0.04, -0.07)) * s
+        parts.append(tube("driver_arm", shoulder, elbow, 0.055 * s, "skin", segments=6))
+        parts.append(tube("driver_forearm", elbow, hand, 0.05 * s, "skin", segments=6))
+        parts.append(box("driver_glove", (0.09 * s, 0.09 * s, 0.09 * s), hand, "rubber",
+                bevel=0.02 * s))
+    if legs != "none":
+        knees, default_feet = [], []
+        for side in (-1.0, 1.0):
+            if legs == "straddle":
+                knee = at(side * 0.22, 0.2, -0.1)
+                default_feet.append(at(side * 0.2, 0.18, -0.42))
+            else:
+                knee = at(side * 0.11, 0.38, 0.02)
+                default_feet.append(at(side * 0.12, 0.42, -0.32))
+            knees.append(knee)
+        feet = [Vector(f) for f in feet] if feet else default_feet
+        for side, knee, foot in zip((-1.0, 1.0), knees, feet):
+            thigh_top = at(side * 0.1, 0.0, 0.0)
+            parts.append(tube("driver_thigh", thigh_top, knee, 0.075 * s, "cloth", segments=6))
+            parts.append(tube("driver_shin", knee, foot, 0.065 * s, "cloth", segments=6))
+            parts.append(box("driver_boot", (0.11 * s, 0.17 * s, 0.1 * s), foot + Vector((0.0, 0.03, 0.0)) * s,
+                    "rubber", bevel=0.02 * s))
+    return parts

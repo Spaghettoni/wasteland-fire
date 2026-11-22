@@ -1,0 +1,167 @@
+class_name Burning
+extends Node3D
+## The fire the Flame Tank's flames leave on what they hit (Story 063; Martin, 2026-11-22: "bude
+## ostavat na veziach, budovach, muroch, nepriatelskych vozoch. 5s a bude davat polovicny dmg over
+## time"): a child of the burning Unit or Structure that, for `seconds` after the last puff that hit,
+## gives it `dps` damage per second, a lump every tick_seconds, and draws flames and smoke on it.
+##
+## ignite() puts one on a target or, when it burns already, sets its fire to the new numbers and
+## starts its seconds again: fires never stack. The fire goes out early when its target is out of play
+## (a Unit destroyed or benched, a Structure fallen); a Unit coming back into play does not burn.
+##
+## Damage comes from this node's own physics tick, never from a signal handler, as a Shot's does
+## (Unit.apply_damage() may destroy the Unit, and the Round's handler of that reparents the Flag).
+## The process_mode stays INHERIT, so the Round-over pause freezes it.
+
+## Damage each lump is given every this many seconds.
+@export_range(0.05, 2.0, 0.05, "suffix:s") var tick_seconds: float = 0.25
+## The flames and the smoke drawn on the target, each FxParticles (no rate of their own: this node emits).
+@export var flames: FxParticles
+@export var smoke: FxParticles
+## Particles a second of each, and how fast they rise.
+@export var flame_rate: float = 60.0
+@export var flame_rise: float = 2.2
+@export var smoke_rate: float = 8.0
+@export var smoke_rise: float = 1.2
+## The flames rise from the top of the target's drawn box (its meshes' box, read once when it catches fire), this much
+## below and above it, metres, and stay this far inside its sides.
+@export var below_top: float = 0.5
+@export var above_top: float = 0.15
+@export var inset: float = 0.2
+
+## Damage per second the fire gives (the matrix already applied).
+var dps: float = 0.0
+## Seconds the fire has left.
+var seconds_left: float = 0.0
+
+var _target: Node3D
+## The target's drawn box in its own frame.
+var _box: AABB = AABB(Vector3(-0.5, 0.0, -0.5), Vector3(1.0, 1.0, 1.0))
+var _lump_clock: float = 0.0
+var _out: bool = false
+
+
+## Sets `target` on fire for `seconds` at `dps`, or rekindles its fire. Returns the Burning node, or
+## null for a target that cannot burn (null, out of the tree, or the scene's root is no Burning).
+static func ignite(target: Node3D, scene: PackedScene, burn_dps: float, burn_seconds: float) -> Burning:
+	if target == null or not target.is_inside_tree() or scene == null:
+		return null
+	var fire: Burning = of(target)
+	if fire == null:
+		fire = scene.instantiate() as Burning
+		if fire == null:
+			push_error("Burning: the scene '%s' is not a Burning, so nothing burns." % scene.resource_path)
+			return null
+		fire._target = target
+		target.add_child(fire)
+	fire.dps = burn_dps
+	fire.seconds_left = burn_seconds
+	return fire
+
+
+## The Burning on `target`, or null.
+static func of(target: Node) -> Burning:
+	if target == null:
+		return null
+	for child: Node in target.get_children():
+		if child is Burning and not (child as Burning)._out:
+			return child as Burning
+	return null
+
+
+## True while the fire burns.
+func is_burning() -> bool:
+	return not _out and seconds_left > 0.0
+
+
+func _ready() -> void:
+	if _target == null:
+		_target = get_parent() as Node3D
+	position = Vector3.ZERO
+	_box = _drawn_box()
+	# The particles are top_level and drawn about their node's own transform, so it stays the world's.
+	for fx: FxParticles in [flames, smoke]:
+		if fx != null:
+			fx.global_transform = Transform3D.IDENTITY
+
+
+func _process(delta: float) -> void:
+	if _out or delta <= 0.0:
+		return
+	_emit(flames, flame_rate * delta, flame_rise)
+	_emit(smoke, smoke_rate * delta, smoke_rise)
+
+
+## Emits about `amount` particles (the fraction carried) at random points over the target's
+## footprint, rising at `rise` m/s.
+func _emit(fx: FxParticles, amount: float, rise: float) -> void:
+	if fx == null:
+		return
+	var carry: float = float(fx.get_meta(&"carry", 0.0)) + amount
+	var r: RandomNumberGenerator = fx.rng()
+	while carry >= 1.0:
+		carry -= 1.0
+		var lo: Vector3 = _box.position + Vector3(inset, 0.0, inset)
+		var hi: Vector3 = _box.end - Vector3(inset, 0.0, inset)
+		var top: float = _box.end.y
+		var local: Vector3 = Vector3(r.randf_range(lo.x, maxf(hi.x, lo.x)),
+				r.randf_range(top - below_top, top + above_top), r.randf_range(lo.z, maxf(hi.z, lo.z)))
+		var at: Vector3 = global_transform * local
+		fx.emit(at, Vector3(r.randf_range(-0.3, 0.3), rise * r.randf_range(0.7, 1.3), r.randf_range(-0.3, 0.3)))
+	fx.set_meta(&"carry", carry)
+
+
+## The box of every mesh drawn under the target, in the target's frame (this node's, which sits at its origin), the
+## particles' own meshes left out; a 1 m box when there is none.
+func _drawn_box() -> AABB:
+	var box: AABB = AABB()
+	var found: bool = false
+	var inverse: Transform3D = global_transform.affine_inverse()
+	for node: Node in _target.find_children("*", "MeshInstance3D", true, false):
+		var mesh: MeshInstance3D = node as MeshInstance3D
+		if mesh.mesh == null or not mesh.visible or is_ancestor_of(mesh):
+			continue
+		var part: AABB = (inverse * mesh.global_transform) * mesh.get_aabb()
+		box = part if not found else box.merge(part)
+		found = true
+	return box if found else AABB(Vector3(-0.5, 0.0, -0.5), Vector3(1.0, 1.0, 1.0))
+
+
+func _physics_process(delta: float) -> void:
+	if _out:
+		return
+	if not _in_play():
+		_go_out()
+		return
+	var step: float = minf(delta, seconds_left)
+	seconds_left -= delta
+	_lump_clock += step
+	if _lump_clock >= tick_seconds or seconds_left <= 0.0:
+		var lump: float = dps * _lump_clock
+		_lump_clock = 0.0
+		if lump > 0.0 and _target.has_method(&"apply_damage"):
+			_target.call(&"apply_damage", lump)
+	if seconds_left <= 0.0:
+		_go_out()
+
+
+func _in_play() -> bool:
+	if not is_instance_valid(_target):
+		return false
+	if _target is Unit:
+		return (_target as Unit).is_alive
+	var standing: Variant = _target.get(&"is_standing")
+	return typeof(standing) != TYPE_BOOL or standing
+
+
+## Puts the fire out: the flames stop, the smoke drifts off, and the node frees itself.
+func _go_out() -> void:
+	_out = true
+	seconds_left = 0.0
+	var keep: Node = get_tree().current_scene if is_inside_tree() else null
+	for fx: FxParticles in [flames, smoke]:
+		if fx != null:
+			fx.finish(keep)
+	flames = null
+	smoke = null
+	queue_free()

@@ -251,6 +251,38 @@ extends Resource
 ## refuses a negative one.
 @export_range(0, 1000, 1, "or_greater") var ammo_capacity: int = 0
 
+## How many Shots of the load one high Shot spends (Story 063): 1 for every type but the Flame Tank,
+## whose load counts flame puffs, so its rockets spend more of it. At least 1.
+@export_range(1, 100, 1, "or_greater") var high_ammo_cost: int = 1
+
+@export_group("Flamer")
+## The Flame Tank's low fire (Story 063; Martin, 2026-11-22: a flamethrower, "plamene ale musi palit
+## dostatocne pred seba"; 20 m; it burns everybody but the one who fires; "bude ostavat na veziach,
+## budovach, muroch, nepriatelskych vozoch. 5s a bude davat polovicny dmg over time"). A type with a
+## flame_shot_scene fires flame puffs (FlameShot) when the low trigger is held, with the numbers
+## below instead of damage, fire_interval_seconds, weapon_range and shot_speed, which then are its
+## high fire's (the rockets). Null, the default, for every other type: its low fire is as before.
+@export var flame_shot_scene: PackedScene
+## Damage of one flame puff, before the matrix.
+@export_range(0.0, 100.0, 0.1, "or_greater", "suffix:hp") var flame_damage: float = 0.0
+## Seconds between two puffs while the trigger is held.
+@export_range(0.0, 1.0, 0.005, "or_greater", "suffix:s") var flame_interval_seconds: float = 0.0
+## How far a puff flies, metres from the nozzle.
+@export_range(0.0, 100.0, 0.5, "or_greater", "suffix:m") var flame_range: float = 0.0
+## How fast a puff flies.
+@export_range(0.0, 200.0, 0.5, "or_greater", "suffix:m/s") var flame_speed: float = 0.0
+## The two nozzles stand this far either side of the middle; puffs take turns between them.
+@export_range(0.0, 2.0, 0.01, "suffix:m") var flame_nozzle_side: float = 0.0
+## The most a puff's flight turns away from the facing, degrees, in a fixed repeating pattern: the
+## stream's width.
+@export_range(0.0, 30.0, 0.5, "suffix:deg") var flame_spread_degrees: float = 0.0
+## The turns of the puffs, in order and then again, as shares of flame_spread_degrees (from -1 to 1). Empty: all straight.
+@export var flame_pattern: PackedFloat32Array = PackedFloat32Array()
+## How long a target the flames hit keeps burning (Burning): a Structure, or a Unit of the other Team.
+@export_range(0.0, 30.0, 0.1, "or_greater", "suffix:s") var burn_seconds: float = 0.0
+## The burn's damage per second as a share of the flame's (flame_damage / flame_interval_seconds).
+@export_range(0.0, 2.0, 0.01) var burn_share: float = 0.0
+
 @export_group("Body")
 
 ## Whether this type flies (Story 005 AC-1 and AC-5; design/rules.md "Units": "Flying means only
@@ -464,6 +496,9 @@ func first_problem() -> String:
 		return "crash_speed is not zero or above"
 	if ammo_capacity < 0:
 		return "ammo_capacity is below zero"
+	if flame_shot_scene != null:
+		if not (flame_damage > 0.0 and flame_interval_seconds > 0.0 and flame_range > 0.0 and flame_speed > 0.0):
+			return "flame_damage, flame_interval_seconds, flame_range and flame_speed are not all above zero while flame_shot_scene is set"
 	for index: int in tyres.size():
 		var problem: String = "is missing" if tyres[index] == null else tyres[index].first_problem()
 		if not problem.is_empty():

@@ -3,26 +3,27 @@
 [ext_resource type="Script" path="res://src/gameplay/units/unit_stats.gd" id="1_us"]
 [ext_resource type="PackedScene" path="res://src/gameplay/units/models/truck_mesh_model.tscn" id="2_model"]
 [ext_resource type="Script" path="res://src/gameplay/units/tyre_contact.gd" id="3_tyre"]
+[ext_resource type="PackedScene" path="res://src/gameplay/combat/flame_shot.tscn" id="4_flame"]
 
 [sub_resource type="Resource" id="Resource_front_left"]
 script = ExtResource("3_tyre")
-offset = Vector2(-0.86, -1.28)
-width = 0.36
+offset = Vector2(-0.95, -1.5)
+width = 0.5
 
 [sub_resource type="Resource" id="Resource_front_right"]
 script = ExtResource("3_tyre")
-offset = Vector2(0.86, -1.28)
-width = 0.36
+offset = Vector2(0.95, -1.5)
+width = 0.5
 
 [sub_resource type="Resource" id="Resource_rear_left"]
 script = ExtResource("3_tyre")
-offset = Vector2(-0.86, 1.3)
-width = 0.36
+offset = Vector2(-0.95, 1.6)
+width = 0.5
 
 [sub_resource type="Resource" id="Resource_rear_right"]
 script = ExtResource("3_tyre")
-offset = Vector2(0.86, 1.3)
-width = 0.36
+offset = Vector2(0.95, 1.6)
+width = 0.5
 
 [resource]
 script = ExtResource("1_us")
@@ -40,13 +41,24 @@ ground_snap_length = 0.1
 wall_min_slide_angle_degrees = 15.0
 blocked_speed = 0.5
 type_id = &"truck"
-display_name = "Truck"
+display_name = "Flame Tank"
 damage = 25.0
 fire_interval_seconds = 0.8
 weapon_range = 40.0
 shot_speed = 60.0
 muzzle_forward = 2.8
-ammo_capacity = 25
+ammo_capacity = 250
+high_ammo_cost = 10
+flame_shot_scene = ExtResource("4_flame")
+flame_damage = 2.5
+flame_interval_seconds = 0.08
+flame_range = 20.0
+flame_speed = 26.0
+flame_nozzle_side = 0.62
+flame_spread_degrees = 5.0
+flame_pattern = PackedFloat32Array(0, 0.6, -0.4, 1, -0.9, 0.3, -0.7, 0.8, -0.2, -1)
+burn_seconds = 5.0
+burn_share = 0.5
 model = ExtResource("2_model")
 collision_size = Vector3(2.4, 1.6, 4.4)
 collision_center = Vector3(0, 0.8, 0)

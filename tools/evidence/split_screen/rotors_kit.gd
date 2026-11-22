@@ -19,6 +19,10 @@ const Watch: GDScript = preload("res://tools/evidence/split_screen/rotors_watch.
 const SETTINGS_PATH: String = "res://src/gameplay/units/data/gyrocopter_rotor_settings.tres"
 const MESH_FILE_PATH: String = "res://assets/art/vehicles/wasteland_gyrocopter/wasteland_gyrocopter.glb"
 const FROZEN_FILE_PATH: String = "res://tools/evidence/frozen/wasteland_gyrocopter_story_024.glb"
+## The shipped Gyrocopter's file built again with its turning parts left in the body's Accent and Neutral (Story 064 gave the
+## model its pilot, so the story-024 copy is no longer the shipped file unsplit): tools/blender/build_gyrocopter.py with every part's
+## "split" mark taken off before wasteland_kit.finish(). The file scenario compares the shipped file with it.
+const UNSPLIT_FILE_PATH: String = "res://tools/evidence/frozen/wasteland_gyrocopter_story_064_unsplit.glb"
 const MODEL_PATH: String = "res://src/gameplay/units/models/gyrocopter_mesh_model.tscn"
 ## The Gyrocopter's index into the data.
 const GYRO: int = Quick.GYROCOPTER

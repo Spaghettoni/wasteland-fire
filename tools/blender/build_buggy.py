@@ -180,6 +180,9 @@ def main():
     build_cage()
     build_bars()
     build_wheels()
+    # The driver in the left seat, hands on the wheel (Story 064).
+    kit.driver((-0.24, 0.02, 0.54), ((-0.33, 0.36, 0.92), (-0.15, 0.36, 0.92)), lean=8.0,
+            scale=1.1)
     kit.finish(args["out"], args["previews"], VIEWS, ao_distance=AO_DISTANCE)
 
 

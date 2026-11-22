@@ -1,5 +1,6 @@
 extends RefCounted
-## The mesh file and the older model for the rotors scenario (Story 025 AC-5 and AC-8): file (the rebuilt mesh file holds the body's
+## The mesh file and the older model for the rotors scenario (Story 025 AC-5 and AC-8): file (since Story 064 compared with
+## Kit25.UNSPLIT_FILE_PATH, the same model with its pilot built unsplit, in place of the story-024 copy: the rebuilt mesh file holds the body's
 ## Accent and Neutral and the four turning meshes; its vertex boxes, as the game reads them with MeshUnitModel.hull_of(), are the
 ## frozen copy's to the bit, at no height limit and at hull_top; the 13,231 vertices of its six meshes, each with its normal and
 ## its colour as the file holds them (read from the .glb itself, not through the importer, which stores each mesh's positions at
@@ -99,7 +100,7 @@ static func _by_text(names: Array) -> Array:
 func _file() -> void:
 	var problems: PackedStringArray = []
 	var shipped: PackedScene = load(Kit25.MESH_FILE_PATH) as PackedScene
-	var frozen: PackedScene = load(Kit25.FROZEN_FILE_PATH) as PackedScene
+	var frozen: PackedScene = load(Kit25.UNSPLIT_FILE_PATH) as PackedScene
 	var names: Array = MeshFile.meshes_of(shipped).keys()
 	var old_names: Array = MeshFile.meshes_of(frozen).keys()
 	names.sort()
@@ -116,7 +117,7 @@ func _file() -> void:
 		_q.kit.need(problems, _bits(now) == _bits(then) and now.has_volume(), "the hull at %s is %s in the rebuilt file and %s in the frozen copy (%s against %s)" % [top, now, then, _bits(now), _bits(then)])
 		boxes.append("%s: %s" % [top, now])
 	var now_table: Dictionary = _vertex_table(Kit25.MESH_FILE_PATH)
-	var old_table: Dictionary = _vertex_table(Kit25.FROZEN_FILE_PATH)
+	var old_table: Dictionary = _vertex_table(Kit25.UNSPLIT_FILE_PATH)
 	var now_keys: Dictionary = now_table["table"]
 	var old_keys: Dictionary = old_table["table"]
 	var differing: int = 0
@@ -127,7 +128,7 @@ func _file() -> void:
 	_q.kit.need(problems, differing == 0 and int(now_table["count"]) == int(old_table["count"]) and int(now_table["count"]) > 0, "the rebuilt file holds %d vertices and the frozen copy %d, and %d vertex keys (position, normal, colour) are held a different number of times" % [now_table["count"], old_table["count"], differing])
 	_q.kit.need(problems, int(now_table["triangles"]) == int(old_table["triangles"]), "the rebuilt file has %d triangles, the frozen copy %d" % [now_table["triangles"], old_table["triangles"]])
 	var body_now: Dictionary = _vertex_table(Kit25.MESH_FILE_PATH, OLD_MESHES)["table"]
-	var body_then: Dictionary = _vertex_table(Kit25.FROZEN_FILE_PATH, OLD_MESHES)["table"]
+	var body_then: Dictionary = _vertex_table(Kit25.UNSPLIT_FILE_PATH, OLD_MESHES)["table"]
 	var body_missing: int = 0
 	for key: String in body_now:
 		body_missing += 0 if int(body_then.get(key, 0)) >= int(body_now[key]) else 1

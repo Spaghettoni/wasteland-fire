@@ -15,10 +15,10 @@ Blender 5.2.2 LTS (Homebrew: `brew install --cask blender`, which puts `blender`
 
 | File | What it is |
 |---|---|
-| `wasteland_kit.py` | Shared helpers: the palette, the skull emblem, the shape builders (box, prism, loft, cylinder, cone, tube, torus, wheel, fender arch, pixel emblem), the occlusion bake, the join, the split of the parts that turn out of their joined object after the bake (`obj["split"]`, Story 025), the previews and the export. |
+| `wasteland_kit.py` | Shared helpers (since Story 064 also `driver()`, the figure in every vehicle): the palette, the skull emblem, the shape builders (box, prism, loft, cylinder, cone, tube, torus, wheel, fender arch, pixel emblem), the occlusion bake, the join, the split of the parts that turn out of their joined object after the bake (`obj["split"]`, Story 025), the previews and the export. |
 | `build_motorbike.py` | The Motorbike. Writes `assets/art/vehicles/wasteland_motorbike/wasteland_motorbike.glb`. |
 | `build_buggy.py` | The Buggy. Writes `assets/art/vehicles/wasteland_buggy/wasteland_buggy.glb`. |
-| `build_truck.py` | The Truck. Writes `assets/art/vehicles/wasteland_truck/wasteland_truck.glb`. |
+| `build_truck.py` | The Truck type, since Story 063 the tracked Flame Tank. Writes `assets/art/vehicles/wasteland_truck/wasteland_truck.glb`. |
 | `build_gyrocopter.py` | The Gyrocopter. Writes `assets/art/vehicles/wasteland_gyrocopter/wasteland_gyrocopter.glb`, six meshes since Story 025: the body's `Accent` and `Neutral` and the two turning parts' `RotorAccent`, `RotorNeutral`, `PropellerAccent` and `PropellerNeutral`. |
 | `build_rocks.py` | Map 01's rocks, read from the cliff colliders of `map_01_cliffs.tscn` (rerun it after changing them). Writes `assets/art/map_01/rocks/map_01_rocks.glb`, one mesh per cliff. |
 | `build_props.py` | Map 01's props, each built to the box of the primitive it replaces: wrecks, containers, scrap walls, the dressing's containers, tyres, boulders and posts, the fuel tanks' trim. Writes `assets/art/map_01/props/map_01_props.glb`. |
