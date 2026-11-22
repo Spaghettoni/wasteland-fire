@@ -8,6 +8,8 @@ extends RefCounted
 ##     burn_seconds, about burn_share of the flame's damage a second (times the matrix), then stops, and it has no fire left.
 ##  F3 a Structure burns: a second of flame on the fixture Turret 9 m ahead: it keeps losing hit points after the trigger
 ##     is let go, until it falls or its fire goes out.
+##  F5 a Teammate burns (Martin, 2026-11-22): Player 2's Buggy made Player 1's Teammate (its player_index set to Player 1's Team
+##     for the check) loses hit points to the flame and keeps burning after it.
 ##  F4 the load: a new Flame Tank (its Unit out of play and back) holds 250; a flame puff spends 1 and a rocket (high fire) high_ammo_cost.
 ## SPLIT moments for the frames in a windowed --write-movie run: flames (F3, the stream on the Turret) and afterburn (F3,
 ## the Turret burning after the trigger is let go).
@@ -123,6 +125,25 @@ func run(harness: Node) -> void:
 	_q.kit.need(problems, Burning.of(turret) == null, "the Turret still burns")
 	_q.kit.verdict("F3_a_structure_burns", problems, "the Turret %.1f at the start, %.1f when the trigger was let go, %.1f after its fire (standing %s)" % [
 		turret_start, turret_release, turret_end, turret.is_standing])
+	# F5
+	problems = PackedStringArray()
+	var team: int = units[1].player_index
+	units[1].player_index = units[0].player_index
+	_q.units.retype(0, Quick.TRUCK, base, facing)
+	_q.units.retype(1, Quick.BUGGY, base + facing * (tank.muzzle_forward + F2_GAP + half_buggy), facing)
+	await _q.kit.advance(SETTLE)
+	var mate_start: float = units[1].hit_points
+	await _q.units.hold_fire(0, HALF_SECOND)
+	var mate_release: float = units[1].hit_points
+	var mate_burning: bool = Burning.of(units[1]) != null
+	await _q.kit.advance(SECOND)
+	var mate_after: float = units[1].hit_points
+	units[1].player_index = team
+	_q.kit.need(problems, mate_start > mate_release, "the Teammate's Buggy lost nothing to the flame")
+	_q.kit.need(problems, mate_burning and mate_after < mate_release, "the Teammate's Buggy did not keep burning (on fire %s, lost %.1f after)" % [mate_burning, mate_release - mate_after])
+	_q.kit.verdict("F5_a_teammate_burns", problems, "Player 2's Buggy on Player 1's Team: %.1f -> %.1f under half a second of flame, on fire %s, %.1f a second later" % [mate_start, mate_release, mate_burning, mate_after])
+	await _q.kit.advance(int(tank.burn_seconds * 60.0))
+
 	_k.free_arena()
 
 	# F4
@@ -146,6 +167,7 @@ func run(harness: Node) -> void:
 	_q.kit.need(problems, full - after_puff == 1, "a puff spent %d" % (full - after_puff))
 	_q.kit.need(problems, after_puff - after_rocket == tank.high_ammo_cost, "a rocket spent %d" % (after_puff - after_rocket))
 	_q.kit.verdict("F4_the_load", problems, "a new Flame Tank %d of %d; after a puff %d; after a rocket %d (cost %d)" % [full, weapon.capacity, after_puff, after_rocket, tank.high_ammo_cost])
+
 	_k.close()
 	harness.finish("flame=%.1fm burn=%.0fs" % [tank.flame_range, tank.burn_seconds])
 

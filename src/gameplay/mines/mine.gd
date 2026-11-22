@@ -87,6 +87,11 @@ enum State {
 ## The cylinder the Mine polls through the Area3D: its shape is made in _ready().
 @export var trigger_shape: CollisionShape3D
 
+## The casing under the Team light (Story 065), drawn when MineSettings.look_radius is above 0 and hidden once the Mine is
+## spent. Optional. Built at a radius of 1 and scaled to look_radius; its top stands casing_top (times look_radius) high.
+@export var casing: Node3D
+@export var casing_top: float = 0.0
+
 ## The disc: shown while the Mine is lit, hidden while it blinks dark, hidden once it is spent.
 ## A MeshInstance3D, because lay() gives it its owner's material (material_override).
 @export var body: MeshInstance3D
@@ -106,6 +111,9 @@ var state: State:
 		push_error("Mine '%s': state is read-only. A Mine arms with time and goes off under a Unit." % name)
 
 var _state: State = State.ARMING
+## A live Mine's blink in ticks (Story 065): 0 keeps it lit.
+var _live_period_ticks: int = 0
+var _live_lit_ticks: int = 0
 ## This node's own ticks since it entered the tree.
 var _ticks: int = 0
 var _arming_ticks: int = 0
@@ -128,7 +136,19 @@ func _ready() -> void:
 	cylinder.height = settings.trigger_height
 	trigger_shape.shape = cylinder
 	trigger_shape.position = Vector3.UP * settings.trigger_height / 2.0
-	body.scale = Vector3(settings.trigger_radius, 1.0, settings.trigger_radius)
+	if settings.look_radius > 0.0 and casing != null:
+		casing.visible = true
+		casing.scale = Vector3.ONE * settings.look_radius
+		var light: float = settings.look_radius * settings.light_share
+		body.scale = Vector3(light, 1.0, light)
+		body.position.y = settings.look_radius * casing_top
+	else:
+		if casing != null:
+			casing.visible = false
+		body.scale = Vector3(settings.trigger_radius, 1.0, settings.trigger_radius)
+	if settings.live_blink_period_seconds > 0.0:
+		_live_period_ticks = maxi(roundi(settings.live_blink_period_seconds * Engine.physics_ticks_per_second), 1)
+		_live_lit_ticks = roundi(_live_period_ticks * clampf(settings.live_blink_lit_fraction, 0.0, 1.0))
 	flash.scale = Vector3.ONE * settings.flash_radius
 	var ticks_per_second: int = Engine.physics_ticks_per_second
 	_arming_ticks = maxi(roundi(settings.arming_seconds * ticks_per_second), 1)
@@ -147,6 +167,8 @@ func _physics_process(_delta: float) -> void:
 		_state = State.LIVE
 		body.visible = true
 	if _state == State.LIVE:
+		if _live_period_ticks > 0:
+			body.visible = (_ticks - _arming_ticks) % _live_period_ticks < _live_lit_ticks
 		_detonate(touching)
 		return
 	_flash_left -= 1
@@ -199,6 +221,8 @@ func _detonate(touching: Array[Unit]) -> void:
 	_state = State.SPENT
 	_flash_left = _flash_ticks
 	body.visible = false
+	if casing != null:
+		casing.visible = false
 	flash.visible = true
 
 

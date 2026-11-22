@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" path="res://assets/art/vehicles/wasteland_gyrocopter/wasteland_gyrocopter.glb" id="2_mesh"]
 [ext_resource type="PackedScene" path="res://src/gameplay/effects/badly_damaged_smoke.tscn" id="3_smoke"]
 [ext_resource type="Resource" path="res://src/gameplay/units/data/gyrocopter_rotor_settings.tres" id="4_rotors"]
+[ext_resource type="Script" path="res://src/gameplay/units/models/unit_body_motion.gd" id="5_motion"]
 
 [node name="GyrocopterMeshModel" type="Node3D"]
 script = ExtResource("1_model")
@@ -12,3 +13,15 @@ smoke_scene = ExtResource("3_smoke")
 hull_top = 1.4
 rotor_settings = ExtResource("4_rotors")
 hover_height = 2.5
+
+[node name="BodyMotion" type="Node" parent="."]
+script = ExtResource("5_motion")
+pitch_per_accel = -0.5
+roll_per_accel = -1.6
+max_pitch = 6.0
+max_roll = 18.0
+stiffness = 60.0
+damping = 9.0
+pivot_height = 0.0
+bump_height = 0.0
+bump_tilt = 0.0

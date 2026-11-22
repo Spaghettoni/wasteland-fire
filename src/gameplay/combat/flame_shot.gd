@@ -8,9 +8,9 @@ extends Shot
 ## - Who it burns. It never touches the shooter (the Shot's RID exclusion), and it damages every Unit
 ##   it meets, the shooter's Teammates too; a Structure as a Shot does (one of the shooter's own Team
 ##   is spared unless it says spares_owner false, as every wall does).
-## - What it leaves. A Structure it damaged, and a Unit of the other Team, catch fire (Burning): for
-##   burn_seconds after the last puff that hit, they take the burn's damage per second. A Teammate
-##   it scorched does not keep burning.
+## - What it leaves. A Structure it damaged and a Unit it hit catch fire (Burning): for burn_seconds
+##   after the last puff that hit, they take the burn's damage per second. A Teammate keeps burning too
+##   (Martin, 2026-11-22: "chcem aby ostal horet aj tvoj kamos ked prejde cez plamen").
 ##
 ## The look: the tracer is a few glowing cubes (flame_shot.tscn) that swell and cool from yellow to
 ## red as the puff flies; their heat is the instance parameter `heat` of spatial_fx_flame.gdshader.
@@ -56,5 +56,5 @@ func _damage_target(collider: Object) -> void:
 			return
 	var multiplier: float = _matrix.multiplier(_shooter_type, target_type)
 	collider.call(&"apply_damage", _damage * multiplier)
-	if burn_dps > 0.0 and burn_seconds > 0.0 and burning_scene != null and (not unit or not own):
+	if burn_dps > 0.0 and burn_seconds > 0.0 and burning_scene != null:
 		Burning.ignite(collider as Node3D, burning_scene, burn_dps * multiplier, burn_seconds)

@@ -535,6 +535,7 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"rockets_showcase": preload("res://tools/evidence/split_screen/rockets_showcase.gd"),
 	&"flame_tank": preload("res://tools/evidence/split_screen/flame_tank.gd"),
 	&"drivers_showcase": preload("res://tools/evidence/split_screen/drivers_showcase.gd"),
+	&"mines_gyro_065": preload("res://tools/evidence/split_screen/mines_gyro_065.gd"),
 	&"effects_showcase": preload("res://tools/evidence/split_screen/effects_showcase.gd"),
 	&"fire_heights_showcase": preload("res://tools/evidence/split_screen/fire_heights_showcase.gd"),
 	&"secondary": preload("res://tools/evidence/split_screen/secondary.gd"),
@@ -753,6 +754,11 @@ const LEGACY_043_BUSH_SIZE: float = 1.0
 const LINEUP_DEVICES_CONSTANT: StringName = &"LINEUP_DEVICES"
 const LINEUP_TEAMS_CONSTANT: StringName = &"LINEUP_TEAMS"
 const TEAMS_CONSTANT: StringName = &"TEAMS"
+## The constant a scenario script declares as true to play the Mines of Story 065: the casing with a blinking Team light
+## (MineSettings.look_radius, live_blink_period_seconds) and a Mine that goes off under its own Team's Units too.
+const MINE_LOOKS_CONSTANT: StringName = &"MINE_LOOKS"
+## The constant a scenario script declares as true to keep the Gyrocopter's banking of Story 066 (_apply_gyro_banks_off()).
+const GYRO_BANKS_CONSTANT: StringName = &"GYRO_BANKS"
 ## The constants a scenario script declares as true to keep Story 050's chase view and Tokens (_apply_story_050_off()).
 const TURN_RAMP_CONSTANT: StringName = &"TURN_RAMP"
 ## The constant a scenario script declares as true to play the shipped Map 01 of Story 058 (no corner towers, breakable wrecks
@@ -1029,6 +1035,7 @@ func _ready() -> void:
 	_apply_badly_damaged_off(SCENARIOS[scenario])
 	_apply_heights_off(SCENARIOS[scenario])
 	_apply_rotors_off(SCENARIOS[scenario])
+	_apply_gyro_banks_off(SCENARIOS[scenario])
 	_apply_crash_off(SCENARIOS[scenario])
 	_apply_ammo_off(SCENARIOS[scenario])
 	_apply_turret_looks_data_off(SCENARIOS[scenario])
@@ -1671,11 +1678,41 @@ func _apply_rotors_off(script: GDScript) -> void:
 		stats.model = packed[path]
 
 
+## Takes the Gyrocopter's banking (Story 066, its model's BodyMotion) off, unless the scenario script declares GYRO_BANKS: the
+## Gyrocopter's model in match_rules.tres's unit_types becomes a scene packed from an instance of it without that node, so its
+## drawn body stands level at its hover height as every older scenario measured it. Runs after _apply_rotors_off().
+func _apply_gyro_banks_off(script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(GYRO_BANKS_CONSTANT, false)):
+		return
+	var rules: MatchRules = load(MATCH_RULES_PATH) as MatchRules
+	if rules == null:
+		return
+	for stats: UnitStats in rules.unit_types:
+		if stats == null or stats.model == null or stats.type_id != &"gyrocopter":
+			continue
+		var model: Node = stats.model.instantiate()
+		var motion: Node = model.get_node_or_null(^"BodyMotion")
+		if motion == null:
+			model.free()
+			continue
+		model.remove_child(motion)
+		motion.free()
+		var copy: PackedScene = PackedScene.new()
+		copy.pack(model)
+		model.free()
+		stats.model = copy
+
+
 ## A scene packed from an instance of a Gyrocopter model scene with its mesh file swapped for the old one and no rotor settings.
 func _without_rotors(scene: PackedScene) -> PackedScene:
 	var model: MeshUnitModel = scene.instantiate() as MeshUnitModel
 	model.mesh_scene = FROZEN_GYROCOPTER_MESH_FILE
 	model.rotor_settings = null
+	# The model of before Story 025 did not bank either (Story 066).
+	var motion: Node = model.get_node_or_null(^"BodyMotion")
+	if motion != null:
+		model.remove_child(motion)
+		motion.free()
 	var copy: PackedScene = PackedScene.new()
 	copy.pack(model)
 	model.free()
@@ -1765,11 +1802,20 @@ func _apply_lineup(root: SplitScreen, script: GDScript) -> void:
 ## Gives Mines back the rule of stories 014 to 047, unless the scenario script declares const TEAMS: bool = true (Story 048):
 ## a Mine goes off under any ground Unit, its own Team's too (MineSettings.spares_own_team false).
 func _apply_teams_off(script: GDScript) -> void:
-	if bool(script.get_script_constant_map().get(TEAMS_CONSTANT, false)):
-		return
+	var constants: Dictionary = script.get_script_constant_map()
 	var settings: MineSettings = load(MINE_SETTINGS_PATH_048) as MineSettings
-	if settings != null:
-		settings.spares_own_team = false
+	if settings == null:
+		return
+	# Story 065: without MINE_LOOKS a Mine is the disc of stories 014 to 064, lit steadily once live, and a scenario of
+	# Teams keeps the rule of stories 048 to 064 (a Mine spares its own Team).
+	if not bool(constants.get(MINE_LOOKS_CONSTANT, false)):
+		settings.look_radius = 0.0
+		settings.live_blink_period_seconds = 0.0
+		settings.spares_own_team = bool(constants.get(TEAMS_CONSTANT, false))
+		return
+	if bool(constants.get(TEAMS_CONSTANT, false)):
+		return
+	settings.spares_own_team = false
 
 
 func _apply_map_scene(root: SplitScreen, script: GDScript) -> void:

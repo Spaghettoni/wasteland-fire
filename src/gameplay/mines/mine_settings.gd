@@ -85,7 +85,18 @@ extends Resource
 ## Whether a Mine leaves its own Team's Units alone (Story 048; Martin, 2026-10-23: "nech ta moze
 ## zranit super, aj jeho miny, vlastne veze ta nezrania"): true, a Mine goes off only under a Unit
 ## of the other Team; false (every Round before Story 048), under any ground Unit, its layer's too.
+## Since Story 065 (Martin, 2026-11-22: "myslim ze miny nevybuchnu na friendly fire. A mali by") false again.
 @export var spares_own_team: bool = false
+
+## The look (Story 065; Martin, 2026-11-22: "nech su pekne. Kusok mensie a nech blikaju vo farbach timu"). The radius of the
+## drawn Mine, a dark casing with a Team light on top, metres; 0 draws the disc of stories 014 to 064 instead, the size of the
+## trigger. The trigger keeps trigger_radius either way.
+@export_range(0.0, 3.0, 0.01, "suffix:m") var look_radius: float = 0.0
+## The Team light's radius as a share of look_radius.
+@export_range(0.0, 1.0, 0.01) var light_share: float = 0.0
+## A live Mine's blink: its Team light is lit this share of every period; a period of 0 keeps it lit (stories 014 to 064).
+@export_range(0.0, 5.0, 0.05, "suffix:s") var live_blink_period_seconds: float = 0.0
+@export_range(0.0, 1.0, 0.01) var live_blink_lit_fraction: float = 0.0
 
 
 ## Mine._ready() and MineLayer._ready() apply it and push one named error when it is not empty.

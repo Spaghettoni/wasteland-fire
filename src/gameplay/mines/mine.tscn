@@ -11,6 +11,36 @@ radial_segments = 32
 rings = 1
 cap_bottom = false
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_casing"]
+albedo_color = Color(0.2, 0.19, 0.18, 1)
+metallic = 0.6
+roughness = 0.55
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rim"]
+albedo_color = Color(0.4, 0.38, 0.35, 1)
+metallic = 0.7
+roughness = 0.45
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_casing"]
+material = SubResource("StandardMaterial3D_casing")
+top_radius = 0.82
+bottom_radius = 1.0
+height = 0.24
+radial_segments = 10
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_rim"]
+material = SubResource("StandardMaterial3D_rim")
+top_radius = 1.04
+bottom_radius = 1.04
+height = 0.08
+radial_segments = 10
+rings = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_stud"]
+material = SubResource("StandardMaterial3D_rim")
+size = Vector3(0.16, 0.12, 0.16)
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_flash"]
 shading_mode = 0
 albedo_color = Color(1, 0.95, 0.55, 1)
@@ -22,7 +52,7 @@ height = 2.0
 radial_segments = 16
 rings = 8
 
-[node name="Mine" type="Area3D" node_paths=PackedStringArray("trigger_shape", "body", "flash") groups=["mines"]]
+[node name="Mine" type="Area3D" node_paths=PackedStringArray("trigger_shape", "body", "flash", "casing") groups=["mines"]]
 collision_layer = 0
 collision_mask = 2
 script = ExtResource("1_mine")
@@ -30,8 +60,38 @@ settings = ExtResource("2_mine_settings")
 trigger_shape = NodePath("Trigger")
 body = NodePath("Body")
 flash = NodePath("Flash")
+casing = NodePath("Casing")
+casing_top = 0.26
 
 [node name="Trigger" type="CollisionShape3D" parent="."]
+
+[node name="Casing" type="Node3D" parent="."]
+visible = false
+
+[node name="Shell" type="MeshInstance3D" parent="Casing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, 0)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_casing")
+
+[node name="Rim" type="MeshInstance3D" parent="Casing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_rim")
+
+[node name="StudA" type="MeshInstance3D" parent="Casing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.66, 0.24, 0)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_stud")
+
+[node name="StudB" type="MeshInstance3D" parent="Casing"]
+transform = Transform3D(0.5, 0, 0.866, 0, 1, 0, -0.866, 0, 0.5, -0.33, 0.24, 0.57)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_stud")
+
+[node name="StudC" type="MeshInstance3D" parent="Casing"]
+transform = Transform3D(0.5, 0, -0.866, 0, 1, 0, 0.866, 0, 0.5, -0.33, 0.24, -0.57)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_stud")
 
 [node name="Body" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
