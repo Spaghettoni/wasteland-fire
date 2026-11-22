@@ -1,0 +1,104 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/effects/shot_effect.gd" id="1_effect"]
+[ext_resource type="Script" path="res://src/gameplay/effects/fx_particles.gd" id="2_fx"]
+
+[sub_resource type="Gradient" id="Gradient_scorch"]
+offsets = PackedFloat32Array(0, 0.55, 1)
+colors = PackedColorArray(0.07, 0.06, 0.05, 0.85, 0.1, 0.08, 0.06, 0.55, 0.12, 0.1, 0.08, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_scorch"]
+gradient = SubResource("Gradient_scorch")
+width = 64
+height = 64
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[node name="Impact" type="Node3D" groups=["explosions"] node_paths=PackedStringArray("flash", "smoke", "sparks", "chunks", "scorch")]
+script = ExtResource("1_effect")
+flash = NodePath("Flash")
+smoke = NodePath("Smoke")
+sparks = NodePath("Sparks")
+chunks = NodePath("Chunks")
+scorch = NodePath("Scorch")
+flash_count = 1
+smoke_count = 10
+smoke_speed_min = 0.6
+smoke_speed_max = 2.4
+smoke_spread = 70.0
+spark_count = 16
+spark_speed_min = 5.0
+spark_speed_max = 12.0
+spark_spread = 75.0
+chunk_count = 9
+chunk_speed_min = 2.5
+chunk_speed_max = 6.0
+chunk_spread = 55.0
+scorch_hold = 8.0
+scorch_fade = 4.0
+
+[node name="Flash" type="MultiMeshInstance3D" parent="."]
+script = ExtResource("2_fx")
+glow = false
+max_particles = 4
+life_min = 0.1
+life_max = 0.14
+size_start = 1.7
+size_end = 2.5
+size_random_min = 0.9
+colour_start = Color(1, 0.85, 0.45, 1)
+colour_end = Color(1, 0.4, 0.08, 0.0)
+drag = 0.0
+seed_value = 21
+
+[node name="Smoke" type="MultiMeshInstance3D" parent="."]
+script = ExtResource("2_fx")
+max_particles = 16
+life_min = 0.7
+life_max = 1.3
+size_start = 0.6
+size_end = 2.1
+colour_start = Color(0.34, 0.3, 0.26, 0.72)
+colour_end = Color(0.45, 0.4, 0.34, 0.0)
+gravity = Vector3(0, 0.6, 0)
+drag = 2.5
+seed_value = 22
+
+[node name="Sparks" type="MultiMeshInstance3D" parent="."]
+script = ExtResource("2_fx")
+kind = 1
+glow = true
+max_particles = 24
+life_min = 0.15
+life_max = 0.35
+size_start = 0.075
+size_end = 0.04
+colour_start = Color(1, 0.9, 0.5, 1)
+colour_end = Color(1, 0.35, 0.05, 0.3)
+gravity = Vector3(0, -12, 0)
+drag = 0.6
+spark_stretch = 0.045
+seed_value = 23
+
+[node name="Chunks" type="MultiMeshInstance3D" parent="."]
+script = ExtResource("2_fx")
+kind = 2
+max_particles = 14
+life_min = 0.5
+life_max = 0.8
+size_start = 0.17
+size_end = 0.12
+colour_start = Color(0.32, 0.25, 0.18, 1)
+colour_end = Color(0.32, 0.25, 0.18, 0.0)
+gravity = Vector3(0, -14, 0)
+drag = 0.3
+spin = 2.5
+seed_value = 24
+
+[node name="Scorch" type="Decal" parent="."]
+size = Vector3(1.1, 0.6, 1.1)
+texture_albedo = SubResource("GradientTexture2D_scorch")
+albedo_mix = 1.0
+upper_fade = 0.0
+lower_fade = 0.0

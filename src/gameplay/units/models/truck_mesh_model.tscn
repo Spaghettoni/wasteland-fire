@@ -3,8 +3,41 @@
 [ext_resource type="Script" path="res://src/gameplay/units/models/mesh_unit_model.gd" id="1_model"]
 [ext_resource type="PackedScene" path="res://assets/art/vehicles/wasteland_truck/wasteland_truck.glb" id="2_mesh"]
 [ext_resource type="PackedScene" path="res://src/gameplay/effects/badly_damaged_smoke.tscn" id="3_smoke"]
+[ext_resource type="Script" path="res://src/gameplay/units/models/unit_body_motion.gd" id="4_motion"]
+[ext_resource type="Script" path="res://src/gameplay/effects/unit_dust.gd" id="5_dust"]
+[ext_resource type="Script" path="res://src/gameplay/effects/fx_particles.gd" id="6_fx"]
 
 [node name="TruckMeshModel" type="Node3D"]
 script = ExtResource("1_model")
 mesh_scene = ExtResource("2_mesh")
 smoke_scene = ExtResource("3_smoke")
+
+[node name="BodyMotion" type="Node" parent="."]
+script = ExtResource("4_motion")
+pitch_per_accel = 0.45
+roll_per_accel = 0.8
+max_pitch = 4.0
+max_roll = 6.0
+stiffness = 90.0
+damping = 9.0
+pivot_height = 0.8
+bump_height = 0.04
+bump_tilt = 0.8
+
+[node name="Dust" type="Node" parent="." node_paths=PackedStringArray("puffs")]
+script = ExtResource("5_dust")
+puffs = NodePath("Puffs")
+rate_per_speed = 3.6
+
+[node name="Puffs" type="MultiMeshInstance3D" parent="Dust"]
+script = ExtResource("6_fx")
+max_particles = 128
+life_min = 0.9
+life_max = 1.6
+size_start = 0.35
+size_end = 1.9
+colour_start = Color(0.64, 0.5, 0.34, 0.55)
+colour_end = Color(0.72, 0.6, 0.44, 0.0)
+gravity = Vector3(0, 0.25, 0)
+drag = 1.8
+seed_value = 41

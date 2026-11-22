@@ -62,6 +62,18 @@ extends Node3D
 ## The drawn tracer, which lift_tracer() raises for a high shot (Story 041).
 @export var tracer: Node3D
 
+@export_group("Effects")
+## A picture played at the muzzle when the shot is launched (ShotEffect), or null for none.
+@export var muzzle_scene: PackedScene
+## A picture played where the shot ends on something (ShotEffect), or null for none: sparks on a Unit
+## or a Structure, chunks and a scorch on anything else.
+@export var impact_scene: PackedScene
+## Scale of the impact's picture (a rocket's is bigger than a bullet's).
+@export var impact_size: float = 1.0
+## A smoke trail drawn behind the shot (FxParticles with a rate), kept until its smoke has gone
+## when the shot ends; null for none.
+@export var trail: FxParticles
+
 var _shooter_rid: RID
 var _shooter_type: StringName = &""
 ## The Player the shooter belongs to (Unit.player_index), or -1 for a shooter no Player owns.
@@ -94,13 +106,40 @@ func _physics_process(delta: float) -> void:
 	var hit: Dictionary = get_world_3d().direct_space_state.intersect_ray(query)
 	if not hit.is_empty():
 		global_position = hit["position"]
-		_damage_target(hit["collider"] as Object)
-		queue_free()
+		var collider: Object = hit["collider"] as Object
+		_play_impact(hit["position"], hit["normal"], collider)
+		_damage_target(collider)
+		_end()
 		return
 	global_position = to
 	_travelled += step
 	if _travelled >= _max_range:
-		queue_free()
+		_end()
+
+
+## Frees the shot, leaving its trail behind until the trail's smoke has gone.
+func _end() -> void:
+	if trail != null and get_parent() != null:
+		trail.finish(get_parent())
+		trail = null
+	queue_free()
+
+
+## Plays impact_scene where the shot ended: metal (sparks) on anything that takes damage, a Unit or a
+## Structure, chunks and a scorch on anything else. The picture stands where the flight line met
+## the collider, lifted like the tracer, facing the surface's normal (back along the flight where the
+## ray started inside the collider and has none).
+func _play_impact(at: Vector3, normal: Vector3, collider: Object) -> void:
+	if impact_scene == null or get_parent() == null:
+		return
+	var effect: ShotEffect = impact_scene.instantiate() as ShotEffect
+	if effect == null:
+		return
+	get_parent().add_child(effect)
+	var facing: Vector3 = normal if normal.length_squared() > 0.0 else -_direction
+	var lift: float = tracer.position.y if tracer != null else 0.0
+	var metal: bool = collider != null and collider.has_method(&"apply_damage")
+	effect.play(at + Vector3.UP * lift, facing, metal, impact_size)
 
 
 ## Applies the shot's damage to what it ended on, when that is something it may damage (the class
@@ -173,3 +212,8 @@ func launch_from(shooter_rid: RID, shooter_type: StringName, shooter_player_inde
 	global_transform = Transform3D(Basis.looking_at(_direction, Vector3.UP), origin)
 	reset_physics_interpolation()
 	_launched = true
+	if muzzle_scene != null and get_parent() != null:
+		var flash: ShotEffect = muzzle_scene.instantiate() as ShotEffect
+		if flash != null:
+			get_parent().add_child(flash)
+			flash.play(origin, _direction, true)
