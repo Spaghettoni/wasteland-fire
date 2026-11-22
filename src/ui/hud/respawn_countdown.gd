@@ -95,6 +95,7 @@ func _ready() -> void:
 		return
 	match_controller.unit_destroyed.connect(_on_unit_destroyed)
 	match_controller.unit_spawned.connect(_on_unit_spawned)
+	match_controller.unit_swapped.connect(_on_unit_destroyed)
 	match_controller.round_over.connect(_on_round_over)
 	_set_counting(not match_controller.is_round_over()
 		and match_controller.seconds_until_respawn(player_index) > 0.0)
@@ -141,6 +142,7 @@ func _first_problem() -> String:
 
 ## This Player's Unit was destroyed: start counting, unless the Round is over (no respawn comes
 ## before the restart). Another Player's destruction is not ours.
+## Also this Player's swap at its own Base, which waits rules.swap_respawn_seconds (Story 070).
 func _on_unit_destroyed(destroyed_player_index: int) -> void:
 	if destroyed_player_index == player_index and not match_controller.is_round_over():
 		_set_counting(true)

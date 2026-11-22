@@ -107,12 +107,16 @@ func run(harness: Node) -> void:
 	var multiplier: float = matrix.multiplier(tank.type_id, buggy.type_id)
 	var burn_dps: float = tank.flame_damage / tank.flame_interval_seconds * tank.burn_share * multiplier
 	var expected: float = burn_dps * tank.burn_seconds
+	# The puffs still in the air when the trigger is let go land after it: each hits and rekindles the fire, so the burn
+	# runs up to their flight longer and their own hits count too.
+	var flight: float = (tank.muzzle_forward + F2_GAP) / tank.flame_speed
+	var most: float = expected + burn_dps * flight + tank.flame_damage * ceilf(flight / tank.flame_interval_seconds)
 	var burned: float = at_release - after_burn
 	_q.kit.need(problems, burning, "the Buggy did not catch fire")
-	_q.kit.need(problems, absf(burned - expected) <= BURN_TOLERANCE, "it burned %.1f after the trigger, %.1f expected" % [burned, expected])
+	_q.kit.need(problems, burned >= expected - BURN_TOLERANCE and burned <= most + BURN_TOLERANCE, "it burned %.1f after the trigger, %.1f to %.1f expected" % [burned, expected, most])
 	_q.kit.need(problems, gone and is_equal_approx(later, after_burn), "the fire did not go out (burning %s, lost %.1f more)" % [not gone, after_burn - later])
-	_q.kit.verdict("F2_the_burn", problems, "a second of flame: %.1f lost; then %.1f in the %.0f s of fire (%.1f expected, %.2f a second times %.2f); out after it %s" % [
-		start - at_release, burned, tank.burn_seconds, expected, burn_dps / multiplier, multiplier, gone])
+	_q.kit.verdict("F2_the_burn", problems, "a second of flame: %.1f lost; then %.1f in the %.0f s of fire (%.1f to %.1f expected with the puffs in the air, %.2f a second times %.2f); out after it %s" % [
+		start - at_release, burned, tank.burn_seconds, expected, most, burn_dps / multiplier, multiplier, gone])
 
 	# F3
 	problems = PackedStringArray()

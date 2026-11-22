@@ -537,6 +537,7 @@ const SCENARIOS: Dictionary[StringName, GDScript] = {
 	&"drivers_showcase": preload("res://tools/evidence/split_screen/drivers_showcase.gd"),
 	&"mines_gyro_065": preload("res://tools/evidence/split_screen/mines_gyro_065.gd"),
 	&"direction_lock": preload("res://tools/evidence/split_screen/direction_lock.gd"),
+	&"swap_wait": preload("res://tools/evidence/split_screen/swap_wait.gd"),
 	&"effects_showcase": preload("res://tools/evidence/split_screen/effects_showcase.gd"),
 	&"fire_heights_showcase": preload("res://tools/evidence/split_screen/fire_heights_showcase.gd"),
 	&"secondary": preload("res://tools/evidence/split_screen/secondary.gd"),
@@ -632,6 +633,9 @@ const SHIPPED_CAMERA_CONSTANT: StringName = &"SHIPPED_CAMERA"
 ## The constant a scenario script declares as true to run with the swap at the own Base the shipped
 ## rules turn on, instead of the swap off (_apply_swap_off()).
 const OWN_BASE_SWAP_CONSTANT: StringName = &"OWN_BASE_SWAP"
+## The constant a scenario script declares as true to run with Story 070's rules: the swap waits swap_respawn_seconds and the
+## Self-destruct needs an empty tank; without it both are off, as every older output was measured (_apply_swap_off()).
+const SWAP_WAIT_CONSTANT: StringName = &"SWAP_WAIT"
 ## The constant a scenario script declares as true to keep the Flag Walls and the side spawn spots
 ## the shipped Map 01 has, instead of the Map without them (_apply_defences_off()).
 const BASE_DEFENCES_CONSTANT: StringName = &"BASE_DEFENCES"
@@ -1240,11 +1244,14 @@ func _apply_pre_009_map(root: SplitScreen) -> void:
 ## OWN_BASE_SWAP (the class doc says why). The resource is the one object the scene's controller and
 ## match inputs hold, so nothing else is needed; rules that fail to load are an error.
 func _apply_swap_off(script: GDScript) -> void:
-	if bool(script.get_script_constant_map().get(OWN_BASE_SWAP_CONSTANT, false)):
-		return
 	var rules: MatchRules = load(MATCH_RULES_PATH) as MatchRules
 	if rules == null:
 		push_error("split_screen_harness: %s did not load as MatchRules, so the swap is not turned off." % MATCH_RULES_PATH)
+		return
+	if not bool(script.get_script_constant_map().get(SWAP_WAIT_CONSTANT, false)):
+		rules.swap_respawn_seconds = 0.0
+		rules.self_destruct_needs_empty_fuel = false
+	if bool(script.get_script_constant_map().get(OWN_BASE_SWAP_CONSTANT, false)):
 		return
 	rules.own_base_swap = false
 

@@ -54,6 +54,16 @@ extends Resource
 ## script and vanish from the data file); the shipped data turns it on in match_rules.tres.
 @export var own_base_swap: bool = false
 
+## The wait after a swap at the own Base before the next Unit appears (Story 070; Martin, 2026-11-22: "ked si ides sam vymenit
+## voz, budes mat 3 respawn time aby si to nezneuzival"), seconds: the swap counts down like a destruction's respawn. 0 puts
+## the next Unit out as soon as it is chosen, as before.
+@export_range(0.0, 30.0, 0.1, "or_greater", "suffix:s") var swap_respawn_seconds: float = 0.0
+
+## Self-destruct only with an empty tank (Story 070; Martin, 2026-11-22: "nemozes resetnut vozidlo len tak. musi Ti dojst
+## fuel"): on, the key outside the own Base does nothing while the Unit has Fuel left; the swap at the own Base is unchanged.
+## False by default (a flag left at its default would live in this script); the shipped data turns it on.
+@export var self_destruct_needs_empty_fuel: bool = false
+
 ## The Unit types a Player may choose from at every spawn, in the order the choice panel lists
 ## them: Motorbike, Buggy, Truck, Gyrocopter (Story 005 AC-1 and AC-6; design/rules.md "Units").
 ## Each entry is one UnitStats .tres, the very resource its scene uses (one object in the

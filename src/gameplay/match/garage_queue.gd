@@ -225,7 +225,7 @@ func bench(player_index: int) -> void:
 	_cameras[player_index].snap_to_target()
 	unit.leave_play()
 	_state[player_index] = MatchController.State.WAITING
-	_respawn_frame[player_index] = _now()
+	_respawn_frame[player_index] = _now() + _swap_delay_ticks()
 	_is_blocked[player_index] = false
 	_choice[player_index] = NO_CHOICE
 	_bench_frame[player_index] = Engine.get_physics_frames()
@@ -429,6 +429,11 @@ func _now() -> int:
 ## The respawn delay in physics ticks: the tuned seconds, read from the controller's rules export
 ## at the call, times the tick rate, rounded, and never less than one, so a destroyed Unit is
 ## always out of play for at least one tick.
+## The swap's wait in ticks (rules.swap_respawn_seconds, Story 070): 0 when the rules give none.
+func _swap_delay_ticks() -> int:
+	return maxi(roundi(_owner.rules.swap_respawn_seconds * float(Engine.physics_ticks_per_second)), 0)
+
+
 func _delay_ticks() -> int:
 	return maxi(roundi(_owner.rules.respawn_delay_seconds * float(Engine.physics_ticks_per_second)), 1)
 

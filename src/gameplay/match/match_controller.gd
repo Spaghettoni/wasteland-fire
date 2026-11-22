@@ -418,8 +418,18 @@ func request_self_destruct(player_index: int) -> void:
 		return
 	if can_swap(player_index):
 		_swap_requested[player_index] = true
-	else:
+	elif can_self_destruct(player_index):
 		_units[player_index].destroy()
+
+
+## True when a Self-destruct of this Player (not a swap) would destroy its Unit: always, unless
+## rules.self_destruct_needs_empty_fuel is on, and then only while the Unit's tank is empty (Story 070).
+func can_self_destruct(player_index: int) -> bool:
+	if not _is_player(player_index):
+		return false
+	if rules != null and rules.self_destruct_needs_empty_fuel:
+		return _units[player_index].is_fuel_empty
+	return true
 
 
 ## True while a Self-destruct of this Player would be a swap (Story 011): rules.own_base_swap is on,
