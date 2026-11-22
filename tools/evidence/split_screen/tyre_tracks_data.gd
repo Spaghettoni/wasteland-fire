@@ -19,8 +19,8 @@ const PIXEL_HIGH: float = 0.075
 const HOLD: float = 20.0
 const FADE: float = 40.0
 ## The tyres of AC-1 by type: widths front to back (the Motorbike's differ), and how many.
-## Since Story 063 the Truck type is the Flame Tank, on tracks: its four contacts are the ends of its tracks' ground runs, 0.5 m wide.
-const WIDTHS: Dictionary = {&"motorbike": [0.20, 0.25], &"buggy": [0.30, 0.30, 0.30, 0.30], &"truck": [0.5, 0.5, 0.5, 0.5], &"gyrocopter": []}
+## Since Story 063 the Truck type is the Flame Tank, on tracks: its four contacts are the ends of its tracks' ground runs, 0.6 m wide (Story 068).
+const WIDTHS: Dictionary = {&"motorbike": [0.20, 0.25], &"buggy": [0.30, 0.30, 0.30, 0.30], &"truck": [0.6, 0.6, 0.6, 0.6], &"gyrocopter": []}
 ## The types on tracks (Story 063): their contacts are the ends of each track's ground run (GROUND_FRONT, GROUND_BACK, TRACK_X,
 ## TRACK_W of the script), and everything between two of a side's contacts touches the ground too.
 const TRACKED: Array[StringName] = [&"truck"]

@@ -7,23 +7,23 @@
 
 [sub_resource type="Resource" id="Resource_front_left"]
 script = ExtResource("3_tyre")
-offset = Vector2(-0.95, -1.5)
-width = 0.5
+offset = Vector2(-0.9, -1.5)
+width = 0.6
 
 [sub_resource type="Resource" id="Resource_front_right"]
 script = ExtResource("3_tyre")
-offset = Vector2(0.95, -1.5)
-width = 0.5
+offset = Vector2(0.9, -1.5)
+width = 0.6
 
 [sub_resource type="Resource" id="Resource_rear_left"]
 script = ExtResource("3_tyre")
-offset = Vector2(-0.95, 1.6)
-width = 0.5
+offset = Vector2(-0.9, 1.6)
+width = 0.6
 
 [sub_resource type="Resource" id="Resource_rear_right"]
 script = ExtResource("3_tyre")
-offset = Vector2(0.95, 1.6)
-width = 0.5
+offset = Vector2(0.9, 1.6)
+width = 0.6
 
 [resource]
 script = ExtResource("1_us")

@@ -25,6 +25,7 @@ const CHASE_FIRST: bool = true
 const FULL_THROTTLE: bool = true
 const CLOSE_CHASE: bool = true
 const FLAME_TANK: bool = true
+const FLAT_DAMAGE: bool = true
 const GYRO_BANKS: bool = true
 const MINE_LOOKS: bool = true
 const WATCHDOG_SECONDS: float = 120.0

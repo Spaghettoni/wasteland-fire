@@ -131,7 +131,9 @@ func _tops() -> void:
 	var rule_height: float = ceilf((tallest + Kit20.CLEARANCE) / Kit20.ROUND_STEP - 1e-9) * Kit20.ROUND_STEP
 	var with_antenna: float = ceilf((antenna_top + Kit20.CLEARANCE) / Kit20.ROUND_STEP - 1e-9) * Kit20.ROUND_STEP
 	_q.kit.need(problems, absf(rule_height - _k.height) <= Kit20.TOLERANCE, "the rule gives %.3f m and the model's scene %.4f m" % [rule_height, _k.height])
-	_q.kit.need(problems, absf(tallest + Kit20.CLEARANCE - RECORD_015) <= Kit20.TOLERANCE, "the tallest top %.4f plus the clearance is %.4f, story 015 measured %.3f" % [tallest, tallest + Kit20.CLEARANCE, RECORD_015])
+	# Since Story 068 the tallest ground body (the Flame Tank's) stands under story 015's: the flying height must still clear
+	# it, so the figure may be lower than the record, never higher.
+	_q.kit.need(problems, tallest + Kit20.CLEARANCE <= RECORD_015 + Kit20.TOLERANCE, "the tallest top %.4f plus the clearance is %.4f, over story 015's %.3f" % [tallest, tallest + Kit20.CLEARANCE, RECORD_015])
 	_q.kit.need(problems, body_top > low_top, "the tallest ground Unit's body (%.4f) is not above the low pieces (%.3f): the Unit would not set the height" % [body_top, low_top])
 	var scene: PackedScene = _q.units.stats(Kit20.GYRO).model
 	var gyro: MeshUnitModel = scene.instantiate() as MeshUnitModel

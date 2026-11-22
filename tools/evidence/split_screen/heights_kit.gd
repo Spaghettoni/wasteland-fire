@@ -56,10 +56,11 @@ const FAMILIES: Array = [
 	["Floor", "^Floor$", 1, "high", false],
 	["sea edge", "^Terrain/ShoreEdge/\\w+$", 32, "high", false]]
 ## The thin parts of the ground Units' mesh files, found by story 015 (boxes in the file's frame, by type): the Buggy's whip and
-## pennant, the Truck's whip antenna. A "body top" is the highest vertex outside them.
+## pennant, the Truck's whip antenna (since Story 068 the Flame Tank's flag pole and pennant). A "body top" is the highest vertex outside them.
 const THIN: Dictionary = {
 	"buggy": [["whip and pennant", AABB(Vector3(0.38, 1.2, 0.95), Vector3(0.08, 0.85, 0.6))]],
-	"truck": [["whip antenna", AABB(Vector3(-0.82, 1.5, 0.2), Vector3(0.14, 1.25, 0.25))]]}
+	# Since Story 068 the Truck type's thin part is the Flame Tank's flag pole with its pennant (tools/blender/build_truck.py).
+	"truck": [["flag pole and pennant", AABB(Vector3(0.48, 2.0, 1.38), Vector3(0.28, 1.5, 1.1))]]}
 ## The Story 019 kit.
 var k: Kit19
 ## The watch node under the launch scene.

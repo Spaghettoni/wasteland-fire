@@ -30,7 +30,7 @@ const FLAG_WALL_PATH: String = "res://src/gameplay/defences/flag_wall.tscn"
 ## pennant, the Truck's whip antenna.
 const THIN: Dictionary = {
 	&"buggy": [AABB(Vector3(0.38, 1.2, 0.95), Vector3(0.08, 0.85, 0.6))],
-	&"truck": [AABB(Vector3(-0.82, 1.5, 0.2), Vector3(0.14, 1.25, 0.25))],
+	&"truck": [AABB(Vector3(0.48, 2.0, 1.38), Vector3(0.28, 1.5, 1.1))],  # since Story 068: the Flame Tank's flag pole and pennant
 }
 ## The story's figures for the Turret (AC-3), metres, each "about": the drum's top, the dome's top, the
 ## barrel's drawn height, the flying height, how far the dome's top stands over the band's lowest

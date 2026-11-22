@@ -10,6 +10,8 @@ extends RefCounted
 ##     is let go, until it falls or its fire goes out.
 ##  F5 a Teammate burns (Martin, 2026-11-22): Player 2's Buggy made Player 1's Teammate (its player_index set to Player 1's Team
 ##     for the check) loses hit points to the flame and keeps burning after it.
+##  F6 flat damage (Story 067; Martin, 2026-11-22: "nechcem aby niektore vozdidla uberali niektorym viac a niektorym menej ...
+##     stale by mal byt rozny pocet hp"): every Unit type takes every other's damage at 1.0; the types' hit points still differ.
 ##  F4 the load: a new Flame Tank (its Unit out of play and back) holds 250; a flame puff spends 1 and a rocket (high fire) high_ammo_cost.
 ## SPLIT moments for the frames in a windowed --write-movie run: flames (F3, the stream on the Turret) and afterburn (F3,
 ## the Turret burning after the trigger is let go).
@@ -30,6 +32,7 @@ const AMMO: bool = true
 const HEIGHTS: bool = true
 const FIRE_HEIGHTS: bool = true
 const FLAME_TANK: bool = true
+const FLAT_DAMAGE: bool = true
 const STOCK_COUNTS: Dictionary = {&"motorbike": 12, &"buggy": 12, &"truck": 12, &"gyrocopter": 12}
 const WATCHDOG_SECONDS: float = 240.0
 const MOMENT_FRAME_LAG: int = 1
@@ -168,6 +171,25 @@ func run(harness: Node) -> void:
 	_q.kit.need(problems, after_puff - after_rocket == tank.high_ammo_cost, "a rocket spent %d" % (after_puff - after_rocket))
 	_q.kit.verdict("F4_the_load", problems, "a new Flame Tank %d of %d; after a puff %d; after a rocket %d (cost %d)" % [full, weapon.capacity, after_puff, after_rocket, tank.high_ammo_cost])
 
+
+	# F6
+	problems = PackedStringArray()
+	var types: Array[StringName] = []
+	var points: Array[float] = []
+	for kind: int in [Quick.MOTORBIKE, Quick.BUGGY, Quick.TRUCK, Quick.GYROCOPTER]:
+		types.append(_q.units.stats(kind).type_id)
+		points.append(_q.units.stats(kind).max_hit_points)
+	var off: PackedStringArray = PackedStringArray()
+	for shooter: StringName in types:
+		for target: StringName in types:
+			if not is_equal_approx(matrix.multiplier(shooter, target), 1.0):
+				off.append("%s>%s %.2f" % [shooter, target, matrix.multiplier(shooter, target)])
+	var distinct: Dictionary = {}
+	for value: float in points:
+		distinct[value] = true
+	_q.kit.need(problems, off.is_empty(), "multipliers between Unit types not 1: %s" % [off])
+	_q.kit.need(problems, distinct.size() > 1, "every type has the same hit points %s" % [points])
+	_q.kit.verdict("F6_flat_damage", problems, "every Unit type against every Unit type 1.0 (the matrix's other entries %s); hit points still differ by type %s" % [matrix.multipliers.keys(), points])
 	_k.close()
 	harness.finish("flame=%.1fm burn=%.0fs" % [tank.flame_range, tank.burn_seconds])
 

@@ -776,6 +776,12 @@ const FULL_THROTTLE_CONSTANT: StringName = &"FULL_THROTTLE"
 ## load of 250 puffs, rockets at 10 a time, its track contacts and its name); without it the Truck type fires and counts its
 ## Shots as before the story (_apply_flame_tank_off()). Its model is the new one either way.
 const FLAME_TANK_CONSTANT: StringName = &"FLAME_TANK"
+## The constant a scenario script declares as true to play Story 067's damage (Martin, 2026-11-22: "nechcem aby niektore vozdidla
+## uberali niektorym viac a niektorym menej"): an empty matrix, every Shot its own damage. Without it the shared matrix holds the
+## six multipliers of the triangle (_apply_flat_damage_off()).
+const FLAT_DAMAGE_CONSTANT: StringName = &"FLAT_DAMAGE"
+const TRIANGLE_067: Dictionary = {&"buggy>gyrocopter": 0.5, &"buggy>truck": 1.5, &"gyrocopter>buggy": 1.5,
+	&"gyrocopter>truck": 0.5, &"truck>buggy": 0.5, &"truck>gyrocopter": 1.5}
 const TRUCK_STATS_PATH_063: String = "res://src/gameplay/units/data/truck_stats.tres"
 ## The Truck's tyre contacts before Story 063: (x, y, width) each.
 const TRUCK_TYRES_062: Array[Vector3] = [Vector3(-0.86, -1.28, 0.36), Vector3(0.86, -1.28, 0.36),
@@ -1022,6 +1028,7 @@ func _ready() -> void:
 	_apply_fire_heights_off(SCENARIOS[scenario])
 	_apply_flying_sight_off(SCENARIOS[scenario])
 	_apply_flame_tank_off(SCENARIOS[scenario])
+	_apply_flat_damage_off(SCENARIOS[scenario])
 	if LEGACY_SCENARIOS.has(scenario):
 		_apply_legacy_data()
 	if LEGACY_SCENARIOS.has(scenario) or STORY_005_SCENARIOS.has(scenario):
@@ -1909,6 +1916,20 @@ func _apply_story_050_off(script: GDScript) -> void:
 ## Gives the shared data the numbers of stories 009 to 048, unless the scenario script declares FULL_THROTTLE (Story 049): the
 ## pad layout's throttle and reverse take the common dead zone (no full_throttle_suffixes), each type its old spot_turn_rate,
 ## the Turret its 35 m. On the cached resources, before every other opt-out, which may set them again.
+## Puts the triangle's six multipliers back into the shared damage matrix (match_rules.tres's), unless the scenario script
+## declares FLAT_DAMAGE: every older scenario was measured with them.
+func _apply_flat_damage_off(script: GDScript) -> void:
+	if bool(script.get_script_constant_map().get(FLAT_DAMAGE_CONSTANT, false)):
+		return
+	var rules: MatchRules = load(MATCH_RULES_PATH) as MatchRules
+	if rules == null or rules.damage_matrix == null:
+		push_error("split_screen_harness: the damage matrix did not load, so the triangle is not put back.")
+		return
+	# Merged into what the matrix holds: other opt-outs add rows of their own (the Flag Walls').
+	for key: StringName in TRIANGLE_067:
+		rules.damage_matrix.multipliers[key] = float(TRIANGLE_067[key])
+
+
 ## Gives the Truck type its weapon of before Story 063, on the shared resource, unless the scenario script declares FLAME_TANK:
 ## no flamethrower (its low fire the Shot of damage, fire_interval_seconds, weapon_range and shot_speed again), a load of 25
 ## with every Shot one, the name Truck and its four tyre contacts. Runs before _apply_ammo_off(), which may zero the load.

@@ -58,6 +58,7 @@ PALETTE = {
     "container_grey": (0.47, 0.45, 0.41),
     "concrete": (0.6, 0.58, 0.54),
     # The drivers (Story 064): sunburnt skin and dark worn cloth, neither near a Team colour.
+    "brass": (0.72, 0.5, 0.2),
     "skin": (0.71, 0.50, 0.38),
     "cloth": (0.24, 0.21, 0.18),
 }
