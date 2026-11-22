@@ -163,7 +163,7 @@ func run(harness: Node) -> void:
 	_q.harness.set_key(throttle, true)
 	await _q.kit.advance(BURN_DRIVE)
 	var middle: Vector3 = _flames_middle(fire)
-	var buggy_at: Vector3 = fire.global_transform * fire._box.get_center()
+	var buggy_at: Vector3 = fire.get_global_transform_interpolated() * fire._box.get_center()
 	var off_ground: float = Vector2(middle.x - buggy_at.x, middle.z - buggy_at.z).length()
 	var speed: float = units[1].current_speed
 	print("SPLIT %s t=%.3f frame=%d moment=burn_rides speed=%.1f" % [_q.harness.scenario, _q.harness.time(), Engine.get_process_frames() - MOMENT_FRAME_LAG, speed])

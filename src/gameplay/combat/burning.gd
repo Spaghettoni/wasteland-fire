@@ -23,9 +23,10 @@ extends Node3D
 @export var flame_rise: float = 2.2
 @export var smoke_rate: float = 8.0
 @export var smoke_rise: float = 1.2
-## The share of the target's own velocity each new flame and puff of smoke takes, so the fire rides on a driving Unit
-## instead of being left behind it (Martin, 2026-11-22: "chcel by som vidiet, ze vozidla horia"); a little under 1 so the
-## flames ride along; their small drag lets them stream back a little off a fast one.
+## The share of the target's own move each drawn frame that the living flames and smoke are moved by too, so the fire rides
+## on a driving Unit instead of being left behind it (Martin, 2026-11-22: "chcel by som vidiet, ze vozidla horia ... hp klesa
+## ale vozidla nehoria"); a little under 1 so the flames stream back a little off a fast one. The move is the target's drawn
+## (interpolated) position from frame to frame, so it holds at any frame rate and while the Unit speeds up or turns.
 @export_range(0.0, 1.0, 0.01) var ride_share: float = 0.0
 ## The flickering glow the fire throws on the target and the ground around it: an OmniLight3D child, its energy
 ## glow_energy times a random factor between 1 - glow_flicker and 1, drawn anew glow_flicker_hz times a second.
@@ -49,8 +50,7 @@ var _target: Node3D
 var _box: AABB = AABB(Vector3(-0.5, 0.0, -0.5), Vector3(1.0, 1.0, 1.0))
 var _lump_clock: float = 0.0
 var _out: bool = false
-## The target's velocity, m/s, from its moves between drawn frames.
-var _ride: Vector3 = Vector3.ZERO
+## The target's drawn position at the last drawn frame.
 var _last_at: Vector3 = Vector3.ZERO
 var _has_last: bool = false
 var _flicker_clock: float = 0.0
@@ -106,11 +106,15 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if _out or delta <= 0.0:
 		return
-	var at: Vector3 = global_position
-	_ride = (at - _last_at) / delta if _has_last else Vector3.ZERO
+	_flicker(delta)
+	var at: Vector3 = get_global_transform_interpolated().origin
+	if _has_last:
+		var moved: Vector3 = (at - _last_at) * ride_share
+		for fx: FxParticles in [flames, smoke]:
+			if fx != null:
+				fx.shift(moved)
 	_last_at = at
 	_has_last = true
-	_flicker(delta)
 	_emit(flames, flame_rate * delta, flame_rise)
 	_emit(smoke, smoke_rate * delta, smoke_rise)
 
@@ -129,8 +133,9 @@ func _emit(fx: FxParticles, amount: float, rise: float) -> void:
 		var top: float = _box.end.y
 		var local: Vector3 = Vector3(r.randf_range(lo.x, maxf(hi.x, lo.x)),
 				r.randf_range(top - below_top, top + above_top), r.randf_range(lo.z, maxf(hi.z, lo.z)))
-		var at: Vector3 = global_transform * local
-		fx.emit(at, _ride * ride_share + Vector3(r.randf_range(-0.3, 0.3), rise * r.randf_range(0.7, 1.3), r.randf_range(-0.3, 0.3)))
+		# Where the target is drawn this frame (physics interpolation), so the fire sits on the model.
+		var at: Vector3 = get_global_transform_interpolated() * local
+		fx.emit(at, Vector3(r.randf_range(-0.3, 0.3), rise * r.randf_range(0.7, 1.3), r.randf_range(-0.3, 0.3)))
 	fx.set_meta(&"carry", carry)
 
 

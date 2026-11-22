@@ -133,6 +133,14 @@ func burst(at: Vector3, count: int, direction: Vector3, spread: float, speed_min
 		emit(at + offset, v)
 
 
+## Moves every living particle by `offset` metres (world), so they ride along with something that moves (a burning
+## Unit's fire).
+func shift(offset: Vector3) -> void:
+	for i: int in max_particles:
+		if _age[i] < _life[i]:
+			_pos[i] += offset
+
+
 ## Stops the trail and frees the node once its last particle has died, after taking it out of its
 ## parent into `keep_under` (so a trail outlives the rocket that drew it).
 func finish(keep_under: Node = null) -> void:
