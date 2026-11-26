@@ -28,6 +28,13 @@
 // only (the shore edge takes none), and only on these three surfaces: the water, the fords, the
 // channels and the Garage floors are other materials, and a Map with no TyreTracks node leaves the
 // strength at the project's default of 0, which makes every term below exactly nothing.
+// The pixel look (the art overhaul of 2026-11-26, Martin's picture of a voxel desert): with pixel_size above 0 every
+// layer is sampled at the middle of a pixel_size square cell in world space, so the ground reads as chunky square tiles;
+// each tile takes its own small tone (pixel_jitter) and a bevel at its edges (pixel_bevel: a tilt toward the sun on two
+// sides, a darker seam), which fades out where a tile is smaller than about a screen pixel so the far ground does not
+// shimmer. The samples keep the unquantised derivatives (textureGrad), so the mip level does not jump at the tile
+// edges. Side faces take bands of side_colour by height (pixel_size tall), each band and tile its own tone, like
+// layered rock. pixel_size 0 leaves every term as it was.
 // Target: desktop, Forward+ renderer (project.godot rendering_method); macOS Metal and the Windows
 // build. No quality tiers or fallback yet.
 // Budget: one fragment pass, fifteen texture reads (ten mipmapped and anisotropic, and the five of the
@@ -155,6 +162,13 @@ uniform float stone_relief : hint_range(0.0, 2.0) = 0.8;
 uniform float crack_relief : hint_range(0.0, 2.0) = 0.0;
 uniform float roughness_base : hint_range(0.0, 1.0) = 0.95;
 uniform float specular_base : hint_range(0.0, 1.0) = 0.3;
+
+group_uniforms pixel_look;
+uniform float pixel_size : hint_range(0.0, 2.0) = 0.0;
+uniform float pixel_jitter : hint_range(0.0, 0.3) = 0.0;
+uniform float pixel_bevel : hint_range(0.0, 1.0) = 0.0;
+uniform float pixel_seam : hint_range(0.0, 0.5) = 0.0;
+uniform float side_band_amount : hint_range(0.0, 0.5) = 0.0;
 group_uniforms;
 
 varying vec3 world_position;
@@ -172,8 +186,8 @@ vec3 three_tone(vec3 dark, vec3 mid, vec3 light, float t) {
 }
 
 // The level-surface slope (x, z) that a relief map holds at uv.
-vec2 slope_of(sampler2D map, vec2 uv) {
-	vec3 n = texture(map, uv).rgb * 2.0 - 1.0;
+vec2 slope_of(sampler2D map, vec2 uv, vec2 gx, vec2 gy) {
+	vec3 n = textureGrad(map, uv, gx, gy).rgb * 2.0 - 1.0;
 	return n.xy / max(n.z, RELIEF_MIN_HEIGHT);
 }
 
@@ -188,19 +202,34 @@ float track_mark(vec2 uv) {
 }
 
 // A cell texture's "outside a width" mask: 0 inside width of a border (its G), 1 past it.
+float cell_hash(vec2 c) {
+	return fract(sin(dot(c, vec2(127.1, 311.7))) * 43758.5453);
+}
+
 float crack_line(float gap, float width) {
 	return 1.0 - smoothstep(width * 0.5, width, gap * CELL_DISTANCE_SCALE);
 }
 
 void fragment() {
-	vec2 p = world_position.xz;
-	vec3 macro = texture(soft_noise, p / macro_size).rgb;
-	vec3 mottle = texture(soft_noise, p / mottle_size + MOTTLE_OFFSET).rgb;
+	vec2 raw = world_position.xz;
+	vec2 dx = dFdx(raw);
+	vec2 dy = dFdy(raw);
+	float pixelated = step(0.0001, pixel_size);
+	float px = max(pixel_size, 0.0001);
+	vec2 tile = floor(raw / px);
+	vec2 inside_tile = raw / px - tile;
+	vec2 p = mix(raw, (tile + 0.5) * px, pixelated);
+	// How much of the bevel and seam show: none where a tile is about a screen pixel or smaller.
+	float tile_on_screen = px / max(max(length(dx), length(dy)), 0.00001);
+	float detail = pixelated * smoothstep(2.0, 6.0, tile_on_screen);
+	vec3 macro = textureGrad(soft_noise, p / macro_size, dx / macro_size, dy / macro_size).rgb;
+	vec3 mottle = textureGrad(soft_noise, p / mottle_size + MOTTLE_OFFSET, dx / mottle_size, dy / mottle_size).rgb;
 	// The streak sample runs along the wind: rotate the position into (along, across).
 	vec2 wind = vec2(cos(streak_angle), sin(streak_angle));
 	vec2 along = vec2(dot(p, wind), dot(p, vec2(-wind.y, wind.x)));
-	float streak = texture(soft_noise, along / vec2(streak_size, streak_size / STREAK_ASPECT)).g;
-	float grain = texture(soft_noise, p / grain_size).b;
+	vec2 streak_scale = vec2(streak_size, streak_size / STREAK_ASPECT);
+	float streak = textureGrad(soft_noise, along / streak_scale, dx / streak_size, dy / streak_size).g;
+	float grain = textureGrad(soft_noise, p / grain_size, dx / grain_size, dy / grain_size).b;
 
 	float t = 0.5 + (macro.r - 0.5) * macro_amount * 2.0 + (mottle.g - 0.5) * mottle_amount * 2.0;
 	vec3 colour = three_tone(tone_dark.rgb, tone_mid.rgb, tone_light.rgb, t);
@@ -213,9 +242,9 @@ void fragment() {
 	colour *= 1.0 + (streak - 0.5) * streak_amount * 2.0;
 	colour *= 1.0 + (grain - 0.5) * grain_amount * 2.0;
 
-	vec3 plates = texture(cell_noise, p / crack_size).rgb;
+	vec3 plates = textureGrad(cell_noise, p / crack_size, dx / crack_size, dy / crack_size).rgb;
 	colour *= 1.0 + (plates.b - 0.5) * plate_amount * 2.0;
-	vec3 fine = texture(cell_noise, p / fine_crack_size + FINE_CRACK_OFFSET).rgb;
+	vec3 fine = textureGrad(cell_noise, p / fine_crack_size + FINE_CRACK_OFFSET, dx / fine_crack_size, dy / fine_crack_size).rgb;
 	float cracks = max(crack_line(plates.g, crack_width) * crack_amount,
 			crack_line(fine.g, fine_crack_width) * fine_crack_amount);
 	colour = mix(colour, crack_colour.rgb, cracks);
@@ -223,7 +252,7 @@ void fragment() {
 	// A stone lies at a cell point whose cell tone passes the amount; its radius shrinks outside
 	// the mottle's patches.
 	vec2 stone_uv = p / stone_size + STONE_OFFSET;
-	vec3 cell = texture(cell_noise, stone_uv).rgb;
+	vec3 cell = textureGrad(cell_noise, stone_uv, dx / stone_size, dy / stone_size).rgb;
 	float gather = mix(1.0, smoothstep(GATHER_LOW, GATHER_HIGH, mottle.r), stone_patchiness);
 	// A second random value from the cell's tone varies the stones' size.
 	float size_pick = fract(cell.b * STONE_SIZE_HASH);
@@ -233,18 +262,30 @@ void fragment() {
 	colour = mix(colour, stone_colour.rgb * (STONE_TONE_LOW + cell.b * STONE_TONE_SPREAD), stone);
 
 	float level = smoothstep(LEVEL_LOW, LEVEL_HIGH, world_normal.y);
+	// Each tile its own tone, and a darker seam at its edges.
+	colour *= 1.0 + (cell_hash(tile) - 0.5) * pixel_jitter * 2.0 * pixelated;
+	vec2 to_edge = min(inside_tile, 1.0 - inside_tile);
+	float seam = 1.0 - smoothstep(0.0, 0.08, min(to_edge.x, to_edge.y));
+	colour *= 1.0 - seam * pixel_seam * detail;
 	// The tyre mark here, on level faces only; its rut's sides come from the mark one reach to either side.
 	vec2 track_uv = (p - tyre_track_area.xy) / tyre_track_area.zw;
 	vec2 reach = tyre_track_clock.w / vec2(textureSize(tyre_track_map, 0));
 	float mark = track_mark(track_uv) * tyre_track_look.w * level;
 	colour *= 1.0 - tyre_track_look.x * mark;
-	ALBEDO = mix(side_colour.rgb, colour, level);
+	// Side faces: bands by height, each band and tile its own tone, like layered rock.
+	vec2 side_cell = vec2(floor(world_position.y / px), floor((world_position.x + world_position.z) / px));
+	float band = cell_hash(vec2(side_cell.x, 7.0)) - 0.5;
+	float side_tone = 1.0 + (band * 2.0 + (cell_hash(side_cell) - 0.5)) * side_band_amount * pixelated;
+	ALBEDO = mix(side_colour.rgb * side_tone, colour, level);
 	ROUGHNESS = clamp(roughness_base - stone * STONE_SMOOTHER - tyre_track_look.z * mark, 0.0, 1.0);
 	SPECULAR = specular_base;
 
-	vec2 slope = slope_of(soft_relief, p / mottle_size + MOTTLE_OFFSET) * swell_relief;
-	slope += slope_of(stone_relief_map, stone_uv) * stone_relief * stone;
-	slope += slope_of(crack_relief_map, p / crack_size) * crack_relief * crack_amount;
+	vec2 slope = slope_of(soft_relief, p / mottle_size + MOTTLE_OFFSET, dx / mottle_size, dy / mottle_size) * swell_relief;
+	// The tile's bevel: near each edge the surface tilts away from the tile's middle.
+	vec2 bevel = (smoothstep(0.85, 1.0, inside_tile) - smoothstep(0.85, 1.0, 1.0 - inside_tile));
+	slope += bevel * pixel_bevel * detail;
+	slope += slope_of(stone_relief_map, stone_uv, dx / stone_size, dy / stone_size) * stone_relief * stone;
+	slope += slope_of(crack_relief_map, p / crack_size, dx / crack_size, dy / crack_size) * crack_relief * crack_amount;
 	// The rut: the mark's rise a metre across its edge (the rise of the mark from one reach to the other, over
 	// the two reaches in metres), turned into a slope of depth rut_depth; the level mix below keeps it off side faces.
 	vec2 rise = vec2(track_mark(track_uv + vec2(reach.x, 0.0)) - track_mark(track_uv - vec2(reach.x, 0.0)),

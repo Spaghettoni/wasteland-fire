@@ -1,5 +1,7 @@
 [gd_scene format=3]
 
+[ext_resource type="PackedScene" path="res://src/gameplay/maps/map_01/map_01_scenery.tscn" id="scenery_voxel"]
+[ext_resource type="Environment" path="res://src/gameplay/maps/data/wasteland_environment.tres" id="env_wasteland"]
 [ext_resource type="Script" path="res://src/gameplay/maps/map_field.gd" id="1_map_field"]
 [ext_resource type="Resource" path="res://src/gameplay/maps/data/token_stock.tres" id="2_token_stock"]
 [ext_resource type="PackedScene" path="res://src/gameplay/maps/map_01/map_01_terrain.tscn" id="3_terrain"]
@@ -16,56 +18,11 @@
 [ext_resource type="PackedScene" path="res://src/gameplay/supply/ammo_building.tscn" id="15_ammo_building"]
 [ext_resource type="PackedScene" path="res://src/gameplay/maps/tyre_tracks.tscn" id="16_tyre_tracks"]
 [ext_resource type="Resource" path="res://src/gameplay/maps/data/tyre_track_settings.tres" id="17_tyre_track_settings"]
-[ext_resource type="ImageTexture3D" path="res://src/gameplay/maps/map_01/textures/colour_grade_lut.res" id="18_colour_grade_lut"]
 
 [ext_resource type="Material" path="res://src/gameplay/maps/map_01/materials/ford.tres" id="19_ford_pool"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(300, 1, 100)
-
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_desert"]
-sky_top_color = Color(0.4, 0.56, 0.76, 1)
-sky_horizon_color = Color(0.7, 0.78, 0.86, 1)
-sky_curve = 0.09
-ground_bottom_color = Color(0.5, 0.4, 0.28, 1)
-ground_horizon_color = Color(0.76, 0.67, 0.53, 1)
-
-[sub_resource type="Sky" id="Sky_desert"]
-sky_material = SubResource("ProceduralSkyMaterial_desert")
-
-[sub_resource type="Environment" id="Environment_sky"]
-background_mode = 2
-sky = SubResource("Sky_desert")
-ambient_light_source = 3
-ambient_light_color = Color(0.8, 0.8, 0.82, 1)
-ambient_light_sky_contribution = 0.6
-ambient_light_energy = 0.9
-tonemap_mode = 4
-tonemap_exposure = 1.3
-tonemap_agx_white = 10.0
-tonemap_agx_contrast = 1.5
-ssao_enabled = true
-ssao_radius = 2.0
-ssao_intensity = 3.0
-ssao_light_affect = 0.4
-fog_enabled = true
-fog_mode = 1
-fog_light_color = Color(0.84, 0.8, 0.72, 1)
-fog_density = 0.2
-fog_sky_affect = 0.3
-fog_depth_begin = 60.0
-fog_depth_end = 260.0
-glow_enabled = true
-glow_levels/3 = 0.5
-glow_levels/4 = 0.25
-glow_levels/5 = 0.1
-glow_intensity = 0.8
-glow_hdr_threshold = 2.0
-glow_hdr_scale = 1.0
-adjustment_enabled = true
-adjustment_contrast = 1.04
-adjustment_saturation = 0.97
-adjustment_color_correction = ExtResource("18_colour_grade_lut")
 
 [node name="Map" type="Node3D" node_paths=PackedStringArray("player_1_base", "player_2_base", "neutral_structures", "supply_zones", "tyre_tracks")]
 unique_name_in_owner = true
@@ -78,15 +35,16 @@ tyre_tracks = NodePath("TyreTracks")
 token_stock = ExtResource("2_token_stock")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.81915206, 0.40557979, -0.40557979, 0, 0.70710678, 0.70710678, 0.57357645, -0.57922797, 0.57922797, 0, 0, 0)
-light_color = Color(1, 0.93, 0.82, 1)
-light_energy = 1.3
+transform = Transform3D(0.819152, 0.286788, -0.496732, 0, 0.866025, 0.5, 0.573576, -0.409576, 0.709406, 0, 0, 0)
+light_color = Color(1, 0.8, 0.58, 1)
+light_energy = 2.1
+shadow_blur = 1.4
 shadow_enabled = true
 directional_shadow_max_distance = 100.0
 directional_shadow_pancake_size = 0.0
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_sky")
+environment = ExtResource("env_wasteland")
 
 [node name="Floor" type="StaticBody3D" parent="."]
 
@@ -185,3 +143,5 @@ settings = ExtResource("17_tyre_track_settings")
 
 [editable path="FordWest"]
 [editable path="FordEast"]
+
+[node name="Scenery" parent="." instance=ExtResource("scenery_voxel")]

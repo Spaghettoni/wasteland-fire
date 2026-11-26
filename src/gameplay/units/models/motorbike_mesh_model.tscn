@@ -27,17 +27,17 @@ bump_tilt = 0.6
 [node name="Dust" type="Node" parent="." node_paths=PackedStringArray("puffs")]
 script = ExtResource("5_dust")
 puffs = NodePath("Puffs")
-rate_per_speed = 2.0
+rate_per_speed = 4.48
 
 [node name="Puffs" type="MultiMeshInstance3D" parent="Dust"]
 script = ExtResource("6_fx")
-max_particles = 128
+max_particles = 200
 life_min = 0.9
 life_max = 1.6
-size_start = 0.35
-size_end = 1.9
-colour_start = Color(0.64, 0.5, 0.34, 0.55)
-colour_end = Color(0.72, 0.6, 0.44, 0.0)
+size_start = 0.4
+size_end = 2.2
+colour_start = Color(0.76, 0.56, 0.36, 0.5)
+colour_end = Color(0.82, 0.64, 0.44, 0.0)
 gravity = Vector3(0, 0.25, 0)
 drag = 1.8
 seed_value = 41

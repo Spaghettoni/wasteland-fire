@@ -3,8 +3,10 @@
 [ext_resource type="Texture2D" path="res://src/gameplay/maps/map_01/textures/sea.tres" id="1_sea_texture"]
 
 [resource]
+albedo_color = Color(0.72, 1.0, 0.98, 1)
 albedo_texture = ExtResource("1_sea_texture")
-roughness = 1.0
+roughness = 0.35
+metallic_specular = 0.6
 uv1_scale = Vector3(0.015625, 0.015625, 0.015625)
 uv1_triplanar = true
 uv1_world_triplanar = true

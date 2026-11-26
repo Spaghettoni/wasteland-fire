@@ -7,6 +7,7 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_flame"]
 render_priority = 1
 shader = ExtResource("2_shader")
+shader_parameter/brightness = 1.25
 
 [sub_resource type="BoxMesh" id="BoxMesh_cube"]
 material = SubResource("ShaderMaterial_flame")
