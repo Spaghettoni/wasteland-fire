@@ -1,6 +1,9 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://src/ui/hud/unit_choice.gd" id="1_choice"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/ui_move.ogg" id="90_snd"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/ui_confirm.ogg" id="91_snd"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/ui_back.ogg" id="92_snd"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 content_margin_left = 16.0
@@ -71,6 +74,10 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_choice")
+move_sound = ExtResource("90_snd")
+confirm_sound = ExtResource("91_snd")
+back_sound = ExtResource("92_snd")
+sound_volume_db = -8.0
 title_text = "Choose your Unit"
 hint_format = "%s / %s to choose, %s to confirm"
 ready_format = "%s ready"

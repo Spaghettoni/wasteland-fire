@@ -99,6 +99,14 @@ extends Resource
 @export_range(0.0, 1.0, 0.01) var live_blink_lit_fraction: float = 0.0
 
 
+@export_group("Sound")
+## Heard where a Mine goes off (first sound pass, 2026-11). Null: silent.
+@export var blast_sound: AudioStream
+## Its loudness against the file, in dB.
+@export_range(-40.0, 12.0, 0.5, "suffix:dB") var blast_volume_db: float = 0.0
+## Distance within which it is heard at full loudness, in metres (0: SoundPlay.DEFAULT_UNIT_SIZE).
+@export_range(0.0, 200.0, 0.5, "suffix:m") var blast_sound_unit_size: float = 0.0
+
 ## Mine._ready() and MineLayer._ready() apply it and push one named error when it is not empty.
 func first_problem() -> String:
 	if trigger_radius <= 0.0:

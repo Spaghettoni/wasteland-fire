@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="MineSettings" format=3]
 
 [ext_resource type="Script" path="res://src/gameplay/mines/mine_settings.gd" id="1_msset"]
+[ext_resource type="AudioStream" path="res://src/gameplay/audio/data/explosion_mine.tres" id="9_snd"]
 
 [resource]
 script = ExtResource("1_msset")
@@ -21,3 +22,6 @@ look_radius = 0.5
 light_share = 0.45
 live_blink_period_seconds = 0.8
 live_blink_lit_fraction = 0.5
+blast_sound = ExtResource("9_snd")
+blast_volume_db = -2.0
+blast_sound_unit_size = 25.0

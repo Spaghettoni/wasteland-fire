@@ -2,9 +2,12 @@
 
 [ext_resource type="Script" path="res://src/gameplay/combat/burning.gd" id="1_burn"]
 [ext_resource type="Script" path="res://src/gameplay/effects/fx_particles.gd" id="2_fx"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/burning_loop.ogg" id="9_snd"]
 
 [node name="Burning" type="Node3D" node_paths=PackedStringArray("flames", "smoke", "glow")]
 script = ExtResource("1_burn")
+sound = ExtResource("9_snd")
+sound_volume_db = -10.0
 flames = NodePath("Flames")
 smoke = NodePath("Smoke")
 flame_rate = 110.0

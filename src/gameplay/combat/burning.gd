@@ -41,6 +41,12 @@ extends Node3D
 @export var inset: float = 0.2
 
 ## Damage per second the fire gives (the matrix already applied).
+## The fire's looping crackle (first sound pass, 2026-11), heard from the burning target while it
+## burns. Null: a silent fire.
+@export var sound: AudioStream
+## The crackle's loudness against the file, in dB.
+@export_range(-40.0, 12.0, 0.5, "suffix:dB") var sound_volume_db: float = 0.0
+
 var dps: float = 0.0
 ## Seconds the fire has left.
 var seconds_left: float = 0.0
@@ -101,6 +107,10 @@ func _ready() -> void:
 	if glow != null:
 		glow.position = Vector3(_box.get_center().x, _box.end.y + above_top, _box.get_center().z)
 		glow.light_energy = glow_energy
+	var crackle: AudioStreamPlayer3D = SoundPlay.make_loop(self, sound, sound_volume_db)
+	if crackle != null:
+		# A start point from the node id, not the global random numbers (the game logic draws from those).
+		crackle.play(float(hash(get_instance_id()) % 1000) / 1000.0 * maxf(sound.get_length() - 0.1, 0.0))
 
 
 func _process(delta: float) -> void:

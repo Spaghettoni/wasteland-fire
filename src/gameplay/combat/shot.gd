@@ -74,6 +74,21 @@ extends Node3D
 ## when the shot ends; null for none.
 @export var trail: FxParticles
 
+@export_group("Sound")
+## Heard where the shot leaves the muzzle (first sound pass, 2026-11). Null: a silent launch.
+@export var launch_sound: AudioStream
+## Heard where the shot stops on anything that takes no damage (ground, rock, cover). Null: silent.
+@export var impact_sound: AudioStream
+## Heard where the shot stops on something that takes damage, a Unit or a Structure (the metal
+## look). Null: impact_sound is used instead.
+@export var impact_metal_sound: AudioStream
+## Loudness of the launch against the file, in dB.
+@export_range(-40.0, 12.0, 0.5, "suffix:dB") var launch_volume_db: float = 0.0
+## Loudness of the impact against the file, in dB.
+@export_range(-40.0, 12.0, 0.5, "suffix:dB") var impact_volume_db: float = 0.0
+## Distance within which the shot's sounds are at full loudness, in metres.
+@export_range(1.0, 100.0, 0.5, "suffix:m") var sound_unit_size: float = 12.0
+
 var _shooter_rid: RID
 var _shooter_type: StringName = &""
 ## The Player the shooter belongs to (Unit.player_index), or -1 for a shooter no Player owns.
@@ -130,6 +145,9 @@ func _end() -> void:
 ## the collider, lifted like the tracer, facing the surface's normal (back along the flight where the
 ## ray started inside the collider and has none).
 func _play_impact(at: Vector3, normal: Vector3, collider: Object) -> void:
+	var damageable: bool = collider != null and collider.has_method(&"apply_damage")
+	var sound: AudioStream = impact_metal_sound if damageable and impact_metal_sound != null else impact_sound
+	SoundPlay.at(get_parent(), sound, at, impact_volume_db, sound_unit_size)
 	if impact_scene == null or get_parent() == null:
 		return
 	var effect: ShotEffect = impact_scene.instantiate() as ShotEffect
@@ -212,6 +230,7 @@ func launch_from(shooter_rid: RID, shooter_type: StringName, shooter_player_inde
 	global_transform = Transform3D(Basis.looking_at(_direction, Vector3.UP), origin)
 	reset_physics_interpolation()
 	_launched = true
+	SoundPlay.at(get_parent(), launch_sound, origin, launch_volume_db, sound_unit_size)
 	if muzzle_scene != null and get_parent() != null:
 		var flash: ShotEffect = muzzle_scene.instantiate() as ShotEffect
 		if flash != null:

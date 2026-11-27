@@ -108,6 +108,14 @@ const SECONDS_SLACK: float = 0.001
 @export var smoke_colour: Color = Color(0.0, 0.0, 0.0, 0.0)
 
 
+@export_group("Sound")
+## Heard where a destroyed Unit blows up (first sound pass, 2026-11). Null: silent.
+@export var sound: AudioStream
+## Its loudness against the file, in dB.
+@export_range(-40.0, 12.0, 0.5, "suffix:dB") var sound_volume_db: float = 0.0
+## Distance within which it is heard at full loudness, in metres (0: SoundPlay.DEFAULT_UNIT_SIZE).
+@export_range(0.0, 200.0, 0.5, "suffix:m") var sound_unit_size: float = 0.0
+
 ## The reason an Explosion cannot play these settings, or an empty String when it can: the lifetime and
 ## the durations, the factors, the fireball's fractions and the gravity must be above zero where they
 ## are used, the chunk tables must be the same length with a direction that points somewhere, every

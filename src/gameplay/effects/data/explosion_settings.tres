@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="ExplosionSettings" format=3]
 
 [ext_resource type="Script" path="res://src/gameplay/effects/explosion_settings.gd" id="1_exset"]
+[ext_resource type="AudioStream" path="res://src/gameplay/audio/data/explosion_unit.tres" id="9_snd"]
 
 [resource]
 script = ExtResource("1_exset")
@@ -28,3 +29,6 @@ smoke_seconds = 1.8
 smoke_rise_speed = 1.0
 smoke_growth = 2.5
 smoke_colour = Color(0.22, 0.22, 0.22, 0.4)
+sound = ExtResource("9_snd")
+sound_volume_db = -2.0
+sound_unit_size = 30.0

@@ -189,6 +189,7 @@ func destroy() -> void:
 	collision_layer = 0
 	collision_mask = 0
 	_show_look()
+	SoundPlay.at(get_parent(), stats.fall_sound, global_position, stats.fall_volume_db, stats.fall_sound_unit_size)
 	hit_points_changed.emit(_hit_points, stats.max_hit_points)
 	destroyed.emit()
 

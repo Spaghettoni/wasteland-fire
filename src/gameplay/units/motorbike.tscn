@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://src/gameplay/units/unit.gd" id="1_ljjdm"]
 [ext_resource type="Resource" path="res://src/gameplay/units/data/motorbike_stats.tres" id="2_ykypc"]
+[ext_resource type="Script" path="res://src/gameplay/audio/unit_engine_sound.gd" id="3_engine"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_wonkl"]
 size = Vector3(1.4, 1, 2.6)
@@ -37,3 +38,9 @@ mesh = SubResource("BoxMesh_8ed75")
 [node name="Nose" type="MeshInstance3D" parent="." unique_id=1012444919]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -1.05)
 mesh = SubResource("BoxMesh_3pgy1")
+
+[node name="EngineSound" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+unit_size = 8.0
+max_distance = 120.0
+script = ExtResource("3_engine")

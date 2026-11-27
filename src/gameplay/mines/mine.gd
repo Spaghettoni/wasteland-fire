@@ -224,6 +224,7 @@ func _detonate(touching: Array[Unit]) -> void:
 	if casing != null:
 		casing.visible = false
 	flash.visible = true
+	SoundPlay.at(get_parent(), settings.blast_sound, global_position, settings.blast_volume_db, settings.blast_sound_unit_size)
 
 
 ## True when the first Unit's node name sorts before the second's (the order of a blast).

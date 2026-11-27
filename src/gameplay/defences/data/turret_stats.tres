@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="TurretStats" format=3]
 
 [ext_resource type="Script" path="res://src/gameplay/defences/turret_stats.gd" id="1_ts"]
+[ext_resource type="AudioStream" path="res://src/gameplay/audio/data/structure_fall.tres" id="9_snd"]
 
 [resource]
 script = ExtResource("1_ts")
@@ -18,3 +19,6 @@ display_name = "Turret"
 max_hit_points = 100.0
 damaged_below = Array[float]([0.8, 0.35])
 locks_flag = false
+fall_sound = ExtResource("9_snd")
+fall_volume_db = -4.0
+fall_sound_unit_size = 20.0

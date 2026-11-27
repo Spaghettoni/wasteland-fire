@@ -133,6 +133,10 @@ var _in_play: bool = false
 var _carry: float = 0.0
 ## Flame puffs fired, for the nozzle they come from and their turn in the spread (Story 063).
 var _puffs: int = 0
+## The flamer's looping roar (UnitStats.flame_sound), made on the first flame and kept on the Unit.
+var _flame_player: AudioStreamPlayer3D
+## The physics frame after which the roar stops unless another puff keeps it going.
+var _flame_until_frame: int = -1
 
 
 func _ready() -> void:
@@ -157,6 +161,7 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 	_follow_unit()
+	_update_flame_sound()
 	var held: bool = _trigger or _trigger_high
 	var pressed: bool = held and not _was_held
 	_was_held = held
@@ -177,6 +182,31 @@ func _physics_process(_delta: float) -> void:
 	var interval: float = unit.stats.flame_interval_seconds if flame else unit.stats.fire_interval_seconds
 	var interval_ticks: int = roundi(interval * Engine.physics_ticks_per_second)
 	_next_fire_frame = now + maxi(interval_ticks, 1)
+	if flame:
+		_flame_until_frame = now + maxi(interval_ticks, 1) + 1
+
+
+## Keeps the flamer's roar playing while puffs keep coming (first sound pass, 2026-11): it starts
+## with the first puff and stops one tick after the cadence lapses, or at once when the Unit leaves
+## play. A type without UnitStats.flame_sound stays silent.
+func _update_flame_sound() -> void:
+	var pouring: bool = (is_instance_valid(unit) and unit.is_alive
+			and Engine.get_physics_frames() <= _flame_until_frame)
+	if not pouring:
+		if _flame_player != null and _flame_player.playing:
+			_flame_player.stop()
+		return
+	var stats: UnitStats = unit.stats
+	if stats.flame_sound == null:
+		return
+	if _flame_player == null:
+		_flame_player = SoundPlay.make_loop(unit, stats.flame_sound, stats.flame_volume_db)
+		_flame_player.name = "FlameSound"
+		_flame_player.position = Vector3(0.0, rules.shooting_height, -stats.muzzle_forward)
+	_flame_player.stream = stats.flame_sound
+	_flame_player.volume_db = stats.flame_volume_db
+	if not _flame_player.playing:
+		_flame_player.play()
 
 
 ## Holds or releases the trigger: true fires at the cadence from this tick on, false stops. Call

@@ -456,6 +456,24 @@ extends Resource
 ## the Fuel burn do not read it.
 @export_range(0.0, 1.0, 0.01) var badly_damaged_speed_share: float = 0.0
 
+@export_group("Sound")
+## The engine's looping sound (first sound pass, 2026-11), played by the Unit's UnitEngineSound
+## while the Unit is in play. Null: the type drives silently. The .ogg must be imported with loop on.
+@export var engine_sound: AudioStream
+## The engine's loudness against the file, in dB.
+@export_range(-40.0, 12.0, 0.5, "suffix:dB") var engine_volume_db: float = 0.0
+## The engine's pitch at a standstill (1 is the recording as it is).
+@export_range(0.1, 4.0, 0.01) var engine_pitch_idle: float = 1.0
+## The engine's pitch at max_speed; between the two it follows |speed| / max_speed.
+@export_range(0.1, 4.0, 0.01) var engine_pitch_top: float = 1.0
+## How fast the pitch follows the speed, as the share of the gap closed per second (higher is snappier).
+@export_range(0.1, 50.0, 0.1) var engine_pitch_follow: float = 6.0
+## The flamer's looping roar (types with a flame_shot_scene), played by the Weapon while it pours
+## flame. Null: the flamer is silent.
+@export var flame_sound: AudioStream
+## The flamer's loudness against the file, in dB.
+@export_range(-40.0, 12.0, 0.5, "suffix:dB") var flame_volume_db: float = 0.0
+
 @export_group("Tyres")
 
 ## Where each tyre of this type touches the ground, in the Unit's frame, and how wide it is (Story 026

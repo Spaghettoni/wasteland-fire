@@ -6,6 +6,9 @@
 [ext_resource type="Resource" path="res://src/gameplay/maps/map_03/map_03_entry.tres" id="8_map_03"]
 [ext_resource type="PackedScene" path="res://src/gameplay/split_screen/split_screen.tscn" id="4_split"]
 [ext_resource type="Script" path="res://src/gameplay/maps/map_entry.gd" id="5_entry_script"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/ui_move.ogg" id="90_snd"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/ui_confirm.ogg" id="91_snd"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/ui_back.ogg" id="92_snd"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
 content_margin_left = 14.0
@@ -47,6 +50,10 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_choice")
+move_sound = ExtResource("90_snd")
+confirm_sound = ExtResource("91_snd")
+back_sound = ExtResource("92_snd")
+sound_volume_db = -8.0
 maps = Array[ExtResource("5_entry_script")]([ExtResource("2_map_01"), ExtResource("3_map_02"), ExtResource("8_map_03")])
 launch_scene = ExtResource("4_split")
 cards_row = NodePath("Layout/Cards")

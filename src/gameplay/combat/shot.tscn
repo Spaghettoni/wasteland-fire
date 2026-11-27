@@ -3,6 +3,9 @@
 [ext_resource type="Script" path="res://src/gameplay/combat/shot.gd" id="1_shot"]
 [ext_resource type="PackedScene" path="res://src/gameplay/effects/muzzle_flash.tscn" id="2_muzzle"]
 [ext_resource type="PackedScene" path="res://src/gameplay/effects/impact.tscn" id="3_impact"]
+[ext_resource type="AudioStream" path="res://src/gameplay/audio/data/shot_gun.tres" id="10_snd"]
+[ext_resource type="AudioStream" path="res://src/gameplay/audio/data/impact_ground.tres" id="11_snd"]
+[ext_resource type="AudioStream" path="res://src/gameplay/audio/data/impact_metal.tres" id="12_snd"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tracer"]
 shading_mode = 0
@@ -17,6 +20,11 @@ script = ExtResource("1_shot")
 tracer = NodePath("Tracer")
 muzzle_scene = ExtResource("2_muzzle")
 impact_scene = ExtResource("3_impact")
+launch_sound = ExtResource("10_snd")
+impact_sound = ExtResource("11_snd")
+impact_metal_sound = ExtResource("12_snd")
+launch_volume_db = -6.0
+impact_volume_db = -8.0
 
 [node name="Tracer" type="MeshInstance3D" parent="."]
 cast_shadow = 0

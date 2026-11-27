@@ -224,6 +224,16 @@ const _PATH_COUNT_LABEL: NodePath = ^"Lines/CountLabel"
 ## team_teal_edge.tres. Optional: null, the default, draws nothing (the look before Story 007).
 @export var edge_style: StyleBox
 
+@export_group("Sound")
+## Menu sounds (first sound pass, 2026-11), flat, heard by everyone. Null: silent.
+@export var move_sound: AudioStream
+## Heard on a confirm.
+@export var confirm_sound: AudioStream
+## Heard on a step back.
+@export var back_sound: AudioStream
+## Loudness of the menu sounds against the files, in dB.
+@export_range(-40.0, 12.0, 0.5, "suffix:dB") var sound_volume_db: float = 0.0
+
 @onready var _panel: PanelContainer = %Panel
 @onready var _title_label: Label = %TitleLabel
 @onready var _slots: HBoxContainer = %Slots
@@ -501,6 +511,8 @@ func _on_unit_swapped(swapped_player_index: int) -> void:
 func _on_unit_chosen(chosen_player_index: int, _type_index: int) -> void:
 	if _is_mine_or_teammate(chosen_player_index):
 		_refresh()
+	if chosen_player_index == player_index:
+		SoundPlay.flat(self, confirm_sound, sound_volume_db)
 
 
 ## This Player's Unit appeared: nothing to choose, hide. Another Player's spawn is not ours.
@@ -517,6 +529,7 @@ func _on_round_over(_winner_index: int) -> void:
 
 ## The cursor moved: the marked slot follows it. Emitted only while this Player is choosing.
 func _on_cursor_moved(_type_index: int) -> void:
+	SoundPlay.flat(self, move_sound, sound_volume_db)
 	_refresh()
 
 

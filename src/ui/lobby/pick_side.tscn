@@ -5,6 +5,9 @@
 [ext_resource type="Resource" path="res://src/gameplay/input/data/controls_settings.tres" id="3_controls"]
 [ext_resource type="Resource" path="res://src/gameplay/input/data/pad_layout.tres" id="4_pad"]
 [ext_resource type="PackedScene" path="res://src/ui/lobby/controls_screen.tscn" id="5_screen"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/ui_move.ogg" id="90_snd"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/ui_confirm.ogg" id="91_snd"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/ui_back.ogg" id="92_snd"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
 content_margin_left = 12.0
@@ -46,6 +49,10 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_pick")
+move_sound = ExtResource("90_snd")
+confirm_sound = ExtResource("91_snd")
+back_sound = ExtResource("92_snd")
+sound_volume_db = -8.0
 map_choice_scene = ExtResource("2_choice")
 controls_settings = ExtResource("3_controls")
 pad_layout = ExtResource("4_pad")

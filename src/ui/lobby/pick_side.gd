@@ -67,6 +67,16 @@ enum Place { ORANGE, MIDDLE, TEAL }
 @export var need_ready_text: String = ""
 @export var starting_text: String = ""
 
+@export_group("Sound")
+## Menu sounds (first sound pass, 2026-11), flat, heard by everyone. Null: silent.
+@export var move_sound: AudioStream
+## Heard on a confirm.
+@export var confirm_sound: AudioStream
+## Heard on a step back.
+@export var back_sound: AudioStream
+## Loudness of the menu sounds against the files, in dB.
+@export_range(-40.0, 12.0, 0.5, "suffix:dB") var sound_volume_db: float = 0.0
+
 ## Every joined device in joining order: [device, Place, ready].
 var _joined: Array[Array] = []
 ## Per pad, the stick's last side (-1, 0, 1), so one lean is one move.
@@ -165,6 +175,7 @@ func move(device: int, direction: int) -> void:
 		var place: int = clampi(int(_joined[index][1]) + direction, Place.ORANGE, Place.TEAL)
 		_joined[index][1] = place
 	_countdown = -1.0
+	SoundPlay.flat(self, move_sound, sound_volume_db)
 	_refresh()
 
 
@@ -176,6 +187,7 @@ func confirm(device: int) -> void:
 	if index < 0 or _joined[index][1] == Place.MIDDLE:
 		return
 	_joined[index][2] = true
+	SoundPlay.flat(self, confirm_sound, sound_volume_db)
 	_refresh()
 
 
@@ -191,6 +203,7 @@ func back(device: int) -> void:
 	else:
 		_joined.remove_at(index)
 	_countdown = -1.0
+	SoundPlay.flat(self, back_sound, sound_volume_db)
 	_refresh()
 
 

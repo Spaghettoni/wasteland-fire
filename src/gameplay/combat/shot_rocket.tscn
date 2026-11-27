@@ -4,6 +4,8 @@
 [ext_resource type="PackedScene" path="res://src/gameplay/effects/muzzle_flash.tscn" id="2_muzzle"]
 [ext_resource type="PackedScene" path="res://src/gameplay/effects/impact.tscn" id="3_impact"]
 [ext_resource type="Script" path="res://src/gameplay/effects/fx_particles.gd" id="4_fx"]
+[ext_resource type="AudioStream" path="res://src/gameplay/audio/data/shot_rocket.tres" id="10_snd"]
+[ext_resource type="AudioStream" path="res://src/gameplay/audio/data/explosion_mine.tres" id="11_snd"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
 shading_mode = 0
@@ -60,6 +62,11 @@ tracer = NodePath("Rocket")
 muzzle_scene = ExtResource("2_muzzle")
 impact_scene = ExtResource("3_impact")
 impact_size = 1.8
+launch_sound = ExtResource("10_snd")
+impact_sound = ExtResource("11_snd")
+launch_volume_db = -5.0
+impact_volume_db = -8.0
+sound_unit_size = 16.0
 trail = NodePath("Trail")
 
 [node name="Rocket" type="Node3D" parent="."]

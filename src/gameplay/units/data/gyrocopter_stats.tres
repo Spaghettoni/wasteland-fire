@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://src/gameplay/units/unit_stats.gd" id="1_us"]
 [ext_resource type="PackedScene" path="res://src/gameplay/units/models/gyrocopter_mesh_model.tscn" id="2_model"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/engine_gyrocopter.ogg" id="9_engine"]
 
 [resource]
 script = ExtResource("1_us")
@@ -41,3 +42,7 @@ fuel_use_idle = 0.625
 spawn_fuel_fraction = 1.0
 badly_damaged_fraction = 0.2
 badly_damaged_speed_share = 0.5
+engine_sound = ExtResource("9_engine")
+engine_volume_db = -13.0
+engine_pitch_idle = 0.9
+engine_pitch_top = 1.25

@@ -43,6 +43,16 @@ signal map_chosen(index: int)
 ## The text of the hint line.
 @export var hint_text: String = ""
 
+@export_group("Sound")
+## Menu sounds (first sound pass, 2026-11), flat, heard by everyone. Null: silent.
+@export var move_sound: AudioStream
+## Heard on a confirm.
+@export var confirm_sound: AudioStream
+## Heard on a step back.
+@export var back_sound: AudioStream
+## Loudness of the menu sounds against the files, in dB.
+@export_range(-40.0, 12.0, 0.5, "suffix:dB") var sound_volume_db: float = 0.0
+
 ## The index of the card under the cursor. Read-only.
 var cursor: int:
 	get:
@@ -97,6 +107,7 @@ func step(delta: int) -> void:
 	if _cards.is_empty():
 		return
 	_cursor = posmod(_cursor + delta, _cards.size())
+	SoundPlay.flat(self, move_sound, sound_volume_db)
 	_show_cursor()
 
 
@@ -105,6 +116,8 @@ func step(delta: int) -> void:
 func start() -> void:
 	if _started or _cards.is_empty():
 		return
+	# The root keeps the sound: this screen is freed below.
+	SoundPlay.flat(get_tree().root, confirm_sound, sound_volume_db)
 	var instance: Node = launch_scene.instantiate()
 	var split: SplitScreen = instance as SplitScreen
 	if split == null:

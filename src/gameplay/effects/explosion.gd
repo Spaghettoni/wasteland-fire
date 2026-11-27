@@ -157,6 +157,7 @@ func blast(at: Vector3, size: float, floor_y: float) -> void:
 	_pose(0)
 	reset_physics_interpolation()
 	set_physics_process(true)
+	SoundPlay.at(get_parent(), settings.sound, at, settings.sound_volume_db, settings.sound_unit_size)
 
 
 ## The ticks this explosion has counted since blast(): 0 until the first of its own ticks. They go on

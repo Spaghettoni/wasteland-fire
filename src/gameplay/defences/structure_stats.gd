@@ -55,6 +55,14 @@ extends Resource
 @export var spared_by_owner: bool = true
 
 
+@export_group("Sound")
+## Heard where the piece falls (first sound pass, 2026-11). Null: silent.
+@export var fall_sound: AudioStream
+## Its loudness against the file, in dB.
+@export_range(-40.0, 12.0, 0.5, "suffix:dB") var fall_volume_db: float = 0.0
+## Distance within which it is heard at full loudness, in metres (0: SoundPlay.DEFAULT_UNIT_SIZE).
+@export_range(0.0, 200.0, 0.5, "suffix:m") var fall_sound_unit_size: float = 0.0
+
 ## The reason a Structure cannot use these stats, or an empty String when it can: the type id must
 ## name a type, max_hit_points must be above zero (the rule UnitStats.first_problem() applies to a
 ## Unit) and every damaged_below fraction must be above 0, below 1 and below the one before it.
