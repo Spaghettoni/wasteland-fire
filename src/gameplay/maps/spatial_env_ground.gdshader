@@ -28,10 +28,11 @@
 // only (the shore edge takes none), and only on these three surfaces: the water, the fords, the
 // channels and the Garage floors are other materials, and a Map with no TyreTracks node leaves the
 // strength at the project's default of 0, which makes every term below exactly nothing.
-// The pixel look (the art overhaul of 2026-11-26, Martin's picture of a voxel desert): with pixel_size above 0 every
-// layer is sampled at the middle of a pixel_size square cell in world space, so the ground reads as chunky square tiles;
-// each tile takes its own small tone (pixel_jitter) and a bevel at its edges (pixel_bevel: a tilt toward the sun on two
-// sides, a darker seam), which fades out where a tile is smaller than about a screen pixel so the far ground does not
+// The low-poly facets (the art overhaul, 2026-11-26/27; Martin: "paci sa mi low poly, ale asi nie take pravouhle"): with
+// pixel_size above 0 the ground is cut into irregular facets about pixel_size across (Voronoi cells round jittered
+// points), every layer sampled at its facet's point, so each facet is one flat patch of sand; each takes its own small tone
+// (pixel_jitter) and its own small tilt (pixel_bevel), which the sun shades as a facet, and an optional darker seam
+// (pixel_seam); tilt and seam fade out where a facet is smaller than a few screen pixels so the far ground does not
 // shimmer. The samples keep the unquantised derivatives (textureGrad), so the mip level does not jump at the tile
 // edges. Side faces take bands of side_colour by height (pixel_size tall), each band and tile its own tone, like
 // layered rock. pixel_size 0 leaves every term as it was.
@@ -216,9 +217,29 @@ void fragment() {
 	vec2 dy = dFdy(raw);
 	float pixelated = step(0.0001, pixel_size);
 	float px = max(pixel_size, 0.0001);
-	vec2 tile = floor(raw / px);
-	vec2 inside_tile = raw / px - tile;
-	vec2 p = mix(raw, (tile + 0.5) * px, pixelated);
+	// The facet: the nearest of the jittered points of this and the eight cells round it, and the gap to the second.
+	vec2 g = raw / px;
+	vec2 gi = floor(g);
+	vec2 tile = gi;
+	vec2 site = gi + 0.5;
+	float nearest = 9.0;
+	float second = 9.0;
+	for (int j = -1; j <= 1; j++) {
+		for (int i = -1; i <= 1; i++) {
+			vec2 c = gi + vec2(float(i), float(j));
+			vec2 point = c + 0.1 + 0.8 * vec2(cell_hash(c), cell_hash(c + 17.31));
+			float d = length(g - point);
+			if (d < nearest) {
+				second = nearest;
+				nearest = d;
+				tile = c;
+				site = point;
+			} else if (d < second) {
+				second = d;
+			}
+		}
+	}
+	vec2 p = mix(raw, site * px, pixelated);
 	// How much of the bevel and seam show: none where a tile is about a screen pixel or smaller.
 	float tile_on_screen = px / max(max(length(dx), length(dy)), 0.00001);
 	float detail = pixelated * smoothstep(2.0, 6.0, tile_on_screen);
@@ -264,8 +285,7 @@ void fragment() {
 	float level = smoothstep(LEVEL_LOW, LEVEL_HIGH, world_normal.y);
 	// Each tile its own tone, and a darker seam at its edges.
 	colour *= 1.0 + (cell_hash(tile) - 0.5) * pixel_jitter * 2.0 * pixelated;
-	vec2 to_edge = min(inside_tile, 1.0 - inside_tile);
-	float seam = 1.0 - smoothstep(0.0, 0.08, min(to_edge.x, to_edge.y));
+	float seam = 1.0 - smoothstep(0.0, 0.06, second - nearest);
 	colour *= 1.0 - seam * pixel_seam * detail;
 	// The tyre mark here, on level faces only; its rut's sides come from the mark one reach to either side.
 	vec2 track_uv = (p - tyre_track_area.xy) / tyre_track_area.zw;
@@ -281,9 +301,8 @@ void fragment() {
 	SPECULAR = specular_base;
 
 	vec2 slope = slope_of(soft_relief, p / mottle_size + MOTTLE_OFFSET, dx / mottle_size, dy / mottle_size) * swell_relief;
-	// The tile's bevel: near each edge the surface tilts away from the tile's middle.
-	vec2 bevel = (smoothstep(0.85, 1.0, inside_tile) - smoothstep(0.85, 1.0, 1.0 - inside_tile));
-	slope += bevel * pixel_bevel * detail;
+	// The facet's own tilt.
+	slope += (vec2(cell_hash(tile + 3.7), cell_hash(tile + 9.1)) - 0.5) * pixel_bevel * detail;
 	slope += slope_of(stone_relief_map, stone_uv, dx / stone_size, dy / stone_size) * stone_relief * stone;
 	slope += slope_of(crack_relief_map, p / crack_size, dx / crack_size, dy / crack_size) * crack_relief * crack_amount;
 	// The rut: the mark's rise a metre across its edge (the rise of the mark from one reach to the other, over

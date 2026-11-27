@@ -1,11 +1,13 @@
-[gd_resource type="StandardMaterial3D" format=3]
+[gd_resource type="ShaderMaterial" format=3]
 
-[ext_resource type="Texture2D" path="res://src/gameplay/maps/map_01/textures/rock_strata.png" id="1_rock_texture"]
+[ext_resource type="Shader" path="res://src/gameplay/maps/spatial_env_strata.gdshader" id="1_strata_shader"]
+[ext_resource type="Texture2D" path="res://src/gameplay/maps/map_01/textures/rock_strata.png" id="2_strata"]
 
 [resource]
-albedo_texture = ExtResource("1_rock_texture")
-roughness = 1.0
-uv1_scale = Vector3(0.0833, 0.0833, 0.0833)
-uv1_triplanar = true
-uv1_world_triplanar = true
-texture_filter = 4
+render_priority = 0
+shader = ExtResource("1_strata_shader")
+shader_parameter/strata = ExtResource("2_strata")
+shader_parameter/band_height = 12.0
+shader_parameter/wave_amount = 0.35
+shader_parameter/top_colour = Color(0.86, 0.62, 0.4, 1)
+shader_parameter/roughness_value = 1.0

@@ -12,8 +12,9 @@ extends Shot
 ##   after the last puff that hit, they take the burn's damage per second. A Teammate keeps burning too
 ##   (Martin, 2026-11-22: "chcem aby ostal horet aj tvoj kamos ked prejde cez plamen").
 ##
-## The look: the tracer is a few glowing cubes (flame_shot.tscn) that swell and cool from yellow to
-## red as the puff flies; their heat is the instance parameter `heat` of spatial_fx_flame.gdshader.
+## The look: the tracer is a few soft fire sprites (flame_shot.tscn, spatial_fx_fire_sprite.gdshader;
+## the art overhaul, 2026-11-27) that swell and cool from white-yellow through orange and red to smoke as
+## the puff flies; their heat is the instance parameter `heat`.
 ## Set burn_dps, burn_seconds and burning_scene before launch() (Weapon does).
 
 ## Damage per second of the fire the puff leaves on what it hit (before the matrix), 0 for none.
@@ -26,8 +27,20 @@ var burning_scene: PackedScene
 ## The size of the tracer at the nozzle and at the end of the range, metres.
 @export var size_start: float = 0.35
 @export var size_end: float = 1.6
-## The cubes drawn: their heat goes from 1 at the nozzle to 0 at the end of the range.
+## The sprites drawn (cubes before 2026-11-27): their heat goes from 1 at the nozzle to 0 at the end of the range.
 @export var cubes: Array[GeometryInstance3D] = []
+## How far the fire has risen at the end of the range, metres (it climbs with the square of the distance, as hot gas
+## does): the look only, the puff's hit test flies straight.
+@export var rise_end: float = 0.0
+
+
+func _ready() -> void:
+	# Every puff its own noise, so the stream never repeats; from the node's id, not the global random numbers, which
+	# the look must not draw from.
+	var k: int = 0
+	for cube: GeometryInstance3D in cubes:
+		k += 1
+		cube.set_instance_shader_parameter(&"seed", float(hash(get_instance_id() * 7 + k) % 1000) / 1000.0)
 
 
 func _process(_delta: float) -> void:
@@ -35,6 +48,7 @@ func _process(_delta: float) -> void:
 		return
 	var t: float = clampf(_travelled / _max_range, 0.0, 1.0)
 	tracer.scale = Vector3.ONE * lerpf(size_start, size_end, t)
+	tracer.position.y = rise_end * t * t
 	for cube: GeometryInstance3D in cubes:
 		cube.set_instance_shader_parameter(&"heat", 1.0 - t)
 

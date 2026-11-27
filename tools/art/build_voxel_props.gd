@@ -1,10 +1,12 @@
 extends SceneTree
-## Writes the voxel props of the art overhaul (2026-11-26) to assets/art/voxel/: cactuses, mesas (layered cliffs),
-## rocks and shrubs, each an ArrayMesh .res with vertex colours (drawn with assets/art/voxel/voxel_material.tres).
+## Writes the props of the art overhaul (2026-11-26/27) to assets/art/voxel/: voxel cactuses, and in low poly the
+## mesas (layered cliffs) and the Bush's two looks, each an ArrayMesh .res with vertex colours (drawn with
+## assets/art/voxel/voxel_material.tres). The voxel mesas, rocks, shrubs and Bush builders stay for reference, unused.
 ## Seeded, so a rerun writes the same meshes. Tooling only.
 ## Run: godot --headless --path . -s res://tools/art/build_voxel_props.gd
 
 const Voxels: GDScript = preload("res://tools/art/voxel_builder.gd")
+const LowPoly: GDScript = preload("res://tools/art/lowpoly_builder.gd")
 const OUT: String = "res://assets/art/voxel/"
 
 var rng := RandomNumberGenerator.new()
@@ -14,15 +16,75 @@ func _init() -> void:
 	rng.seed = 20261126
 	for i: int in 4:
 		_save(_cactus(i), "cactus_%d" % i)
+	_save(_bush_lowpoly(false), "bush_standing")
+	_save(_bush_lowpoly(true), "bush_flat")
 	for i: int in 4:
-		_save(_mesa(i), "mesa_%d" % i)
-	for i: int in 4:
-		_save(_rock(i), "rock_%d" % i)
-	for i: int in 2:
-		_save(_shrub(i), "shrub_%d" % i)
-	_save(_bush(false), "bush_standing")
-	_save(_bush(true), "bush_flat")
+		_save(_mesa_lowpoly(i), "mesa_lp_%d" % i)
 	quit()
+
+
+## The Bush's looks in low poly (2026-11-27): the six lumps as jittered faceted blobs in olive greens; flat, the same
+## lumps pressed to a low mat of dry tones.
+func _bush_lowpoly(flat: bool) -> ArrayMesh:
+	var lp = LowPoly.new()
+	var lumps: Array = [[Vector3(0, 0.892, 0), Vector3(1.25, 1.04, 1.25)], [Vector3(1.25, 0.722, 0.35), Vector3(0.95, 0.8, 0.95)],
+		[Vector3(-1.15, 0.68, 0.55), Vector3(0.9, 0.8, 0.9)], [Vector3(0.3, 0.68, -1.2), Vector3(0.9, 0.8, 0.9)],
+		[Vector3(-0.55, 0.595, -0.95), Vector3(0.8, 0.68, 0.8)], [Vector3(0.85, 0.552, 1.05), Vector3(0.75, 0.64, 0.75)]]
+	var greens: Array[Color] = [Color(0.36, 0.42, 0.17), Color(0.29, 0.35, 0.13), Color(0.43, 0.47, 0.21), Color(0.33, 0.39, 0.15)]
+	var dry: Array[Color] = [Color(0.52, 0.5, 0.28), Color(0.45, 0.44, 0.23), Color(0.58, 0.54, 0.32)]
+	for l: Array in lumps:
+		var centre: Vector3 = l[0]
+		var radii: Vector3 = l[1]
+		if flat:
+			centre = Vector3(centre.x, 0.0, centre.z)
+			radii = Vector3(radii.x, 0.14, radii.z)
+		lp.blob(centre, radii, dry if flat else greens, rng, 0.14)
+	return lp.commit()
+
+
+## A low-poly mesa (2026-11-27; Martin: "mohli by byt jednoduchsie"): an irregular outline extruded in three or four
+## tiers, each a band of the strata colours and a little narrower than the one under it, on a sloped skirt of scree,
+## with a flat sand top. i picks the size.
+func _mesa_lowpoly(i: int) -> ArrayMesh:
+	var lp = LowPoly.new()
+	var bands: Array[Color] = [Color(0.72, 0.36, 0.26), Color(0.86, 0.54, 0.38), Color(0.78, 0.44, 0.30), Color(0.92, 0.66, 0.46), Color(0.64, 0.31, 0.24)]
+	var top_tone := Color(0.88, 0.62, 0.40)
+	var radius: float = [9.0, 13.0, 7.0, 16.0][i]
+	var height: float = [9.0, 13.0, 7.0, 15.0][i]
+	var sides: int = rng.randi_range(8, 11)
+	var outline: Array[Vector2] = []
+	for k: int in sides:
+		var a: float = TAU * (float(k) + rng.randf_range(-0.25, 0.25)) / float(sides)
+		outline.append(Vector2(cos(a), sin(a)) * radius * rng.randf_range(0.75, 1.15))
+	var tiers: int = rng.randi_range(3, 4)
+	var levels: Array[float] = [0.0]
+	for t: int in tiers:
+		levels.append(height * float(t + 1) / float(tiers) * rng.randf_range(0.92, 1.05))
+	levels[0] = height * 0.18
+	# The scree skirt: from 1.35 x the outline on the ground up to the outline at the first level.
+	_ring(lp, outline, 1.35, 0.0, 1.0, levels[0], Color(0.8, 0.5, 0.34))
+	var shrink: float = 1.0
+	for t: int in tiers:
+		var next: float = shrink * rng.randf_range(0.9, 1.0)
+		_ring(lp, outline, shrink, levels[t], next, levels[t + 1], bands[(t + i) % bands.size()])
+		shrink = next
+	var top: float = levels[tiers]
+	var middle := Vector3(0.0, top, 0.0)
+	for k: int in sides:
+		var a: Vector2 = outline[k] * shrink
+		var b: Vector2 = outline[(k + 1) % sides] * shrink
+		lp.tri(middle, Vector3(a.x, top, a.y), Vector3(b.x, top, b.y), top_tone, Vector3.UP)
+	return lp.commit()
+
+
+## The side faces between the outline scaled by s0 at y0 and by s1 at y1, in one colour per face (a little varied).
+func _ring(lp, outline: Array[Vector2], s0: float, y0: float, s1: float, y1: float, tone: Color) -> void:
+	for k: int in outline.size():
+		var a: Vector2 = outline[k]
+		var b: Vector2 = outline[(k + 1) % outline.size()]
+		var mid: Vector2 = (a + b) * 0.5
+		lp.quad(Vector3(a.x * s0, y0, a.y * s0), Vector3(b.x * s0, y0, b.y * s0), Vector3(b.x * s1, y1, b.y * s1), Vector3(a.x * s1, y1, a.y * s1),
+			_jit(tone, 0.06), Vector3(mid.x, 0.0, mid.y))
 
 
 func _save(mesh: ArrayMesh, name: String) -> void:

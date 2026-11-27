@@ -1,9 +1,11 @@
 extends SceneTree
 ## Places the voxel scenery of the art overhaul (2026-11-26) on one Map and writes it as a scene beside the Map
 ## (map_0N_scenery.tscn), which the Map instances as its Scenery node. Seeded per Map, so a rerun writes the same scene.
-##  - Mesas (assets/art/voxel/mesa_*.res): out of play, on a ring 14 to 80 m beyond the Map's edges (the map_edge bodies),
-##    at least 28 m apart; drawn only, no collider.
-##  - Cactuses and rocks: on the ground in play (on an Island on a Map that has Island* polygons), at least CLEAR_M from
+##  - Mesas (assets/art/voxel/mesa_lp_*.res, low poly): only on a Map without Islands (a desert, not an island Map; Martin,
+##    2026-11-27: "davaju mi zmysel, ale nie na ostrovnych mapach"), their whole footprint 4 to 40 m beyond the Map's
+##    edges (the map_edge bodies), at least 28 m apart; drawn only, no collider.
+##  - Cactuses (no rocks since 2026-11-27: "tie oranzove kopky ... by som dal prec"), never taller than CACTUS_TOP_M so
+##    a Gyrocopter flies over them ("nech nad nimi preleti gyro"): on the ground in play (on an Island on a Map that has Island* polygons), at least CLEAR_M from
 ##    anything that collides or watches (Structures, Bases, zones, Bushes, spawn points), at least SPACING_M from each
 ##    other, mostly near a shore or an edge; each a StaticBody3D on layer 1 with a small collider no taller than
 ##    COLLIDER_TOP_M, well under the flying height (Story 015), so a Gyrocopter never touches one; on a Map without
@@ -17,8 +19,12 @@ const MESAS: int = 4
 const CACTUSES: int = 4
 const ROCKS: int = 4
 const CLEAR_M: float = 9.0
+## No raised terrain piece (a ridge, a cliff) nearer than this, measured from its box.
+const FLAT_M: float = 6.0
 const SPACING_M: float = 7.0
 const COLLIDER_TOP_M: float = 1.2
+## The tallest a cactus is drawn: under the flying height (2.5 m, Story 015) with room for the Gyrocopter's body.
+const CACTUS_TOP_M: float = 1.9
 ## On a Map without Islands nothing is put nearer its edge than this, so the runs along and at the edge meet nothing.
 const EDGE_CLEAR_M: float = 12.0
 const VOXEL: String = "res://assets/art/voxel/"
@@ -63,28 +69,31 @@ func _go() -> void:
 	# Mesas on a ring beyond the edges.
 	var mesas: Array[Vector2] = []
 	var tries: int = 0
-	while mesas.size() < 26 and tries < 4000:
+	while islands.is_empty() and mesas.size() < 26 and tries < 4000:
 		tries += 1
 		var angle: float = rng.randf() * TAU
 		var dir := Vector2(cos(angle), sin(angle))
 		var half: Vector2 = bounds.size * 0.5
 		# The distance from the middle to the edge along dir, then out beyond it.
 		var to_edge: float = minf(half.x / maxf(absf(dir.x), 0.001), half.y / maxf(absf(dir.y), 0.001))
-		var p: Vector2 = bounds.get_center() + dir * (to_edge + rng.randf_range(10.0, 55.0))
+		var mesh: ArrayMesh = load(VOXEL + "mesa_lp_%d.res" % rng.randi_range(0, MESAS - 1))
+		var s: float = rng.randf_range(1.0, 1.5)
+		var reach: float = Vector2(mesh.get_aabb().size.x, mesh.get_aabb().size.z).length() * 0.5 * s
+		# The whole footprint stays out of play.
+		var p: Vector2 = bounds.get_center() + dir * (to_edge + reach + rng.randf_range(4.0, 40.0))
 		if mesas.any(func(q: Vector2) -> bool: return q.distance_to(p) < 28.0):
 			continue
 		mesas.append(p)
 		var mi := MeshInstance3D.new()
 		mi.name = "Mesa%d" % mesas.size()
-		mi.mesh = load(VOXEL + "mesa_%d.res" % rng.randi_range(0, MESAS - 1))
+		mi.mesh = mesh
 		mi.material_override = material
-		var s: float = rng.randf_range(1.6, 3.0)
 		mi.transform = Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * s), Vector3(p.x, -0.3, p.y))
 		_add(scenery, mi)
 
 	# Cactuses and rocks in play.
 	var props: Array[Vector2] = []
-	var wanted: int = 34 if not islands.is_empty() else 40
+	var wanted: int = 22 if not islands.is_empty() else 26
 	tries = 0
 	while props.size() < wanted and tries < 20000:
 		tries += 1
@@ -98,21 +107,22 @@ func _go() -> void:
 			continue
 		if props.any(func(q: Vector2) -> bool: return q.distance_to(p) < SPACING_M):
 			continue
-		if _crowded(space, Vector3(p.x, 1.0, p.y), floor_rid):
+		if _crowded(space, Vector3(p.x, 1.0, p.y), floor_rid) or not _flat(map, Vector2(p.x, p.y)):
 			continue
 		props.append(p)
-		var cactus: bool = rng.randf() < 0.6
+		var cactus: bool = true
 		var body := StaticBody3D.new()
 		body.name = ("Cactus%d" if cactus else "Rock%d") % props.size()
 		body.collision_layer = 1
 		body.collision_mask = 0
-		var grow: float = rng.randf_range(1.2, 1.5) if cactus else rng.randf_range(1.0, 1.6)
+		var grow: float = rng.randf_range(1.0, 1.25)
 		body.transform = Transform3D(Basis(Vector3.UP, rng.randf() * TAU), Vector3(p.x, 0.0, p.y))
 		_add(scenery, body)
 		var mi := MeshInstance3D.new()
 		mi.name = "Look"
 		mi.mesh = load(VOXEL + ("cactus_%d.res" % rng.randi_range(0, CACTUSES - 1) if cactus else "rock_%d.res" % rng.randi_range(0, ROCKS - 1)))
 		mi.material_override = material
+		grow = minf(grow, CACTUS_TOP_M / mi.mesh.get_aabb().size.y)
 		mi.scale = Vector3.ONE * grow
 		_add(body, mi, scenery)
 		var shape := CollisionShape3D.new()
@@ -184,6 +194,21 @@ func _to_shore(p: Vector2, islands: Array[PackedVector2Array], bounds: Rect2) ->
 				best = minf(best, c.distance_to(p))
 			return best
 	return 0.0
+
+
+## True when the drawn ground at and round `p` (within FLAT_M) is all level with the floor: no ridge, ramp or cliff
+## near, whether or not it collides as a body of its own.
+func _flat(map: Node3D, p: Vector2) -> bool:
+	for node: Node in map.find_children("*", "CSGShape3D", true, false):
+		var csg := node as CSGShape3D
+		if csg == null or not csg.is_root_shape() or String(csg.name).begins_with("Island") or String(csg.name).begins_with("Sea") or not csg.visible:
+			continue
+		var box: AABB = csg.global_transform * csg.get_aabb()
+		if box.end.y <= 0.2:
+			continue
+		if Rect2(box.position.x, box.position.z, box.size.x, box.size.z).grow(FLAT_M).has_point(p):
+			return false
+	return true
 
 
 ## True when anything but the floor and the Islands collides or watches within CLEAR_M of `at`.

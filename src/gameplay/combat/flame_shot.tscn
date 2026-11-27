@@ -1,46 +1,57 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://src/gameplay/combat/flame_shot.gd" id="1_flame"]
-[ext_resource type="Shader" path="res://src/gameplay/effects/spatial_fx_flame.gdshader" id="2_shader"]
+[ext_resource type="Shader" path="res://src/gameplay/effects/spatial_fx_fire_sprite.gdshader" id="2_shader"]
 [ext_resource type="Script" path="res://src/gameplay/effects/fx_particles.gd" id="3_fx"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_flame"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fire"]
 render_priority = 1
 shader = ExtResource("2_shader")
-shader_parameter/brightness = 1.25
 
-[sub_resource type="BoxMesh" id="BoxMesh_cube"]
-material = SubResource("ShaderMaterial_flame")
-size = Vector3(0.7, 0.7, 0.7)
+[sub_resource type="QuadMesh" id="QuadMesh_sprite"]
+material = SubResource("ShaderMaterial_fire")
+size = Vector2(1.6, 1.6)
 
 [node name="FlameShot" type="Node3D" groups=["shots"] node_paths=PackedStringArray("tracer", "cubes", "trail")]
 script = ExtResource("1_flame")
-size_start = 0.8
-size_end = 2.4
+size_start = 1.0
+size_end = 3.0
+rise_end = 1.6
 tracer = NodePath("Flame")
-cubes = [NodePath("Flame/A"), NodePath("Flame/B"), NodePath("Flame/C"), NodePath("Flame/D")]
+cubes = [NodePath("Flame/A"), NodePath("Flame/B"), NodePath("Flame/C"), NodePath("Flame/D"), NodePath("Flame/E")]
 trail = NodePath("Embers")
 
 [node name="Flame" type="Node3D" parent="."]
 
 [node name="A" type="MeshInstance3D" parent="Flame"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, 0)
 cast_shadow = 0
-mesh = SubResource("BoxMesh_cube")
+instance_shader_parameters/seed = 0.11
+mesh = SubResource("QuadMesh_sprite")
 
 [node name="B" type="MeshInstance3D" parent="Flame"]
-transform = Transform3D(0.8, 0.3, 0, -0.3, 0.8, 0, 0, 0, 0.85, 0.28, 0.18, 0.2)
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0.35, 0.2, 0.55)
 cast_shadow = 0
-mesh = SubResource("BoxMesh_cube")
+instance_shader_parameters/seed = 0.37
+mesh = SubResource("QuadMesh_sprite")
 
 [node name="C" type="MeshInstance3D" parent="Flame"]
-transform = Transform3D(0.7, 0, 0.3, 0, 0.75, 0, -0.3, 0, 0.7, -0.26, 0.12, -0.22)
+transform = Transform3D(0.85, 0, 0, 0, 0.85, 0, 0, 0, 0.85, -0.3, 0.1, -0.5)
 cast_shadow = 0
-mesh = SubResource("BoxMesh_cube")
+instance_shader_parameters/seed = 0.62
+mesh = SubResource("QuadMesh_sprite")
 
 [node name="D" type="MeshInstance3D" parent="Flame"]
-transform = Transform3D(0.6, -0.2, 0, 0.2, 0.6, 0, 0, 0, 0.6, 0.05, 0.36, 0.3)
+transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0.1, 0.4, 0.2)
 cast_shadow = 0
-mesh = SubResource("BoxMesh_cube")
+instance_shader_parameters/seed = 0.83
+mesh = SubResource("QuadMesh_sprite")
+
+[node name="E" type="MeshInstance3D" parent="Flame"]
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, -0.15, -0.1, 0.9)
+cast_shadow = 0
+instance_shader_parameters/seed = 0.29
+mesh = SubResource("QuadMesh_sprite")
 
 [node name="Embers" type="MultiMeshInstance3D" parent="." node_paths=PackedStringArray("follow")]
 script = ExtResource("3_fx")
@@ -49,8 +60,8 @@ kind = 2
 max_particles = 32
 life_min = 0.25
 life_max = 0.55
-size_start = 0.26
-size_end = 0.06
+size_start = 0.16
+size_end = 0.04
 colour_start = Color(1, 0.8, 0.3, 1)
 colour_end = Color(0.75, 0.12, 0.02, 0.6)
 glow = true

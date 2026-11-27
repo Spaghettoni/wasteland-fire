@@ -6,7 +6,6 @@
 [ext_resource type="Script" path="res://src/gameplay/units/player_drive_input.gd" id="4_pdi"]
 [ext_resource type="Script" path="res://src/gameplay/camera/chase_camera.gd" id="5_cam"]
 [ext_resource type="Resource" path="res://src/gameplay/camera/data/chase_camera_settings.tres" id="6_set"]
-[ext_resource type="CameraAttributesPractical" path="res://src/gameplay/camera/data/tilt_shift_attributes.tres" id="tilt_shift"]
 [ext_resource type="Material" path="res://src/gameplay/split_screen/data/player_1_body_material.tres" id="7_m1"]
 [ext_resource type="Material" path="res://src/gameplay/split_screen/data/player_2_body_material.tres" id="8_m2"]
 [ext_resource type="Script" path="res://src/gameplay/match/match_controller.gd" id="9_mc"]
@@ -263,7 +262,6 @@ msaa_3d = 2
 [node name="Player1Camera" type="Camera3D" parent="Views/Player1View/SubViewport" unique_id=9000041 node_paths=PackedStringArray("target")]
 unique_name_in_owner = true
 current = true
-attributes = ExtResource("tilt_shift")
 script = ExtResource("5_cam")
 target = NodePath("%Player1Unit")
 settings = ExtResource("6_set")
@@ -330,7 +328,6 @@ msaa_3d = 2
 [node name="Player2Camera" type="Camera3D" parent="Views/Player2View/SubViewport" unique_id=9000042 node_paths=PackedStringArray("target")]
 unique_name_in_owner = true
 current = true
-attributes = ExtResource("tilt_shift")
 script = ExtResource("5_cam")
 target = NodePath("%Player2Unit")
 settings = ExtResource("6_set")
