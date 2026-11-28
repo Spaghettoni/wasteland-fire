@@ -7,7 +7,7 @@ extends SceneTree
 ##  - Cactuses (no rocks since 2026-11-27: "tie oranzove kopky ... by som dal prec"), never taller than CACTUS_TOP_M so
 ##    a Gyrocopter flies over them ("nech nad nimi preleti gyro"): on the ground in play (on an Island on a Map that has Island* polygons), at least CLEAR_M from
 ##    anything that collides or watches (Structures, Bases, zones, Bushes, spawn points), at least SPACING_M from each
-##    other, mostly near a shore or an edge; each a StaticBody3D on layer 1 with a small collider no taller than
+##    other, mostly near a shore or an edge; each a StaticBody3D on the cover layer (7) with a small collider no taller than
 ##    COLLIDER_TOP_M, well under the flying height (Story 015), so a Gyrocopter never touches one; on a Map without
 ##    Islands, none nearer the edge than EDGE_CLEAR_M.
 ##  - Maps without a sea get a wide plain sand plane under everything, so the desert runs on to the horizon.
@@ -113,7 +113,9 @@ func _go() -> void:
 		var cactus: bool = true
 		var body := StaticBody3D.new()
 		body.name = ("Cactus%d" if cactus else "Rock%d") % props.size()
-		body.collision_layer = 1
+		# The cover layer: the ground Units run into a cactus, a Gyrocopter (whose mask leaves cover out) flies over it
+		# (Martin, 2026-11-28: "gyro naraza do kaktusov").
+		body.collision_layer = 64
 		body.collision_mask = 0
 		var grow: float = rng.randf_range(1.0, 1.25)
 		body.transform = Transform3D(Basis(Vector3.UP, rng.randf() * TAU), Vector3(p.x, 0.0, p.y))

@@ -31,3 +31,7 @@
 ## Test Evidence
 
 `production/qa/evidence/story-072-evidence.md`, frames in `production/qa/evidence/story-072/`.
+
+## Follow-up 2026-11-28: the Gyrocopter hit cactuses
+
+Martin: "gyro naraza do kaktusov". The cactus bodies were on the map layer (1), which the Gyrocopter's mask holds. They are on the cover layer (7) now: the ground types' masks hold it (they run into a cactus), the Gyrocopter's does not (it flies over). `tools/evidence/scenery/scenery_check.gd` checks the layers, masks and heights (53 cactuses, tallest 1.90 m): FAIL on the old scenery, ok on the new. Full regression (132): the same exits as before.

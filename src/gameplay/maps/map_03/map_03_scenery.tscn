@@ -6,13 +6,33 @@
 [ext_resource type="ArrayMesh" path="res://assets/art/voxel/cactus_2.res" id="4_qdkqe"]
 [ext_resource type="ArrayMesh" path="res://assets/art/voxel/cactus_3.res" id="5_s8eib"]
 
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_6nkjc"]
+height = 1.2
+radius = 0.3778409
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_8qvrv"]
+height = 1.2
+radius = 0.38143638
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_6m68b"]
+height = 1.2
+radius = 0.33585858
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_qdkqe"]
+height = 1.2
+radius = 0.40771484
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_s8eib"]
+height = 1.2
+radius = 0.4318182
+
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_rjevt"]
 height = 1.2
 radius = 0.33585858
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_punay"]
 height = 1.2
-radius = 0.42633477
+radius = 0.39619562
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_o5tcp"]
 height = 1.2
@@ -24,19 +44,19 @@ radius = 0.33585858
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_bw4ab"]
 height = 1.2
-radius = 0.3778409
+radius = 0.33585858
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_8m6dh"]
 height = 1.2
-radius = 0.33585858
+radius = 0.3913439
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_p20do"]
 height = 1.2
-radius = 0.3662646
+radius = 0.41887498
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_tonm6"]
 height = 1.2
-radius = 0.3792672
+radius = 0.33585858
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_njcy0"]
 height = 1.2
@@ -56,7 +76,7 @@ radius = 0.3778409
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_gsfgl"]
 height = 1.2
-radius = 0.33585858
+radius = 0.431588
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_vwtpj"]
 height = 1.2
@@ -64,320 +84,322 @@ radius = 0.3778409
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_kxv0m"]
 height = 1.2
-radius = 0.38815662
+radius = 0.33585858
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_ih01h"]
 height = 1.2
-radius = 0.3798952
+radius = 0.3778409
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_on0qp"]
 height = 1.2
-radius = 0.40080503
-
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_oiwro"]
-height = 1.2
 radius = 0.3778409
 
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_c7by3"]
-height = 1.2
-radius = 0.41572514
+[node name="Scenery" type="Node3D" unique_id=1809420085]
 
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_2dmtj"]
-height = 1.2
-radius = 0.3778409
-
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_rjwrc"]
-height = 1.2
-radius = 0.37377
-
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_s6jef"]
-height = 1.2
-radius = 0.40041572
-
-[node name="Scenery" type="Node3D" unique_id=1633319580]
-
-[node name="Cactus1" type="StaticBody3D" parent="." unique_id=908303271]
-transform = Transform3D(-0.98886716, 0, 0.1488009, 0, 1, 0, -0.1488009, 0, -0.98886716, -47.41391, 0, -54.96151)
+[node name="Cactus1" type="StaticBody3D" parent="." unique_id=359286762]
+transform = Transform3D(-0.32799277, 0, 0.9446802, 0, 1, 0, -0.9446802, 0, -0.32799277, -79.09454, 0, 48.40425)
+collision_layer = 64
 collision_mask = 0
 
-[node name="Look" type="MeshInstance3D" parent="Cactus1" unique_id=1401718519]
+[node name="Look" type="MeshInstance3D" parent="Cactus1" unique_id=2130842446]
+transform = Transform3D(1.0795455, 0, 0, 0, 1.0795455, 0, 0, 0, 1.0795455, 0, 0, 0)
+material_override = ExtResource("1_6nkjc")
+mesh = ExtResource("5_s8eib")
+
+[node name="Collider" type="CollisionShape3D" parent="Cactus1" unique_id=561027777]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("CylinderShape3D_6nkjc")
+
+[node name="Cactus2" type="StaticBody3D" parent="." unique_id=1511868249]
+transform = Transform3D(-0.9509146, 0, -0.30945343, 0, 1, 0, 0.30945343, 0, -0.9509146, -73.49219, 0, 54.13054)
+collision_layer = 64
+collision_mask = 0
+
+[node name="Look" type="MeshInstance3D" parent="Cactus2" unique_id=1446690624]
+transform = Transform3D(1.0898182, 0, 0, 0, 1.0898182, 0, 0, 0, 1.0898182, 0, 0, 0)
+material_override = ExtResource("1_6nkjc")
+mesh = ExtResource("3_6m68b")
+
+[node name="Collider" type="CollisionShape3D" parent="Cactus2" unique_id=204914337]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("CylinderShape3D_8qvrv")
+
+[node name="Cactus3" type="StaticBody3D" parent="." unique_id=107636782]
+transform = Transform3D(-0.7552395, 0, 0.655449, 0, 1, 0, -0.655449, 0, -0.7552395, 19.028366, 0, -38.427612)
+collision_layer = 64
+collision_mask = 0
+
+[node name="Look" type="MeshInstance3D" parent="Cactus3" unique_id=1657404959]
 transform = Transform3D(0.959596, 0, 0, 0, 0.959596, 0, 0, 0, 0.959596, 0, 0, 0)
 material_override = ExtResource("1_6nkjc")
 mesh = ExtResource("2_8qvrv")
 
-[node name="Collider" type="CollisionShape3D" parent="Cactus1" unique_id=1916149681]
+[node name="Collider" type="CollisionShape3D" parent="Cactus3" unique_id=97012116]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("CylinderShape3D_6m68b")
+
+[node name="Cactus4" type="StaticBody3D" parent="." unique_id=885433021]
+transform = Transform3D(0.2384671, 0, 0.9711506, 0, 1, 0, -0.9711506, 0, 0.2384671, -44.62816, 0, -98.25577)
+collision_layer = 64
+collision_mask = 0
+
+[node name="Look" type="MeshInstance3D" parent="Cactus4" unique_id=1240438654]
+transform = Transform3D(1.1648996, 0, 0, 0, 1.1648996, 0, 0, 0, 1.1648996, 0, 0, 0)
+material_override = ExtResource("1_6nkjc")
+mesh = ExtResource("3_6m68b")
+
+[node name="Collider" type="CollisionShape3D" parent="Cactus4" unique_id=1326422684]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("CylinderShape3D_qdkqe")
+
+[node name="Cactus5" type="StaticBody3D" parent="." unique_id=323395014]
+transform = Transform3D(0.4215669, 0, -0.9067973, 0, 1, 0, 0.9067973, 0, 0.4215669, 54.90367, 0, -59.251423)
+collision_layer = 64
+collision_mask = 0
+
+[node name="Look" type="MeshInstance3D" parent="Cactus5" unique_id=703823505]
+transform = Transform3D(1.2337663, 0, 0, 0, 1.2337663, 0, 0, 0, 1.2337663, 0, 0, 0)
+material_override = ExtResource("1_6nkjc")
+mesh = ExtResource("3_6m68b")
+
+[node name="Collider" type="CollisionShape3D" parent="Cactus5" unique_id=96585656]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("CylinderShape3D_s8eib")
+
+[node name="Cactus6" type="StaticBody3D" parent="." unique_id=1150313645]
+transform = Transform3D(0.079035275, 0, -0.9968718, 0, 1, 0, 0.9968718, 0, 0.079035275, -77.47833, 0, -108.0197)
+collision_layer = 64
+collision_mask = 0
+
+[node name="Look" type="MeshInstance3D" parent="Cactus6" unique_id=316194612]
+transform = Transform3D(0.959596, 0, 0, 0, 0.959596, 0, 0, 0, 0.959596, 0, 0, 0)
+material_override = ExtResource("1_6nkjc")
+mesh = ExtResource("4_qdkqe")
+
+[node name="Collider" type="CollisionShape3D" parent="Cactus6" unique_id=1867783369]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("CylinderShape3D_rjevt")
 
-[node name="Cactus2" type="StaticBody3D" parent="." unique_id=684328316]
-transform = Transform3D(0.39623106, 0, -0.91815084, 0, 1, 0, 0.91815084, 0, 0.39623106, 80.22693, 0, 49.47905)
+[node name="Cactus7" type="StaticBody3D" parent="." unique_id=851084952]
+transform = Transform3D(-0.73721474, 0, -0.6756585, 0, 1, 0, 0.6756585, 0, -0.73721474, 69.78133, 0, 55.218307)
+collision_layer = 64
 collision_mask = 0
 
-[node name="Look" type="MeshInstance3D" parent="Cactus2" unique_id=304930024]
-transform = Transform3D(1.2180994, 0, 0, 0, 1.2180994, 0, 0, 0, 1.2180994, 0, 0, 0)
+[node name="Look" type="MeshInstance3D" parent="Cactus7" unique_id=52057972]
+transform = Transform3D(1.1319875, 0, 0, 0, 1.1319875, 0, 0, 0, 1.1319875, 0, 0, 0)
 material_override = ExtResource("1_6nkjc")
 mesh = ExtResource("3_6m68b")
 
-[node name="Collider" type="CollisionShape3D" parent="Cactus2" unique_id=1390940112]
+[node name="Collider" type="CollisionShape3D" parent="Cactus7" unique_id=512354242]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("CylinderShape3D_punay")
 
-[node name="Cactus3" type="StaticBody3D" parent="." unique_id=130249779]
-transform = Transform3D(-0.8485045, 0, 0.5291882, 0, 1, 0, -0.5291882, 0, -0.8485045, -91.59566, 0, -48.35376)
+[node name="Cactus8" type="StaticBody3D" parent="." unique_id=2035152680]
+transform = Transform3D(-0.5220319, 0, -0.85292596, 0, 1, 0, 0.85292596, 0, -0.5220319, 80.61957, 0, -46.804054)
+collision_layer = 64
 collision_mask = 0
 
-[node name="Look" type="MeshInstance3D" parent="Cactus3" unique_id=302285705]
+[node name="Look" type="MeshInstance3D" parent="Cactus8" unique_id=1074069877]
 transform = Transform3D(0.959596, 0, 0, 0, 0.959596, 0, 0, 0, 0.959596, 0, 0, 0)
 material_override = ExtResource("1_6nkjc")
-mesh = ExtResource("4_qdkqe")
+mesh = ExtResource("2_8qvrv")
 
-[node name="Collider" type="CollisionShape3D" parent="Cactus3" unique_id=2005471625]
+[node name="Collider" type="CollisionShape3D" parent="Cactus8" unique_id=671788997]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("CylinderShape3D_o5tcp")
 
-[node name="Cactus4" type="StaticBody3D" parent="." unique_id=1674499282]
-transform = Transform3D(-0.7154761, 0, -0.6986372, 0, 1, 0, 0.6986372, 0, -0.7154761, 43.27162, 0, -58.02975)
+[node name="Cactus9" type="StaticBody3D" parent="." unique_id=339526136]
+transform = Transform3D(0.8934126, 0, -0.44923708, 0, 1, 0, 0.44923708, 0, 0.8934126, -0.1563797, 0, 42.956543)
+collision_layer = 64
 collision_mask = 0
 
-[node name="Look" type="MeshInstance3D" parent="Cactus4" unique_id=604762905]
+[node name="Look" type="MeshInstance3D" parent="Cactus9" unique_id=2131667675]
 transform = Transform3D(0.959596, 0, 0, 0, 0.959596, 0, 0, 0, 0.959596, 0, 0, 0)
 material_override = ExtResource("1_6nkjc")
 mesh = ExtResource("2_8qvrv")
 
-[node name="Collider" type="CollisionShape3D" parent="Cactus4" unique_id=405057463]
+[node name="Collider" type="CollisionShape3D" parent="Cactus9" unique_id=1493415031]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("CylinderShape3D_0l23n")
 
-[node name="Cactus5" type="StaticBody3D" parent="." unique_id=391619419]
-transform = Transform3D(-0.70582706, 0, 0.7083842, 0, 1, 0, -0.7083842, 0, -0.70582706, -45.408524, 0, -65.75978)
+[node name="Cactus10" type="StaticBody3D" parent="." unique_id=1380022588]
+transform = Transform3D(-0.9897862, 0, 0.14255966, 0, 1, 0, -0.14255966, 0, -0.9897862, 64.050354, 0, 59.683075)
+collision_layer = 64
 collision_mask = 0
 
-[node name="Look" type="MeshInstance3D" parent="Cactus5" unique_id=1873864073]
-transform = Transform3D(1.0795455, 0, 0, 0, 1.0795455, 0, 0, 0, 1.0795455, 0, 0, 0)
+[node name="Look" type="MeshInstance3D" parent="Cactus10" unique_id=507839391]
+transform = Transform3D(0.959596, 0, 0, 0, 0.959596, 0, 0, 0, 0.959596, 0, 0, 0)
 material_override = ExtResource("1_6nkjc")
-mesh = ExtResource("5_s8eib")
+mesh = ExtResource("2_8qvrv")
 
-[node name="Collider" type="CollisionShape3D" parent="Cactus5" unique_id=1906685109]
+[node name="Collider" type="CollisionShape3D" parent="Cactus10" unique_id=230604746]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("CylinderShape3D_bw4ab")
 
-[node name="Cactus6" type="StaticBody3D" parent="." unique_id=256780582]
-transform = Transform3D(-0.64174235, 0, 0.7669203, 0, 1, 0, -0.7669203, 0, -0.64174235, -87.688126, 0, -109.89033)
+[node name="Cactus11" type="StaticBody3D" parent="." unique_id=1357748335]
+transform = Transform3D(-0.7368412, 0, -0.67606586, 0, 1, 0, 0.67606586, 0, -0.7368412, -114.38495, 0, -81.77344)
+collision_layer = 64
 collision_mask = 0
 
-[node name="Look" type="MeshInstance3D" parent="Cactus6" unique_id=633750282]
-transform = Transform3D(0.959596, 0, 0, 0, 0.959596, 0, 0, 0, 0.959596, 0, 0, 0)
+[node name="Look" type="MeshInstance3D" parent="Cactus11" unique_id=707144342]
+transform = Transform3D(1.1181254, 0, 0, 0, 1.1181254, 0, 0, 0, 1.1181254, 0, 0, 0)
 material_override = ExtResource("1_6nkjc")
-mesh = ExtResource("4_qdkqe")
+mesh = ExtResource("3_6m68b")
 
-[node name="Collider" type="CollisionShape3D" parent="Cactus6" unique_id=256765544]
+[node name="Collider" type="CollisionShape3D" parent="Cactus11" unique_id=440249292]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("CylinderShape3D_8m6dh")
 
-[node name="Cactus7" type="StaticBody3D" parent="." unique_id=1798703000]
-transform = Transform3D(-0.9237593, 0, 0.38297358, 0, 1, 0, -0.38297358, 0, -0.9237593, -93.42804, 0, 53.025635)
+[node name="Cactus12" type="StaticBody3D" parent="." unique_id=1013696715]
+transform = Transform3D(-0.2935301, 0, 0.95594984, 0, 1, 0, -0.95594984, 0, -0.2935301, 98.38814, 0, 111.585846)
+collision_layer = 64
 collision_mask = 0
 
-[node name="Look" type="MeshInstance3D" parent="Cactus7" unique_id=105684887]
-transform = Transform3D(1.0464703, 0, 0, 0, 1.0464703, 0, 0, 0, 1.0464703, 0, 0, 0)
+[node name="Look" type="MeshInstance3D" parent="Cactus12" unique_id=1956095860]
+transform = Transform3D(1.1967857, 0, 0, 0, 1.1967857, 0, 0, 0, 1.1967857, 0, 0, 0)
 material_override = ExtResource("1_6nkjc")
-mesh = ExtResource("5_s8eib")
+mesh = ExtResource("3_6m68b")
 
-[node name="Collider" type="CollisionShape3D" parent="Cactus7" unique_id=25687098]
+[node name="Collider" type="CollisionShape3D" parent="Cactus12" unique_id=1166151331]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("CylinderShape3D_p20do")
 
-[node name="Cactus8" type="StaticBody3D" parent="." unique_id=944182184]
-transform = Transform3D(0.97982925, 0, 0.19983657, 0, 1, 0, -0.19983657, 0, 0.97982925, -28.072327, 0, -33.21154)
+[node name="Cactus13" type="StaticBody3D" parent="." unique_id=1229038582]
+transform = Transform3D(0.9288534, 0, 0.3704475, 0, 1, 0, -0.3704475, 0, 0.9288534, -56.465687, 0, 93.94551)
+collision_layer = 64
 collision_mask = 0
 
-[node name="Look" type="MeshInstance3D" parent="Cactus8" unique_id=1864254286]
-transform = Transform3D(1.0836205, 0, 0, 0, 1.0836205, 0, 0, 0, 1.0836205, 0, 0, 0)
+[node name="Look" type="MeshInstance3D" parent="Cactus13" unique_id=459511003]
+transform = Transform3D(0.959596, 0, 0, 0, 0.959596, 0, 0, 0, 0.959596, 0, 0, 0)
 material_override = ExtResource("1_6nkjc")
-mesh = ExtResource("3_6m68b")
+mesh = ExtResource("4_qdkqe")
 
-[node name="Collider" type="CollisionShape3D" parent="Cactus8" unique_id=1389201318]
+[node name="Collider" type="CollisionShape3D" parent="Cactus13" unique_id=218183020]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("CylinderShape3D_tonm6")
 
-[node name="Cactus9" type="StaticBody3D" parent="." unique_id=739791530]
-transform = Transform3D(0.20677614, 0, 0.9783883, 0, 1, 0, -0.9783883, 0, 0.20677614, 53.94049, 0, 93.81943)
+[node name="Cactus14" type="StaticBody3D" parent="." unique_id=1412395752]
+transform = Transform3D(0.9889019, 0, 0.14856987, 0, 1, 0, -0.14856987, 0, 0.9889019, 102.95282, 0, -109.03654)
+collision_layer = 64
 collision_mask = 0
 
-[node name="Look" type="MeshInstance3D" parent="Cactus9" unique_id=174885062]
+[node name="Look" type="MeshInstance3D" parent="Cactus14" unique_id=189693534]
 transform = Transform3D(0.959596, 0, 0, 0, 0.959596, 0, 0, 0, 0.959596, 0, 0, 0)
 material_override = ExtResource("1_6nkjc")
-mesh = ExtResource("2_8qvrv")
+mesh = ExtResource("4_qdkqe")
 
-[node name="Collider" type="CollisionShape3D" parent="Cactus9" unique_id=42342428]
+[node name="Collider" type="CollisionShape3D" parent="Cactus14" unique_id=1657661096]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("CylinderShape3D_njcy0")
 
-[node name="Cactus10" type="StaticBody3D" parent="." unique_id=2130101349]
-transform = Transform3D(-0.7484434, 0, 0.66319865, 0, 1, 0, -0.66319865, 0, -0.7484434, -21.086159, 0, 30.501312)
+[node name="Cactus15" type="StaticBody3D" parent="." unique_id=392616427]
+transform = Transform3D(-0.8791267, 0, 0.47658807, 0, 1, 0, -0.47658807, 0, -0.8791267, 65.19232, 0, -46.294167)
+collision_layer = 64
 collision_mask = 0
 
-[node name="Look" type="MeshInstance3D" parent="Cactus10" unique_id=142549390]
+[node name="Look" type="MeshInstance3D" parent="Cactus15" unique_id=1414794781]
 transform = Transform3D(0.959596, 0, 0, 0, 0.959596, 0, 0, 0, 0.959596, 0, 0, 0)
 material_override = ExtResource("1_6nkjc")
 mesh = ExtResource("4_qdkqe")
 
-[node name="Collider" type="CollisionShape3D" parent="Cactus10" unique_id=32477833]
+[node name="Collider" type="CollisionShape3D" parent="Cactus15" unique_id=1406746067]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("CylinderShape3D_20ibb")
 
-[node name="Cactus11" type="StaticBody3D" parent="." unique_id=824118098]
-transform = Transform3D(0.94916874, 0, 0.31476766, 0, 1, 0, -0.31476766, 0, 0.94916874, 55.025314, 0, -48.832405)
+[node name="Cactus16" type="StaticBody3D" parent="." unique_id=1391947117]
+transform = Transform3D(0.3031767, 0, 0.9529344, 0, 1, 0, -0.9529344, 0, 0.3031767, 84.53111, 0, -110.70284)
+collision_layer = 64
 collision_mask = 0
 
-[node name="Look" type="MeshInstance3D" parent="Cactus11" unique_id=882547035]
+[node name="Look" type="MeshInstance3D" parent="Cactus16" unique_id=1616698836]
 transform = Transform3D(0.959596, 0, 0, 0, 0.959596, 0, 0, 0, 0.959596, 0, 0, 0)
 material_override = ExtResource("1_6nkjc")
 mesh = ExtResource("4_qdkqe")
 
-[node name="Collider" type="CollisionShape3D" parent="Cactus11" unique_id=381762742]
+[node name="Collider" type="CollisionShape3D" parent="Cactus16" unique_id=1308591859]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("CylinderShape3D_hd5tn")
 
-[node name="Cactus12" type="StaticBody3D" parent="." unique_id=1810769663]
-transform = Transform3D(0.25930074, 0, -0.96579665, 0, 1, 0, 0.96579665, 0, 0.25930074, -63.282097, 0, 60.433502)
+[node name="Cactus17" type="StaticBody3D" parent="." unique_id=650674876]
+transform = Transform3D(0.8767116, 0, 0.48101637, 0, 1, 0, -0.48101637, 0, 0.8767116, -60.180035, 0, -51.432587)
+collision_layer = 64
 collision_mask = 0
 
-[node name="Look" type="MeshInstance3D" parent="Cactus12" unique_id=1153411201]
+[node name="Look" type="MeshInstance3D" parent="Cactus17" unique_id=366299458]
 transform = Transform3D(1.0795455, 0, 0, 0, 1.0795455, 0, 0, 0, 1.0795455, 0, 0, 0)
 material_override = ExtResource("1_6nkjc")
 mesh = ExtResource("5_s8eib")
 
-[node name="Collider" type="CollisionShape3D" parent="Cactus12" unique_id=24651075]
+[node name="Collider" type="CollisionShape3D" parent="Cactus17" unique_id=2118516783]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("CylinderShape3D_nlwq2")
 
-[node name="Cactus13" type="StaticBody3D" parent="." unique_id=761734596]
-transform = Transform3D(0.92707, 0, -0.37488824, 0, 1, 0, 0.37488824, 0, 0.92707, 88.325516, 0, 49.934143)
+[node name="Cactus18" type="StaticBody3D" parent="." unique_id=654032246]
+transform = Transform3D(0.76454806, 0, -0.6445667, 0, 1, 0, 0.6445667, 0, 0.76454806, -104.170494, 0, -108.919624)
+collision_layer = 64
 collision_mask = 0
 
-[node name="Look" type="MeshInstance3D" parent="Cactus13" unique_id=65456160]
+[node name="Look" type="MeshInstance3D" parent="Cactus18" unique_id=1618409729]
+transform = Transform3D(1.2331085, 0, 0, 0, 1.2331085, 0, 0, 0, 1.2331085, 0, 0, 0)
+material_override = ExtResource("1_6nkjc")
+mesh = ExtResource("3_6m68b")
+
+[node name="Collider" type="CollisionShape3D" parent="Cactus18" unique_id=1446714331]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("CylinderShape3D_gsfgl")
+
+[node name="Cactus19" type="StaticBody3D" parent="." unique_id=1681288151]
+transform = Transform3D(-0.9870612, 0, 0.16034411, 0, 1, 0, -0.16034411, 0, -0.9870612, 28.394196, 0, -32.849167)
+collision_layer = 64
+collision_mask = 0
+
+[node name="Look" type="MeshInstance3D" parent="Cactus19" unique_id=11238055]
+transform = Transform3D(1.0795455, 0, 0, 0, 1.0795455, 0, 0, 0, 1.0795455, 0, 0, 0)
+material_override = ExtResource("1_6nkjc")
+mesh = ExtResource("5_s8eib")
+
+[node name="Collider" type="CollisionShape3D" parent="Cactus19" unique_id=721314658]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("CylinderShape3D_vwtpj")
+
+[node name="Cactus20" type="StaticBody3D" parent="." unique_id=1245457163]
+transform = Transform3D(0.739082, 0, -0.67361546, 0, 1, 0, 0.67361546, 0, 0.739082, -20.149673, 0, -40.098488)
+collision_layer = 64
+collision_mask = 0
+
+[node name="Look" type="MeshInstance3D" parent="Cactus20" unique_id=654971222]
 transform = Transform3D(0.959596, 0, 0, 0, 0.959596, 0, 0, 0, 0.959596, 0, 0, 0)
 material_override = ExtResource("1_6nkjc")
 mesh = ExtResource("2_8qvrv")
 
-[node name="Collider" type="CollisionShape3D" parent="Cactus13" unique_id=646848185]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
-shape = SubResource("CylinderShape3D_gsfgl")
-
-[node name="Cactus14" type="StaticBody3D" parent="." unique_id=1509152846]
-transform = Transform3D(-0.09141728, 0, -0.99581265, 0, 1, 0, 0.99581265, 0, -0.09141728, -99.06989, 0, -47.013046)
-collision_mask = 0
-
-[node name="Look" type="MeshInstance3D" parent="Cactus14" unique_id=1565716935]
-transform = Transform3D(1.0795455, 0, 0, 0, 1.0795455, 0, 0, 0, 1.0795455, 0, 0, 0)
-material_override = ExtResource("1_6nkjc")
-mesh = ExtResource("5_s8eib")
-
-[node name="Collider" type="CollisionShape3D" parent="Cactus14" unique_id=225603883]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
-shape = SubResource("CylinderShape3D_vwtpj")
-
-[node name="Cactus15" type="StaticBody3D" parent="." unique_id=1548486660]
-transform = Transform3D(-0.008240531, 0, 0.999966, 0, 1, 0, -0.999966, 0, -0.008240531, 39.877045, 0, -95.48595)
-collision_mask = 0
-
-[node name="Look" type="MeshInstance3D" parent="Cactus15" unique_id=1996950519]
-transform = Transform3D(1.1090189, 0, 0, 0, 1.1090189, 0, 0, 0, 1.1090189, 0, 0, 0)
-material_override = ExtResource("1_6nkjc")
-mesh = ExtResource("3_6m68b")
-
-[node name="Collider" type="CollisionShape3D" parent="Cactus15" unique_id=35877849]
+[node name="Collider" type="CollisionShape3D" parent="Cactus20" unique_id=1997792280]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("CylinderShape3D_kxv0m")
 
-[node name="Cactus16" type="StaticBody3D" parent="." unique_id=1122894386]
-transform = Transform3D(-0.24815516, 0, 0.9687203, 0, 1, 0, -0.9687203, 0, -0.24815516, 89.1487, 0, -50.93759)
+[node name="Cactus21" type="StaticBody3D" parent="." unique_id=539518941]
+transform = Transform3D(-0.8167802, 0, 0.57694894, 0, 1, 0, -0.57694894, 0, -0.8167802, 58.81024, 0, 102.452545)
+collision_layer = 64
 collision_mask = 0
 
-[node name="Look" type="MeshInstance3D" parent="Cactus16" unique_id=28546919]
-transform = Transform3D(1.0854149, 0, 0, 0, 1.0854149, 0, 0, 0, 1.0854149, 0, 0, 0)
+[node name="Look" type="MeshInstance3D" parent="Cactus21" unique_id=410381406]
+transform = Transform3D(1.0795455, 0, 0, 0, 1.0795455, 0, 0, 0, 1.0795455, 0, 0, 0)
 material_override = ExtResource("1_6nkjc")
-mesh = ExtResource("3_6m68b")
+mesh = ExtResource("5_s8eib")
 
-[node name="Collider" type="CollisionShape3D" parent="Cactus16" unique_id=896218134]
+[node name="Collider" type="CollisionShape3D" parent="Cactus21" unique_id=418573359]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("CylinderShape3D_ih01h")
 
-[node name="Cactus17" type="StaticBody3D" parent="." unique_id=1179972248]
-transform = Transform3D(-0.5207357, 0, 0.8537179, 0, 1, 0, -0.8537179, 0, -0.5207357, -51.773506, 0, 73.77844)
+[node name="Cactus22" type="StaticBody3D" parent="." unique_id=829332057]
+transform = Transform3D(-0.75301737, 0, 0.65800065, 0, 1, 0, -0.65800065, 0, -0.75301737, 1.224083, 0, -43.43879)
+collision_layer = 64
 collision_mask = 0
 
-[node name="Look" type="MeshInstance3D" parent="Cactus17" unique_id=1889159030]
-transform = Transform3D(1.1451572, 0, 0, 0, 1.1451572, 0, 0, 0, 1.1451572, 0, 0, 0)
+[node name="Look" type="MeshInstance3D" parent="Cactus22" unique_id=29507814]
+transform = Transform3D(1.0795455, 0, 0, 0, 1.0795455, 0, 0, 0, 1.0795455, 0, 0, 0)
 material_override = ExtResource("1_6nkjc")
-mesh = ExtResource("3_6m68b")
+mesh = ExtResource("5_s8eib")
 
-[node name="Collider" type="CollisionShape3D" parent="Cactus17" unique_id=1319437081]
+[node name="Collider" type="CollisionShape3D" parent="Cactus22" unique_id=145795203]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("CylinderShape3D_on0qp")
-
-[node name="Cactus18" type="StaticBody3D" parent="." unique_id=292774766]
-transform = Transform3D(-0.099050246, 0, 0.99508244, 0, 1, 0, -0.99508244, 0, -0.099050246, 102.25185, 0, 54.38568)
-collision_mask = 0
-
-[node name="Look" type="MeshInstance3D" parent="Cactus18" unique_id=2084606138]
-transform = Transform3D(1.0795455, 0, 0, 0, 1.0795455, 0, 0, 0, 1.0795455, 0, 0, 0)
-material_override = ExtResource("1_6nkjc")
-mesh = ExtResource("5_s8eib")
-
-[node name="Collider" type="CollisionShape3D" parent="Cactus18" unique_id=1313090176]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
-shape = SubResource("CylinderShape3D_oiwro")
-
-[node name="Cactus19" type="StaticBody3D" parent="." unique_id=2093648165]
-transform = Transform3D(0.6651345, 0, 0.7467236, 0, 1, 0, -0.7467236, 0, 0.6651345, 41.716324, 0, -67.7115)
-collision_mask = 0
-
-[node name="Look" type="MeshInstance3D" parent="Cactus19" unique_id=1269905322]
-transform = Transform3D(1.1877861, 0, 0, 0, 1.1877861, 0, 0, 0, 1.1877861, 0, 0, 0)
-material_override = ExtResource("1_6nkjc")
-mesh = ExtResource("3_6m68b")
-
-[node name="Collider" type="CollisionShape3D" parent="Cactus19" unique_id=2098238403]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
-shape = SubResource("CylinderShape3D_c7by3")
-
-[node name="Cactus20" type="StaticBody3D" parent="." unique_id=789396733]
-transform = Transform3D(0.80180025, 0, 0.5975922, 0, 1, 0, -0.5975922, 0, 0.80180025, 26.08194, 0, 33.39627)
-collision_mask = 0
-
-[node name="Look" type="MeshInstance3D" parent="Cactus20" unique_id=132025727]
-transform = Transform3D(1.0795455, 0, 0, 0, 1.0795455, 0, 0, 0, 1.0795455, 0, 0, 0)
-material_override = ExtResource("1_6nkjc")
-mesh = ExtResource("5_s8eib")
-
-[node name="Collider" type="CollisionShape3D" parent="Cactus20" unique_id=325112809]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
-shape = SubResource("CylinderShape3D_2dmtj")
-
-[node name="Cactus21" type="StaticBody3D" parent="." unique_id=2054480099]
-transform = Transform3D(-0.17529316, 0, 0.98451626, 0, 1, 0, -0.98451626, 0, -0.17529316, -101.298645, 0, 54.415558)
-collision_mask = 0
-
-[node name="Look" type="MeshInstance3D" parent="Cactus21" unique_id=184350821]
-transform = Transform3D(1.0679142, 0, 0, 0, 1.0679142, 0, 0, 0, 1.0679142, 0, 0, 0)
-material_override = ExtResource("1_6nkjc")
-mesh = ExtResource("3_6m68b")
-
-[node name="Collider" type="CollisionShape3D" parent="Cactus21" unique_id=1822393009]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
-shape = SubResource("CylinderShape3D_rjwrc")
-
-[node name="Cactus22" type="StaticBody3D" parent="." unique_id=779137706]
-transform = Transform3D(0.99432874, 0, -0.106350444, 0, 1, 0, 0.106350444, 0, 0.99432874, 54.912476, 0, 64.164566)
-collision_mask = 0
-
-[node name="Look" type="MeshInstance3D" parent="Cactus22" unique_id=407907849]
-transform = Transform3D(1.1440449, 0, 0, 0, 1.1440449, 0, 0, 0, 1.1440449, 0, 0, 0)
-material_override = ExtResource("1_6nkjc")
-mesh = ExtResource("3_6m68b")
-
-[node name="Collider" type="CollisionShape3D" parent="Cactus22" unique_id=1444740276]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
-shape = SubResource("CylinderShape3D_s6jef")
